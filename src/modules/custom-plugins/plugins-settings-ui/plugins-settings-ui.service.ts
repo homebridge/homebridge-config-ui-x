@@ -86,7 +86,9 @@ export class PluginsSettingsUiService {
         const uiOrigin = process.env.UIX_DEVELOPMENT === '1'
           ? this.resolveUiOrigin(origin, reply.request?.headers?.host)
           : ''
-        const devOrigin = uiOrigin ? ` ${uiOrigin}` : ''
+        const devOrigin = uiOrigin
+          ? ` ${uiOrigin}`
+          : ''
         // Scope the CSP to this server.  'unsafe-inline' is required because the
         // generated index.html contains two inline <script> blocks.
         // 'unsafe-eval' is required because plugin custom UIs ran without any
@@ -135,7 +137,9 @@ export class PluginsSettingsUiService {
       }
     } catch (e) {
       this.loggerService.error(`[${pluginName}] UI threw an error - ${e.message}.`)
-      return e.message === 'Not Found' ? reply.code(404).send(e.message) : reply.code(500).send(e.message)
+      return e.message === 'Not Found'
+        ? reply.code(404).send(e.message)
+        : reply.code(500).send(e.message)
     }
   }
 
@@ -260,7 +264,9 @@ export class PluginsSettingsUiService {
       if (!DEV_SERVER_PORTS.has(url.port)) {
         return ''
       }
-      return url.origin === origin ? url.origin : ''
+      return url.origin === origin
+        ? url.origin
+        : ''
     } catch {
       return ''
     }
@@ -296,7 +302,11 @@ export class PluginsSettingsUiService {
    * expects: it settles the pending promise held against this request id by rejecting it.
    */
   private rejectRequest(pluginName: string, client: EventEmitter, requestId: string) {
-    client.emit('response', { requestId, success: false, data: { message: CUSTOM_UI_UNAVAILABLE } })
+    client.emit('response', {
+      requestId,
+      success: false,
+      data: { message: CUSTOM_UI_UNAVAILABLE },
+    })
     this.loggerService.debug(`[${pluginName}] custom UI request ${requestId} rejected (no server-side handler available).`)
   }
 
@@ -444,7 +454,9 @@ export class PluginsSettingsUiService {
         if (response.action === 'response' && response.payload?.requestId) {
           outstanding.delete(response.payload.requestId)
         }
-        response.action = response.action === 'error' ? 'server_error' : response.action
+        response.action = response.action === 'error'
+          ? 'server_error'
+          : response.action
         client.emit(response.action, response.payload)
       }
     })

@@ -107,14 +107,16 @@ export class AccessoriesService {
   }
 
   public async showAccessoryInformation(service: ServiceTypeX): Promise<boolean> {
-    const injector = createEnvironmentInjector([{
-      provide: ACCESSORY_INFO_MODAL_DATA,
-      useValue: {
-        service,
-        accessoryCache: this.accessoryCache,
-        pairingCache: this.pairingCache,
+    const injector = createEnvironmentInjector([
+      {
+        provide: ACCESSORY_INFO_MODAL_DATA,
+        useValue: {
+          service,
+          accessoryCache: this.accessoryCache,
+          pairingCache: this.pairingCache,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(AccessoryInfoComponent, {
       size: 'lg',
@@ -159,7 +161,9 @@ export class AccessoriesService {
       // Replace the service reference inside the rooms signal so the OnPush tile re-renders.
       this.rooms.update(rooms => rooms.map(room => ({
         ...room,
-        services: room.services.map(s => (s.uniqueId === updated.uniqueId ? updated : s)),
+        services: room.services.map(s => (s.uniqueId === updated.uniqueId
+          ? updated
+          : s)),
       })))
 
       this.saveLayout()
@@ -362,7 +366,9 @@ export class AccessoriesService {
     if (!hasDefaultRoom && this.accessoryLayout.length > 0) {
       // Find room named "Default Room" or use first room
       const defaultRoomIndex = this.accessoryLayout.findIndex(r => r.name === 'Default Room')
-      const indexToMakeDefault = defaultRoomIndex !== -1 ? defaultRoomIndex : 0
+      const indexToMakeDefault = defaultRoomIndex !== -1
+        ? defaultRoomIndex
+        : 0
       this.accessoryLayout[indexToMakeDefault].isDefault = true
     }
 
@@ -405,7 +411,9 @@ export class AccessoriesService {
    * plugin left it empty or at the HAP default every accessory shares
    */
   private deviceSerial(serial: string | undefined): string | undefined {
-    return serial && serial !== 'Default-SerialNumber' ? serial : undefined
+    return serial && serial !== 'Default-SerialNumber'
+      ? serial
+      : undefined
   }
 
   /**
@@ -636,7 +644,10 @@ export class AccessoriesService {
           // Add to the correct room using signal update
           this.rooms.update(current => current.map(r =>
             r.name === cached.room.name
-              ? { ...r, services: [...r.services, service] }
+              ? {
+                  ...r,
+                  services: [...r.services, service],
+                }
               : r,
           ))
         } else {
@@ -650,15 +661,21 @@ export class AccessoriesService {
           if (defaultRoom) {
             this.rooms.update(current => current.map(r =>
               r.name === defaultRoom.name
-                ? { ...r, services: [...r.services, service] }
+                ? {
+                    ...r,
+                    services: [...r.services, service],
+                  }
                 : r,
             ))
           } else {
-            this.rooms.update(current => [...current, {
-              name: 'Default Room',
-              isDefault: true,
-              services: [service],
-            }])
+            this.rooms.update(current => [
+              ...current,
+              {
+                name: 'Default Room',
+                isDefault: true,
+                services: [service],
+              },
+            ])
           }
         }
       }

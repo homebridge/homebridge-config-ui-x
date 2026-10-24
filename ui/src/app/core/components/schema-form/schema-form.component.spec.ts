@@ -37,7 +37,9 @@ describe('schemaFormComponent', () => {
 
   function create(options: { lang?: string, data?: any, schema?: any } = {}) {
     TestBed.resetTestingModule()
-    settings = makeSettings({ env: { lang: options.lang ?? 'en' } })
+    settings = makeSettings({
+      env: { lang: options.lang ?? 'en' },
+    })
 
     TestBed.configureTestingModule({
       imports: [SchemaFormComponent],
@@ -48,12 +50,17 @@ describe('schemaFormComponent', () => {
     })
 
     TestBed.overrideComponent(SchemaFormComponent, {
-      set: { imports: [], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     fixture = TestBed.createComponent(SchemaFormComponent)
     component = fixture.componentInstance
-    fixture.componentRef.setInput('configSchema', options.schema ?? { schema: { type: 'object', properties: {} } })
+    fixture.componentRef.setInput('configSchema', options.schema ?? {
+      schema: { type: 'object', properties: {} },
+    })
     fixture.componentRef.setInput('data', options.data ?? { name: 'Example' })
 
     emitted = []
@@ -170,7 +177,9 @@ describe('schemaFormComponent', () => {
     })
 
     it('removes a key the user cleared out of the form', () => {
-      create({ data: { name: 'Example', legacyOption: true } })
+      create({
+        data: { name: 'Example', legacyOption: true },
+      })
 
       component.onChanges({ name: 'Example' })
 
@@ -180,19 +189,32 @@ describe('schemaFormComponent', () => {
     it('preserves the child bridge block the form does not model', () => {
       // ng-formworks rebuilds `_bridge` from its hidden sub-schema and drops the
       // nested shapes, so its copy would strip a disabled HAP protocol
-      const bridge = { username: '0E:11:11:11:11:11', hap: { enabled: false, externalsOnly: true } }
-      create({ data: { name: 'Example', _bridge: bridge } })
+      const bridge = {
+        username: '0E:11:11:11:11:11',
+        hap: { enabled: false, externalsOnly: true },
+      }
+      create({
+        data: { name: 'Example', _bridge: bridge },
+      })
 
-      component.onChanges({ name: 'Example', _bridge: { username: '0E:11:11:11:11:11' } })
+      component.onChanges({
+        name: 'Example',
+        _bridge: { username: '0E:11:11:11:11:11' },
+      })
 
       expect(component.currentData()._bridge).toBe(bridge)
       expect(component.currentData()._bridge.hap).toEqual({ enabled: false, externalsOnly: true })
     })
 
     it('does not invent a child bridge block the caller never had', () => {
-      create({ data: { name: 'Example' } })
+      create({
+        data: { name: 'Example' },
+      })
 
-      component.onChanges({ name: 'Example', _bridge: { username: '0E:11:11:11:11:11' } })
+      component.onChanges({
+        name: 'Example',
+        _bridge: { username: '0E:11:11:11:11:11' },
+      })
 
       expect('_bridge' in component.currentData()).toBe(false)
     })

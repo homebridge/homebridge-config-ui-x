@@ -48,7 +48,10 @@ describe('two factor authentication modals', () => {
    */
   async function open<T>(type: new (...args: any[]) => T, arrange?: () => void): Promise<T> {
     TestBed.resetTestingModule()
-    api = fakeApi().respond('post', '/users/otp/setup', { otpauth, timestamp: serverTime() })
+    api = fakeApi().respond('post', '/users/otp/setup', {
+      otpauth,
+      timestamp: serverTime(),
+    })
     auth = makeAuth()
     toastr = toastrStub()
     activeModal = activeModalStub()
@@ -56,8 +59,19 @@ describe('two factor authentication modals', () => {
     TestBed.configureTestingModule({
       providers: [
         provideTestTranslate(),
-        provideFakes({ api, auth, settings: makeSettings(), toastr, activeModal }),
-        { provide: USER_MODAL_DATA, useValue: { user: { id: 1, username: 'admin', admin: true } } },
+        provideFakes({
+          api,
+          auth,
+          settings: makeSettings(),
+          toastr,
+          activeModal,
+        }),
+        {
+          provide: USER_MODAL_DATA,
+          useValue: {
+            user: { id: 1, username: 'admin', admin: true },
+          },
+        },
       ],
     })
 
@@ -74,7 +88,10 @@ describe('two factor authentication modals', () => {
     // jsdom has no clipboard at all, and the async clipboard API is not
     // writable through a plain assignment
     writeText = vi.fn(async () => undefined)
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } })
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    })
   })
 
   afterEach(() => {
@@ -99,7 +116,10 @@ describe('two factor authentication modals', () => {
 
     it('accepts a clock within a few seconds', async () => {
       const modal = await open(Users2faEnableComponent, () =>
-        api.respond('post', '/users/otp/setup', { otpauth, timestamp: serverTime(2000) }))
+        api.respond('post', '/users/otp/setup', {
+          otpauth,
+          timestamp: serverTime(2000),
+        }))
 
       expect(modal.timeDiffError()).toBeNull()
       expect(modal.otpString()).toBe(otpauth)
@@ -107,7 +127,10 @@ describe('two factor authentication modals', () => {
 
     it('refuses to set up against a server clock that is ahead', async () => {
       const modal = await open(Users2faEnableComponent, () =>
-        api.respond('post', '/users/otp/setup', { otpauth, timestamp: serverTime(60_000) }))
+        api.respond('post', '/users/otp/setup', {
+          otpauth,
+          timestamp: serverTime(60_000),
+        }))
 
       // No QR code and no secret: every code generated from this secret would
       // be rejected, and the user would have locked themselves out
@@ -118,7 +141,10 @@ describe('two factor authentication modals', () => {
 
     it('refuses to set up against a server clock that is behind', async () => {
       const modal = await open(Users2faEnableComponent, () =>
-        api.respond('post', '/users/otp/setup', { otpauth, timestamp: serverTime(-60_000) }))
+        api.respond('post', '/users/otp/setup', {
+          otpauth,
+          timestamp: serverTime(-60_000),
+        }))
 
       // Drift in either direction breaks the codes, so both signs count
       expect(modal.timeDiffError()).not.toBeNull()
@@ -199,7 +225,10 @@ describe('two factor authentication modals', () => {
 
     it('copies nothing when there is no secret to copy', async () => {
       const modal = await open(Users2faEnableComponent, () =>
-        api.respond('post', '/users/otp/setup', { otpauth, timestamp: serverTime(60_000) }))
+        api.respond('post', '/users/otp/setup', {
+          otpauth,
+          timestamp: serverTime(60_000),
+        }))
 
       await modal.copySecretToClipboard()
 

@@ -48,14 +48,20 @@ describe('the dashboard widget modals', () => {
     featureFlags?: Record<string, boolean>
   } = {}) {
     TestBed.resetTestingModule()
-    settings = makeSettings({ env: { ...options.env, featureFlags: options.featureFlags ?? {} } })
+    settings = makeSettings({
+      env: { ...options.env, featureFlags: options.featureFlags ?? {} },
+    })
     activeModal = activeModalStub()
     resetLayout = vi.fn()
 
     TestBed.configureTestingModule({
       providers: [
         provideTestTranslate(),
-        provideFakes({ settings, activeModal, toastr: toastrStub() }),
+        provideFakes({
+          settings,
+          activeModal,
+          toastr: toastrStub(),
+        }),
         {
           provide: WIDGET_VISIBILITY_MODAL_DATA,
           useValue: { dashboard: options.dashboard ?? [], resetLayout },
@@ -84,7 +90,9 @@ describe('the dashboard widget modals', () => {
   } = {}) {
     TestBed.resetTestingModule()
     api = fakeApi().respond('get', '/server/network-interfaces/bridge', options.interfaces ?? ['eth0', 'wlan0'])
-    settings = makeSettings({ actualLightingMode: options.lightMode ? 'light' : 'dark' } as any)
+    settings = makeSettings({
+      actualLightingMode: options.lightMode ? 'light' : 'dark',
+    } as any)
     activeModal = activeModalStub()
     ws = fakeWs()
     io = ws.namespace('status')
@@ -97,8 +105,17 @@ describe('the dashboard widget modals', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideTestTranslate(),
-        provideFakes({ api, settings, activeModal, ws, toastr: toastrStub() }),
-        { provide: WIDGET_CONTROL_MODAL_DATA, useValue: { widget } },
+        provideFakes({
+          api,
+          settings,
+          activeModal,
+          ws,
+          toastr: toastrStub(),
+        }),
+        {
+          provide: WIDGET_CONTROL_MODAL_DATA,
+          useValue: { widget },
+        },
       ],
     })
 
@@ -139,14 +156,18 @@ describe('the dashboard widget modals', () => {
     })
 
     it('leaves out the accessories widget when accessory control is off', async () => {
-      const modal = await openVisibility({ env: { enableAccessories: false } })
+      const modal = await openVisibility({
+        env: { enableAccessories: false },
+      })
 
       // The widget would render an empty box with no way to fix it
       expect(modal.availableWidgets().map(entry => entry.component)).not.toContain('AccessoriesWidgetComponent')
     })
 
     it('leaves out the terminal widget when terminal access is off', async () => {
-      const modal = await openVisibility({ env: { enableTerminalAccess: false } })
+      const modal = await openVisibility({
+        env: { enableTerminalAccess: false },
+      })
 
       expect(modal.availableWidgets().map(entry => entry.component)).not.toContain('TerminalWidgetComponent')
     })
@@ -155,7 +176,9 @@ describe('the dashboard widget modals', () => {
       const without = await openVisibility()
       expect(without.availableWidgets().map(entry => entry.component)).not.toContain('MatterQrcodeWidgetComponent')
 
-      const with_ = await openVisibility({ featureFlags: { matterSupport: true } })
+      const with_ = await openVisibility({
+        featureFlags: { matterSupport: true },
+      })
       expect(with_.availableWidgets().map(entry => entry.component)).toContain('MatterQrcodeWidgetComponent')
     })
 
@@ -168,7 +191,11 @@ describe('the dashboard widget modals', () => {
     })
 
     it('treats a widget on the dashboard as shown unless it says otherwise', async () => {
-      const modal = await openVisibility({ dashboard: [{ component: 'CpuWidgetComponent' }] })
+      const modal = await openVisibility({
+        dashboard: [
+          { component: 'CpuWidgetComponent' },
+        ],
+      })
       const cpu = modal.availableWidgets().find(entry => entry.component === 'CpuWidgetComponent')!
 
       // Older saved layouts have no hide flags at all, and those widgets are
@@ -179,7 +206,9 @@ describe('the dashboard widget modals', () => {
 
     it('reads a widget hidden on one screen size only', async () => {
       const modal = await openVisibility({
-        dashboard: [{ component: 'CpuWidgetComponent', hideOnDesktop: true, hideOnMobile: false }],
+        dashboard: [
+          { component: 'CpuWidgetComponent', hideOnDesktop: true, hideOnMobile: false },
+        ],
       })
       const cpu = modal.availableWidgets().find(entry => entry.component === 'CpuWidgetComponent')!
 
@@ -188,7 +217,11 @@ describe('the dashboard widget modals', () => {
     })
 
     it('starts with nothing to save', async () => {
-      const modal = await openVisibility({ dashboard: [{ component: 'CpuWidgetComponent' }] })
+      const modal = await openVisibility({
+        dashboard: [
+          { component: 'CpuWidgetComponent' },
+        ],
+      })
 
       expect(modal.isFormUnchanged()).toBe(true)
     })
@@ -213,7 +246,11 @@ describe('the dashboard widget modals', () => {
     })
 
     it('keeps the two screen sizes independent', async () => {
-      const modal = await openVisibility({ dashboard: [{ component: 'CpuWidgetComponent' }] })
+      const modal = await openVisibility({
+        dashboard: [
+          { component: 'CpuWidgetComponent' },
+        ],
+      })
       const cpu = () => modal.availableWidgets().find(entry => entry.component === 'CpuWidgetComponent')!
 
       modal.toggleDesktop(cpu())
@@ -227,7 +264,11 @@ describe('the dashboard widget modals', () => {
       // ⚠️ The mobile toggle is its own copy of the desktop one. Written against
       // the wrong flag it would hide the widget on the desktop instead, which is
       // the opposite of what the user asked for
-      const modal = await openVisibility({ dashboard: [{ component: 'CpuWidgetComponent' }] })
+      const modal = await openVisibility({
+        dashboard: [
+          { component: 'CpuWidgetComponent' },
+        ],
+      })
       const cpu = () => modal.availableWidgets().find(entry => entry.component === 'CpuWidgetComponent')!
 
       modal.toggleMobile(cpu())
@@ -247,7 +288,10 @@ describe('the dashboard widget modals', () => {
 
     it('leaves the other widgets alone when one is toggled', async () => {
       const modal = await openVisibility({
-        dashboard: [{ component: 'CpuWidgetComponent' }, { component: 'MemoryWidgetComponent' }],
+        dashboard: [
+          { component: 'CpuWidgetComponent' },
+          { component: 'MemoryWidgetComponent' },
+        ],
       })
 
       modal.toggleMobile(modal.availableWidgets().find(entry => entry.component === 'CpuWidgetComponent')!)
@@ -258,7 +302,11 @@ describe('the dashboard widget modals', () => {
     })
 
     it('closes with the hide flags the layout actually stores', async () => {
-      const modal = await openVisibility({ dashboard: [{ component: 'CpuWidgetComponent' }] })
+      const modal = await openVisibility({
+        dashboard: [
+          { component: 'CpuWidgetComponent' },
+        ],
+      })
       modal.toggleDesktop(modal.availableWidgets().find(entry => entry.component === 'CpuWidgetComponent')!)
 
       modal.saveModal()
@@ -375,7 +423,10 @@ describe('the dashboard widget modals', () => {
     })
 
     it('notices the weather location changing', async () => {
-      const modal = await openControl({ component: 'WeatherWidgetComponent', location: { id: 1, name: 'London' } })
+      const modal = await openControl({
+        component: 'WeatherWidgetComponent',
+        location: { id: 1, name: 'London' },
+      })
 
       modal.widget.location = { id: 2, name: 'Paris' } as any
 
@@ -385,7 +436,10 @@ describe('the dashboard widget modals', () => {
     })
 
     it('does not count reselecting the same location as a change', async () => {
-      const modal = await openControl({ component: 'WeatherWidgetComponent', location: { id: 1, name: 'London' } })
+      const modal = await openControl({
+        component: 'WeatherWidgetComponent',
+        location: { id: 1, name: 'London' },
+      })
 
       modal.widget.location = { id: 1, name: 'London' } as any
 
@@ -470,11 +524,23 @@ describe('the dashboard widget modals', () => {
       const results = search(modal, 'London')
       await vi.advanceTimersByTimeAsync(300)
       http.expectOne(isOwm).flush({
-        list: [{ id: 2643743, name: 'London', sys: { country: 'GB' }, coord: { lat: 51.5, lon: -0.13 } }],
+        list: [
+          {
+            id: 2643743,
+            name: 'London',
+            sys: { country: 'GB' },
+            coord: { lat: 51.5, lon: -0.13 },
+          },
+        ],
       })
 
       expect(results.at(-1)).toEqual([
-        { id: 2643743, name: 'London', country: 'GB', coord: { lat: 51.5, lon: -0.13 } },
+        {
+          id: 2643743,
+          name: 'London',
+          country: 'GB',
+          coord: { lat: 51.5, lon: -0.13 },
+        },
       ])
       expect(modal.searchCountryCodeFormatter({ name: 'London', country: 'GB' })).toBe('London, GB')
     })

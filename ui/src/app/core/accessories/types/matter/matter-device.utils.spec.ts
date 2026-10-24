@@ -107,14 +107,22 @@ describe('matter-device.utils', () => {
 
   describe('cluster features', () => {
     it('reads a feature the running homebridge declared', () => {
-      const service = device({ thermostat: { featureMap: { heating: true, cooling: false } } })
+      const service = device({
+        thermostat: {
+          featureMap: { heating: true, cooling: false },
+        },
+      })
 
       expect(hasClusterFeature(service, 'thermostat', 'heating', false)).toBe(true)
       expect(hasClusterFeature(service, 'thermostat', 'cooling', true)).toBe(false)
     })
 
     it('treats a key missing from a present map as off, not as unknown', () => {
-      const service = device({ thermostat: { featureMap: { heating: true } } })
+      const service = device({
+        thermostat: {
+          featureMap: { heating: true },
+        },
+      })
 
       expect(hasClusterFeature(service, 'thermostat', 'autoMode', true)).toBe(false)
     })
@@ -131,7 +139,9 @@ describe('matter-device.utils', () => {
     })
 
     it('ignores a feature map that is not an object', () => {
-      const service = device({ thermostat: { featureMap: 'heating' } })
+      const service = device({
+        thermostat: { featureMap: 'heating' },
+      })
 
       expect(hasClusterFeature(service, 'thermostat', 'heating', true)).toBe(true)
     })
@@ -157,7 +167,9 @@ describe('matter-device.utils', () => {
   describe('on/off and brightness', () => {
     it('defaults to off when the cluster is missing', () => {
       expect(getOnOffState(device())).toBe(false)
-      expect(getOnOffState(device({ onOff: { onOff: true } }))).toBe(true)
+      expect(getOnOffState(device({
+        onOff: { onOff: true },
+      }))).toBe(true)
     })
 
     it.each([
@@ -167,7 +179,9 @@ describe('matter-device.utils', () => {
       [254, 100],
     ])('converts level %i to %i%%', (level, expected) => {
       expect(levelToPercentage(level)).toBe(expected)
-      expect(getBrightnessPercentage(device({ levelControl: { currentLevel: level } }))).toBe(expected)
+      expect(getBrightnessPercentage(device({
+        levelControl: { currentLevel: level },
+      }))).toBe(expected)
     })
 
     it('reads brightness as zero when there is no level control', () => {
@@ -175,15 +189,28 @@ describe('matter-device.utils', () => {
     })
 
     it('needs both on and a non-zero level before a dimmable light counts as active', () => {
-      const on = { onOff: { onOff: true } }
+      const on = {
+        onOff: { onOff: true },
+      }
 
-      expect(getDeviceActiveState(device({ ...on, levelControl: { currentLevel: 100 } }))).toBe(true)
-      expect(getDeviceActiveState(device({ ...on, levelControl: { currentLevel: 0 } }))).toBe(false)
-      expect(getDeviceActiveState(device({ onOff: { onOff: false }, levelControl: { currentLevel: 100 } }))).toBe(false)
+      expect(getDeviceActiveState(device({
+        ...on,
+        levelControl: { currentLevel: 100 },
+      }))).toBe(true)
+      expect(getDeviceActiveState(device({
+        ...on,
+        levelControl: { currentLevel: 0 },
+      }))).toBe(false)
+      expect(getDeviceActiveState(device({
+        onOff: { onOff: false },
+        levelControl: { currentLevel: 100 },
+      }))).toBe(false)
     })
 
     it('uses on/off alone when there is no level control', () => {
-      expect(getDeviceActiveState(device({ onOff: { onOff: true } }))).toBe(true)
+      expect(getDeviceActiveState(device({
+        onOff: { onOff: true },
+      }))).toBe(true)
     })
 
     it('reads a vacuum through its operational state, not its on/off cluster', () => {
@@ -196,11 +223,18 @@ describe('matter-device.utils', () => {
     })
 
     it('writes the inverted state to the onOff cluster', async () => {
-      const service = device({ onOff: { onOff: false } })
+      const service = device({
+        onOff: { onOff: false },
+      })
 
       await controlOnOffDevice(service)
 
-      expect(service.writes).toEqual([{ cluster: 'onOff', attributes: { onOff: true } }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'onOff',
+          attributes: { onOff: true },
+        },
+      ])
     })
 
     it('throws when the onOff cluster is missing', async () => {
@@ -208,41 +242,69 @@ describe('matter-device.utils', () => {
     })
 
     it('rethrows a failed write', async () => {
-      const service = device({ onOff: { onOff: false } })
+      const service = device({
+        onOff: { onOff: false },
+      })
       service.failWrites('onOff', new Error('write rejected'))
 
       await expect(controlOnOffDevice(service)).rejects.toThrow('write rejected')
     })
 
     it('turns a dimmable light off through onOff, not by writing level zero', async () => {
-      const service = device({ onOff: { onOff: true }, levelControl: { currentLevel: 200 } })
+      const service = device({
+        onOff: { onOff: true },
+        levelControl: { currentLevel: 200 },
+      })
 
       await toggleDimmableLight(service)
 
-      expect(service.writes).toEqual([{ cluster: 'onOff', attributes: { onOff: false } }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'onOff',
+          attributes: { onOff: false },
+        },
+      ])
     })
 
     it('turns a dimmable light back on at its previous level, writing onOff as well', async () => {
       // A raw level write does not run Matter's on/off coupling, so without
       // the onOff write the tile never reads as on and can never turn off
-      const service = device({ onOff: { onOff: false }, levelControl: { currentLevel: 200 } })
+      const service = device({
+        onOff: { onOff: false },
+        levelControl: { currentLevel: 200 },
+      })
 
       await toggleDimmableLight(service)
 
       expect(service.writes).toEqual([
-        { cluster: 'levelControl', attributes: { currentLevel: 200 } },
-        { cluster: 'onOff', attributes: { onOff: true } },
+        {
+          cluster: 'levelControl',
+          attributes: { currentLevel: 200 },
+        },
+        {
+          cluster: 'onOff',
+          attributes: { onOff: true },
+        },
       ])
     })
 
     it('turns a light stored at level zero on at full brightness', async () => {
-      const service = device({ onOff: { onOff: false }, levelControl: { currentLevel: 0 } })
+      const service = device({
+        onOff: { onOff: false },
+        levelControl: { currentLevel: 0 },
+      })
 
       await toggleDimmableLight(service)
 
       expect(service.writes).toEqual([
-        { cluster: 'levelControl', attributes: { currentLevel: 254 } },
-        { cluster: 'onOff', attributes: { onOff: true } },
+        {
+          cluster: 'levelControl',
+          attributes: { currentLevel: 254 },
+        },
+        {
+          cluster: 'onOff',
+          attributes: { onOff: true },
+        },
       ])
     })
   })
@@ -250,12 +312,16 @@ describe('matter-device.utils', () => {
   describe('colour', () => {
     it('defaults the colour temperature to 250 mireds', () => {
       expect(getColorTemperatureMireds(device())).toBe(250)
-      expect(getColorTemperatureMireds(device({ colorControl: { colorTemperatureMireds: 370 } }))).toBe(370)
+      expect(getColorTemperatureMireds(device({
+        colorControl: { colorTemperatureMireds: 370 },
+      }))).toBe(370)
     })
 
     it('reports colour temperature support from the attribute being present', () => {
       expect(hasColorTemperature(device({ colorControl: {} }))).toBe(false)
-      expect(hasColorTemperature(device({ colorControl: { colorTemperatureMireds: 250 } }))).toBe(true)
+      expect(hasColorTemperature(device({
+        colorControl: { colorTemperatureMireds: 250 },
+      }))).toBe(true)
     })
 
     it('defaults hue, saturation and mode to zero', () => {
@@ -279,7 +345,9 @@ describe('matter-device.utils', () => {
       [RvcOperationalState.Docked, false],
       [RvcOperationalState.Error, false],
     ])('treats operational state %i as active: %s', (state, expected) => {
-      expect(isRvcActive(device({ rvcOperationalState: { operationalState: state } }))).toBe(expected)
+      expect(isRvcActive(device({
+        rvcOperationalState: { operationalState: state },
+      }))).toBe(expected)
     })
 
     it.each([
@@ -291,36 +359,50 @@ describe('matter-device.utils', () => {
       [RvcOperationalState.Stopped, 'accessories.control.stopped'],
       [RvcOperationalState.Error, 'accessories.control.stopped'],
     ])('labels operational state %i as %s', (state, expected) => {
-      const service = device({ rvcOperationalState: { operationalState: state } }, 'RoboticVacuumCleaner')
+      const service = device({
+        rvcOperationalState: { operationalState: state },
+      }, 'RoboticVacuumCleaner')
 
       expect(getDeviceStatusText(service)).toBe(expected)
     })
 
     it('labels a plain on/off device by its power state', () => {
-      expect(getDeviceStatusText(device({ onOff: { onOff: true } }))).toBe('accessories.control.on')
-      expect(getDeviceStatusText(device({ onOff: { onOff: false } }))).toBe('accessories.control.off')
+      expect(getDeviceStatusText(device({
+        onOff: { onOff: true },
+      }))).toBe('accessories.control.on')
+      expect(getDeviceStatusText(device({
+        onOff: { onOff: false },
+      }))).toBe('accessories.control.off')
     })
 
     it('pauses a running vacuum through the operational state cluster', async () => {
-      const service = device({ rvcOperationalState: { operationalState: RvcOperationalState.Running } })
+      const service = device({
+        rvcOperationalState: { operationalState: RvcOperationalState.Running },
+      })
 
       await controlRvcDevice(service)
 
-      expect(service.writes).toEqual([{
-        cluster: 'rvcOperationalState',
-        attributes: { operationalState: RvcOperationalState.Paused },
-      }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'rvcOperationalState',
+          attributes: { operationalState: RvcOperationalState.Paused },
+        },
+      ])
     })
 
     it('resumes a paused vacuum through the operational state cluster', async () => {
-      const service = device({ rvcOperationalState: { operationalState: RvcOperationalState.Paused } })
+      const service = device({
+        rvcOperationalState: { operationalState: RvcOperationalState.Paused },
+      })
 
       await controlRvcDevice(service)
 
-      expect(service.writes).toEqual([{
-        cluster: 'rvcOperationalState',
-        attributes: { operationalState: RvcOperationalState.Running },
-      }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'rvcOperationalState',
+          attributes: { operationalState: RvcOperationalState.Running },
+        },
+      ])
     })
 
     it.each([
@@ -335,7 +417,12 @@ describe('matter-device.utils', () => {
 
       await controlRvcDevice(service)
 
-      expect(service.writes).toEqual([{ cluster: 'rvcRunMode', attributes: { currentMode: 1 } }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'rvcRunMode',
+          attributes: { currentMode: 1 },
+        },
+      ])
     })
 
     it('throws when the run mode cluster it needs to start is missing', async () => {
@@ -351,7 +438,10 @@ describe('matter-device.utils', () => {
       const service = device({
         serviceArea: {
           supportedAreas: [
-            { areaId: 1, areaInfo: { locationName: 'Kitchen' } },
+            {
+              areaId: 1,
+              areaInfo: { locationName: 'Kitchen' },
+            },
             { areaId: 2 },
           ],
         },
@@ -365,7 +455,9 @@ describe('matter-device.utils', () => {
 
     it('returns no areas when the cluster is absent or malformed', () => {
       expect(getServiceAreas(device())).toEqual([])
-      expect(getServiceAreas(device({ serviceArea: { supportedAreas: 'nope' } }))).toEqual([])
+      expect(getServiceAreas(device({
+        serviceArea: { supportedAreas: 'nope' },
+      }))).toEqual([])
       expect(hasServiceAreaCluster(device())).toBe(false)
       expect(hasServiceAreaCluster(device({ serviceArea: {} }))).toBe(true)
     })
@@ -383,36 +475,60 @@ describe('matter-device.utils', () => {
 
   describe('sensors', () => {
     it('inverts the contact sensor, because matter reports closed as true', () => {
-      expect(getContactSensorState(device({ booleanState: { stateValue: false } }))).toBe(true)
-      expect(getContactSensorState(device({ booleanState: { stateValue: true } }))).toBe(false)
+      expect(getContactSensorState(device({
+        booleanState: { stateValue: false },
+      }))).toBe(true)
+      expect(getContactSensorState(device({
+        booleanState: { stateValue: true },
+      }))).toBe(false)
     })
 
     it('does NOT invert the leak detector, though it reads the same attribute', () => {
-      expect(getWaterLeakState(device({ booleanState: { stateValue: true } }))).toBe(true)
-      expect(getWaterLeakState(device({ booleanState: { stateValue: false } }))).toBe(false)
+      expect(getWaterLeakState(device({
+        booleanState: { stateValue: true },
+      }))).toBe(true)
+      expect(getWaterLeakState(device({
+        booleanState: { stateValue: false },
+      }))).toBe(false)
     })
 
     it('reads occupancy out of its nested field', () => {
-      expect(getOccupancySensorState(device({ occupancySensing: { occupancy: { occupied: true } } }))).toBe(true)
+      expect(getOccupancySensorState(device({
+        occupancySensing: {
+          occupancy: { occupied: true },
+        },
+      }))).toBe(true)
       expect(getOccupancySensorState(device({ occupancySensing: {} }))).toBe(false)
       expect(getOccupancySensorState(device())).toBe(false)
     })
 
     it('converts illuminance off its logarithmic scale', () => {
       // lux = 10 ^ ((measuredValue - 1) / 10000)
-      expect(getLightSensorIlluminance(device({ illuminanceMeasurement: { measuredValue: 10001 } }))).toBeCloseTo(10, 6)
-      expect(getLightSensorIlluminance(device({ illuminanceMeasurement: { measuredValue: 1 } }))).toBe(1)
+      expect(getLightSensorIlluminance(device({
+        illuminanceMeasurement: { measuredValue: 10001 },
+      }))).toBeCloseTo(10, 6)
+      expect(getLightSensorIlluminance(device({
+        illuminanceMeasurement: { measuredValue: 1 },
+      }))).toBe(1)
     })
 
     it('reports zero lux for a zero or null reading, rather than the formula result', () => {
-      expect(getLightSensorIlluminance(device({ illuminanceMeasurement: { measuredValue: 0 } }))).toBe(0)
-      expect(getLightSensorIlluminance(device({ illuminanceMeasurement: { measuredValue: null } }))).toBe(0)
+      expect(getLightSensorIlluminance(device({
+        illuminanceMeasurement: { measuredValue: 0 },
+      }))).toBe(0)
+      expect(getLightSensorIlluminance(device({
+        illuminanceMeasurement: { measuredValue: null },
+      }))).toBe(0)
       expect(getLightSensorIlluminance(device())).toBe(0)
     })
 
     it('converts active power from milliwatts to watts', () => {
-      expect(getActivePowerWatts(device({ electricalPowerMeasurement: { activePower: 12500 } }))).toBe(12.5)
-      expect(getActivePowerWatts(device({ electricalPowerMeasurement: { activePower: 0 } }))).toBe(0)
+      expect(getActivePowerWatts(device({
+        electricalPowerMeasurement: { activePower: 12500 },
+      }))).toBe(12.5)
+      expect(getActivePowerWatts(device({
+        electricalPowerMeasurement: { activePower: 0 },
+      }))).toBe(0)
     })
 
     it.each([
@@ -420,17 +536,27 @@ describe('matter-device.utils', () => {
       ['undefined', undefined],
       ['a non-number', '500'],
     ])('reports no power reading for %s', (_case, activePower) => {
-      expect(getActivePowerWatts(device({ electricalPowerMeasurement: { activePower } }))).toBeNull()
+      expect(getActivePowerWatts(device({
+        electricalPowerMeasurement: { activePower },
+      }))).toBeNull()
     })
 
     it('converts temperature and humidity from hundredths', () => {
-      expect(getTemperatureSensorValue(device({ temperatureMeasurement: { measuredValue: 2150 } }))).toBe(21.5)
-      expect(getHumiditySensorValue(device({ relativeHumidityMeasurement: { measuredValue: 4550 } }))).toBe(45.5)
+      expect(getTemperatureSensorValue(device({
+        temperatureMeasurement: { measuredValue: 2150 },
+      }))).toBe(21.5)
+      expect(getHumiditySensorValue(device({
+        relativeHumidityMeasurement: { measuredValue: 4550 },
+      }))).toBe(45.5)
     })
 
     it('keeps a genuine zero reading rather than falling back to null', () => {
-      expect(getTemperatureSensorValue(device({ temperatureMeasurement: { measuredValue: 0 } }))).toBe(0)
-      expect(getHumiditySensorValue(device({ relativeHumidityMeasurement: { measuredValue: 0 } }))).toBe(0)
+      expect(getTemperatureSensorValue(device({
+        temperatureMeasurement: { measuredValue: 0 },
+      }))).toBe(0)
+      expect(getHumiditySensorValue(device({
+        relativeHumidityMeasurement: { measuredValue: 0 },
+      }))).toBe(0)
     })
 
     it('reports no reading when the sensor cluster is absent', () => {
@@ -446,16 +572,29 @@ describe('matter-device.utils', () => {
     })
 
     it.each([
-      [{ smokeState: 1, coState: 0 }, true],
-      [{ smokeState: 0, coState: 2 }, true],
-      [{ smokeState: 0, coState: 0 }, false],
+      [
+        { smokeState: 1, coState: 0 },
+        true,
+      ],
+      [
+        { smokeState: 0, coState: 2 },
+        true,
+      ],
+      [
+        { smokeState: 0, coState: 0 },
+        false,
+      ],
     ])('treats %o as triggered: %s', (smokeCoAlarm, expected) => {
       expect(isSmokeCoAlarmTriggered(device({ smokeCoAlarm }))).toBe(expected)
     })
 
     it('works out which of the two alarms a combined sensor actually has', () => {
-      const smokeOnly = device({ smokeCoAlarm: { smokeState: 0 } })
-      const coOnly = device({ smokeCoAlarm: { coState: 0 } })
+      const smokeOnly = device({
+        smokeCoAlarm: { smokeState: 0 },
+      })
+      const coOnly = device({
+        smokeCoAlarm: { coState: 0 },
+      })
 
       expect(hasSmokeAlarm(smokeOnly)).toBe(true)
       expect(hasCoAlarm(smokeOnly)).toBe(false)
@@ -465,7 +604,11 @@ describe('matter-device.utils', () => {
 
     it('lets the feature map override what the attributes imply', () => {
       const service = device({
-        smokeCoAlarm: { smokeState: 0, coState: 0, featureMap: { smokeAlarm: true, coAlarm: false } },
+        smokeCoAlarm: {
+          smokeState: 0,
+          coState: 0,
+          featureMap: { smokeAlarm: true, coAlarm: false },
+        },
       })
 
       expect(hasSmokeAlarm(service)).toBe(true)
@@ -479,25 +622,53 @@ describe('matter-device.utils', () => {
     })
 
     it('unlocks a locked door and locks anything else', async () => {
-      const locked = device({ doorLock: { lockState: 1 } })
-      const unlocked = device({ doorLock: { lockState: 2 } })
-      const ajar = device({ doorLock: { lockState: 0 } })
+      const locked = device({
+        doorLock: { lockState: 1 },
+      })
+      const unlocked = device({
+        doorLock: { lockState: 2 },
+      })
+      const ajar = device({
+        doorLock: { lockState: 0 },
+      })
 
       await toggleDoorLock(locked)
       await toggleDoorLock(unlocked)
       await toggleDoorLock(ajar)
 
-      expect(locked.writes).toEqual([{ cluster: 'doorLock', attributes: { lockState: 2 } }])
-      expect(unlocked.writes).toEqual([{ cluster: 'doorLock', attributes: { lockState: 1 } }])
-      expect(ajar.writes).toEqual([{ cluster: 'doorLock', attributes: { lockState: 1 } }])
+      expect(locked.writes).toEqual([
+        {
+          cluster: 'doorLock',
+          attributes: { lockState: 2 },
+        },
+      ])
+      expect(unlocked.writes).toEqual([
+        {
+          cluster: 'doorLock',
+          attributes: { lockState: 1 },
+        },
+      ])
+      expect(ajar.writes).toEqual([
+        {
+          cluster: 'doorLock',
+          attributes: { lockState: 1 },
+        },
+      ])
     })
 
     it('sets the state directly', async () => {
-      const service = device({ doorLock: { lockState: 2 } })
+      const service = device({
+        doorLock: { lockState: 2 },
+      })
 
       await setDoorLockState(service, true)
 
-      expect(service.writes).toEqual([{ cluster: 'doorLock', attributes: { lockState: 1 } }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'doorLock',
+          attributes: { lockState: 1 },
+        },
+      ])
     })
 
     it('throws when the cluster is missing', async () => {
@@ -522,8 +693,12 @@ describe('matter-device.utils', () => {
     })
 
     it('detects lift and tilt from the declared attributes', () => {
-      const liftOnly = device({ windowCovering: { currentPositionLiftPercent100ths: 0 } })
-      const tiltOnly = device({ windowCovering: { currentPositionTiltPercent100ths: 0 } })
+      const liftOnly = device({
+        windowCovering: { currentPositionLiftPercent100ths: 0 },
+      })
+      const tiltOnly = device({
+        windowCovering: { currentPositionTiltPercent100ths: 0 },
+      })
 
       expect(hasWindowCoveringLift(liftOnly)).toBe(true)
       expect(hasWindowCoveringTilt(liftOnly)).toBe(false)
@@ -533,47 +708,80 @@ describe('matter-device.utils', () => {
 
     it('reads the tilt position on a blind that only tilts', () => {
       // Its lift position would default to 0, which reads as fully open
-      const tiltOnly = device({ windowCovering: { currentPositionTiltPercent100ths: 10000 } })
+      const tiltOnly = device({
+        windowCovering: { currentPositionTiltPercent100ths: 10000 },
+      })
 
       expect(getWindowCoveringTiltPercentage(tiltOnly)).toBe(0)
       expect(getWindowCoveringOpenPercentage(tiltOnly)).toBe(0)
     })
 
     it('reads the lift position when the covering has one', () => {
-      const lift = device({ windowCovering: { currentPositionLiftPercent100ths: 2500 } })
+      const lift = device({
+        windowCovering: { currentPositionLiftPercent100ths: 2500 },
+      })
 
       expect(getWindowCoveringOpenPercentage(lift)).toBe(75)
     })
 
     it('writes lift and tilt to their own attributes', async () => {
-      const service = device({ windowCovering: { currentPositionLiftPercent100ths: 0 } })
+      const service = device({
+        windowCovering: { currentPositionLiftPercent100ths: 0 },
+      })
 
       await setWindowCoveringPosition(service, 30)
       await setWindowCoveringTiltPosition(service, 30)
 
       expect(service.writes).toEqual([
-        { cluster: 'windowCovering', attributes: { targetPositionLiftPercent100ths: 7000 } },
-        { cluster: 'windowCovering', attributes: { targetPositionTiltPercent100ths: 7000 } },
+        {
+          cluster: 'windowCovering',
+          attributes: { targetPositionLiftPercent100ths: 7000 },
+        },
+        {
+          cluster: 'windowCovering',
+          attributes: { targetPositionTiltPercent100ths: 7000 },
+        },
       ])
     })
 
     it('closes a covering that is more than half open, and opens one that is not', async () => {
-      const open = device({ windowCovering: { currentPositionLiftPercent100ths: 0 } })
-      const closed = device({ windowCovering: { currentPositionLiftPercent100ths: 10000 } })
+      const open = device({
+        windowCovering: { currentPositionLiftPercent100ths: 0 },
+      })
+      const closed = device({
+        windowCovering: { currentPositionLiftPercent100ths: 10000 },
+      })
 
       await toggleWindowCovering(open)
       await toggleWindowCovering(closed)
 
-      expect(open.writes).toEqual([{ cluster: 'windowCovering', attributes: { targetPositionLiftPercent100ths: 10000 } }])
-      expect(closed.writes).toEqual([{ cluster: 'windowCovering', attributes: { targetPositionLiftPercent100ths: 0 } }])
+      expect(open.writes).toEqual([
+        {
+          cluster: 'windowCovering',
+          attributes: { targetPositionLiftPercent100ths: 10000 },
+        },
+      ])
+      expect(closed.writes).toEqual([
+        {
+          cluster: 'windowCovering',
+          attributes: { targetPositionLiftPercent100ths: 0 },
+        },
+      ])
     })
 
     it('drives the tilt attribute on a blind that only tilts', async () => {
-      const tiltOnly = device({ windowCovering: { currentPositionTiltPercent100ths: 10000 } })
+      const tiltOnly = device({
+        windowCovering: { currentPositionTiltPercent100ths: 10000 },
+      })
 
       await toggleWindowCovering(tiltOnly)
 
-      expect(tiltOnly.writes).toEqual([{ cluster: 'windowCovering', attributes: { targetPositionTiltPercent100ths: 0 } }])
+      expect(tiltOnly.writes).toEqual([
+        {
+          cluster: 'windowCovering',
+          attributes: { targetPositionTiltPercent100ths: 0 },
+        },
+      ])
     })
 
     it('throws when the cluster is missing', async () => {
@@ -607,14 +815,18 @@ describe('matter-device.utils', () => {
     })
 
     it('writes the target state, so the plugin handler runs', async () => {
-      const service = device({ valveConfigurationAndControl: { currentState: WaterValveState.Closed } })
+      const service = device({
+        valveConfigurationAndControl: { currentState: WaterValveState.Closed },
+      })
 
       await toggleWaterValve(service)
 
-      expect(service.writes).toEqual([{
-        cluster: 'valveConfigurationAndControl',
-        attributes: { targetState: WaterValveState.Open },
-      }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'valveConfigurationAndControl',
+          attributes: { targetState: WaterValveState.Open },
+        },
+      ])
     })
 
     it('throws when the cluster is missing', async () => {
@@ -630,22 +842,45 @@ describe('matter-device.utils', () => {
     })
 
     it.each([
-      [{ fanMode: 0, percentSetting: 0 }, false],
-      [{ fanMode: 1, percentSetting: 0 }, true],
-      [{ fanMode: 0, percentSetting: 40 }, true],
+      [
+        { fanMode: 0, percentSetting: 0 },
+        false,
+      ],
+      [
+        { fanMode: 1, percentSetting: 0 },
+        true,
+      ],
+      [
+        { fanMode: 0, percentSetting: 40 },
+        true,
+      ],
     ])('treats %o as running: %s', (fanControl, expected) => {
       expect(isFanOn(device({ fanControl }))).toBe(expected)
     })
 
     it('toggles through the percent setting', async () => {
-      const off = device({ fanControl: { fanMode: 0, percentSetting: 0 } })
-      const on = device({ fanControl: { fanMode: 0, percentSetting: 40 } })
+      const off = device({
+        fanControl: { fanMode: 0, percentSetting: 0 },
+      })
+      const on = device({
+        fanControl: { fanMode: 0, percentSetting: 40 },
+      })
 
       await toggleFan(off)
       await toggleFan(on)
 
-      expect(off.writes).toEqual([{ cluster: 'fanControl', attributes: { percentSetting: 100 } }])
-      expect(on.writes).toEqual([{ cluster: 'fanControl', attributes: { percentSetting: 0 } }])
+      expect(off.writes).toEqual([
+        {
+          cluster: 'fanControl',
+          attributes: { percentSetting: 100 },
+        },
+      ])
+      expect(on.writes).toEqual([
+        {
+          cluster: 'fanControl',
+          attributes: { percentSetting: 0 },
+        },
+      ])
     })
 
     it('sets an explicit speed', async () => {
@@ -653,7 +888,12 @@ describe('matter-device.utils', () => {
 
       await setFanSpeed(service, 65)
 
-      expect(service.writes).toEqual([{ cluster: 'fanControl', attributes: { percentSetting: 65 } }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'fanControl',
+          attributes: { percentSetting: 65 },
+        },
+      ])
     })
 
     it('throws when the cluster is missing', async () => {
@@ -664,11 +904,15 @@ describe('matter-device.utils', () => {
 
   describe('thermostat', () => {
     it('converts the local temperature from hundredths', () => {
-      expect(getThermostatLocalTemperature(device({ thermostat: { localTemperature: 2150 } }))).toBe(21.5)
+      expect(getThermostatLocalTemperature(device({
+        thermostat: { localTemperature: 2150 },
+      }))).toBe(21.5)
     })
 
     it('falls back to the externally measured temperature', () => {
-      const service = device({ thermostat: { externalMeasuredIndoorTemperature: 1800 } })
+      const service = device({
+        thermostat: { externalMeasuredIndoorTemperature: 1800 },
+      })
 
       expect(getThermostatLocalTemperature(service)).toBe(18)
       expect(getThermostatLocalTemperature(device())).toBeNull()
@@ -682,12 +926,18 @@ describe('matter-device.utils', () => {
     it('reports the system mode and whether it is on', () => {
       expect(getThermostatSystemMode(device())).toBe(0)
       expect(isThermostatOn(device())).toBe(false)
-      expect(isThermostatOn(device({ thermostat: { systemMode: 4 } }))).toBe(true)
+      expect(isThermostatOn(device({
+        thermostat: { systemMode: 4 },
+      }))).toBe(true)
     })
 
     it('infers the supported modes from the declared setpoints', () => {
-      const heatOnly = device({ thermostat: { occupiedHeatingSetpoint: 2000 } })
-      const both = device({ thermostat: { occupiedHeatingSetpoint: 2000, occupiedCoolingSetpoint: 2400 } })
+      const heatOnly = device({
+        thermostat: { occupiedHeatingSetpoint: 2000 },
+      })
+      const both = device({
+        thermostat: { occupiedHeatingSetpoint: 2000, occupiedCoolingSetpoint: 2400 },
+      })
 
       expect(getThermostatSupportedModes(heatOnly)).toEqual({ heat: true, cool: false, auto: false })
       expect(getThermostatSupportedModes(both)).toEqual({ heat: true, cool: true, auto: true })
@@ -717,9 +967,18 @@ describe('matter-device.utils', () => {
       await setThermostatSystemMode(service, 4)
 
       expect(service.writes).toEqual([
-        { cluster: 'thermostat', attributes: { occupiedHeatingSetpoint: 2150 } },
-        { cluster: 'thermostat', attributes: { occupiedCoolingSetpoint: 2346 } },
-        { cluster: 'thermostat', attributes: { systemMode: 4 } },
+        {
+          cluster: 'thermostat',
+          attributes: { occupiedHeatingSetpoint: 2150 },
+        },
+        {
+          cluster: 'thermostat',
+          attributes: { occupiedCoolingSetpoint: 2346 },
+        },
+        {
+          cluster: 'thermostat',
+          attributes: { systemMode: 4 },
+        },
       ])
     })
 
@@ -741,8 +1000,12 @@ describe('matter-device.utils', () => {
     })
 
     it('reports data when any one concentration is present', () => {
-      expect(hasConcentrationData(device({ ozoneConcentrationMeasurement: { measuredValue: 4 } }))).toBe(true)
-      expect(getOzoneValue(device({ ozoneConcentrationMeasurement: { measuredValue: 4 } }))).toBe(4)
+      expect(hasConcentrationData(device({
+        ozoneConcentrationMeasurement: { measuredValue: 4 },
+      }))).toBe(true)
+      expect(getOzoneValue(device({
+        ozoneConcentrationMeasurement: { measuredValue: 4 },
+      }))).toBe(4)
     })
 
     it.each([
@@ -752,7 +1015,9 @@ describe('matter-device.utils', () => {
       [3, 'mg/m³'],
       [4, 'µg/m³'],
     ])('uses the declared measurement unit %i', (measurementUnit, expected) => {
-      const service = device({ pm25ConcentrationMeasurement: { measurementUnit } })
+      const service = device({
+        pm25ConcentrationMeasurement: { measurementUnit },
+      })
 
       expect(getConcentrationUnit(service, 'pm25ConcentrationMeasurement')).toBe(expected)
     })
@@ -795,7 +1060,10 @@ describe('matter-device.utils', () => {
       await controlRvcDevice(service)
 
       expect(service.writes).toEqual([
-        { cluster: 'rvcOperationalState', attributes: { operationalState: RvcOperationalState.Paused } },
+        {
+          cluster: 'rvcOperationalState',
+          attributes: { operationalState: RvcOperationalState.Paused },
+        },
       ])
     })
 
@@ -805,7 +1073,10 @@ describe('matter-device.utils', () => {
       await controlRvcDevice(service)
 
       expect(service.writes).toEqual([
-        { cluster: 'rvcOperationalState', attributes: { operationalState: RvcOperationalState.Running } },
+        {
+          cluster: 'rvcOperationalState',
+          attributes: { operationalState: RvcOperationalState.Running },
+        },
       ])
     })
 
@@ -820,19 +1091,26 @@ describe('matter-device.utils', () => {
       await controlRvcDevice(service)
 
       expect(service.writes).toEqual([
-        { cluster: 'rvcRunMode', attributes: { currentMode: RvcRunMode.Cleaning } },
+        {
+          cluster: 'rvcRunMode',
+          attributes: { currentMode: RvcRunMode.Cleaning },
+        },
       ])
     })
 
     it('refuses to pause a vacuum with no operational state cluster', async () => {
-      const service = device({ rvcOperationalState: { operationalState: RvcOperationalState.Running } })
+      const service = device({
+        rvcOperationalState: { operationalState: RvcOperationalState.Running },
+      })
       ;(service as any).getCluster = () => null
 
       await expect(controlRvcDevice(service)).rejects.toThrow('RVC operational state cluster not found')
     })
 
     it('refuses to start a vacuum with no run mode cluster', async () => {
-      const service = device({ rvcOperationalState: { operationalState: RvcOperationalState.Docked } })
+      const service = device({
+        rvcOperationalState: { operationalState: RvcOperationalState.Docked },
+      })
 
       await expect(controlRvcDevice(service)).rejects.toThrow('RvcRunMode cluster not found')
     })
@@ -879,7 +1157,12 @@ describe('matter-device.utils', () => {
 
       await toggleDimmableLight(service)
 
-      expect(service.writes).toEqual([{ cluster: 'onOff', attributes: { onOff: false } }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'onOff',
+          attributes: { onOff: false },
+        },
+      ])
     })
 
     it('turns a light on at the level it was last on at, writing onOff as well', async () => {
@@ -890,8 +1173,14 @@ describe('matter-device.utils', () => {
       await toggleDimmableLight(service)
 
       expect(service.writes).toEqual([
-        { cluster: 'levelControl', attributes: { currentLevel: 60 } },
-        { cluster: 'onOff', attributes: { onOff: true } },
+        {
+          cluster: 'levelControl',
+          attributes: { currentLevel: 60 },
+        },
+        {
+          cluster: 'onOff',
+          attributes: { onOff: true },
+        },
       ])
     })
 
@@ -902,8 +1191,14 @@ describe('matter-device.utils', () => {
       await toggleDimmableLight(service)
 
       expect(service.writes).toEqual([
-        { cluster: 'levelControl', attributes: { currentLevel: 254 } },
-        { cluster: 'onOff', attributes: { onOff: true } },
+        {
+          cluster: 'levelControl',
+          attributes: { currentLevel: 254 },
+        },
+        {
+          cluster: 'onOff',
+          attributes: { onOff: true },
+        },
       ])
     })
 
@@ -915,7 +1210,9 @@ describe('matter-device.utils', () => {
     })
 
     it('refuses to turn on a light with no level cluster', async () => {
-      const service = device({ onOff: { onOff: false } }, 'DimmableLight')
+      const service = device({
+        onOff: { onOff: false },
+      }, 'DimmableLight')
 
       await expect(toggleDimmableLight(service)).rejects.toThrow('LevelControl cluster not found')
     })
@@ -947,37 +1244,49 @@ describe('matter-device.utils', () => {
     it.each([
       [
         'unlocking a door',
-        () => device({ doorLock: { lockState: 1 } }),
+        () => device({
+          doorLock: { lockState: 1 },
+        }),
         'doorLock',
         (service: MatterServiceFixture) => toggleDoorLock(service),
       ],
       [
         'opening a water valve',
-        () => device({ valveConfigurationAndControl: { currentState: 0, targetState: 0 } }),
+        () => device({
+          valveConfigurationAndControl: { currentState: 0, targetState: 0 },
+        }),
         'valveConfigurationAndControl',
         (service: MatterServiceFixture) => toggleWaterValve(service),
       ],
       [
         'switching a fan on',
-        () => device({ fanControl: { fanMode: 0, percentSetting: 0 } }),
+        () => device({
+          fanControl: { fanMode: 0, percentSetting: 0 },
+        }),
         'fanControl',
         (service: MatterServiceFixture) => toggleFan(service),
       ],
       [
         'setting a cooling setpoint',
-        () => device({ thermostat: { occupiedCoolingSetpoint: 2400 } }),
+        () => device({
+          thermostat: { occupiedCoolingSetpoint: 2400 },
+        }),
         'thermostat',
         (service: MatterServiceFixture) => setThermostatCoolingSetpoint(service, 22),
       ],
       [
         'pausing a running vacuum',
-        () => device({ rvcOperationalState: { operationalState: 1 } }),
+        () => device({
+          rvcOperationalState: { operationalState: 1 },
+        }),
         'rvcOperationalState',
         (service: MatterServiceFixture) => controlRvcDevice(service),
       ],
       [
         'resuming a paused vacuum',
-        () => device({ rvcOperationalState: { operationalState: 2 } }),
+        () => device({
+          rvcOperationalState: { operationalState: 2 },
+        }),
         'rvcOperationalState',
         (service: MatterServiceFixture) => controlRvcDevice(service),
       ],

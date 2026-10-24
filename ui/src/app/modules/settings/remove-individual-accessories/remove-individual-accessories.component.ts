@@ -75,7 +75,10 @@ export class RemoveIndividualAccessoriesComponent implements OnInit, OnDestroy {
     if (this.toDelete().some(item => item.uuid === uuid && item.cacheFile === cacheFile && item.protocol === protocol)) {
       this.toDelete.set(this.toDelete().filter(item => item.uuid !== uuid || item.cacheFile !== cacheFile || item.protocol !== protocol))
     } else {
-      this.toDelete.update(list => [...list, { cacheFile, uuid, protocol, deviceId }])
+      this.toDelete.update(list => [
+        ...list,
+        { cacheFile, uuid, protocol, deviceId },
+      ])
     }
   }
 
@@ -143,9 +146,14 @@ export class RemoveIndividualAccessoriesComponent implements OnInit, OnDestroy {
       const { hapAccessories: cachedAccessories, matterAccessories: rawMatterAccessories, pairings }
         = await this.$accessoryOverview.get<CachedAccessory, CachedAccessory, Pairing>()
 
-      const matterAccessories = this.isMatterSupported ? rawMatterAccessories : []
+      const matterAccessories = this.isMatterSupported
+        ? rawMatterAccessories
+        : []
 
-      const pairingMap = new Map<string, Pairing>(pairings.map((pairing: Pairing) => [pairing._id, { ...pairing, accessories: [] as CachedAccessory[] }]))
+      const pairingMap = new Map<string, Pairing>(pairings.map((pairing: Pairing) => [
+        pairing._id,
+        { ...pairing, accessories: [] as CachedAccessory[] },
+      ]))
 
       // Process HAP accessories
       cachedAccessories
@@ -189,7 +197,9 @@ export class RemoveIndividualAccessoriesComponent implements OnInit, OnDestroy {
           })
       }
 
-      const pairingsList = [...pairingMap.values()]
+      const pairingsList = [
+        ...pairingMap.values(),
+      ]
         .filter((pairing: Pairing) => pairing.accessories.length > 0)
         .sort((a, b) => {
           if (a._main && !b._main) {

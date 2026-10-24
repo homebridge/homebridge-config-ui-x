@@ -159,7 +159,9 @@ export class AuthController {
     // person out of every browser they use, or drop the plugin ui tickets they
     // are in the middle of using. `refreshToken` refuses them for the same
     // reason.
-    const account = req.user?.service === undefined ? req.user?.username : undefined
+    const account = req.user?.service === undefined
+      ? req.user?.username
+      : undefined
     const username = account ?? this.readLogoutUsername(req.headers.authorization)
 
     // The cookies clear and the in-memory tickets go BEFORE the revocation
@@ -244,7 +246,9 @@ export class AuthController {
       if (payload?.service !== undefined) {
         return undefined
       }
-      return typeof payload?.username === 'string' ? payload.username : undefined
+      return typeof payload?.username === 'string'
+        ? payload.username
+        : undefined
     } catch {
       return undefined
     }

@@ -35,12 +35,18 @@ describe('the support pages', () => {
 
     TestBed.configureTestingModule({
       imports: [SupportComponent],
-      providers: [provideTestTranslate(), provideFakes({ settings })],
+      providers: [
+        provideTestTranslate(),
+        provideFakes({ settings }),
+      ],
     })
 
     // The real template is kept: the link assertions below are about its markup
     TestBed.overrideComponent(SupportComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     const fixture = TestBed.createComponent(SupportComponent)
@@ -110,7 +116,9 @@ describe('the support pages', () => {
   describe('the links out', () => {
     /** Every anchor on the page, with both sections open. */
     function links(): HTMLAnchorElement[] {
-      return [...createPage().nativeElement.querySelectorAll('a[href]')]
+      return [
+        ...createPage().nativeElement.querySelectorAll('a[href]'),
+      ]
     }
 
     it('has links to offer', () => {
@@ -174,14 +182,23 @@ describe('the support pages', () => {
 
   describe('the plugin support panel', () => {
     it('closes when dismissed', () => {
-      const activeModal = { dismiss: vi.fn(), close: vi.fn() }
+      const activeModal = {
+        dismiss: vi.fn(),
+        close: vi.fn(),
+      }
       TestBed.resetTestingModule()
       TestBed.configureTestingModule({
         imports: [PluginSupportComponent],
-        providers: [provideTestTranslate(), provideFakes({ activeModal })],
+        providers: [
+          provideTestTranslate(),
+          provideFakes({ activeModal }),
+        ],
       })
       TestBed.overrideComponent(PluginSupportComponent, {
-        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+        set: {
+          imports: [TranslatePipe],
+          schemas: [NO_ERRORS_SCHEMA],
+        },
       })
 
       const fixture = TestBed.createComponent(PluginSupportComponent)

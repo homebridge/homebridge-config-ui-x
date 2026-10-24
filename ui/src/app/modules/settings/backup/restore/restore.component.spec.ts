@@ -71,8 +71,18 @@ describe('restoreComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideTestTranslate(),
-        provideFakes({ api, settings, toastr, activeModal, modal, ws }),
-        { provide: RESTORE_MODAL_DATA, useValue: { selectedBackup: null, ...modalData } },
+        provideFakes({
+          api,
+          settings,
+          toastr,
+          activeModal,
+          modal,
+          ws,
+        }),
+        {
+          provide: RESTORE_MODAL_DATA,
+          useValue: { selectedBackup: null, ...modalData },
+        },
       ],
     })
 
@@ -93,7 +103,11 @@ describe('restoreComponent', () => {
    * @param names - the names of the selected files
    */
   function fileEvent(names: string[]): Event {
-    return { target: { files: names.map(name => new File(['archive'], name)) } } as unknown as Event
+    return {
+      target: {
+        files: names.map(name => new File(['archive'], name)),
+      },
+    } as unknown as Event
   }
 
   beforeEach(() => {
@@ -221,7 +235,9 @@ describe('restoreComponent', () => {
 
     it('never asks for the unpack when the upload is rejected', async () => {
       vi.useFakeTimers()
-      const restore = await open({}, () => api.fail('post', '/backup/restore', { error: { message: 'archive too large' } }))
+      const restore = await open({}, () => api.fail('post', '/backup/restore', {
+        error: { message: 'archive too large' },
+      }))
       restore.handleRestoreFileInput(fileEvent(['homebridge-backup.tar.gz']))
 
       restore.onRestoreBackupClick()

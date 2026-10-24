@@ -15,7 +15,12 @@ export default defineConfig({
     reporters: process.env.GITHUB_ACTIONS === 'true'
       ? [
           'default',
-          ['github-actions', { jobSummary: { enabled: false } }],
+          [
+            'github-actions',
+            {
+              jobSummary: { enabled: false },
+            },
+          ],
         ]
       : ['default'],
     // Snapshot/restore test/.homebridge around the run - the specs write mock

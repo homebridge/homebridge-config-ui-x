@@ -36,10 +36,25 @@ export class UsersAddComponent implements OnInit {
 
   // Other properties
   public form = new FormGroup({
-    username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    password: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(4)] }),
-    passwordConfirm: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    username: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    name: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    password: new FormControl('', {
+      nonNullable: true,
+      validators: [
+        Validators.required,
+        Validators.minLength(4),
+      ],
+    }),
+    passwordConfirm: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
     admin: new FormControl(true, { nonNullable: true }),
   }, this.matchPassword)
 
@@ -80,20 +95,26 @@ export class UsersAddComponent implements OnInit {
       user => user.username?.toLowerCase() === trimmedUsername,
     )
 
-    return isDuplicate ? { duplicateUsername: true } : null
+    return isDuplicate
+      ? { duplicateUsername: true }
+      : null
   }
 
   private matchPassword(AC: AbstractControl): { [key: string]: boolean } | null {
     const passwordConfirmCtrl = AC.get('passwordConfirm')
     const password = AC.get('password')?.value
     const passwordConfirm = passwordConfirmCtrl?.value
-    const otherErrors = { ...(passwordConfirmCtrl?.errors ?? {}) }
+    const otherErrors = {
+      ...(passwordConfirmCtrl?.errors ?? {}),
+    }
     delete otherErrors.matchPassword
     if (password !== passwordConfirm) {
       passwordConfirmCtrl?.setErrors({ ...otherErrors, matchPassword: true })
       return { matchPassword: true }
     }
-    passwordConfirmCtrl?.setErrors(Object.keys(otherErrors).length ? otherErrors : null)
+    passwordConfirmCtrl?.setErrors(Object.keys(otherErrors).length
+      ? otherErrors
+      : null)
     return null
   }
 }

@@ -43,13 +43,15 @@ export class MatterThermostatComponent {
     }
 
     const modalInjector = createEnvironmentInjector(
-      [{
-        provide: ACCESSORY_MANAGE_MODAL_DATA,
-        useValue: {
-          service: this.service(),
-          $accessories: this.$accessories,
+      [
+        {
+          provide: ACCESSORY_MANAGE_MODAL_DATA,
+          useValue: {
+            service: this.service(),
+            $accessories: this.$accessories,
+          },
         },
-      }],
+      ],
       this.injector,
     )
 
@@ -80,6 +82,22 @@ export class MatterThermostatComponent {
   public readonly isOn = computed(() => isThermostatOn(this.service()))
 
   public readonly systemMode = computed(() => getThermostatSystemMode(this.service()))
+
+  /** The translation key for the system mode, or '' for a mode the tile does not name. */
+  public readonly modeKey = computed(() => {
+    switch (this.systemMode()) {
+      case 0:
+        return 'accessories.control.off'
+      case 1:
+        return 'accessories.control.auto'
+      case 3:
+        return 'accessories.control.cool'
+      case 4:
+        return 'accessories.control.heat'
+      default:
+        return ''
+    }
+  })
 
   public readonly currentTemperature = computed(() => getThermostatLocalTemperature(this.service()))
 }

@@ -73,7 +73,11 @@ describe('the terminal pages', () => {
       providers: [
         provideRouter([]),
         provideTestTranslate(),
-        provideFakes({ settings, auth: makeAuth(), toastr: toastrStub() }),
+        provideFakes({
+          settings,
+          auth: makeAuth(),
+          toastr: toastrStub(),
+        }),
         { provide: LogService, useValue: log },
         { provide: TerminalService, useValue: terminal },
         { provide: TerminalNavigationGuardService, useValue: navigationGuard },
@@ -135,7 +139,12 @@ describe('the terminal pages', () => {
 
     it('paints the page white behind a light terminal', async () => {
       await open(LogsComponent, {
-        settings: { actualLightingMode: 'light', env: { terminal: { lightingMode: 'light' } } as any },
+        settings: {
+          actualLightingMode: 'light',
+          env: {
+            terminal: { lightingMode: 'light' },
+          } as any,
+        },
       })
 
       expect(bodyClasses()).toContain('bg-white')
@@ -143,14 +152,18 @@ describe('the terminal pages', () => {
     })
 
     it('eases the change only when a light theme meets a dark terminal', async () => {
-      await open(LogsComponent, { settings: { actualLightingMode: 'light' } })
+      await open(LogsComponent, {
+        settings: { actualLightingMode: 'light' },
+      })
 
       // The jarring case: the rest of the app is light and this page is black
       expect(bodyClasses()).toContain('theme-transition')
     })
 
     it('does not ease the change when the app is already dark', async () => {
-      await open(LogsComponent, { settings: { actualLightingMode: 'dark' } })
+      await open(LogsComponent, {
+        settings: { actualLightingMode: 'dark' },
+      })
 
       expect(bodyClasses()).not.toContain('theme-transition')
     })
@@ -335,7 +348,9 @@ describe('the terminal pages', () => {
     ]
 
     it.each(PAGES)('%s goes immediately when there is no theme change to ease', async (_name, type) => {
-      const { page } = await open(type, { settings: { actualLightingMode: 'dark' } })
+      const { page } = await open(type, {
+        settings: { actualLightingMode: 'dark' },
+      })
 
       await expect(page.canDeactivate()).resolves.toBe(true)
 
@@ -345,7 +360,9 @@ describe('the terminal pages', () => {
     })
 
     it.each(PAGES)('%s waits for both animations before navigating away', async (_name, type) => {
-      const { page } = await open(type, { settings: { actualLightingMode: 'light' } })
+      const { page } = await open(type, {
+        settings: { actualLightingMode: 'light' },
+      })
       let settled = false
       void Promise.resolve(page.canDeactivate('/plugins')).then(() => {
         settled = true
@@ -361,7 +378,9 @@ describe('the terminal pages', () => {
     })
 
     it.each(PAGES)('%s leaves the background alone when the next page is also a terminal', async (_name, type) => {
-      const { page } = await open(type, { settings: { actualLightingMode: 'light' } })
+      const { page } = await open(type, {
+        settings: { actualLightingMode: 'light' },
+      })
 
       const done = Promise.resolve(page.canDeactivate('/platform-tools/terminal'))
       await vi.advanceTimersByTimeAsync(250)
@@ -372,7 +391,9 @@ describe('the terminal pages', () => {
     })
 
     it.each(PAGES)('%s keeps the background when going to the other terminal page', async (_name, type) => {
-      const { page } = await open(type, { settings: { actualLightingMode: 'light' } })
+      const { page } = await open(type, {
+        settings: { actualLightingMode: 'light' },
+      })
 
       const done = Promise.resolve(page.canDeactivate('/logs'))
       await vi.advanceTimersByTimeAsync(250)
@@ -382,7 +403,9 @@ describe('the terminal pages', () => {
     })
 
     it('hides the search bar before fading, to avoid a mismatched strip', async () => {
-      const { page } = await open(LogsComponent, { settings: { actualLightingMode: 'light' } })
+      const { page } = await open(LogsComponent, {
+        settings: { actualLightingMode: 'light' },
+      })
       page.showSearch()
 
       const done = page.canDeactivate('/plugins')
@@ -431,7 +454,11 @@ describe('the terminal pages', () => {
 
     it('reconnects to a session that is being kept alive', async () => {
       await open(TerminalComponent, {
-        settings: { env: { terminal: { persistence: true } } as any },
+        settings: {
+          env: {
+            terminal: { persistence: true },
+          } as any,
+        },
         arrange: () => {
           terminal.hasActiveSession = vi.fn(() => true)
         },
@@ -468,7 +495,13 @@ describe('the terminal pages', () => {
     })
 
     it('keeps the session alive on the way out when persistence is on', async () => {
-      await open(TerminalComponent, { settings: { env: { terminal: { persistence: true } } as any } })
+      await open(TerminalComponent, {
+        settings: {
+          env: {
+            terminal: { persistence: true },
+          } as any,
+        },
+      })
 
       TestBed.resetTestingModule()
 
@@ -486,7 +519,9 @@ describe('the terminal pages', () => {
     })
 
     it('leaves no body classes behind', async () => {
-      await open(TerminalComponent, { settings: { actualLightingMode: 'light' } })
+      await open(TerminalComponent, {
+        settings: { actualLightingMode: 'light' },
+      })
       expect(bodyClasses()).toContain('bg-black')
 
       TestBed.resetTestingModule()

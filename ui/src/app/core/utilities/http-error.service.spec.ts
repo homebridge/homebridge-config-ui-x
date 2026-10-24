@@ -9,20 +9,42 @@ describe('HttpErrorService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideTestTranslate()],
+      providers: [
+        provideTestTranslate(),
+      ],
     })
     service = TestBed.inject(HttpErrorService)
   })
 
   it('shows the message the server sent', () => {
-    expect(service.toToastMessage({ error: { message: 'Username already taken' } })).toBe('Username already taken')
+    expect(service.toToastMessage({
+      error: { message: 'Username already taken' },
+    })).toBe('Username already taken')
   })
 
   it.each([
-    ['a blank server message', { error: { message: '   ' } }],
-    ['a non-string server message', { error: { message: { detail: 'nope' } } }],
-    ['no error body', { status: 500 }],
-    ['a locally thrown error', new Error('LevelControl cluster not found')],
+    [
+      'a blank server message',
+      {
+        error: { message: '   ' },
+      },
+    ],
+    [
+      'a non-string server message',
+      {
+        error: {
+          message: { detail: 'nope' },
+        },
+      },
+    ],
+    [
+      'no error body',
+      { status: 500 },
+    ],
+    [
+      'a locally thrown error',
+      new Error('LevelControl cluster not found'),
+    ],
     ['null', null],
     ['undefined', undefined],
   ])('falls back to the generic message for %s', (_case, err) => {

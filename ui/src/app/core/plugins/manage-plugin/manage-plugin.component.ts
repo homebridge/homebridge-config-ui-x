@@ -172,13 +172,15 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     // The xterm textarea is for stdin which this terminal does not use
     const ta = xtermRoot.querySelector('textarea') as HTMLTextAreaElement | null
     if (ta) {
+      // Blur before disabling: blur() on an element that is already disabled
+      // is a no-op, so the other way round can leave focus stuck on it
+      if (document.activeElement === ta) {
+        ta.blur()
+      }
       ta.disabled = true
       ta.setAttribute('aria-hidden', 'true')
       ta.setAttribute('tabindex', '-1')
       ta.setAttribute('readonly', 'true')
-      if (document.activeElement === ta) {
-        ta.blur()
-      }
     }
 
     // Silence xterm's per-line live region — speakAction() drives announcements instead
@@ -197,7 +199,9 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     this.targetVersionPretty.set(
       targetVer === 'latest'
         ? `v${latestVer}`
-        : (RE_STARTS_WITH_DIGIT.test(targetVer) ? `v${targetVer}` : targetVer),
+        : (RE_STARTS_WITH_DIGIT.test(targetVer)
+            ? `v${targetVer}`
+            : targetVer),
     )
 
     this.io = this.$ws.connectToNamespace('plugins')
@@ -284,8 +288,12 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       if (typeof this.funding === 'string') {
         donationUrl = this.funding
       } else if (Array.isArray(this.funding)) {
-        const urls = this.funding.map((o: any) => typeof o === 'string' ? o : o?.url).filter(Boolean)
-        donationUrl = urls.length > 0 ? urls[Math.floor(Math.random() * urls.length)] : null
+        const urls = this.funding.map((o: any) => typeof o === 'string'
+          ? o
+          : o?.url).filter(Boolean)
+        donationUrl = urls.length > 0
+          ? urls[Math.floor(Math.random() * urls.length)]
+          : null
       } else if (this.funding?.url) {
         donationUrl = this.funding.url
       }
@@ -363,7 +371,10 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
           // If plugin is not configured and has no child bridges, no restart needed
           if (!this.isConfigured() && this.childBridges().length === 0) {
             this.$toastr.success(
-              this.$translate.instant('plugins.manage.toast_success', { verb: this.pastTenseVerb(), name: this.pluginName }),
+              this.$translate.instant('plugins.manage.toast_success', {
+                verb: this.pastTenseVerb(),
+                name: this.pluginName,
+              }),
               this.toastSuccess,
             )
             this.$activeModal.close()
@@ -396,16 +407,18 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       for (const bridge of this.childBridges()) {
         await this.$api.put(`/server/restart/${bridge.username}`, {})
       }
-      const modalInjector = createEnvironmentInjector([{
-        provide: PLUGIN_LOGS_MODAL_DATA,
-        useValue: {
-          plugin: {
-            name: this.pluginName,
-            displayName: this.pluginDisplayName,
+      const modalInjector = createEnvironmentInjector([
+        {
+          provide: PLUGIN_LOGS_MODAL_DATA,
+          useValue: {
+            plugin: {
+              name: this.pluginName,
+              displayName: this.pluginDisplayName,
+            },
+            childBridges: this.childBridges(),
           },
-          childBridges: this.childBridges(),
         },
-      }], this.injector)
+      ], this.injector)
 
       this.$modal.open(PluginLogsComponent, {
         size: 'xl',
@@ -431,7 +444,9 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       await this.$backup.downloadBackup()
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : this.$translate.instant('toast.title_error')
+      const message = error instanceof Error
+        ? error.message
+        : this.$translate.instant('toast.title_error')
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
     } finally {
       this.downloadingBackup.set(false)
@@ -446,13 +461,15 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     // Close current modal and reopen ManageVersionComponent
     this.$activeModal.dismiss('Back')
 
-    const injector = createEnvironmentInjector([{
-      provide: MANAGE_VERSION_MODAL_DATA,
-      useValue: {
-        plugin: this.backToVersionModal,
-        onRefreshPluginList: this.onRefreshPluginList,
+    const injector = createEnvironmentInjector([
+      {
+        provide: MANAGE_VERSION_MODAL_DATA,
+        useValue: {
+          plugin: this.backToVersionModal,
+          onRefreshPluginList: this.onRefreshPluginList,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ManageVersionComponent, {
       size: 'lg',
@@ -464,24 +481,28 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       const { action, version } = await ref.result
 
       // Reopen the manage plugin modal with the selected version
-      const newInjector = createEnvironmentInjector([{
-        provide: MANAGE_PLUGIN_MODAL_DATA,
-        useValue: {
-          action: action === 'alternate' ? 'Update' : 'Install',
-          pluginName: this.pluginName,
-          pluginDisplayName: this.pluginDisplayName,
-          targetVersion: version,
-          latestVersion: this.latestVersion,
-          installedVersion: this.installedVersion,
-          isDisabled: this.isDisabled,
-          isConfigured: this.initialIsConfigured,
-          onRefreshPluginList: this.onRefreshPluginList,
-          verifiedPlugin: this.verifiedPlugin,
-          verifiedPlusPlugin: this.verifiedPlusPlugin,
-          funding: this.funding,
-          backToVersionModal: this.backToVersionModal,
+      const newInjector = createEnvironmentInjector([
+        {
+          provide: MANAGE_PLUGIN_MODAL_DATA,
+          useValue: {
+            action: action === 'alternate'
+              ? 'Update'
+              : 'Install',
+            pluginName: this.pluginName,
+            pluginDisplayName: this.pluginDisplayName,
+            targetVersion: version,
+            latestVersion: this.latestVersion,
+            installedVersion: this.installedVersion,
+            isDisabled: this.isDisabled,
+            isConfigured: this.initialIsConfigured,
+            onRefreshPluginList: this.onRefreshPluginList,
+            verifiedPlugin: this.verifiedPlugin,
+            verifiedPlusPlugin: this.verifiedPlusPlugin,
+            funding: this.funding,
+            backToVersionModal: this.backToVersionModal,
+          },
         },
-      }], this.injector)
+      ], this.injector)
 
       this.$modal.open(ManagePluginComponent, {
         size: 'lg',
@@ -512,7 +533,10 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: async () => {
         this.speakAction('plugins.a11y.installed_restart', 3000)
-        this.$toastr.success(this.$translate.instant('plugins.manage.toast_success', { verb: this.pastTenseVerb(), name: this.pluginName }), this.toastSuccess)
+        this.$toastr.success(this.$translate.instant('plugins.manage.toast_success', {
+          verb: this.pastTenseVerb(),
+          name: this.pluginName,
+        }), this.toastSuccess)
 
         // Invalidate caches BEFORE notifying the plugins page — otherwise its
         // loadInstalledPlugins() reads the pre-install cached list and the
@@ -588,13 +612,15 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       Number(this.installedVersion.split('.')[0]) < 2
       && ['2', 'alpha', 'beta'].includes(this.targetVersion.split('.')[0])
     ) {
-      const modalInjector = createEnvironmentInjector([{
-        provide: HB_V2_MODAL_DATA,
-        useValue: {
-          isUpdating: true,
-          skipIfCompatible: false,
+      const modalInjector = createEnvironmentInjector([
+        {
+          provide: HB_V2_MODAL_DATA,
+          useValue: {
+            isUpdating: true,
+            skipIfCompatible: false,
+          },
         },
-      }], this.injector)
+      ], this.injector)
 
       const ref = this.$modal.open(HbV2ModalComponent, {
         size: 'lg',
@@ -625,7 +651,9 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.actionFailed.set(true)
           console.error(error)
-          const message = error instanceof Error ? error.message : this.$translate.instant('toast.title_error')
+          const message = error instanceof Error
+            ? error.message
+            : this.$translate.instant('toast.title_error')
           this.$toastr.error(message, this.$translate.instant('toast.title_error'))
           this.$activeModal.close()
         },

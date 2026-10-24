@@ -77,7 +77,9 @@ export class HeaterCoolerComponent implements OnInit {
     }
 
     if ('Active' in this.service().values) {
-      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active ? 0 : 1)
+      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active
+        ? 0
+        : 1)
     } else if ('On' in this.service().values) {
       void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
     }
@@ -90,13 +92,15 @@ export class HeaterCoolerComponent implements OnInit {
 
     if ('TargetHeaterCoolerState' in this.service().values) {
       const modalInjector = createEnvironmentInjector(
-        [{
-          provide: ACCESSORY_MANAGE_MODAL_DATA,
-          useValue: {
-            service: this.service(),
-            $accessories: this.$accessories,
+        [
+          {
+            provide: ACCESSORY_MANAGE_MODAL_DATA,
+            useValue: {
+              service: this.service(),
+              $accessories: this.$accessories,
+            },
           },
-        }],
+        ],
         this.injector,
       )
 

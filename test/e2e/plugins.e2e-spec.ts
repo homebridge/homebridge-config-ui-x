@@ -468,7 +468,11 @@ describe('PluginController (e2e)', () => {
     const maliciousSchema = {
       pluginAlias: 'EscapedPlugin',
       pluginType: 'platform',
-      schema: { properties: { exfiltrated: { type: 'string', default: 'OWNED' } } },
+      schema: {
+        properties: {
+          exfiltrated: { type: 'string', default: 'OWNED' },
+        },
+      },
     }
 
     try {
@@ -809,8 +813,12 @@ describe('PluginController (e2e)', () => {
       const mockTwo = plugins.find(p => p.name === 'homebridge-mock-plugin-two')
       expect(mockOne).toBeTruthy()
       expect(mockTwo).toBeTruthy()
-      expect(mockOne!.config).toEqual([{ platform: 'ExampleHomebridgePlugin', name: 'Saved Platform' }])
-      expect(mockTwo!.config).toEqual([{ accessory: 'HomebridgeMockPluginTwo', name: 'Saved Accessory' }])
+      expect(mockOne!.config).toEqual([
+        { platform: 'ExampleHomebridgePlugin', name: 'Saved Platform' },
+      ])
+      expect(mockTwo!.config).toEqual([
+        { accessory: 'HomebridgeMockPluginTwo', name: 'Saved Accessory' },
+      ])
     })
 
     it('attaches an empty config array when the plugin has no saved blocks', async () => {
@@ -1576,7 +1584,9 @@ describe('PluginController (e2e)', () => {
       }
 
       const versionsSpy = vi.spyOn(pluginsService, 'getAvailablePluginVersions').mockResolvedValue({
-        tags: opts.betaTag ? { latest: opts.stable, beta: opts.betaTag } : { latest: opts.stable },
+        tags: opts.betaTag
+          ? { latest: opts.stable, beta: opts.betaTag }
+          : { latest: opts.stable },
         versions: {},
       } as any)
 
@@ -1734,7 +1744,9 @@ describe('PluginController (e2e)', () => {
       const getSpy = vi.spyOn(httpService, 'get').mockReturnValue(of({
         data: {
           versions: {
-            '1.0.0': { scripts: { postinstall: 'node scripts/setup.js' } },
+            '1.0.0': {
+              scripts: { postinstall: 'node scripts/setup.js' },
+            },
           },
         },
       }) as any)
@@ -1766,7 +1778,9 @@ describe('PluginController (e2e)', () => {
       const getSpy = vi.spyOn(httpService, 'get').mockReturnValue(of({
         data: {
           versions: {
-            '2.0.0': { allowScripts: ['ffmpeg-for-homebridge'] },
+            '2.0.0': {
+              allowScripts: ['ffmpeg-for-homebridge'],
+            },
           },
         },
       }) as any)
@@ -1780,7 +1794,9 @@ describe('PluginController (e2e)', () => {
 
     it('still allows the plugin itself when it declares no allowScripts', async () => {
       const getSpy = vi.spyOn(httpService, 'get').mockReturnValue(of({
-        data: { versions: { '1.0.0': {} } },
+        data: {
+          versions: { '1.0.0': {} },
+        },
       }) as any)
 
       await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual({
@@ -1819,8 +1835,16 @@ describe('PluginController (e2e)', () => {
       // customPluginPath is searched first by getBasePaths(), so a copy of the UI in
       // the plugin directory is returned before the one actually running
       vi.spyOn(pluginsService as any, 'getInstalledModules').mockResolvedValue([
-        { name: 'homebridge-config-ui-x', path: resolve(shadowPath, '..'), installPath: shadowPath },
-        { name: 'homebridge-config-ui-x', path: resolve(runningPath, '..'), installPath: runningPath },
+        {
+          name: 'homebridge-config-ui-x',
+          path: resolve(shadowPath, '..'),
+          installPath: shadowPath,
+        },
+        {
+          name: 'homebridge-config-ui-x',
+          path: resolve(runningPath, '..'),
+          installPath: runningPath,
+        },
       ])
       // keep the npm lookup out of it - this is only about which package.json is read
       vi.spyOn(pluginsService as any, 'getPluginFromNpm').mockImplementation(async (pkg: any) => {
@@ -1847,7 +1871,11 @@ describe('PluginController (e2e)', () => {
 
     it('still works when only one installation is found', async () => {
       vi.spyOn(pluginsService as any, 'getInstalledModules').mockResolvedValue([
-        { name: 'homebridge-config-ui-x', path: resolve(shadowPath, '..'), installPath: shadowPath },
+        {
+          name: 'homebridge-config-ui-x',
+          path: resolve(shadowPath, '..'),
+          installPath: shadowPath,
+        },
       ])
 
       const uiPackage = await pluginsService.getHomebridgeUiPackage()
@@ -1863,8 +1891,16 @@ describe('PluginController (e2e)', () => {
         version: '0.0.2-other',
       }))
       vi.spyOn(pluginsService as any, 'getInstalledModules').mockResolvedValue([
-        { name: 'homebridge-config-ui-x', path: resolve(shadowPath, '..'), installPath: shadowPath },
-        { name: 'homebridge-config-ui-x', path: resolve(otherPath, '..'), installPath: otherPath },
+        {
+          name: 'homebridge-config-ui-x',
+          path: resolve(shadowPath, '..'),
+          installPath: shadowPath,
+        },
+        {
+          name: 'homebridge-config-ui-x',
+          path: resolve(otherPath, '..'),
+          installPath: otherPath,
+        },
       ])
 
       // no throw, and a deterministic answer rather than whichever the scan happened to hit
@@ -1918,7 +1954,11 @@ describe('PluginController (e2e)', () => {
 
       it('stays quiet for the normal single-installation case', async () => {
         vi.spyOn(pluginsService as any, 'getInstalledModules').mockResolvedValue([
-          { name: 'homebridge-config-ui-x', path: resolve(runningPath, '..'), installPath: runningPath },
+          {
+            name: 'homebridge-config-ui-x',
+            path: resolve(runningPath, '..'),
+            installPath: runningPath,
+          },
         ])
 
         await pluginsService.getHomebridgeUiPackage()
@@ -1937,7 +1977,9 @@ describe('PluginController (e2e)', () => {
       beforeEach(() => {
         vi.restoreAllMocks()
         // only the shadow copy is discoverable, as on a real Pi
-        vi.spyOn(pluginsService as any, 'paths', 'get').mockReturnValue([resolve(shadowPath, '..')])
+        vi.spyOn(pluginsService as any, 'paths', 'get').mockReturnValue([
+          resolve(shadowPath, '..'),
+        ])
         vi.spyOn(pluginsService as any, 'getPluginFromNpm').mockImplementation(async (pkg: any) => {
           pkg.latestVersion = null
           return pkg
@@ -2225,7 +2267,11 @@ describe('PluginController (e2e)', () => {
 
       const result = await pluginsService.performPackageUpdate('homebridge-mock-plugin', '1.1.0', client)
 
-      expect(result.restart).toEqual({ homebridge: false, ui: false, childBridgeUsernames: ['0E:11:22:33:44:55'] })
+      expect(result.restart).toEqual({
+        homebridge: false,
+        ui: false,
+        childBridgeUsernames: ['0E:11:22:33:44:55'],
+      })
       expect(bridgeRestart).not.toHaveBeenCalled()
     })
 

@@ -1,14 +1,5 @@
 @let mode = systemMode();
-@let modeText =
-  mode === 0
-    ? ('accessories.control.off' | translate)
-    : mode === 3
-      ? ('accessories.control.cool' | translate)
-      : mode === 4
-        ? ('accessories.control.heat' | translate)
-        : mode === 1
-          ? ('accessories.control.auto' | translate)
-          : '';
+@let modeText = modeKey() | translate;
 
 @let srBaseName = (service().customName || service().serviceName || service().displayName || '').trim();
 @let srType = 'accessories.core.thermostat' | translate;

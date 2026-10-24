@@ -90,17 +90,32 @@ describe('the pairing and content widgets', () => {
       start: vi.fn(async () => undefined),
       stop: vi.fn(),
     }
-    dragula = { createGroup: vi.fn(), destroy: vi.fn(), drop: vi.fn(() => dropEvents) }
+    dragula = {
+      createGroup: vi.fn(),
+      destroy: vi.fn(),
+      drop: vi.fn(() => dropEvents),
+    }
 
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
         provideTestTranslate(),
-        provideFakes({ settings, ws, toastr: toastrStub() }),
+        provideFakes({
+          settings,
+          ws,
+          toastr: toastrStub(),
+        }),
         { provide: AccessoriesService, useValue: accessories },
         { provide: DragulaService, useValue: dragula },
-        { provide: MobileDetectService, useValue: { detect: { mobile: () => isMobile } } },
+        {
+          provide: MobileDetectService,
+          useValue: {
+            detect: {
+              mobile: () => isMobile,
+            },
+          },
+        },
       ],
     })
 
@@ -108,7 +123,13 @@ describe('the pairing and content widgets', () => {
     // accessory tiles have their own routing spec
     TestBed.overrideComponent(type as any, {
       set: {
-        imports: [TranslatePipe, ConvertTempPipe, DecimalPipe, TitleCasePipe, UpperCasePipe],
+        imports: [
+          TranslatePipe,
+          ConvertTempPipe,
+          DecimalPipe,
+          TitleCasePipe,
+          UpperCasePipe,
+        ],
         schemas: [NO_ERRORS_SCHEMA],
       },
     })
@@ -177,7 +198,12 @@ describe('the pairing and content widgets', () => {
 
     it('hides the code when hap is switched off', async () => {
       const { widget } = await open(HapQrcodeWidgetComponent, { component: 'HapQrcodeWidgetComponent' }, {
-        pairing: { pin: '031-45-154', paired: true, setupUri: 'X-HM://X', hap: { enabled: false } },
+        pairing: {
+          pin: '031-45-154',
+          paired: true,
+          setupUri: 'X-HM://X',
+          hap: { enabled: false },
+        },
       })
 
       // There is no bridge accessory to pair with, so a code here would simply
@@ -190,7 +216,12 @@ describe('the pairing and content widgets', () => {
 
     it('hides the code in externals-only mode', async () => {
       const { widget } = await open(HapQrcodeWidgetComponent, { component: 'HapQrcodeWidgetComponent' }, {
-        pairing: { pin: '031-45-154', paired: false, setupUri: 'X-HM://X', hap: { enabled: true, externalsOnly: true } },
+        pairing: {
+          pin: '031-45-154',
+          paired: false,
+          setupUri: 'X-HM://X',
+          hap: { enabled: true, externalsOnly: true },
+        },
       })
 
       // HAP is on and plugins still publish their own accessories, but the
@@ -211,7 +242,11 @@ describe('the pairing and content widgets', () => {
     it('follows the live status when it changes', async () => {
       const { widget } = await open(HapQrcodeWidgetComponent, { component: 'HapQrcodeWidgetComponent' })
 
-      io.socket.fire('homebridge-status', { pin: '031-45-154', paired: true, hap: { enabled: true } })
+      io.socket.fire('homebridge-status', {
+        pin: '031-45-154',
+        paired: true,
+        hap: { enabled: true },
+      })
       await flushFrames()
 
       // Pairing in the Home app changes this while the page is open
@@ -251,7 +286,14 @@ describe('the pairing and content widgets', () => {
 
     it('shows the code when matter is enabled', async () => {
       const { widget } = await open(MatterQrcodeWidgetComponent, { component: 'MatterQrcodeWidgetComponent' }, {
-        pairing: { matter: { enabled: true, pin: '1234-567-8901', setupUri: 'MT:TEST', commissioned: false } },
+        pairing: {
+          matter: {
+            enabled: true,
+            pin: '1234-567-8901',
+            setupUri: 'MT:TEST',
+            commissioned: false,
+          },
+        },
       })
 
       expect(widget.enabled()).toBe(true)
@@ -261,7 +303,9 @@ describe('the pairing and content widgets', () => {
 
     it('says it is commissioned once a controller has it', async () => {
       const { widget } = await open(MatterQrcodeWidgetComponent, { component: 'MatterQrcodeWidgetComponent' }, {
-        pairing: { matter: { enabled: true, pin: '1234-567-8901', commissioned: true } },
+        pairing: {
+          matter: { enabled: true, pin: '1234-567-8901', commissioned: true },
+        },
       })
 
       expect(widget.commissioned()).toBe(true)
@@ -269,10 +313,14 @@ describe('the pairing and content widgets', () => {
 
     it('keeps the last pin when an update omits it', async () => {
       const { widget } = await open(MatterQrcodeWidgetComponent, { component: 'MatterQrcodeWidgetComponent' }, {
-        pairing: { matter: { enabled: true, pin: '1234-567-8901' } },
+        pairing: {
+          matter: { enabled: true, pin: '1234-567-8901' },
+        },
       })
 
-      io.socket.fire('homebridge-status', { matter: { enabled: true, commissioned: true } })
+      io.socket.fire('homebridge-status', {
+        matter: { enabled: true, commissioned: true },
+      })
       await flushFrames()
 
       // The pin does not change while the fabric exists, and blanking it would
@@ -283,10 +331,19 @@ describe('the pairing and content widgets', () => {
 
     it('clears the code when matter is turned off', async () => {
       const { widget } = await open(MatterQrcodeWidgetComponent, { component: 'MatterQrcodeWidgetComponent' }, {
-        pairing: { matter: { enabled: true, pin: '1234-567-8901', setupUri: 'MT:TEST', commissioned: true } },
+        pairing: {
+          matter: {
+            enabled: true,
+            pin: '1234-567-8901',
+            setupUri: 'MT:TEST',
+            commissioned: true,
+          },
+        },
       })
 
-      io.socket.fire('homebridge-status', { matter: { enabled: false } })
+      io.socket.fire('homebridge-status', {
+        matter: { enabled: false },
+      })
       await flushFrames()
 
       expect(widget.setupUri()).toBeNull()
@@ -325,7 +382,13 @@ describe('the pairing and content widgets', () => {
      * @param temp - the temperature in celsius
      */
     function makeReading(icon = '01d', temp = 18) {
-      return { weather: [{ icon, description: 'clear sky' }], main: { temp }, name: 'London' }
+      return {
+        weather: [
+          { icon, description: 'clear sky' },
+        ],
+        main: { temp },
+        name: 'London',
+      }
     }
 
     it('asks for nothing until a location is chosen', async () => {
@@ -379,7 +442,9 @@ describe('the pairing and content widgets', () => {
       // OpenWeatherMap rate-limits the free tier, and several browser tabs each
       // reloading would burn through it
       expect(http.match(isOwm)).toHaveLength(0)
-      expect(widget.currentWeather()).toMatchObject({ main: { temp: 12 } })
+      expect(widget.currentWeather()).toMatchObject({
+        main: { temp: 12 },
+      })
     })
 
     it('asks again once the cached reading is stale', async () => {
@@ -526,12 +591,23 @@ describe('the pairing and content widgets', () => {
      * @param onDashboard - whether the user pinned it to the dashboard
      */
     function makeAccessory(uniqueId: string, onDashboard = true) {
-      return { uniqueId, onDashboard, serviceName: uniqueId, type: 'Switch' }
+      return {
+        uniqueId,
+        onDashboard,
+        serviceName: uniqueId,
+        type: 'Switch',
+      }
     }
 
     it('shows only the accessories pinned to the dashboard', async () => {
       const { widget } = await open(AccessoriesWidgetComponent, { component: 'AccessoriesWidgetComponent' }, {
-        rooms: [makeRoom([makeAccessory('a'), makeAccessory('b', false), makeAccessory('c')])],
+        rooms: [
+          makeRoom([
+            makeAccessory('a'),
+            makeAccessory('b', false),
+            makeAccessory('c'),
+          ]),
+        ],
       })
 
       accessoryData.next([])
@@ -543,7 +619,17 @@ describe('the pairing and content widgets', () => {
 
     it('gathers them from every room', async () => {
       const { widget } = await open(AccessoriesWidgetComponent, { component: 'AccessoriesWidgetComponent' }, {
-        rooms: [makeRoom([makeAccessory('a')]), { name: 'Kitchen', services: [makeAccessory('b')] }],
+        rooms: [
+          makeRoom([
+            makeAccessory('a'),
+          ]),
+          {
+            name: 'Kitchen',
+            services: [
+              makeAccessory('b'),
+            ],
+          },
+        ],
       })
 
       accessoryData.next([])
@@ -558,7 +644,13 @@ describe('the pairing and content widgets', () => {
         component: 'AccessoriesWidgetComponent',
         accessoryOrder: ['c', 'a', 'b'],
       }, {
-        rooms: [makeRoom([makeAccessory('a'), makeAccessory('b'), makeAccessory('c')])],
+        rooms: [
+          makeRoom([
+            makeAccessory('a'),
+            makeAccessory('b'),
+            makeAccessory('c'),
+          ]),
+        ],
       })
 
       accessoryData.next([])
@@ -569,7 +661,11 @@ describe('the pairing and content widgets', () => {
 
     it('re-reads the list when the layout is saved elsewhere', async () => {
       const { widget } = await open(AccessoriesWidgetComponent, { component: 'AccessoriesWidgetComponent' }, {
-        rooms: [makeRoom([makeAccessory('a')])],
+        rooms: [
+          makeRoom([
+            makeAccessory('a'),
+          ]),
+        ],
       })
 
       layoutSaved.next(undefined)
@@ -588,7 +684,12 @@ describe('the pairing and content widgets', () => {
       const saved = vi.fn()
       ownSaveEvent.subscribe(saved)
       await open(AccessoriesWidgetComponent, widgetConfig, {
-        rooms: [makeRoom([makeAccessory('a'), makeAccessory('b')])],
+        rooms: [
+          makeRoom([
+            makeAccessory('a'),
+            makeAccessory('b'),
+          ]),
+        ],
       })
       accessoryData.next([])
       await Promise.resolve()

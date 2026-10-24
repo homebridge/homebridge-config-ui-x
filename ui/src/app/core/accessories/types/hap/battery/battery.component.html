@@ -2,16 +2,7 @@
 @let isCharging = service().values?.ChargingState === 1;
 @let isLow = service().values?.StatusLowBattery === 1 || batteryLevel === 0;
 
-@let chargingText =
-  service().values?.ChargingState === 0
-    ? ('accessories.control.battery_notcharging' | translate)
-    : service().values?.ChargingState === 1
-      ? ('accessories.control.battery_charging' | translate)
-      : service().values?.ChargingState === 2
-        ? ('accessories.control.battery_notchargeable' | translate)
-        : isLow
-          ? ('accessories.control.battery_low' | translate)
-          : ('accessories.control.battery_charged' | translate);
+@let chargingText = chargingKey(isLow) | translate;
 
 @let srBaseName = (service().customName || service().serviceName || '').trim();
 @let srType = 'accessories.core.battery' | translate;

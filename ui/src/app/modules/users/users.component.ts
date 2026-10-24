@@ -72,12 +72,14 @@ export class UsersComponent implements OnInit {
   }
 
   public async openAddNewUser(): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: ADD_USER_MODAL_DATA,
-      useValue: {
-        existingUsers: this.homebridgeUsers(),
+    const injector = createEnvironmentInjector([
+      {
+        provide: ADD_USER_MODAL_DATA,
+        useValue: {
+          existingUsers: this.homebridgeUsers(),
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(UsersAddComponent, {
       size: 'lg',
@@ -94,13 +96,15 @@ export class UsersComponent implements OnInit {
   }
 
   public async openEditUser(user: User): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: USER_MODAL_DATA,
-      useValue: {
-        user,
-        existingUsers: this.homebridgeUsers(),
+    const injector = createEnvironmentInjector([
+      {
+        provide: USER_MODAL_DATA,
+        useValue: {
+          user,
+          existingUsers: this.homebridgeUsers(),
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(UsersEditComponent, {
       size: 'lg',
@@ -117,12 +121,14 @@ export class UsersComponent implements OnInit {
   }
 
   public async setup2fa(user: User): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: USER_MODAL_DATA,
-      useValue: {
-        user,
+    const injector = createEnvironmentInjector([
+      {
+        provide: USER_MODAL_DATA,
+        useValue: {
+          user,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(Users2faEnableComponent, {
       size: 'lg',
@@ -139,12 +145,14 @@ export class UsersComponent implements OnInit {
   }
 
   public async disable2fa(user: User): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: USER_MODAL_DATA,
-      useValue: {
-        user,
+    const injector = createEnvironmentInjector([
+      {
+        provide: USER_MODAL_DATA,
+        useValue: {
+          user,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(Users2faDisableComponent, {
       size: 'lg',

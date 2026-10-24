@@ -26,7 +26,10 @@ export class LinuxService {
 
     // External consumers (and an existing e2e test) expect `command`
     // to be returned as a single-element array, so keep that shape.
-    return { ok: true, command: [cmd] }
+    return {
+      ok: true,
+      command: [cmd],
+    }
   }
 
   /**
@@ -40,7 +43,10 @@ export class LinuxService {
     this.logger.warn(`Shutting down linux server with command ${cmd}.`)
     this.runHostCommand(cmd, 500)
 
-    return { ok: true, command: [cmd] }
+    return {
+      ok: true,
+      command: [cmd],
+    }
   }
 
   /**

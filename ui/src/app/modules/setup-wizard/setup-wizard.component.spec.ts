@@ -71,7 +71,10 @@ describe('setupWizardComponent', () => {
     })
 
     TestBed.overrideComponent(SetupWizardComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     fixture = TestBed.createComponent(SetupWizardComponent)
@@ -140,7 +143,9 @@ describe('setupWizardComponent', () => {
     })
 
     it('shows the wallpaper the user set', async () => {
-      const wizard = create({ env: { customWallpaperHash: 'abc123' } })
+      const wizard = create({
+        env: { customWallpaperHash: 'abc123' },
+      })
       await settle()
 
       expect(wizard.backgroundStyle()).toBe(`url('${environment.api.base}/auth/wallpaper/abc123') center/cover`)
@@ -259,7 +264,9 @@ describe('setupWizardComponent', () => {
 
     it('stays on the form and says what went wrong', async () => {
       const wizard = create()
-      api.fail('post', '/setup-wizard/create-first-user', { error: { message: 'Username already taken' } })
+      api.fail('post', '/setup-wizard/create-first-user', {
+        error: { message: 'Username already taken' },
+      })
       fill(wizard, {})
 
       await wizard.createFirstUser()
@@ -340,7 +347,9 @@ describe('setupWizardComponent', () => {
     it('takes the file the user picked', () => {
       const wizard = create()
 
-      wizard.handleRestoreFileInput(fileEvent([fileOfSize(1000)]))
+      wizard.handleRestoreFileInput(fileEvent([
+        fileOfSize(1000),
+      ]))
 
       expect(wizard.selectedFile()?.name).toBe('homebridge-backup.tar.gz')
       expect(wizard.progress()).toBe(40)
@@ -350,7 +359,9 @@ describe('setupWizardComponent', () => {
       // ⚠️ Checked here rather than after uploading: the upload of a large archive
       // takes minutes, and the server would refuse it at the end
       const wizard = create()
-      const event = fileEvent([fileOfSize(50 * 1024 * 1024)])
+      const event = fileEvent([
+        fileOfSize(50 * 1024 * 1024),
+      ])
 
       wizard.handleRestoreFileInput(event)
 
@@ -361,7 +372,9 @@ describe('setupWizardComponent', () => {
 
     it('clears the input after refusing one, so the same file can be re-picked', () => {
       const wizard = create()
-      const event = fileEvent([fileOfSize(50 * 1024 * 1024)])
+      const event = fileEvent([
+        fileOfSize(50 * 1024 * 1024),
+      ])
 
       wizard.handleRestoreFileInput(event)
 
@@ -370,7 +383,9 @@ describe('setupWizardComponent', () => {
 
     it('forgets the file when the picker is cleared', () => {
       const wizard = create()
-      wizard.handleRestoreFileInput(fileEvent([fileOfSize(1000)]))
+      wizard.handleRestoreFileInput(fileEvent([
+        fileOfSize(1000),
+      ]))
 
       wizard.handleRestoreFileInput(fileEvent([]))
 
@@ -552,7 +567,9 @@ describe('setupWizardComponent', () => {
 
     it('goes back to the file picker when the upload fails', async () => {
       const wizard = create()
-      api.fail('post', '/backup/restore', { error: { message: 'Archive is not a valid backup' } })
+      api.fail('post', '/backup/restore', {
+        error: { message: 'Archive is not a valid backup' },
+      })
 
       await runRestore(wizard)
 

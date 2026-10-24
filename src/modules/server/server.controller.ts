@@ -428,8 +428,15 @@ export class ServerController {
     schema: {
       type: 'object',
       properties: {
-        hostnames: { type: 'array', items: { type: 'string' } },
-        mode: { type: 'string', enum: ['selfsigned', 'keycert'], default: 'keycert' },
+        hostnames: {
+          type: 'array',
+          items: { type: 'string' },
+        },
+        mode: {
+          type: 'string',
+          enum: ['selfsigned', 'keycert'],
+          default: 'keycert',
+        },
       },
     },
   })

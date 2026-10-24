@@ -20,34 +20,66 @@ describe('user modals', () => {
   let auth: FakeAuth
   let activeModal: ReturnType<typeof activeModalStub>
 
-  const admin: User = { id: 1, username: 'admin', name: 'Admin', admin: true } as User
-  const second: User = { id: 2, username: 'partner', name: 'Partner', admin: true } as User
-  const viewer: User = { id: 3, username: 'viewer', name: 'Viewer', admin: false } as User
+  const admin: User = {
+    id: 1,
+    username: 'admin',
+    name: 'Admin',
+    admin: true,
+  } as User
+  const second: User = {
+    id: 2,
+    username: 'partner',
+    name: 'Partner',
+    admin: true,
+  } as User
+  const viewer: User = {
+    id: 3,
+    username: 'viewer',
+    name: 'Viewer',
+    admin: false,
+  } as User
 
   function configure(providers: any[] = [], signedInAs = 'admin') {
     TestBed.resetTestingModule()
     api = fakeApi()
-    auth = makeAuth({ user: { username: signedInAs } })
+    auth = makeAuth({
+      user: { username: signedInAs },
+    })
     activeModal = activeModalStub()
 
     TestBed.configureTestingModule({
       providers: [
         provideTestTranslate(),
-        provideFakes({ api, auth, toastr: toastrStub(), activeModal }),
+        provideFakes({
+          api,
+          auth,
+          toastr: toastrStub(),
+          activeModal,
+        }),
         ...providers,
       ],
     })
   }
 
   function openAdd(existingUsers: User[] = [admin]): UsersAddComponent {
-    configure([{ provide: ADD_USER_MODAL_DATA, useValue: { existingUsers } }])
+    configure([
+      {
+        provide: ADD_USER_MODAL_DATA,
+        useValue: { existingUsers },
+      },
+    ])
     const fixture = TestBed.createComponent(UsersAddComponent)
     fixture.detectChanges()
     return fixture.componentInstance
   }
 
   function openEdit(user: User, existingUsers: User[], signedInAs = 'admin'): UsersEditComponent {
-    configure([{ provide: USER_MODAL_DATA, useValue: { user, existingUsers } }], signedInAs)
+    configure([
+      {
+        provide: USER_MODAL_DATA,
+        useValue: { user, existingUsers },
+      },
+    ], signedInAs)
     const fixture = TestBed.createComponent(UsersEditComponent)
     fixture.detectChanges()
     return fixture.componentInstance
@@ -56,7 +88,13 @@ describe('user modals', () => {
   describe('adding a user', () => {
     it('sends the new account to the server', async () => {
       const modal = openAdd()
-      modal.form.setValue({ username: 'partner', name: 'Partner', password: 'secret', passwordConfirm: 'secret', admin: false })
+      modal.form.setValue({
+        username: 'partner',
+        name: 'Partner',
+        password: 'secret',
+        passwordConfirm: 'secret',
+        admin: false,
+      })
 
       await modal.onSubmit(modal.form)
 
@@ -93,7 +131,13 @@ describe('user modals', () => {
 
     it('refuses a confirmation that does not match', () => {
       const modal = openAdd()
-      modal.form.setValue({ username: 'partner', name: 'Partner', password: 'secret', passwordConfirm: 'different', admin: true })
+      modal.form.setValue({
+        username: 'partner',
+        name: 'Partner',
+        password: 'secret',
+        passwordConfirm: 'different',
+        admin: true,
+      })
 
       expect(modal.form.valid).toBe(false)
     })
@@ -104,8 +148,16 @@ describe('user modals', () => {
 
     it('keeps the modal open when the server refuses', async () => {
       const modal = openAdd()
-      api.fail('post', '/users', { error: { message: 'Username already taken' } })
-      modal.form.setValue({ username: 'partner', name: 'Partner', password: 'secret', passwordConfirm: 'secret', admin: true })
+      api.fail('post', '/users', {
+        error: { message: 'Username already taken' },
+      })
+      modal.form.setValue({
+        username: 'partner',
+        name: 'Partner',
+        password: 'secret',
+        passwordConfirm: 'secret',
+        admin: true,
+      })
 
       await modal.onSubmit(modal.form)
 
@@ -151,7 +203,9 @@ describe('user modals', () => {
 
     it('deletes rather than saves once confirmed', async () => {
       const modal = openEdit(viewer, [admin, viewer], 'admin')
-      modal.toggleDeleteMode({ target: document.createElement('button') } as unknown as MouseEvent)
+      modal.toggleDeleteMode({
+        target: document.createElement('button'),
+      } as unknown as MouseEvent)
 
       await modal.onSubmit(modal.form)
 

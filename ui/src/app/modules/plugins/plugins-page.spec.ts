@@ -90,7 +90,9 @@ describe('the plugins page', () => {
     ws = fakeWs()
     modal = modalServiceSpy()
     toastr = toastrStub()
-    settings = makeSettings({ env: { recommendChildBridges: true, ...options.env } })
+    settings = makeSettings({
+      env: { recommendChildBridges: true, ...options.env },
+    })
     pluginsCache = cacheStub<Plugin[]>(options.installed ?? [])
     pairingsCache = cacheStub<any[]>(options.pairings ?? [])
     managePlugins = {
@@ -114,7 +116,9 @@ describe('the plugins page', () => {
           modal,
           settings,
           toastr,
-          auth: makeAuth({ user: { username: 'admin', admin: options.admin ?? true } }),
+          auth: makeAuth({
+            user: { username: 'admin', admin: options.admin ?? true },
+          }),
         }),
         { provide: PluginsCacheService, useValue: pluginsCache },
         { provide: ServerPairingsCacheService, useValue: pairingsCache },
@@ -123,7 +127,10 @@ describe('the plugins page', () => {
     })
 
     TestBed.overrideComponent(PluginsComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     const router = TestBed.inject(Router)
@@ -163,7 +170,11 @@ describe('the plugins page', () => {
     })
 
     it('shows what is installed', async () => {
-      create({ installed: [plugin('homebridge-example')] })
+      create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       const page = fixture.componentInstance
       await settle()
 
@@ -173,7 +184,12 @@ describe('the plugins page', () => {
 
     it('never lists itself', async () => {
       // The UI cannot be managed from its own plugin card
-      const page = create({ installed: [plugin('homebridge-config-ui-x'), plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-config-ui-x'),
+          plugin('homebridge-example'),
+        ],
+      })
       await settle()
 
       expect(page.installedPlugins().map(p => p.name)).toEqual(['homebridge-example'])
@@ -181,7 +197,11 @@ describe('the plugins page', () => {
 
     it('does the work once when both triggers fire on a fresh mount', async () => {
       // ⚠️ The websocket-connected subscriber and the router both ask for a load
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       // Let the mount's own load finish first, or these two just join that one
       // and the test passes without proving anything
       await settle()
@@ -195,7 +215,11 @@ describe('the plugins page', () => {
     })
 
     it('loads again once the first load has finished', async () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       await settle()
       pluginsCache.get.mockClear()
 
@@ -206,7 +230,11 @@ describe('the plugins page', () => {
     })
 
     it('reloads when the plugin service says the list changed', async () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       await settle()
       pluginsCache.get.mockClear()
 
@@ -231,7 +259,11 @@ describe('the plugins page', () => {
     })
 
     it('clears the error on a load that works', async () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       await settle()
       page.mainError.set(true)
 
@@ -242,7 +274,11 @@ describe('the plugins page', () => {
 
     it('leaves search mode when the installed list is loaded', async () => {
       // The router and websocket subscribers do not clear the flag themselves
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       await settle()
       page.isSearchMode.set(true)
 
@@ -267,7 +303,12 @@ describe('the plugins page', () => {
       overrides: Partial<Plugin>,
       options: { env?: Record<string, any>, admin?: boolean, pairings?: any[], bridges?: any[] } = {},
     ): Promise<Plugin> {
-      const page = create({ installed: [plugin('homebridge-example', overrides)], ...options })
+      const page = create({
+        installed: [
+          plugin('homebridge-example', overrides),
+        ],
+        ...options,
+      })
       if (options.bridges) {
         page.childBridges.set(options.bridges)
         await (page as any).loadInstalledPlugins()
@@ -300,12 +341,26 @@ describe('the plugins page', () => {
     }
 
     it('fills in the metadata before it publishes the grid', async () => {
-      const page = create({ installed: [plugin('homebridge-example', { config: [{ platform: 'Example' }] })] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example', {
+            config: [
+              { platform: 'Example' },
+            ],
+          }),
+        ],
+      })
       await settle()
       // ⚠️ A fresh object for the second load. The metadata is derived onto the
       // plugin objects themselves, so re-using the ones the mount already
       // annotated makes this pass whatever the ordering is
-      pluginsCache.setValue([plugin('homebridge-example', { config: [{ platform: 'Example' }] })])
+      pluginsCache.setValue([
+        plugin('homebridge-example', {
+          config: [
+            { platform: 'Example' },
+          ],
+        }),
+      ])
       const published = publishedStates(page)
 
       await (page as any).loadInstalledPlugins()
@@ -320,7 +375,13 @@ describe('the plugins page', () => {
       // Same trap, second code path
       const page = create()
       await settle()
-      api.respond('get', /plugins\/search/, [plugin('homebridge-hue', { config: [{ platform: 'Hue' }] })])
+      api.respond('get', /plugins\/search/, [
+        plugin('homebridge-hue', {
+          config: [
+            { platform: 'Hue' },
+          ],
+        }),
+      ])
       const published = publishedStates(page)
 
       await page.search()
@@ -332,7 +393,11 @@ describe('the plugins page', () => {
     })
 
     it('calls a plugin with a config block configured', async () => {
-      expect((await metaFor({ config: [{ platform: 'Example' }] })).isConfigured).toBe(true)
+      expect((await metaFor({
+        config: [
+          { platform: 'Example' },
+        ],
+      })).isConfigured).toBe(true)
     })
 
     it('calls a plugin with no config block unconfigured', async () => {
@@ -341,26 +406,47 @@ describe('the plugins page', () => {
 
     it('notices a configured dynamic platform', async () => {
       // Which decides whether uninstalling has to offer to remove accessories
-      expect((await metaFor({ config: [{ platform: 'Example' }] })).isConfiguredDynamicPlatform).toBe(true)
+      expect((await metaFor({
+        config: [
+          { platform: 'Example' },
+        ],
+      })).isConfiguredDynamicPlatform).toBe(true)
     })
 
     it('does not call an accessory block a dynamic platform', async () => {
-      expect((await metaFor({ config: [{ accessory: 'Example' }] })).isConfiguredDynamicPlatform).toBe(false)
+      expect((await metaFor({
+        config: [
+          { accessory: 'Example' },
+        ],
+      })).isConfiguredDynamicPlatform).toBe(false)
     })
 
     it('sees the child bridge a config block runs on', async () => {
-      const config = [{ platform: 'Example', _bridge: { username: '0E:11:22:33:44:55' } }]
+      const config = [
+        {
+          platform: 'Example',
+          _bridge: { username: '0E:11:22:33:44:55' },
+        },
+      ]
 
       expect((await metaFor({ config })).hasChildBridges).toBe(true)
     })
 
     it('does not count a bridge block with no username', async () => {
       // Half-written config, and it would suppress the setup nudge for nothing
-      expect((await metaFor({ config: [{ platform: 'Example', _bridge: {} }] })).hasChildBridges).toBe(false)
+      expect((await metaFor({
+        config: [
+          { platform: 'Example', _bridge: {} },
+        ],
+      })).hasChildBridges).toBe(false)
     })
 
     it('nudges a configured plugin towards a child bridge', async () => {
-      expect((await metaFor({ config: [{ platform: 'Example' }] })).recommendChildBridge).toBe(true)
+      expect((await metaFor({
+        config: [
+          { platform: 'Example' },
+        ],
+      })).recommendChildBridge).toBe(true)
     })
 
     it('does not nudge an unconfigured plugin', async () => {
@@ -368,15 +454,31 @@ describe('the plugins page', () => {
     })
 
     it('does not nudge when the user switched recommendations off', async () => {
-      const meta = await metaFor({ config: [{ platform: 'Example' }] }, { env: { recommendChildBridges: false } })
+      const meta = await metaFor({
+        config: [
+          { platform: 'Example' },
+        ],
+      }, {
+        env: { recommendChildBridges: false },
+      })
 
       expect(meta.recommendChildBridge).toBe(false)
     })
 
     it('does not nudge a plugin the user opted out of', async () => {
       const meta = await metaFor(
-        { config: [{ platform: 'Example' }] },
-        { env: { plugins: { hideChildBridgeSetupFor: ['homebridge-example'] } } },
+        {
+          config: [
+            { platform: 'Example' },
+          ],
+        },
+        {
+          env: {
+            plugins: {
+              hideChildBridgeSetupFor: ['homebridge-example'],
+            },
+          },
+        },
       )
 
       expect(meta.recommendChildBridge).toBe(false)
@@ -385,14 +487,26 @@ describe('the plugins page', () => {
     it('hides an update the user asked not to see', async () => {
       const meta = await metaFor(
         { updateAvailable: true },
-        { env: { plugins: { hideUpdatesFor: ['homebridge-example'] } } },
+        {
+          env: {
+            plugins: {
+              hideUpdatesFor: ['homebridge-example'],
+            },
+          },
+        },
       )
 
       expect(meta.updateAvailable).toBe(false)
     })
 
     it('leaves an update alone for a plugin not on that list', async () => {
-      const meta = await metaFor({ updateAvailable: true }, { env: { plugins: { hideUpdatesFor: ['homebridge-other'] } } })
+      const meta = await metaFor({ updateAvailable: true }, {
+        env: {
+          plugins: {
+            hideUpdatesFor: ['homebridge-other'],
+          },
+        },
+      })
 
       expect(meta.updateAvailable).toBe(true)
     })
@@ -406,14 +520,20 @@ describe('the plugins page', () => {
 
     it('derives nothing at all for a non-admin', async () => {
       // A non-admin cannot read the config, so the calls would 403
-      const meta = await metaFor({ config: [{ platform: 'Example' }] }, { admin: false })
+      const meta = await metaFor({
+        config: [
+          { platform: 'Example' },
+        ],
+      }, { admin: false })
 
       expect(meta.isConfigured).toBeUndefined()
     })
 
     it('assumes the safe answers when deriving throws', async () => {
       // A malformed config block would otherwise leave the whole grid unrendered
-      const meta = await metaFor({ config: [null as any] })
+      const meta = await metaFor({
+        config: [null as any],
+      })
 
       expect(meta.isConfigured).toBe(true)
       expect(meta.hasChildBridges).toBe(true)
@@ -429,39 +549,83 @@ describe('the plugins page', () => {
       })
 
       it('flags an unpaired hap bridge', async () => {
-        const meta = await metaFor({ config: [{ platform: 'Example' }] }, { bridges: [bridge({ paired: false })] })
+        const meta = await metaFor({
+          config: [
+            { platform: 'Example' },
+          ],
+        }, {
+          bridges: [
+            bridge({ paired: false }),
+          ],
+        })
 
         expect(meta.hasChildBridgesUnpaired).toBe(true)
       })
 
       it('flags an uncommissioned matter bridge', async () => {
         const meta = await metaFor(
-          { config: [{ platform: 'Example' }] },
-          { bridges: [bridge({ matterConfig: {}, matterCommissioned: false })] },
+          {
+            config: [
+              { platform: 'Example' },
+            ],
+          },
+          {
+            bridges: [
+              bridge({ matterConfig: {}, matterCommissioned: false }),
+            ],
+          },
         )
 
         expect(meta.hasChildBridgesUnpaired).toBe(true)
       })
 
       it('says nothing about a bridge that is paired', async () => {
-        const meta = await metaFor({ config: [{ platform: 'Example' }] }, { bridges: [bridge()] })
+        const meta = await metaFor({
+          config: [
+            { platform: 'Example' },
+          ],
+        }, {
+          bridges: [
+            bridge(),
+          ],
+        })
 
         expect(meta.hasChildBridgesUnpaired).toBe(false)
       })
 
       it('respects a hidden hap warning', async () => {
-        const meta = await metaFor({ config: [{ platform: 'Example' }] }, {
-          bridges: [bridge({ paired: false })],
-          env: { bridges: [{ username: '0E:11:22:33:44:55', hideHapAlert: true }] },
+        const meta = await metaFor({
+          config: [
+            { platform: 'Example' },
+          ],
+        }, {
+          bridges: [
+            bridge({ paired: false }),
+          ],
+          env: {
+            bridges: [
+              { username: '0E:11:22:33:44:55', hideHapAlert: true },
+            ],
+          },
         })
 
         expect(meta.hasChildBridgesUnpaired).toBe(false)
       })
 
       it('respects a hidden matter warning', async () => {
-        const meta = await metaFor({ config: [{ platform: 'Example' }] }, {
-          bridges: [bridge({ matterConfig: {}, matterCommissioned: false })],
-          env: { bridges: [{ username: '0E:11:22:33:44:55', hideMatterAlert: true }] },
+        const meta = await metaFor({
+          config: [
+            { platform: 'Example' },
+          ],
+        }, {
+          bridges: [
+            bridge({ matterConfig: {}, matterCommissioned: false }),
+          ],
+          env: {
+            bridges: [
+              { username: '0E:11:22:33:44:55', hideMatterAlert: true },
+            ],
+          },
         })
 
         expect(meta.hasChildBridgesUnpaired).toBe(false)
@@ -469,26 +633,52 @@ describe('the plugins page', () => {
 
       it('matches the bridge whatever case its username is written in', async () => {
         // The config file and the running bridge do not always agree
-        const meta = await metaFor({ config: [{ platform: 'Example' }] }, {
-          bridges: [bridge({ paired: false })],
-          env: { bridges: [{ username: '0e:11:22:33:44:55', hideHapAlert: true }] },
+        const meta = await metaFor({
+          config: [
+            { platform: 'Example' },
+          ],
+        }, {
+          bridges: [
+            bridge({ paired: false }),
+          ],
+          env: {
+            bridges: [
+              { username: '0e:11:22:33:44:55', hideHapAlert: true },
+            ],
+          },
         })
 
         expect(meta.hasChildBridgesUnpaired).toBe(false)
       })
 
       it('does not silence the hap warning with a hidden matter one', async () => {
-        const meta = await metaFor({ config: [{ platform: 'Example' }] }, {
-          bridges: [bridge({ paired: false })],
-          env: { bridges: [{ username: '0E:11:22:33:44:55', hideMatterAlert: true }] },
+        const meta = await metaFor({
+          config: [
+            { platform: 'Example' },
+          ],
+        }, {
+          bridges: [
+            bridge({ paired: false }),
+          ],
+          env: {
+            bridges: [
+              { username: '0E:11:22:33:44:55', hideMatterAlert: true },
+            ],
+          },
         })
 
         expect(meta.hasChildBridgesUnpaired).toBe(true)
       })
 
       it('ignores the bridges of other plugins', async () => {
-        const meta = await metaFor({ config: [{ platform: 'Example' }] }, {
-          bridges: [bridge({ plugin: 'homebridge-other', paired: false })],
+        const meta = await metaFor({
+          config: [
+            { platform: 'Example' },
+          ],
+        }, {
+          bridges: [
+            bridge({ plugin: 'homebridge-other', paired: false }),
+          ],
         })
 
         expect(meta.hasChildBridgesUnpaired).toBe(false)
@@ -497,35 +687,65 @@ describe('the plugins page', () => {
 
     describe('external accessories', () => {
       it('flags a plugin publishing its own accessories', async () => {
-        const meta = await metaFor({ config: [{ platform: 'Example' }] }, {
-          env: { featureFlags: { externalAccessoriesAttribution: true } },
-          pairings: [{ _plugin: 'homebridge-example', _isExternal: true }],
+        const meta = await metaFor({
+          config: [
+            { platform: 'Example' },
+          ],
+        }, {
+          env: {
+            featureFlags: { externalAccessoriesAttribution: true },
+          },
+          pairings: [
+            { _plugin: 'homebridge-example', _isExternal: true },
+          ],
         })
 
         expect(meta.hasExternalAccessories).toBe(true)
       })
 
       it('flags a matter-only pairing the same way', async () => {
-        const meta = await metaFor({ config: [{ platform: 'Example' }] }, {
-          env: { featureFlags: { externalAccessoriesAttribution: true } },
-          pairings: [{ _plugin: 'homebridge-example', _matterOnly: true }],
+        const meta = await metaFor({
+          config: [
+            { platform: 'Example' },
+          ],
+        }, {
+          env: {
+            featureFlags: { externalAccessoriesAttribution: true },
+          },
+          pairings: [
+            { _plugin: 'homebridge-example', _matterOnly: true },
+          ],
         })
 
         expect(meta.hasExternalAccessories).toBe(true)
       })
 
       it('ignores an ordinary bridged pairing', async () => {
-        const meta = await metaFor({ config: [{ platform: 'Example' }] }, {
-          env: { featureFlags: { externalAccessoriesAttribution: true } },
-          pairings: [{ _plugin: 'homebridge-example' }],
+        const meta = await metaFor({
+          config: [
+            { platform: 'Example' },
+          ],
+        }, {
+          env: {
+            featureFlags: { externalAccessoriesAttribution: true },
+          },
+          pairings: [
+            { _plugin: 'homebridge-example' },
+          ],
         })
 
         expect(meta.hasExternalAccessories).toBe(false)
       })
 
       it('does not ask for the pairings while the feature is off', async () => {
-        const meta = await metaFor({ config: [{ platform: 'Example' }] }, {
-          pairings: [{ _plugin: 'homebridge-example', _isExternal: true }],
+        const meta = await metaFor({
+          config: [
+            { platform: 'Example' },
+          ],
+        }, {
+          pairings: [
+            { _plugin: 'homebridge-example', _isExternal: true },
+          ],
         })
 
         expect(meta.hasExternalAccessories).toBe(false)
@@ -534,8 +754,16 @@ describe('the plugins page', () => {
 
       it('carries on when the pairings cannot be read', async () => {
         const page = create({
-          installed: [plugin('homebridge-example', { config: [{ platform: 'Example' }] })],
-          env: { featureFlags: { externalAccessoriesAttribution: true } },
+          installed: [
+            plugin('homebridge-example', {
+              config: [
+                { platform: 'Example' },
+              ],
+            }),
+          ],
+          env: {
+            featureFlags: { externalAccessoriesAttribution: true },
+          },
         })
         pairingsCache.get.mockRejectedValue(new Error('server unavailable'))
 
@@ -571,7 +799,9 @@ describe('the plugins page', () => {
 
     it('shows what came back', async () => {
       const page = create()
-      api.respond('get', /plugins\/search/, [plugin('homebridge-hue', { installedVersion: undefined as any })])
+      api.respond('get', /plugins\/search/, [
+        plugin('homebridge-hue', { installedVersion: undefined as any }),
+      ])
       page.form.setValue({ query: 'hue' })
 
       await page.search()
@@ -582,7 +812,10 @@ describe('the plugins page', () => {
 
     it('never offers itself in the results', async () => {
       const page = create()
-      api.respond('get', /plugins\/search/, [plugin('homebridge-config-ui-x'), plugin('homebridge-hue')])
+      api.respond('get', /plugins\/search/, [
+        plugin('homebridge-config-ui-x'),
+        plugin('homebridge-hue'),
+      ])
       page.form.setValue({ query: 'homebridge' })
 
       await page.search()
@@ -600,7 +833,11 @@ describe('the plugins page', () => {
     })
 
     it('goes back to the installed list when the search fails', async () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       api.fail('get', /plugins\/search/, new Error('npm registry unreachable'))
       page.form.setValue({ query: 'hue' })
 
@@ -638,21 +875,31 @@ describe('the plugins page', () => {
 
       it('shows only the scoped one when neither is installed', async () => {
         // The scoped name is where the plugin lives now
-        expect(await namesFor([unscoped(), scoped()])).toEqual(['@homebridge-plugins/homebridge-foo'])
+        expect(await namesFor([
+          unscoped(),
+          scoped(),
+        ])).toEqual(['@homebridge-plugins/homebridge-foo'])
       })
 
       it('shows the unscoped one when that is what the user has', async () => {
         // Offering the scoped copy would install a second, clashing plugin
-        expect(await namesFor([unscoped({ installedVersion: '1.0.0' }), scoped()])).toEqual(['homebridge-foo'])
+        expect(await namesFor([
+          unscoped({ installedVersion: '1.0.0' }),
+          scoped(),
+        ])).toEqual(['homebridge-foo'])
       })
 
       it('shows the unscoped one when the scoped name is not in the results', async () => {
         // Nothing better to offer
-        expect(await namesFor([unscoped()])).toEqual(['homebridge-foo'])
+        expect(await namesFor([
+          unscoped(),
+        ])).toEqual(['homebridge-foo'])
       })
 
       it('leaves a plugin that has not moved alone', async () => {
-        expect(await namesFor([plugin('homebridge-other', { installedVersion: undefined as any })]))
+        expect(await namesFor([
+          plugin('homebridge-other', { installedVersion: undefined as any }),
+        ]))
           .toEqual(['homebridge-other'])
       })
     })
@@ -661,7 +908,11 @@ describe('the plugins page', () => {
   describe('the search bar', () => {
     it('opens on the search button', async () => {
       vi.useFakeTimers()
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
 
       page.showSearch()
 
@@ -669,7 +920,11 @@ describe('the plugins page', () => {
     })
 
     it('leaves the stats tab when it opens', () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       page.tab.set('stats')
 
       page.showSearch()
@@ -678,7 +933,11 @@ describe('the plugins page', () => {
     })
 
     it('closes again on a second press', () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       page.showSearch()
 
       page.showSearch()
@@ -687,7 +946,11 @@ describe('the plugins page', () => {
     })
 
     it('goes back to the installed list when closed while showing results', async () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       page.showSearch()
       page.isSearchMode.set(true)
       page.form.setValue({ query: 'hue' })
@@ -703,7 +966,9 @@ describe('the plugins page', () => {
       const page = create()
       api.respond('get', /plugins\/search/, [])
 
-      page.onSubmit({ value: { query: 'hue' } })
+      page.onSubmit({
+        value: { query: 'hue' },
+      })
       await settle()
 
       expect(page.isSearchMode()).toBe(true)
@@ -711,10 +976,16 @@ describe('the plugins page', () => {
     })
 
     it('closes the bar on an empty submit', async () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       page.showSearch()
 
-      page.onSubmit({ value: { query: '' } })
+      page.onSubmit({
+        value: { query: '' },
+      })
       await settle()
 
       expect(page.showSearchBar()).toBe(false)
@@ -722,10 +993,16 @@ describe('the plugins page', () => {
     })
 
     it('goes back to the installed list on an empty submit while showing results', async () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       page.isSearchMode.set(true)
 
-      page.onSubmit({ value: { query: '' } })
+      page.onSubmit({
+        value: { query: '' },
+      })
       await settle()
 
       expect(page.isSearchMode()).toBe(false)
@@ -733,7 +1010,11 @@ describe('the plugins page', () => {
     })
 
     it('clears the box and goes back on the clear button', async () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       page.isSearchMode.set(true)
       page.form.setValue({ query: 'hue' })
 
@@ -746,7 +1027,11 @@ describe('the plugins page', () => {
     })
 
     it('does not reload when clearing a box that was not searched', async () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       await settle()
       pluginsCache.get.mockClear()
 
@@ -768,7 +1053,9 @@ describe('the plugins page', () => {
     it('takes the bridge list from the server', async () => {
       io = fakeWs().namespace('child-bridges')
       const page = create()
-      io.socket.respondTo('get-homebridge-child-bridge-status', [{ username: 'A', plugin: 'homebridge-example' }])
+      io.socket.respondTo('get-homebridge-child-bridge-status', [
+        { username: 'A', plugin: 'homebridge-example' },
+      ])
       ;(page as any).getChildBridgeMetadata()
       await settle()
 
@@ -785,7 +1072,9 @@ describe('the plugins page', () => {
 
     it('updates one it already knows rather than duplicating it', () => {
       const page = create()
-      page.childBridges.set([{ username: 'B', plugin: 'homebridge-example', status: 'up' } as any])
+      page.childBridges.set([
+        { username: 'B', plugin: 'homebridge-example', status: 'up' } as any,
+      ])
 
       io.socket.fire('child-bridge-status-update', { username: 'B', status: 'down' })
 
@@ -796,7 +1085,9 @@ describe('the plugins page', () => {
     it('publishes a new array, so the cards re-render', () => {
       // Mutating the object in place would leave the grid showing the old status
       const page = create()
-      page.childBridges.set([{ username: 'B', plugin: 'homebridge-example', status: 'up' } as any])
+      page.childBridges.set([
+        { username: 'B', plugin: 'homebridge-example', status: 'up' } as any,
+      ])
       const before = page.childBridges()
 
       io.socket.fire('child-bridge-status-update', { username: 'B', status: 'down' })
@@ -826,7 +1117,13 @@ describe('the plugins page', () => {
   describe('arriving straight from an install', () => {
     it('asks for a restart when the new plugin has config', async () => {
       create({
-        installed: [plugin('homebridge-example', { config: [{ platform: 'Example' }] })],
+        installed: [
+          plugin('homebridge-example', {
+            config: [
+              { platform: 'Example' },
+            ],
+          }),
+        ],
         url: '/plugins?action=just-installed&plugin=homebridge-example',
       })
       await settle()
@@ -836,7 +1133,9 @@ describe('the plugins page', () => {
 
     it('opens the settings when it does not', async () => {
       create({
-        installed: [plugin('homebridge-example', { config: [] })],
+        installed: [
+          plugin('homebridge-example', { config: [] }),
+        ],
         url: '/plugins?action=just-installed&plugin=homebridge-example',
       })
       await settle()
@@ -846,7 +1145,9 @@ describe('the plugins page', () => {
 
     it('does nothing for a plugin that is not installed after all', async () => {
       create({
-        installed: [plugin('homebridge-example')],
+        installed: [
+          plugin('homebridge-example'),
+        ],
         url: '/plugins?action=just-installed&plugin=homebridge-missing',
       })
       await settle()
@@ -858,7 +1159,9 @@ describe('the plugins page', () => {
     it('clears the query parameters, so a refresh does not repeat it', async () => {
       const router = TestBed.inject(Router)
       create({
-        installed: [plugin('homebridge-example', { config: [] })],
+        installed: [
+          plugin('homebridge-example', { config: [] }),
+        ],
         url: '/plugins?action=just-installed&plugin=homebridge-example',
       })
       await settle()
@@ -868,7 +1171,12 @@ describe('the plugins page', () => {
     })
 
     it('does nothing at all without an action', async () => {
-      create({ installed: [plugin('homebridge-example')], url: '/plugins' })
+      create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+        url: '/plugins',
+      })
       await settle()
 
       expect(vi.mocked(TestBed.inject(Router).navigate)).not.toHaveBeenCalled()
@@ -883,7 +1191,11 @@ describe('the plugins page', () => {
     })
 
     it('leaves the search bar closed when there is something to show', async () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       await settle()
 
       expect(page.showSearchBar()).toBe(false)
@@ -892,7 +1204,11 @@ describe('the plugins page', () => {
 
   describe('the stats tab', () => {
     it('paints the page black behind the stats', () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
 
       page.showStats()
 
@@ -901,7 +1217,11 @@ describe('the plugins page', () => {
     })
 
     it('closes the search bar when it opens', () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       page.showSearchBar.set(true)
 
       page.showStats()
@@ -911,7 +1231,11 @@ describe('the plugins page', () => {
 
     it('goes straight back in dark mode', () => {
       // Nothing to fade: the page is already dark
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       settings.actualLightingMode = 'dark'
       page.showStats()
 
@@ -923,7 +1247,11 @@ describe('the plugins page', () => {
 
     it('fades out before going back in light mode', async () => {
       vi.useFakeTimers()
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       settings.actualLightingMode = 'light'
       page.showStats()
 
@@ -936,7 +1264,11 @@ describe('the plugins page', () => {
     })
 
     it('cleans the light mode class off the body when the page is left', () => {
-      create({ installed: [plugin('homebridge-example')] })
+      create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       settings.actualLightingMode = 'light'
       document.body.classList.add('light-mode')
 
@@ -948,13 +1280,21 @@ describe('the plugins page', () => {
 
   describe('leaving the page', () => {
     it('leaves at once from the plugin grid', () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
 
       expect(page.canDeactivate()).toBe(true)
     })
 
     it('leaves at once from the stats tab in dark mode', async () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       settings.actualLightingMode = 'dark'
       page.showStats()
 
@@ -964,7 +1304,11 @@ describe('the plugins page', () => {
 
     it('fades out first in light mode', async () => {
       vi.useFakeTimers()
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       settings.actualLightingMode = 'light'
       page.showStats()
 
@@ -985,7 +1329,11 @@ describe('the plugins page', () => {
       // The terminal and the log page are both black; flashing white between
       // them looks like a page fault
       vi.useFakeTimers()
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       settings.actualLightingMode = 'light'
       page.showStats()
 
@@ -997,7 +1345,11 @@ describe('the plugins page', () => {
 
     it('does the same for the log page', async () => {
       vi.useFakeTimers()
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
       settings.actualLightingMode = 'light'
       page.showStats()
 
@@ -1010,7 +1362,11 @@ describe('the plugins page', () => {
 
   describe('the support panel', () => {
     it('opens it', () => {
-      const page = create({ installed: [plugin('homebridge-example')] })
+      const page = create({
+        installed: [
+          plugin('homebridge-example'),
+        ],
+      })
 
       page.openSupport()
 
@@ -1038,7 +1394,11 @@ describe('the plugins page', () => {
     it('opens the plan modal through the shared opener', async () => {
       // The modal's options (size, static backdrop) are the opener's business
       // and are asserted with ManagePluginsService - both entry points share it
-      const page = create({ installed: [plugin('homebridge-a', { updateAvailable: true })] })
+      const page = create({
+        installed: [
+          plugin('homebridge-a', { updateAvailable: true }),
+        ],
+      })
       await settle()
 
       page.updateAllModal()
@@ -1051,7 +1411,11 @@ describe('the plugins page', () => {
       // A run that only restarts child bridges never reloads this page, and
       // the plugin list sits behind a ttl cache - without invalidate + reload
       // the completed updates would keep showing as available
-      const page = create({ installed: [plugin('homebridge-a', { updateAvailable: true })] })
+      const page = create({
+        installed: [
+          plugin('homebridge-a', { updateAvailable: true }),
+        ],
+      })
       await settle()
       const before = vi.mocked(pluginsCache.get).mock.calls.length
 
@@ -1066,7 +1430,11 @@ describe('the plugins page', () => {
     it('does not reload on the handover close - the server is restarting', async () => {
       // The modal closes with 'handover' just before navigating to /restart;
       // a reload taken then would cache pre-update state from a dying server
-      const page = create({ installed: [plugin('homebridge-a', { updateAvailable: true })] })
+      const page = create({
+        installed: [
+          plugin('homebridge-a', { updateAvailable: true }),
+        ],
+      })
       await settle()
       const before = vi.mocked(pluginsCache.get).mock.calls.length
 

@@ -1,13 +1,6 @@
 @let state = lockState();
 @let isLocked = state === 1;
-@let stateText =
-  state === 1
-    ? ('accessories.control.locked' | translate)
-    : state === 2
-      ? ('accessories.control.unlocked' | translate)
-      : state === 0
-        ? ('accessories.control.jammed' | translate)
-        : '';
+@let stateText = stateKey() | translate;
 
 @let srBaseName = (service().customName || service().serviceName || service().displayName || '').trim();
 @let srType = 'accessories.core.lock_mechanism' | translate;

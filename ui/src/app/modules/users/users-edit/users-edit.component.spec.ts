@@ -103,12 +103,22 @@ describe('UsersEditComponent', () => {
      * @param options.signedInAs - the username of the signed-in user
      */
     function open(options: { user?: any, existingUsers?: any[], signedInAs?: string } = {}) {
-      const user = options.user ?? { id: 2, username: 'someone', name: 'Someone', admin: false }
+      const user = options.user ?? {
+        id: 2,
+        username: 'someone',
+        name: 'Someone',
+        admin: false,
+      }
       TestBed.resetTestingModule()
       api = fakeApi()
-      auth = makeAuth({ user: { username: options.signedInAs ?? 'admin', admin: true } })
+      auth = makeAuth({
+        user: { username: options.signedInAs ?? 'admin', admin: true },
+      })
       toastr = toastrStub()
-      activeModal = { close: vi.fn(), dismiss: vi.fn() }
+      activeModal = {
+        close: vi.fn(),
+        dismiss: vi.fn(),
+      }
 
       TestBed.configureTestingModule({
         imports: [UsersEditComponent],
@@ -120,7 +130,12 @@ describe('UsersEditComponent', () => {
             useValue: {
               user,
               existingUsers: options.existingUsers ?? [
-                { id: 1, username: 'admin', name: 'Admin', admin: true },
+                {
+                  id: 1,
+                  username: 'admin',
+                  name: 'Admin',
+                  admin: true,
+                },
                 user,
               ],
             },
@@ -129,7 +144,10 @@ describe('UsersEditComponent', () => {
       })
 
       TestBed.overrideComponent(UsersEditComponent, {
-        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+        set: {
+          imports: [TranslatePipe],
+          schemas: [NO_ERRORS_SCHEMA],
+        },
       })
 
       const fixture = TestBed.createComponent(UsersEditComponent)
@@ -143,7 +161,14 @@ describe('UsersEditComponent', () => {
     })
 
     it('starts from the user as they are', () => {
-      const modal = open({ user: { id: 2, username: 'someone', name: 'Someone', admin: true } })
+      const modal = open({
+        user: {
+          id: 2,
+          username: 'someone',
+          name: 'Someone',
+          admin: true,
+        },
+      })
 
       expect(modal.form.getRawValue()).toMatchObject({ username: 'someone', name: 'Someone', admin: true })
       expect(modal.isFormUnchanged()).toBe(true)
@@ -152,7 +177,9 @@ describe('UsersEditComponent', () => {
     it('saves the changes to that user', async () => {
       const modal = open()
 
-      await modal.onSubmit({ value: { username: 'someone', name: 'Someone Else' } })
+      await modal.onSubmit({
+        value: { username: 'someone', name: 'Someone Else' },
+      })
 
       expect(api.lastCall('patch', '/users/2')?.body).toEqual({ username: 'someone', name: 'Someone Else' })
       expect(activeModal.close).toHaveBeenCalled()
@@ -160,9 +187,13 @@ describe('UsersEditComponent', () => {
 
     it('stays open and says so when the save fails', async () => {
       const modal = open()
-      api.fail('patch', '/users/2', { error: { message: 'Username already taken' } })
+      api.fail('patch', '/users/2', {
+        error: { message: 'Username already taken' },
+      })
 
-      await modal.onSubmit({ value: { username: 'taken' } })
+      await modal.onSubmit({
+        value: { username: 'taken' },
+      })
 
       expect(activeModal.close).not.toHaveBeenCalled()
       expect(toastr.error).toHaveBeenCalledWith('Username already taken', 'toast.title_error')
@@ -171,22 +202,36 @@ describe('UsersEditComponent', () => {
     it('signs you out when you rename yourself', async () => {
       // ⚠️ The token names the old username, so every request after this would fail
       const modal = open({
-        user: { id: 1, username: 'admin', name: 'Admin', admin: true },
+        user: {
+          id: 1,
+          username: 'admin',
+          name: 'Admin',
+          admin: true,
+        },
         signedInAs: 'admin',
       })
 
-      await modal.onSubmit({ value: { username: 'administrator' } })
+      await modal.onSubmit({
+        value: { username: 'administrator' },
+      })
 
       expect(auth.logout).toHaveBeenCalled()
     })
 
     it('leaves you signed in when you only change your own name', async () => {
       const modal = open({
-        user: { id: 1, username: 'admin', name: 'Admin', admin: true },
+        user: {
+          id: 1,
+          username: 'admin',
+          name: 'Admin',
+          admin: true,
+        },
         signedInAs: 'admin',
       })
 
-      await modal.onSubmit({ value: { username: 'admin', name: 'The Admin' } })
+      await modal.onSubmit({
+        value: { username: 'admin', name: 'The Admin' },
+      })
 
       expect(auth.logout).not.toHaveBeenCalled()
     })
@@ -194,14 +239,18 @@ describe('UsersEditComponent', () => {
     it('leaves you signed in when you rename somebody else', async () => {
       const modal = open({ signedInAs: 'admin' })
 
-      await modal.onSubmit({ value: { username: 'renamed' } })
+      await modal.onSubmit({
+        value: { username: 'renamed' },
+      })
 
       expect(auth.logout).not.toHaveBeenCalled()
     })
 
     it('deletes the user in delete mode', async () => {
       const modal = open()
-      modal.toggleDeleteMode({ target: document.createElement('button') } as unknown as MouseEvent)
+      modal.toggleDeleteMode({
+        target: document.createElement('button'),
+      } as unknown as MouseEvent)
 
       await modal.onSubmit({ value: {} })
 
@@ -213,7 +262,9 @@ describe('UsersEditComponent', () => {
     it('says so when the delete fails', async () => {
       const modal = open()
       api.fail('delete', '/users/2', new Error('server unavailable'))
-      modal.toggleDeleteMode({ target: document.createElement('button') } as unknown as MouseEvent)
+      modal.toggleDeleteMode({
+        target: document.createElement('button'),
+      } as unknown as MouseEvent)
 
       await modal.onSubmit({ value: {} })
 
@@ -226,14 +277,18 @@ describe('UsersEditComponent', () => {
       // misleading
       const modal = open()
 
-      modal.toggleDeleteMode({ target: document.createElement('button') } as unknown as MouseEvent)
+      modal.toggleDeleteMode({
+        target: document.createElement('button'),
+      } as unknown as MouseEvent)
 
       expect(modal.form.disabled).toBe(true)
     })
 
     it('unlocks it again when delete is disarmed', () => {
       const modal = open()
-      const event = { target: document.createElement('button') } as unknown as MouseEvent
+      const event = {
+        target: document.createElement('button'),
+      } as unknown as MouseEvent
 
       modal.toggleDeleteMode(event)
       modal.toggleDeleteMode(event)
@@ -253,17 +308,30 @@ describe('UsersEditComponent', () => {
     })
 
     describe('the last administrator', () => {
-      const onlyAdmin = { id: 1, username: 'admin', name: 'Admin', admin: true }
+      const onlyAdmin = {
+        id: 1,
+        username: 'admin',
+        name: 'Admin',
+        admin: true,
+      }
 
       it('cannot be demoted', () => {
-        const modal = open({ user: onlyAdmin, existingUsers: [onlyAdmin], signedInAs: 'someone' })
+        const modal = open({
+          user: onlyAdmin,
+          existingUsers: [onlyAdmin],
+          signedInAs: 'someone',
+        })
 
         expect(modal.isLastAdmin()).toBe(true)
         expect(modal.form.controls.admin.disabled).toBe(true)
       })
 
       it('cannot be deleted', () => {
-        const modal = open({ user: onlyAdmin, existingUsers: [onlyAdmin], signedInAs: 'someone' })
+        const modal = open({
+          user: onlyAdmin,
+          existingUsers: [onlyAdmin],
+          signedInAs: 'someone',
+        })
 
         expect(modal.canDelete()).toBe(false)
       })
@@ -271,8 +339,14 @@ describe('UsersEditComponent', () => {
       it('stays undemotable after delete mode is turned off again', () => {
         // ⚠️ `form.enable()` re-enables every control, including the one that was
         // deliberately disabled
-        const modal = open({ user: onlyAdmin, existingUsers: [onlyAdmin], signedInAs: 'someone' })
-        const event = { target: document.createElement('button') } as unknown as MouseEvent
+        const modal = open({
+          user: onlyAdmin,
+          existingUsers: [onlyAdmin],
+          signedInAs: 'someone',
+        })
+        const event = {
+          target: document.createElement('button'),
+        } as unknown as MouseEvent
 
         modal.toggleDeleteMode(event)
         modal.toggleDeleteMode(event)
@@ -281,15 +355,27 @@ describe('UsersEditComponent', () => {
       })
 
       it('can be demoted while another admin exists', () => {
-        const other = { id: 2, username: 'second', name: 'Second', admin: true }
-        const modal = open({ user: onlyAdmin, existingUsers: [onlyAdmin, other], signedInAs: 'someone' })
+        const other = {
+          id: 2,
+          username: 'second',
+          name: 'Second',
+          admin: true,
+        }
+        const modal = open({
+          user: onlyAdmin,
+          existingUsers: [onlyAdmin, other],
+          signedInAs: 'someone',
+        })
 
         expect(modal.isLastAdmin()).toBe(false)
         expect(modal.form.controls.admin.disabled).toBe(false)
       })
 
       it('is not treated as the last admin when the user is not an admin', () => {
-        const modal = open({ user: { id: 2, username: 'someone', admin: false }, existingUsers: [] })
+        const modal = open({
+          user: { id: 2, username: 'someone', admin: false },
+          existingUsers: [],
+        })
 
         expect(modal.isLastAdmin()).toBe(false)
       })
@@ -299,7 +385,12 @@ describe('UsersEditComponent', () => {
       it('you cannot delete yourself', () => {
         // You would be signing yourself out of a box you may be the only admin of
         const modal = open({
-          user: { id: 1, username: 'admin', name: 'Admin', admin: true },
+          user: {
+            id: 1,
+            username: 'admin',
+            name: 'Admin',
+            admin: true,
+          },
           existingUsers: [
             { id: 1, username: 'admin', admin: true },
             { id: 2, username: 'second', admin: true },

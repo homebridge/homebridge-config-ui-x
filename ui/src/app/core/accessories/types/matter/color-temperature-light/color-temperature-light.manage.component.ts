@@ -125,7 +125,9 @@ export class ColorTemperatureLightManageComponent extends BaseManageComponent {
         const cluster = this.service.getCluster?.('levelControl')
         const onOffCluster = this.service.getCluster?.('onOff')
         if (!cluster || !onOffCluster) {
-          throw new Error(!cluster ? 'LevelControl cluster not found' : 'OnOff cluster not found')
+          throw new Error(!cluster
+            ? 'LevelControl cluster not found'
+            : 'OnOff cluster not found')
         }
         // Both writes are needed: a raw level write does not run Matter's
         // on/off coupling (only the moveToLevelWithOnOff command does that)

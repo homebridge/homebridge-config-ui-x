@@ -26,13 +26,17 @@ export class NetworkWidgetComponent extends BaseChartWidgetComponent {
   public readonly sentPerSec = signal<number | undefined>(undefined)
 
   protected fetchData(): void {
-    this.io.request('get-server-network-info', { netInterfaces: [this.widget().networkInterface] }).subscribe((data: NetworkWidgetData) => {
+    this.io.request('get-server-network-info', {
+      netInterfaces: [this.widget().networkInterface],
+    }).subscribe((data: NetworkWidgetData) => {
       // If no param given, the backend will return the default network interface
       // Clear the current chart if the network interface has changed
       if (this.interface() !== data.net.iface) {
         this.widget().networkInterface = data.net.iface
         this.interface.set(data.net.iface)
-        this.lineChartData.datasets[0].data = { ...[] }
+        this.lineChartData.datasets[0].data = {
+          ...[],
+        }
         this.lineChartLabels = []
         this.chart()!.update()
       }

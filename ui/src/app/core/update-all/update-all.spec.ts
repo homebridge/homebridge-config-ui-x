@@ -62,7 +62,12 @@ describe('update all', () => {
     }
 
     function makePlan(overrides: Partial<UpdateAllPlan> = {}): UpdateAllPlan {
-      return { items: [], needsReview: [], skipped: [], ...overrides }
+      return {
+        items: [],
+        needsReview: [],
+        skipped: [],
+        ...overrides,
+      }
     }
 
     /**
@@ -83,7 +88,11 @@ describe('update all', () => {
       // ws service even while only the plan is on screen. Nothing here reaches
       // the run, so the namespace only has to exist.
       const planWs = fakeWs()
-      api.respond('get', '/update-all/plan', options.plan ?? makePlan({ items: [planItem()] }))
+      api.respond('get', '/update-all/plan', options.plan ?? makePlan({
+        items: [
+          planItem(),
+        ],
+      }))
       api.respond('post', '/update-all/start', {})
 
       const { UpdateAllModalComponent } = await import('@/app/core/update-all/update-all-modal.component')
@@ -95,13 +104,23 @@ describe('update all', () => {
         providers: [
           { provide: TERMINAL_FACTORY, useValue: xterm.factory },
           provideTestTranslate(),
-          provideFakes({ api, toastr, settings, activeModal, modal, ws: planWs }),
+          provideFakes({
+            api,
+            toastr,
+            settings,
+            activeModal,
+            modal,
+            ws: planWs,
+          }),
         ],
       })
 
       if (!options.render) {
         TestBed.overrideComponent(UpdateAllModalComponent, {
-          set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+          set: {
+            imports: [TranslatePipe],
+            schemas: [NO_ERRORS_SCHEMA],
+          },
         })
       }
 
@@ -114,7 +133,14 @@ describe('update all', () => {
     }
 
     it('loads the plan and stops showing the loading state', async () => {
-      const { component } = await open({ plan: makePlan({ items: [planItem(), planItem({ name: 'homebridge-other' })] }) })
+      const { component } = await open({
+        plan: makePlan({
+          items: [
+            planItem(),
+            planItem({ name: 'homebridge-other' }),
+          ],
+        }),
+      })
 
       expect(component.phase()).toBe('plan')
       expect(component.plan().items).toHaveLength(2)
@@ -124,7 +150,9 @@ describe('update all', () => {
     it('reports a failed plan lookup and closes itself', async () => {
       // Nothing can be confirmed without a plan, so staying open would offer an
       // empty list with no explanation
-      const { component } = await open({ arrange: ({ api }) => api.fail('get', '/update-all/plan', new Error('nope')) })
+      const { component } = await open({
+        arrange: ({ api }) => api.fail('get', '/update-all/plan', new Error('nope')),
+      })
 
       expect(toastr.error).toHaveBeenCalledWith(expect.anything(), 'toast.title_error')
       expect(activeModal.dismiss).toHaveBeenCalledWith('Dismiss')
@@ -132,7 +160,14 @@ describe('update all', () => {
     })
 
     it('unticks and reticks an item', async () => {
-      const { component } = await open({ plan: makePlan({ items: [planItem(), planItem({ name: 'homebridge-other' })] }) })
+      const { component } = await open({
+        plan: makePlan({
+          items: [
+            planItem(),
+            planItem({ name: 'homebridge-other' }),
+          ],
+        }),
+      })
 
       component.toggleItem('homebridge-example')
 
@@ -149,7 +184,13 @@ describe('update all', () => {
     // for every list in this modal, including the skipped section
 
     it('reports whether anything was skipped', async () => {
-      const { component } = await open({ plan: makePlan({ items: [planItem()] }) })
+      const { component } = await open({
+        plan: makePlan({
+          items: [
+            planItem(),
+          ],
+        }),
+      })
 
       expect(component.hasSkipped()).toBe(false)
     })
@@ -162,8 +203,15 @@ describe('update all', () => {
     it('shows a major update in the list, unselectable and saying why', async () => {
       const { component } = await open({
         plan: makePlan({
-          items: [planItem()],
-          needsReview: [{ ...planItem({ name: 'homebridge-major' }), reason: 'major' }],
+          items: [
+            planItem(),
+          ],
+          needsReview: [
+            {
+              ...planItem({ name: 'homebridge-major' }),
+              reason: 'major',
+            },
+          ],
         }),
       })
 
@@ -178,7 +226,13 @@ describe('update all', () => {
     })
 
     it('leaves the ordinary rows selectable, and says what will happen to them', async () => {
-      const { component } = await open({ plan: makePlan({ items: [planItem()] }) })
+      const { component } = await open({
+        plan: makePlan({
+          items: [
+            planItem(),
+          ],
+        }),
+      })
 
       const row = component.rows()[0]
       expect(component.isSelectable(row)).toBe(true)
@@ -191,7 +245,13 @@ describe('update all', () => {
      * with the item it belongs to rather than in a list at the bottom.
      */
     it('says what is happening to a row at each point in its life', async () => {
-      const { component } = await open({ plan: makePlan({ items: [planItem({ name: 'homebridge-a', displayName: 'Plugin A' })] }) })
+      const { component } = await open({
+        plan: makePlan({
+          items: [
+            planItem({ name: 'homebridge-a', displayName: 'Plugin A' }),
+          ],
+        }),
+      })
       const row = () => component.rows()[0]
 
       // the planned line is the only one that names the versions, since the row has no version line of its own
@@ -201,7 +261,10 @@ describe('update all', () => {
       })
 
       component.toggleItem('homebridge-a')
-      expect(component.rowLine(row())).toEqual({ key: 'update_all.line_excluded', params: { plugin: 'Plugin A' } })
+      expect(component.rowLine(row())).toEqual({
+        key: 'update_all.line_excluded',
+        params: { plugin: 'Plugin A' },
+      })
       component.toggleItem('homebridge-a')
 
       component.phase.set('progress')
@@ -209,14 +272,28 @@ describe('update all', () => {
         schemaVersion: 1,
         runId: 'r1',
         startedAt: '2026-08-19T10:00:00.000Z',
-        items: [{ ...planItem({ name: 'homebridge-a', displayName: 'Plugin A' }), status: 'running' }],
+        items: [
+          {
+            ...planItem({ name: 'homebridge-a', displayName: 'Plugin A' }),
+            status: 'running',
+          },
+        ],
         restart: { homebridge: 'pending', ui: 'pending' },
       })
-      expect(component.rowLine(row())).toEqual({ key: 'update_all.line_running', params: { plugin: 'Plugin A', to: '1.1.0' } })
+      expect(component.rowLine(row())).toEqual({
+        key: 'update_all.line_running',
+        params: { plugin: 'Plugin A', to: '1.1.0' },
+      })
 
       component.journal.set({
         ...component.journal()!,
-        items: [{ ...planItem({ name: 'homebridge-a', displayName: 'Plugin A' }), status: 'failed', reason: 'npm exploded' }],
+        items: [
+          {
+            ...planItem({ name: 'homebridge-a', displayName: 'Plugin A' }),
+            status: 'failed',
+            reason: 'npm exploded',
+          },
+        ],
       })
       expect(component.rowLine(row())).toEqual({
         key: 'update_all.line_failed',
@@ -225,20 +302,40 @@ describe('update all', () => {
 
       component.journal.set({
         ...component.journal()!,
-        items: [{ ...planItem({ name: 'homebridge-a', displayName: 'Plugin A' }), status: 'ok' }],
+        items: [
+          {
+            ...planItem({ name: 'homebridge-a', displayName: 'Plugin A' }),
+            status: 'ok',
+          },
+        ],
       })
-      expect(component.rowLine(row())).toEqual({ key: 'update_all.line_ok', params: { plugin: 'Plugin A', to: '1.1.0' } })
+      expect(component.rowLine(row())).toEqual({
+        key: 'update_all.line_ok',
+        params: { plugin: 'Plugin A', to: '1.1.0' },
+      })
     })
 
     // Every reason the run writes ends in a full stop, and so does the string
     it('does not end a failure line with two full stops', async () => {
-      const { component } = await open({ plan: makePlan({ items: [planItem({ name: 'homebridge-a', displayName: 'Plugin A' })] }) })
+      const { component } = await open({
+        plan: makePlan({
+          items: [
+            planItem({ name: 'homebridge-a', displayName: 'Plugin A' }),
+          ],
+        }),
+      })
       component.phase.set('progress')
       component.journal.set({
         schemaVersion: 1,
         runId: 'r1',
         startedAt: '2026-08-19T10:00:00.000Z',
-        items: [{ ...planItem({ name: 'homebridge-a', displayName: 'Plugin A' }), status: 'skipped', reason: 'Run cancelled by the user.' }],
+        items: [
+          {
+            ...planItem({ name: 'homebridge-a', displayName: 'Plugin A' }),
+            status: 'skipped',
+            reason: 'Run cancelled by the user.',
+          },
+        ],
         restart: { homebridge: 'pending', ui: 'pending' },
       })
 
@@ -257,8 +354,15 @@ describe('update all', () => {
       const { fixture } = await open({
         render: true,
         plan: makePlan({
-          items: [planItem({ name: 'homebridge-normal', displayName: 'Normal' })],
-          needsReview: [{ ...planItem({ name: 'homebridge-major', displayName: 'Major' }), reason: 'major' }],
+          items: [
+            planItem({ name: 'homebridge-normal', displayName: 'Normal' }),
+          ],
+          needsReview: [
+            {
+              ...planItem({ name: 'homebridge-major', displayName: 'Major' }),
+              reason: 'major',
+            },
+          ],
         }),
       })
       fixture.detectChanges()
@@ -287,7 +391,11 @@ describe('update all', () => {
     it('keeps the summary the same height when everything is unticked', async () => {
       const { component, fixture } = await open({
         render: true,
-        plan: makePlan({ items: [planItem({ name: 'homebridge-a' })] }),
+        plan: makePlan({
+          items: [
+            planItem({ name: 'homebridge-a' }),
+          ],
+        }),
       })
       fixture.detectChanges()
 
@@ -315,7 +423,10 @@ describe('update all', () => {
         plan: makePlan({
           items: [
             planItem({ type: 'ui', name: 'homebridge-config-ui-x' }),
-            planItem({ name: 'homebridge-on-a-bridge', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] }),
+            planItem({
+              name: 'homebridge-on-a-bridge',
+              childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'],
+            }),
           ],
         }),
       })
@@ -331,7 +442,12 @@ describe('update all', () => {
       const { fixture } = await open({
         render: true,
         plan: makePlan({
-          items: [planItem({ name: 'homebridge-on-a-bridge', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] })],
+          items: [
+            planItem({
+              name: 'homebridge-on-a-bridge',
+              childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'],
+            }),
+          ],
         }),
       })
       fixture.detectChanges()
@@ -351,7 +467,12 @@ describe('update all', () => {
         render: true,
         plan: makePlan({
           items: [],
-          needsReview: [{ ...planItem({ name: 'homebridge-major' }), reason: 'major' }],
+          needsReview: [
+            {
+              ...planItem({ name: 'homebridge-major' }),
+              reason: 'major',
+            },
+          ],
         }),
       })
       fixture.detectChanges()
@@ -369,7 +490,10 @@ describe('update all', () => {
           plan: makePlan({
             items: [
               planItem({ type: 'homebridge', name: 'homebridge' }),
-              planItem({ name: 'homebridge-child', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] }),
+              planItem({
+                name: 'homebridge-child',
+                childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'],
+              }),
             ],
           }),
         })
@@ -379,7 +503,11 @@ describe('update all', () => {
 
       it('treats a plugin on the main bridge as a homebridge restart', async () => {
         const { component } = await open({
-          plan: makePlan({ items: [planItem({ childBridgeUsernames: [] })] }),
+          plan: makePlan({
+            items: [
+              planItem({ childBridgeUsernames: [] }),
+            ],
+          }),
         })
 
         expect(component.restartPlan()).toEqual({ ui: false, homebridge: true, childBridgeCount: 0 })
@@ -390,8 +518,14 @@ describe('update all', () => {
         const { component } = await open({
           plan: makePlan({
             items: [
-              planItem({ name: 'homebridge-a', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] }),
-              planItem({ name: 'homebridge-b', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF', '11:22:33:44:55:66'] }),
+              planItem({
+                name: 'homebridge-a',
+                childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'],
+              }),
+              planItem({
+                name: 'homebridge-b',
+                childBridgeUsernames: ['AA:BB:CC:DD:EE:FF', '11:22:33:44:55:66'],
+              }),
             ],
           }),
         })
@@ -401,7 +535,15 @@ describe('update all', () => {
 
       it('flags the ui restart independently of the homebridge one', async () => {
         const { component } = await open({
-          plan: makePlan({ items: [planItem({ type: 'ui', name: 'homebridge-config-ui-x', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] })] }),
+          plan: makePlan({
+            items: [
+              planItem({
+                type: 'ui',
+                name: 'homebridge-config-ui-x',
+                childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'],
+              }),
+            ],
+          }),
         })
 
         // Bridges behind an item with a wider impact are covered by that wider
@@ -415,7 +557,10 @@ describe('update all', () => {
           plan: makePlan({
             items: [
               planItem({ type: 'homebridge', name: 'homebridge' }),
-              planItem({ name: 'homebridge-child', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] }),
+              planItem({
+                name: 'homebridge-child',
+                childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'],
+              }),
             ],
           }),
         })
@@ -431,20 +576,32 @@ describe('update all', () => {
         // The server re-validates against a fresh plan, so the modal echoes the
         // plan's `to` rather than choosing a version itself
         const { component } = await open({
-          plan: makePlan({ items: [planItem(), planItem({ name: 'homebridge-other', to: '2.0.0' })] }),
+          plan: makePlan({
+            items: [
+              planItem(),
+              planItem({ name: 'homebridge-other', to: '2.0.0' }),
+            ],
+          }),
         })
         component.toggleItem('homebridge-example')
 
         await component.confirm()
 
         expect(api.lastCall('post', '/update-all/start')?.body).toEqual({
-          items: [{ name: 'homebridge-other', to: '2.0.0' }],
+          items: [
+            { name: 'homebridge-other', to: '2.0.0' },
+          ],
         })
       })
 
       it('keeps the rows and the description on screen, so nothing moves under the cursor', async () => {
         const { component } = await open({
-          plan: makePlan({ items: [planItem(), planItem({ name: 'homebridge-other' })] }),
+          plan: makePlan({
+            items: [
+              planItem(),
+              planItem({ name: 'homebridge-other' }),
+            ],
+          }),
         })
         const before = component.rows().map(x => x.name)
 
@@ -458,7 +615,12 @@ describe('update all', () => {
 
       it('keeps an unticked row in place, marked as not part of the run', async () => {
         const { component } = await open({
-          plan: makePlan({ items: [planItem(), planItem({ name: 'homebridge-other' })] }),
+          plan: makePlan({
+            items: [
+              planItem(),
+              planItem({ name: 'homebridge-other' }),
+            ],
+          }),
         })
         component.toggleItem('homebridge-example')
 
@@ -476,7 +638,10 @@ describe('update all', () => {
           plan: makePlan({
             items: [
               planItem({ name: 'homebridge-main' }),
-              planItem({ name: 'homebridge-bridged', childBridgeUsernames: ['AA:BB'] }),
+              planItem({
+                name: 'homebridge-bridged',
+                childBridgeUsernames: ['AA:BB'],
+              }),
             ],
           }),
         })
@@ -515,13 +680,19 @@ describe('update all', () => {
         // Two runs at once would have npm fighting itself over node_modules
         const { component } = await open()
 
-        await Promise.all([component.confirm(), component.confirm(), component.confirm()])
+        await Promise.all([
+          component.confirm(),
+          component.confirm(),
+          component.confirm(),
+        ])
 
         expect(api.callsTo('post', '/update-all/start')).toHaveLength(1)
       })
 
       it('reports a failed start and lets the user try again', async () => {
-        const { component } = await open({ arrange: ({ api }) => api.fail('post', '/update-all/start', new Error('nope')) })
+        const { component } = await open({
+          arrange: ({ api }) => api.fail('post', '/update-all/start', new Error('nope')),
+        })
 
         await component.confirm()
 
@@ -551,8 +722,20 @@ describe('update all', () => {
         runId: 'run-1',
         startedAt: '2026-08-19T10:00:00.000Z',
         items: [
-          { type: 'plugin', name: 'homebridge-example', from: '1.0.0', to: '1.1.0', status: 'planned' },
-          { type: 'plugin', name: 'homebridge-other', from: '2.0.0', to: '2.1.0', status: 'planned' },
+          {
+            type: 'plugin',
+            name: 'homebridge-example',
+            from: '1.0.0',
+            to: '1.1.0',
+            status: 'planned',
+          },
+          {
+            type: 'plugin',
+            name: 'homebridge-other',
+            from: '2.0.0',
+            to: '2.1.0',
+            status: 'planned',
+          },
         ],
         restart: { homebridge: 'pending', ui: 'pending' },
         ...overrides,
@@ -580,7 +763,9 @@ describe('update all', () => {
       ws = fakeWs()
       io = ws.namespace('update-all')
 
-      const journal = options.journal === undefined ? makeJournal() : options.journal
+      const journal = options.journal === undefined
+        ? makeJournal()
+        : options.journal
       io.socket.respondTo('subscribe', { active: options.active ?? true, journal })
       api.respond('get', '/update-all/journal', journal)
       api.respond('post', '/update-all/cancel', {})
@@ -588,8 +773,20 @@ describe('update all', () => {
       // The plan mirrors the journal's items so the rows line up either way.
       api.respond('get', '/update-all/plan', {
         items: [
-          { type: 'plugin', name: 'homebridge-example', displayName: 'Example', from: '1.0.0', to: '1.1.0' },
-          { type: 'plugin', name: 'homebridge-other', displayName: 'Other', from: '2.0.0', to: '2.1.0' },
+          {
+            type: 'plugin',
+            name: 'homebridge-example',
+            displayName: 'Example',
+            from: '1.0.0',
+            to: '1.1.0',
+          },
+          {
+            type: 'plugin',
+            name: 'homebridge-other',
+            displayName: 'Other',
+            from: '2.0.0',
+            to: '2.1.0',
+          },
         ],
         needsReview: [],
         skipped: [],
@@ -608,14 +805,25 @@ describe('update all', () => {
           // route the navigation rejects, and because the component fires it
           // with `void` that surfaced as an unhandled rejection that failed the
           // whole run from a spec that otherwise passed.
-          provideRouter([{ path: 'restart', children: [] }]),
+          provideRouter([
+            { path: 'restart', children: [] },
+          ]),
           provideTestTranslate(),
-          provideFakes({ api, toastr, settings, activeModal, ws }),
+          provideFakes({
+            api,
+            toastr,
+            settings,
+            activeModal,
+            ws,
+          }),
         ],
       })
 
       TestBed.overrideComponent(UpdateAllModalComponent, {
-        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+        set: {
+          imports: [TranslatePipe],
+          schemas: [NO_ERRORS_SCHEMA],
+        },
       })
 
       options.arrange?.({ api, io })
@@ -661,7 +869,10 @@ describe('update all', () => {
 
     it('re-reads the journal from disk for the summary', async () => {
       // The snapshot's copy predates the restart outcomes
-      const finished = makeJournal({ finishedAt: '2026-08-19T10:05:00.000Z', restart: { homebridge: 'done', ui: 'scheduled' } })
+      const finished = makeJournal({
+        finishedAt: '2026-08-19T10:05:00.000Z',
+        restart: { homebridge: 'done', ui: 'scheduled' },
+      })
       const { component } = await open({
         active: false,
         arrange: ({ api }) => api.respond('get', '/update-all/journal', finished),
@@ -681,7 +892,10 @@ describe('update all', () => {
      * rather than ticked.
      */
     it('hands over to the restart page when it watches the run finish', async () => {
-      const finished = makeJournal({ finishedAt: '2026-08-19T10:05:00.000Z', restart: { homebridge: 'done', ui: 'scheduled' } })
+      const finished = makeJournal({
+        finishedAt: '2026-08-19T10:05:00.000Z',
+        restart: { homebridge: 'done', ui: 'scheduled' },
+      })
       const { component } = await open({
         active: true,
         arrange: ({ api }) => api.respond('get', '/update-all/journal', finished),
@@ -699,7 +913,10 @@ describe('update all', () => {
     })
 
     it('shows the summary instead when the run was already over on arrival', async () => {
-      const finished = makeJournal({ finishedAt: '2026-08-19T10:05:00.000Z', restart: { homebridge: 'done', ui: 'scheduled' } })
+      const finished = makeJournal({
+        finishedAt: '2026-08-19T10:05:00.000Z',
+        restart: { homebridge: 'done', ui: 'scheduled' },
+      })
       const { component } = await open({
         active: false,
         arrange: ({ api }) => api.respond('get', '/update-all/journal', finished),
@@ -714,7 +931,10 @@ describe('update all', () => {
       // Regression: 'failed' used to count as "restart under way" and handed
       // over to /restart, where the never-restarted process answers 'ok' and
       // a success toast appears - the summary's failed line is the honest path
-      const finished = makeJournal({ finishedAt: '2026-08-19T10:05:00.000Z', restart: { homebridge: 'failed', ui: 'not-needed' } })
+      const finished = makeJournal({
+        finishedAt: '2026-08-19T10:05:00.000Z',
+        restart: { homebridge: 'failed', ui: 'not-needed' },
+      })
       const { component } = await open({
         active: true,
         arrange: ({ api }) => api.respond('get', '/update-all/journal', finished),
@@ -735,7 +955,10 @@ describe('update all', () => {
       const { component } = await open({ active: false })
       expect(component.phase()).toBe('summary')
 
-      io.socket.respondTo('subscribe', { active: true, journal: makeJournal({ runId: 'run-2' }) })
+      io.socket.respondTo('subscribe', {
+        active: true,
+        journal: makeJournal({ runId: 'run-2' }),
+      })
       io.markConnected()
       await settle()
 
@@ -750,7 +973,16 @@ describe('update all', () => {
       const finished = makeJournal({
         finishedAt: '2026-08-19T10:05:00.000Z',
         restart: { homebridge: 'not-needed', ui: 'not-needed', childBridges: 'done' },
-        items: [{ type: 'plugin', name: 'homebridge-example', from: '1.0.0', to: '1.1.0', status: 'ok', childBridgeUsernames: ['0E:AA:BB:CC:DD:EE'] }],
+        items: [
+          {
+            type: 'plugin',
+            name: 'homebridge-example',
+            from: '1.0.0',
+            to: '1.1.0',
+            status: 'ok',
+            childBridgeUsernames: ['0E:AA:BB:CC:DD:EE'],
+          },
+        ],
       })
       await open({ active: false, journal: finished })
       const watchCalls = () => ws.connectToNamespace.mock.calls.filter(call => call[0] === 'child-bridges').length
@@ -763,7 +995,10 @@ describe('update all', () => {
     })
 
     it('stays put when nothing the run did needs a restart', async () => {
-      const finished = makeJournal({ finishedAt: '2026-08-19T10:05:00.000Z', restart: { homebridge: 'not-needed', ui: 'not-needed' } })
+      const finished = makeJournal({
+        finishedAt: '2026-08-19T10:05:00.000Z',
+        restart: { homebridge: 'not-needed', ui: 'not-needed' },
+      })
       await open({
         active: false,
         arrange: ({ api }) => api.respond('get', '/update-all/journal', finished),
