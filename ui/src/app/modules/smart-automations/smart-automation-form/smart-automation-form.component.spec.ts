@@ -19,7 +19,11 @@ function publishedLight(automationId: string): ServiceTypeX {
 
 describe('smartAutomationFormComponent', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideTestTranslate()] })
+    TestBed.configureTestingModule({
+      providers: [
+        provideTestTranslate(),
+      ],
+    })
     TestBed.inject(TranslateService).setTranslation('en', {
       'smart_automation.type.average_temperature': 'Average Temperature Sensor',
       'smart_automation.type.door_ajar': 'Door Left Ajar',
@@ -35,7 +39,9 @@ describe('smartAutomationFormComponent', () => {
     fixture.detectChanges()
 
     const element = fixture.nativeElement as HTMLElement
-    const labels = [...element.querySelectorAll<HTMLOptionElement>('#smart-automation-type option')]
+    const labels = [
+      ...element.querySelectorAll<HTMLOptionElement>('#smart-automation-type option'),
+    ]
       .map(option => option.textContent?.trim())
 
     expect(labels).toEqual([
@@ -93,20 +99,54 @@ describe('smartAutomationFormComponent', () => {
     fixture.componentRef.setInput('draft', { type: 'humidity-control' } satisfies Partial<SmartAutomation>)
     fixture.componentRef.setInput('selectedLightUniqueIds', ['humidity-2'])
     fixture.componentRef.setInput('selectedTargetUniqueId', 'switch-2')
-    fixture.componentRef.setInput('rooms', [{
-      name: 'Outside',
-      services: [
-        { uniqueId: 'humidity-1', type: 'HumiditySensor', serviceName: 'Humidity One', serviceCharacteristics: [{ type: 'CurrentRelativeHumidity' }] },
-        { uniqueId: 'humidity-2', type: 'HumiditySensor', serviceName: 'Humidity Two', serviceCharacteristics: [{ type: 'CurrentRelativeHumidity' }] },
-        { uniqueId: 'switch-1', type: 'Switch', serviceName: 'Switch One', serviceCharacteristics: [{ type: 'On', canWrite: true }] },
-        { uniqueId: 'switch-2', type: 'Switch', serviceName: 'Switch Two', serviceCharacteristics: [{ type: 'On', canWrite: true }] },
-      ] as unknown as ServiceTypeX[],
-    }])
+    fixture.componentRef.setInput('rooms', [
+      {
+        name: 'Outside',
+        services: [
+          {
+            uniqueId: 'humidity-1',
+            type: 'HumiditySensor',
+            serviceName: 'Humidity One',
+            serviceCharacteristics: [
+              { type: 'CurrentRelativeHumidity' },
+            ],
+          },
+          {
+            uniqueId: 'humidity-2',
+            type: 'HumiditySensor',
+            serviceName: 'Humidity Two',
+            serviceCharacteristics: [
+              { type: 'CurrentRelativeHumidity' },
+            ],
+          },
+          {
+            uniqueId: 'switch-1',
+            type: 'Switch',
+            serviceName: 'Switch One',
+            serviceCharacteristics: [
+              { type: 'On', canWrite: true },
+            ],
+          },
+          {
+            uniqueId: 'switch-2',
+            type: 'Switch',
+            serviceName: 'Switch Two',
+            serviceCharacteristics: [
+              { type: 'On', canWrite: true },
+            ],
+          },
+        ] as unknown as ServiceTypeX[],
+      },
+    ])
     fixture.detectChanges()
 
     const element = fixture.nativeElement as HTMLElement
-    const sources = [...element.querySelectorAll<HTMLInputElement>('input[name="smart-auto-humidity-source"]')]
-    const targets = [...element.querySelectorAll<HTMLInputElement>('input[name="smart-auto-humidity-target"]')]
+    const sources = [
+      ...element.querySelectorAll<HTMLInputElement>('input[name="smart-auto-humidity-source"]'),
+    ]
+    const targets = [
+      ...element.querySelectorAll<HTMLInputElement>('input[name="smart-auto-humidity-target"]'),
+    ]
     expect(sources.map(input => input.checked)).toEqual([false, true])
     expect(targets.map(input => input.checked)).toEqual([false, true])
   })
@@ -140,7 +180,9 @@ describe('smartAutomationFormComponent', () => {
     fixture.componentInstance.cancelEdit.subscribe(value => reset.push(value))
     fixture.detectChanges()
 
-    const buttons = [...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('button')]
+    const buttons = [
+      ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('button'),
+    ]
     const resetButton = buttons.find(button => button.textContent?.trim() === 'smart_automation.action.reset')
     resetButton?.click()
 

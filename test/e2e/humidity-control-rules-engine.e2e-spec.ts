@@ -32,7 +32,9 @@ describe('humidity helpers', () => {
   })
 
   it('reads current relative humidity', () => {
-    expect(currentHumidity(service('HumiditySensor', 'sensor', [characteristic('CurrentRelativeHumidity', 62)]))).toBe(62)
+    expect(currentHumidity(service('HumiditySensor', 'sensor', [
+      characteristic('CurrentRelativeHumidity', 62),
+    ]))).toBe(62)
   })
 })
 
@@ -51,11 +53,17 @@ describe('HumidityControlRulesEngine', () => {
   it('turns a HeaterCooler on above the high threshold and off below the low threshold', async () => {
     const humidity = characteristic('CurrentRelativeHumidity', 61)
     const active = characteristic('Active', 0, true)
-    const accessories = { getServices: vi.fn(async () => [
-      service('HumiditySensor', 'humidity', [humidity]),
-      service('HeaterCooler', 'ac', [active]),
-    ]) }
-    const engine = new HumidityControlRulesEngine(config, accessories, { debug: vi.fn(), info: vi.fn(), warn: vi.fn() })
+    const accessories = {
+      getServices: vi.fn(async () => [
+        service('HumiditySensor', 'humidity', [humidity]),
+        service('HeaterCooler', 'ac', [active]),
+      ]),
+    }
+    const engine = new HumidityControlRulesEngine(config, accessories, {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    })
 
     await engine.tick()
     expect(active.value).toBe(1)
@@ -73,11 +81,17 @@ describe('HumidityControlRulesEngine', () => {
   it('uses cooling mode for a thermostat target', async () => {
     const humidity = characteristic('CurrentRelativeHumidity', 75)
     const mode = characteristic('TargetHeatingCoolingState', 0, true)
-    const accessories = { getServices: vi.fn(async () => [
-      service('HumiditySensor', 'humidity', [humidity]),
-      service('Thermostat', 'ac', [mode]),
-    ]) }
-    const engine = new HumidityControlRulesEngine(config, accessories, { debug: vi.fn(), info: vi.fn(), warn: vi.fn() })
+    const accessories = {
+      getServices: vi.fn(async () => [
+        service('HumiditySensor', 'humidity', [humidity]),
+        service('Thermostat', 'ac', [mode]),
+      ]),
+    }
+    const engine = new HumidityControlRulesEngine(config, accessories, {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    })
 
     await engine.tick()
 
@@ -87,11 +101,17 @@ describe('HumidityControlRulesEngine', () => {
   it('takes no action at either threshold or inside the hysteresis band', async () => {
     const humidity = characteristic('CurrentRelativeHumidity', 60)
     const on = characteristic('On', false, true)
-    const accessories = { getServices: vi.fn(async () => [
-      service('HumiditySensor', 'humidity', [humidity]),
-      service('Switch', 'ac', [on]),
-    ]) }
-    const engine = new HumidityControlRulesEngine(config, accessories, { debug: vi.fn(), info: vi.fn(), warn: vi.fn() })
+    const accessories = {
+      getServices: vi.fn(async () => [
+        service('HumiditySensor', 'humidity', [humidity]),
+        service('Switch', 'ac', [on]),
+      ]),
+    }
+    const engine = new HumidityControlRulesEngine(config, accessories, {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    })
 
     await engine.tick()
     humidity.value = 50
@@ -114,7 +134,11 @@ describe('HumidityControlRulesEngine', () => {
         return vi.fn()
       }),
     }
-    const engine = new HumidityControlRulesEngine(config, accessories, { debug: vi.fn(), info: vi.fn(), warn: vi.fn() })
+    const engine = new HumidityControlRulesEngine(config, accessories, {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    })
 
     engine.start(() => undefined)
     await vi.waitFor(() => expect(accessories.getServices).toHaveBeenCalled())

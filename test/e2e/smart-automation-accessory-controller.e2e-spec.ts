@@ -7,22 +7,40 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { HapSmartAutomationAccessoryController } from '../../src/smart-automation/smart-automation-accessory.controller.js'
 
 function service(uniqueId: string, value: number): ServiceType {
-  return { uniqueId, serviceCharacteristics: [{ type: 'CurrentTemperature', value }] } as ServiceType
+  return {
+    uniqueId,
+    serviceCharacteristics: [
+      { type: 'CurrentTemperature', value },
+    ],
+  } as ServiceType
 }
 
 function setup(ids = ['temperature']) {
   const selected = service('temperature', 20)
   const unrelated = service('unrelated', 10)
-  const monitor = Object.assign(new EventEmitter(), { finish: vi.fn() })
+  const monitor = Object.assign(new EventEmitter(), {
+    finish: vi.fn(),
+  })
   const client = Object.assign(new EventEmitter(), {
     getAllServices: vi.fn(async () => [selected, unrelated]),
     monitorCharacteristics: vi.fn(async () => monitor),
     destroy: vi.fn(),
   })
   const factory = vi.fn(() => client as any)
-  const log = { debug: vi.fn(), warn: vi.fn() }
+  const log = {
+    debug: vi.fn(),
+    warn: vi.fn(),
+  }
   const controller = new HapSmartAutomationAccessoryController(undefined, log, new Set(ids), factory)
-  return { selected, unrelated, monitor, client, factory, controller, log }
+  return {
+    selected,
+    unrelated,
+    monitor,
+    client,
+    factory,
+    controller,
+    log,
+  }
 }
 
 async function start(controller: HapSmartAutomationAccessoryController) {
@@ -44,7 +62,10 @@ describe('HapSmartAutomationAccessoryController', () => {
       await start(controller)
       expect(client.monitorCharacteristics).toHaveBeenCalledExactlyOnceWith([selected])
       const updated = service('temperature', 24)
-      monitor.emit('service-update', [updated, service('unrelated', 30)])
+      monitor.emit('service-update', [
+        updated,
+        service('unrelated', 30),
+      ])
       expect(await controller.getServices()).toEqual([updated])
       expect(listener).toHaveBeenLastCalledWith(new Set(['temperature']))
       expect(log.debug).toHaveBeenCalledWith(expect.stringContaining('CurrentTemperature=24'))

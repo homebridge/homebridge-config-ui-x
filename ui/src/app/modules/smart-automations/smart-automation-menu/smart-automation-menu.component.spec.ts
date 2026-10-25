@@ -15,10 +15,19 @@ describe('smartAutomationMenuComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         provideTestTranslate(),
-        provideFakes({ api: fakeApi(), settings: makeSettings(), ws, modal: modalServiceSpy() }),
+        provideFakes({
+          api: fakeApi(),
+          settings: makeSettings(),
+          ws,
+          modal: modalServiceSpy(),
+        }),
         {
           provide: ManagePluginsService,
-          useValue: { bridgeSettings: vi.fn(), jsonEditor: vi.fn(), resetChildBridges: vi.fn() },
+          useValue: {
+            bridgeSettings: vi.fn(),
+            jsonEditor: vi.fn(),
+            resetChildBridges: vi.fn(),
+          },
         },
       ],
     })

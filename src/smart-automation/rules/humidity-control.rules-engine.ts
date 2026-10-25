@@ -10,7 +10,9 @@ interface TargetControl {
 
 export function clampHumidity(value: unknown, fallback: number): number {
   const humidity = Number(value)
-  return Number.isFinite(humidity) ? Math.min(Math.max(Math.round(humidity), 0), 100) : fallback
+  return Number.isFinite(humidity)
+    ? Math.min(Math.max(Math.round(humidity), 0), 100)
+    : fallback
 }
 
 export function currentHumidity(service: ServiceType): number | undefined {
@@ -19,12 +21,16 @@ export function currentHumidity(service: ServiceType): number | undefined {
     return undefined
   }
   const value = Number(rawValue)
-  return Number.isFinite(value) ? value : undefined
+  return Number.isFinite(value)
+    ? value
+    : undefined
 }
 
 function targetControl(service: ServiceType): TargetControl | undefined {
   const controls = service.type === 'Thermostat'
-    ? [{ type: 'TargetHeatingCoolingState', onValue: 2, offValue: 0 }]
+    ? [
+        { type: 'TargetHeatingCoolingState', onValue: 2, offValue: 0 },
+      ]
     : [
         { type: 'Active', onValue: 1, offValue: 0 },
         { type: 'On', onValue: true, offValue: false },
@@ -69,7 +75,9 @@ export class HumidityControlRulesEngine implements SmartAutomationMonitor<boolea
       const sensor = services.find(service => service.uniqueId === this.config.uniqueIds[0])
       const target = services.find(service => service.uniqueId === this.config.targetUniqueId)
       if (!sensor || !target) {
-        this.log.warn(`${this.config.name}: ${!sensor ? 'humidity sensor' : 'control target'} was not found.`)
+        this.log.warn(`${this.config.name}: ${!sensor
+          ? 'humidity sensor'
+          : 'control target'} was not found.`)
         return
       }
 
@@ -84,7 +92,9 @@ export class HumidityControlRulesEngine implements SmartAutomationMonitor<boolea
         : humidity < this.config.offHumidity
           ? false
           : undefined
-      this.log.debug(`${this.config.name}: humidity=${humidity}%, offBelow=${this.config.offHumidity}%, onAbove=${this.config.onHumidity}%, action=${desired === undefined ? 'hold' : desired ? 'on' : 'off'}.`)
+      this.log.debug(`${this.config.name}: humidity=${humidity}%, offBelow=${this.config.offHumidity}%, onAbove=${this.config.onHumidity}%, action=${desired === undefined
+        ? 'hold'
+        : desired ? 'on' : 'off'}.`)
       if (desired === undefined) {
         return
       }

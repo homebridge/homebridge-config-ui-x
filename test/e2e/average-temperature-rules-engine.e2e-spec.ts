@@ -9,7 +9,9 @@ function temperatureSensor(uniqueId: string, value: unknown, name = uniqueId) {
     serviceName: name,
     serviceCharacteristics: value === undefined
       ? []
-      : [{ type: 'CurrentTemperature', value, canWrite: false }],
+      : [
+          { type: 'CurrentTemperature', value, canWrite: false },
+        ],
   } as any
 }
 
@@ -33,7 +35,11 @@ describe('averageTemperature', () => {
 
 describe('AverageTemperatureRulesEngine', () => {
   it('publishes the average of only the configured sensors', async () => {
-    const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
+    const log = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    }
     const accessories = {
       getServices: vi.fn(async () => [
         temperatureSensor('one', 19, 'Backyard North'),
@@ -62,7 +68,11 @@ describe('AverageTemperatureRulesEngine', () => {
   })
 
   it('identifies resolved sensors whose readings are unavailable', async () => {
-    const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
+    const log = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    }
     const engine = new AverageTemperatureRulesEngine({
       id: 'room-average',
       name: 'Room Average',
@@ -103,7 +113,11 @@ describe('AverageTemperatureRulesEngine', () => {
       uniqueIds: ['one', 'two'],
       removeAfterMinutes: 30,
       enabled: true,
-    }, accessories, { debug: vi.fn(), info: vi.fn(), warn: vi.fn() })
+    }, accessories, {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    })
 
     engine.start(value => published.push(value))
     await vi.waitFor(() => expect(published).toContain(21))
@@ -128,7 +142,11 @@ describe('AverageTemperatureRulesEngine', () => {
       enabled: true,
     }, {
       getServices: vi.fn(async () => [sensor]),
-    }, { debug: vi.fn(), info: vi.fn(), warn: vi.fn() })
+    }, {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    })
 
     engine.start(value => published.push(value))
     await vi.waitFor(() => expect(published).toContain(24.5))
@@ -142,13 +160,19 @@ describe('AverageTemperatureRulesEngine', () => {
     let now = 0
     const fresh = temperatureSensor('fresh', 20, 'Backyard')
     const stale = temperatureSensor('stale', 10, 'Backyard Tree')
-    fresh.getCharacteristic = vi.fn(() => ({ getValue: vi.fn(async () => ({ value: 20 })) }))
+    fresh.getCharacteristic = vi.fn(() => ({
+      getValue: vi.fn(async () => ({ value: 20 })),
+    }))
     const staleGetValue = vi.fn()
       .mockResolvedValueOnce({ value: 10 })
       .mockResolvedValue(undefined)
     stale.getCharacteristic = vi.fn(() => ({ getValue: staleGetValue }))
     const published: number[] = []
-    const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
+    const log = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    }
     const engine = new AverageTemperatureRulesEngine({
       id: 'room-average',
       name: 'Room Average',
@@ -173,19 +197,27 @@ describe('AverageTemperatureRulesEngine', () => {
   it.each(['error', 'empty'])('excludes a failed refresh (%s) immediately and recovers on a successful read', async (failure) => {
     let now = 0
     const healthy = temperatureSensor('healthy', 24)
-    healthy.getCharacteristic = () => ({ getValue: async () => ({ value: 24 }) })
+    healthy.getCharacteristic = () => ({
+      getValue: async () => ({ value: 24 }),
+    })
     const failing = temperatureSensor('failing', 0, 'Backyard Tree')
     const getValue = vi.fn().mockResolvedValue({ value: 12 })
     failing.getCharacteristic = () => ({ getValue })
     const published: number[] = []
-    const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
+    const log = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    }
     const engine = new AverageTemperatureRulesEngine({
       id: 'average',
       name: 'Average',
       type: 'average-temperature',
       uniqueIds: ['healthy', 'failing'],
       removeAfterMinutes: 5,
-    }, { getServices: async () => [healthy, failing] }, log, () => now)
+    }, {
+      getServices: async () => [healthy, failing],
+    }, log, () => now)
     engine.start(value => published.push(value))
     await vi.waitFor(() => expect(published.at(-1)).toBe(18))
     if (failure === 'error') {
@@ -195,7 +227,9 @@ describe('AverageTemperatureRulesEngine', () => {
     }
     await engine.tick()
     expect(published.at(-1)).toBe(24)
-    expect(log.debug).toHaveBeenCalledWith(expect.stringContaining(`Backyard Tree=${failure === 'error' ? 'error' : 'unavailable'}`))
+    expect(log.debug).toHaveBeenCalledWith(expect.stringContaining(`Backyard Tree=${failure === 'error'
+      ? 'error'
+      : 'unavailable'}`))
     now = 6 * 60_000
     getValue.mockRejectedValueOnce(new Error('HAP status -70402'))
     log.debug.mockClear()

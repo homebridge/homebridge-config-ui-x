@@ -30,18 +30,24 @@ export function isDoorOpen(service: ServiceType): boolean | undefined {
     case 'GarageDoorOpener': {
       // 0 Open, 1 Closed, 2 Opening, 3 Closing, 4 Stopped
       const state = read('CurrentDoorState')
-      return state === undefined ? undefined : Number(state) !== 1
+      return state === undefined
+        ? undefined
+        : Number(state) !== 1
     }
     case 'Door':
     case 'Window':
     case 'WindowCovering': {
       const position = read('CurrentPosition')
-      return position === undefined ? undefined : Number(position) > 0
+      return position === undefined
+        ? undefined
+        : Number(position) > 0
     }
     case 'ContactSensor': {
       // 0 contact detected (shut), 1 contact not detected (open)
       const state = read('ContactSensorState')
-      return state === undefined ? undefined : Number(state) === 1
+      return state === undefined
+        ? undefined
+        : Number(state) === 1
     }
     default:
       return undefined
@@ -91,7 +97,9 @@ export class DoorAjarRulesEngine implements SmartAutomationMonitor<boolean> {
   public start(publish: (tripped: boolean) => void): void {
     this.publish = publish
     publish(false)
-    this.log.info(`${this.config.name}: watching for the door being left open longer than ${this.openMinutes()} minute${this.openMinutes() === 1 ? '' : 's'}, repeating every ${this.repeatMinutes()}.`)
+    this.log.info(`${this.config.name}: watching for the door being left open longer than ${this.openMinutes()} minute${this.openMinutes() === 1
+      ? ''
+      : 's'}, repeating every ${this.repeatMinutes()}.`)
     this.unsubscribe = this.accessories.onServicesChanged?.((changedUniqueIds) => {
       if (changedUniqueIds.has(this.config.uniqueIds[0])) {
         void this.tick()

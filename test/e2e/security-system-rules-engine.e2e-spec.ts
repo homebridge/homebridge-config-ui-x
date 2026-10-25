@@ -7,10 +7,16 @@ function sensor(type: 'ContactSensor' | 'MotionSensor', uniqueId: string, active
     type,
     uniqueId,
     serviceName: uniqueId,
-    serviceCharacteristics: [{
-      type: type === 'ContactSensor' ? 'ContactSensorState' : 'MotionDetected',
-      value: type === 'ContactSensor' ? Number(active) : active,
-    }],
+    serviceCharacteristics: [
+      {
+        type: type === 'ContactSensor'
+          ? 'ContactSensorState'
+          : 'MotionDetected',
+        value: type === 'ContactSensor'
+          ? Number(active)
+          : active,
+      },
+    ],
   } as any
 }
 
@@ -37,8 +43,14 @@ describe('SecuritySystemRulesEngine', () => {
     const door = sensor('ContactSensor', 'door', false)
     const published: number[] = []
     const engine = new SecuritySystemRulesEngine(config, {
-      getServices: vi.fn(async () => [door, sensor('MotionSensor', 'other', true)]),
-    }, { info: vi.fn(), warn: vi.fn() })
+      getServices: vi.fn(async () => [
+        door,
+        sensor('MotionSensor', 'other', true),
+      ]),
+    }, {
+      info: vi.fn(),
+      warn: vi.fn(),
+    })
 
     engine.start(value => published.push(value))
     await engine.tick()
@@ -58,7 +70,11 @@ describe('SecuritySystemRulesEngine', () => {
     const motion = sensor('MotionSensor', 'hall', false)
     let changed: ((ids: ReadonlySet<string>) => void) | undefined
     const published: number[] = []
-    const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
+    const log = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    }
     const engine = new SecuritySystemRulesEngine(config, {
       getServices: vi.fn(async () => [motion]),
       onServicesChanged: vi.fn((listener) => {
@@ -83,8 +99,13 @@ describe('SecuritySystemRulesEngine', () => {
     const faults: number[] = []
     const published: number[] = []
     const engine = new SecuritySystemRulesEngine(config, {
-      getServices: vi.fn(async () => [sensor('ContactSensor', 'door', true)]),
-    }, { info: vi.fn(), warn: vi.fn() })
+      getServices: vi.fn(async () => [
+        sensor('ContactSensor', 'door', true),
+      ]),
+    }, {
+      info: vi.fn(),
+      warn: vi.fn(),
+    })
     engine.start(value => published.push(value), value => faults.push(value))
 
     expect(await engine.setTargetState(1)).toBe(SECURITY_DISARMED)
@@ -98,7 +119,10 @@ describe('SecuritySystemRulesEngine', () => {
     const published: number[] = []
     const engine = new SecuritySystemRulesEngine({ ...config, autoBypass: true }, {
       getServices: vi.fn(async () => [door]),
-    }, { info: vi.fn(), warn: vi.fn() })
+    }, {
+      info: vi.fn(),
+      warn: vi.fn(),
+    })
     engine.start(value => published.push(value))
 
     expect(await engine.setTargetState(1)).toBe(1)

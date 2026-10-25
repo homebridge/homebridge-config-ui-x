@@ -27,7 +27,13 @@ const SMART_AUTOMATION_PLUGIN = {
 
 @Component({
   selector: 'app-smart-automation-menu',
-  imports: [NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, TranslatePipe],
+  imports: [
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownItem,
+    TranslatePipe,
+  ],
   standalone: true,
   templateUrl: './smart-automation-menu.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,13 +53,15 @@ export class SmartAutomationMenuComponent {
   public readonly debugChange = output<boolean>()
 
   public openSettings(): void {
-    const injector = createEnvironmentInjector([{
-      provide: SMART_AUTOMATION_SETTINGS_DATA,
-      useValue: {
-        debugEnabled: this.debugEnabled(),
-        save: (enabled: boolean) => this.debugChange.emit(enabled),
+    const injector = createEnvironmentInjector([
+      {
+        provide: SMART_AUTOMATION_SETTINGS_DATA,
+        useValue: {
+          debugEnabled: this.debugEnabled(),
+          save: (enabled: boolean) => this.debugChange.emit(enabled),
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(SmartAutomationSettingsComponent, {
       backdrop: 'static',
@@ -62,13 +70,15 @@ export class SmartAutomationMenuComponent {
   }
 
   public viewLogs(): void {
-    const injector = createEnvironmentInjector([{
-      provide: PLUGIN_LOGS_MODAL_DATA,
-      useValue: {
-        plugin: this.plugin(),
-        childBridges: this.childBridges(),
+    const injector = createEnvironmentInjector([
+      {
+        provide: PLUGIN_LOGS_MODAL_DATA,
+        useValue: {
+          plugin: this.plugin(),
+          childBridges: this.childBridges(),
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(PluginLogsComponent, {
       size: 'xl',
@@ -101,15 +111,17 @@ export class SmartAutomationMenuComponent {
   }
 
   public async disablePlugin(): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: DISABLE_PLUGIN_MODAL_DATA,
-      useValue: {
-        pluginName: this.$translate.instant('smart_automation.title'),
-        isConfigured: true,
-        isConfiguredDynamicPlatform: true,
-        keepOrphans: this.$settings.keepOrphans,
+    const injector = createEnvironmentInjector([
+      {
+        provide: DISABLE_PLUGIN_MODAL_DATA,
+        useValue: {
+          pluginName: this.$translate.instant('smart_automation.title'),
+          isConfigured: true,
+          isConfiguredDynamicPlatform: true,
+          keepOrphans: this.$settings.keepOrphans,
+        },
       },
-    }], this.injector)
+    ], this.injector)
     const ref = this.$modal.open(DisablePluginComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -127,15 +139,17 @@ export class SmartAutomationMenuComponent {
   }
 
   public async enablePlugin(): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: CONFIRM_MODAL_DATA,
-      useValue: {
-        title: this.$translate.instant('smart_automation.title'),
-        message: this.$translate.instant('smart_automation.confirm_enable'),
-        confirmButtonLabel: this.$translate.instant('plugins.manage.enable'),
-        faIconClass: 'far fa-circle-play primary-text',
+    const injector = createEnvironmentInjector([
+      {
+        provide: CONFIRM_MODAL_DATA,
+        useValue: {
+          title: this.$translate.instant('smart_automation.title'),
+          message: this.$translate.instant('smart_automation.confirm_enable'),
+          confirmButtonLabel: this.$translate.instant('plugins.manage.enable'),
+          faIconClass: 'far fa-circle-play primary-text',
+        },
       },
-    }], this.injector)
+    ], this.injector)
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -161,18 +175,20 @@ export class SmartAutomationMenuComponent {
     if (!username) {
       return []
     }
-    return [{
-      identifier: username,
-      manuallyStopped: false,
-      name: this.$translate.instant('smart_automation.title'),
-      paired: false,
-      pid: 0,
-      pin: '',
-      plugin: SMART_AUTOMATION_PLUGIN.name,
-      setupUri: '',
-      status: 'unknown',
-      username,
-    }]
+    return [
+      {
+        identifier: username,
+        manuallyStopped: false,
+        name: this.$translate.instant('smart_automation.title'),
+        paired: false,
+        pid: 0,
+        pin: '',
+        plugin: SMART_AUTOMATION_PLUGIN.name,
+        setupUri: '',
+        status: 'unknown',
+        username,
+      },
+    ]
   }
 
   private plugin(): Plugin {

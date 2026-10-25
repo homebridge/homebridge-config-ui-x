@@ -81,7 +81,11 @@ describe('DoorAjarRulesEngine', () => {
 
   beforeEach(() => {
     clock = 0
-    log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
+    log = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    }
   })
 
   afterEach(() => {
@@ -94,7 +98,9 @@ describe('DoorAjarRulesEngine', () => {
    */
   function engineFor(state: number) {
     const service = door('GarageDoorOpener', { CurrentDoorState: state })
-    const accessories = { getServices: vi.fn(async () => [service]) }
+    const accessories = {
+      getServices: vi.fn(async () => [service]),
+    }
     const published: boolean[] = []
     const engine = new DoorAjarRulesEngine(config, accessories, log, () => clock)
     return {
@@ -250,7 +256,9 @@ describe('DoorAjarRulesEngine', () => {
   })
 
   it('warns rather than throwing when the door cannot be found', async () => {
-    const accessories = { getServices: vi.fn(async () => []) }
+    const accessories = {
+      getServices: vi.fn(async () => []),
+    }
     const engine = new DoorAjarRulesEngine(config, accessories, log, () => clock)
 
     await expect(engine.tick()).resolves.toBeUndefined()
@@ -259,9 +267,11 @@ describe('DoorAjarRulesEngine', () => {
 
   it('survives the accessory lookup failing', async () => {
     // This also runs from timers, so a rejection must not take the bridge down
-    const accessories = { getServices: vi.fn(async () => {
-      throw new Error('hap is unreachable')
-    }) }
+    const accessories = {
+      getServices: vi.fn(async () => {
+        throw new Error('hap is unreachable')
+      }),
+    }
     const engine = new DoorAjarRulesEngine(config, accessories, log, () => clock)
 
     await expect(engine.tick()).resolves.toBeUndefined()
@@ -270,7 +280,9 @@ describe('DoorAjarRulesEngine', () => {
 
   it('warns about an accessory whose state it cannot read', async () => {
     const service = door('Lightbulb', { On: 1 })
-    const accessories = { getServices: vi.fn(async () => [service]) }
+    const accessories = {
+      getServices: vi.fn(async () => [service]),
+    }
     const engine = new DoorAjarRulesEngine(config, accessories, log, () => clock)
 
     await engine.tick()

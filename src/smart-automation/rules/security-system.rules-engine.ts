@@ -20,11 +20,15 @@ export function isSecuritySensorActive(service: ServiceType): boolean | undefine
 
   if (service.type === 'ContactSensor') {
     const value = read('ContactSensorState')
-    return value === undefined ? undefined : Number(value) === 1
+    return value === undefined
+      ? undefined
+      : Number(value) === 1
   }
   if (service.type === 'MotionSensor') {
     const value = read('MotionDetected')
-    return value === undefined ? undefined : Boolean(value)
+    return value === undefined
+      ? undefined
+      : Boolean(value)
   }
   return undefined
 }
@@ -90,7 +94,9 @@ export class SecuritySystemRulesEngine implements SmartAutomationMonitor<number>
       const resolvedIds = new Set(services.map(service => service.uniqueId))
       const missingIds = this.config.uniqueIds.filter(uniqueId => !resolvedIds.has(uniqueId))
       if (missingIds.length) {
-        this.log.warn(`${this.config.name}: ${missingIds.length} configured sensor${missingIds.length === 1 ? '' : 's'} could not be resolved: ${missingIds.join(', ')}.`)
+        this.log.warn(`${this.config.name}: ${missingIds.length} configured sensor${missingIds.length === 1
+          ? ''
+          : 's'} could not be resolved: ${missingIds.join(', ')}.`)
       }
       const openContacts = services.filter(service => service.type === 'ContactSensor' && isSecuritySensorActive(service) === true)
       if (openContacts.length && !this.config.autoBypass) {
@@ -98,7 +104,9 @@ export class SecuritySystemRulesEngine implements SmartAutomationMonitor<number>
         this.armRejected = true
         this.publishFault?.(SECURITY_GENERAL_FAULT)
         this.publish?.(SECURITY_DISARMED)
-        this.log.warn(`${this.config.name}: ${requestedMode} rejected; ${openContacts.map(service => this.sensorLabel(service)).join(', ')} ${openContacts.length === 1 ? 'is' : 'are'} open and auto-bypass is disabled. Current state remains Disarmed; StatusFault=GENERAL_FAULT.`)
+        this.log.warn(`${this.config.name}: ${requestedMode} rejected; ${openContacts.map(service => this.sensorLabel(service)).join(', ')} ${openContacts.length === 1
+          ? 'is'
+          : 'are'} open and auto-bypass is disabled. Current state remains Disarmed; StatusFault=GENERAL_FAULT.`)
         return SECURITY_DISARMED
       }
 
@@ -108,7 +116,9 @@ export class SecuritySystemRulesEngine implements SmartAutomationMonitor<number>
         }
       }
       if (openContacts.length) {
-        this.log.info(`${this.config.name}: ${requestedMode} will auto-bypass ${openContacts.map(service => this.sensorLabel(service)).join(', ')} until ${openContacts.length === 1 ? 'it closes' : 'they close'}.`)
+        this.log.info(`${this.config.name}: ${requestedMode} will auto-bypass ${openContacts.map(service => this.sensorLabel(service)).join(', ')} until ${openContacts.length === 1
+          ? 'it closes'
+          : 'they close'}.`)
       }
       this.targetState = state
       this.publishFault?.(SECURITY_NO_FAULT)
@@ -197,7 +207,9 @@ export class SecuritySystemRulesEngine implements SmartAutomationMonitor<number>
   }
 
   private describeSensor(service: ServiceType): string {
-    const protection = this.bypassed.has(service.uniqueId) ? 'bypassed' : 'protected'
+    const protection = this.bypassed.has(service.uniqueId)
+      ? 'bypassed'
+      : 'protected'
     return `${this.sensorLabel(service)} is ${this.sensorState(service)} [${protection}]`
   }
 

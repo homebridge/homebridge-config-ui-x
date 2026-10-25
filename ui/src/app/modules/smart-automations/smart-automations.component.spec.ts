@@ -20,14 +20,20 @@ describe('smartAutomationsComponent', () => {
         provideTestTranslate(),
         provideFakes({
           api,
-          auth: makeAuth({ user: { admin: true } }),
+          auth: makeAuth({
+            user: { admin: true },
+          }),
           settings: makeSettings(),
         }),
         { provide: AccessoriesService, useValue: accessories },
       ],
     })
     TestBed.overrideComponent(SmartAutomationsComponent, {
-      set: { imports: [], schemas: [NO_ERRORS_SCHEMA], template: '' },
+      set: {
+        imports: [],
+        schemas: [NO_ERRORS_SCHEMA],
+        template: '',
+      },
     })
 
     return { api, accessories, component: TestBed.createComponent(SmartAutomationsComponent).componentInstance }
@@ -48,30 +54,40 @@ describe('smartAutomationsComponent', () => {
         provideTestTranslate(),
         provideFakes({
           api,
-          auth: makeAuth({ user: { admin: true } }),
+          auth: makeAuth({
+            user: { admin: true },
+          }),
           settings: makeSettings(),
         }),
         { provide: AccessoriesService, useValue: accessories },
       ],
     })
     TestBed.overrideComponent(SmartAutomationsComponent, {
-      set: { imports: [], schemas: [NO_ERRORS_SCHEMA], template: '' },
+      set: {
+        imports: [],
+        schemas: [NO_ERRORS_SCHEMA],
+        template: '',
+      },
     })
 
     const fixture = TestBed.createComponent(SmartAutomationsComponent)
     fixture.detectChanges()
 
     expect(fixture.componentInstance.automationsLoading()).toBe(true)
-    finishConfigLoad([{
-      platform: 'smart-automation',
-      smartAutomations: [{
-        id: 'automation-1',
-        name: 'Dining Room',
-        type: 'smart-light-group',
-        uniqueIds: ['light-1'],
-        enabled: true,
-      }],
-    }])
+    finishConfigLoad([
+      {
+        platform: 'smart-automation',
+        smartAutomations: [
+          {
+            id: 'automation-1',
+            name: 'Dining Room',
+            type: 'smart-light-group',
+            uniqueIds: ['light-1'],
+            enabled: true,
+          },
+        ],
+      },
+    ])
     await Promise.resolve()
     await Promise.resolve()
 
@@ -119,7 +135,12 @@ describe('smartAutomationsComponent', () => {
       uniqueIds: ['light-1'],
       enabled: true,
     } as const
-    component.smartAutomations.set([{ ...automation, uniqueIds: [...automation.uniqueIds] }])
+    component.smartAutomations.set([
+      {
+        ...automation,
+        uniqueIds: [...automation.uniqueIds],
+      },
+    ])
 
     await component.setSmartAutomationEnabled(component.smartAutomations()[0], false)
     expect(component.smartAutomations()[0].enabled).toBe(true)

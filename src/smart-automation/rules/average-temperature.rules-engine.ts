@@ -9,7 +9,9 @@ function numericTemperature(value: unknown): number | undefined {
     return undefined
   }
   const temperature = Number(value)
-  return Number.isFinite(temperature) ? temperature : undefined
+  return Number.isFinite(temperature)
+    ? temperature
+    : undefined
 }
 
 function currentTemperature(service: ServiceType): number | undefined {
@@ -42,7 +44,9 @@ export class AverageTemperatureRulesEngine implements SmartAutomationMonitor<num
 
   public start(publish: (value: number) => void): void {
     this.publish = publish
-    this.log.info(`${this.config.name}: averaging ${this.config.uniqueIds.length} temperature sensor${this.config.uniqueIds.length === 1 ? '' : 's'} and removing sensors after ${this.removeAfterMinutes()} minutes without an update.`)
+    this.log.info(`${this.config.name}: averaging ${this.config.uniqueIds.length} temperature sensor${this.config.uniqueIds.length === 1
+      ? ''
+      : 's'} and removing sensors after ${this.removeAfterMinutes()} minutes without an update.`)
     this.unsubscribe = this.accessories.onServicesChanged?.((changedUniqueIds) => {
       if (this.config.uniqueIds.some(uniqueId => changedUniqueIds.has(uniqueId))) {
         void this.tick()
@@ -77,10 +81,18 @@ export class AverageTemperatureRulesEngine implements SmartAutomationMonitor<num
       }
 
       const inputs = readings
-        .map(reading => `${reading.name}=${reading.error ? 'error' : reading.stale ? `stale (${reading.ageMinutes} min)` : reading.value === undefined ? 'unavailable' : `${reading.value}°C`}`)
+        .map(reading => `${reading.name}=${reading.error
+          ? 'error'
+          : reading.stale
+            ? `stale (${reading.ageMinutes} min)`
+            : reading.value === undefined
+              ? 'unavailable'
+              : `${reading.value}°C`}`)
         .join(', ')
       const reportingSensors = readings.filter(reading => reading.value !== undefined).length
-      this.log.debug(`${this.config.name}: inputs [${inputs}]; averaged ${reportingSensors} of ${services.length} resolved sensor${services.length === 1 ? '' : 's'} to ${value}°C.`)
+      this.log.debug(`${this.config.name}: inputs [${inputs}]; averaged ${reportingSensors} of ${services.length} resolved sensor${services.length === 1
+        ? ''
+        : 's'} to ${value}°C.`)
       this.publish?.(value)
     } catch (error: any) {
       this.log.warn(`${this.config.name}: could not average the temperature sensors: ${error?.message || error}`)

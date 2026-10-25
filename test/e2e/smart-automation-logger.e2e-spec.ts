@@ -4,7 +4,11 @@ import { createSmartAutomationLogger } from '../../src/smart-automation/smart-au
 
 describe('Smart Automation logger', () => {
   it('uses Homebridge debug logging when local debug is disabled', () => {
-    const homebridgeLog = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
+    const homebridgeLog = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    }
     const log = createSmartAutomationLogger(homebridgeLog, false)
 
     log.debug('characteristic details')
@@ -14,7 +18,11 @@ describe('Smart Automation logger', () => {
   })
 
   it('makes debug details visible when local debug is enabled', () => {
-    const homebridgeLog = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
+    const homebridgeLog = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    }
     const log = createSmartAutomationLogger(homebridgeLog, true)
 
     log.debug('characteristic details')

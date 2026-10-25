@@ -73,7 +73,13 @@ export class SmartAutomationFormComponent {
    */
   public selectableTypes(type: SmartAutomation['type'] | undefined): string[] {
     if (type === 'door-ajar') {
-      return ['GarageDoorOpener', 'Door', 'Window', 'WindowCovering', 'ContactSensor']
+      return [
+        'GarageDoorOpener',
+        'Door',
+        'Window',
+        'WindowCovering',
+        'ContactSensor',
+      ]
     }
     if (type === 'average-temperature') {
       return ['TemperatureSensor', 'Thermostat', 'HeaterCooler']
@@ -117,12 +123,25 @@ export class SmartAutomationFormComponent {
 
   public onTargetSelectionChange(uniqueId: string, event: Event): void {
     const selected = (event.target as HTMLInputElement).checked
-    this.lightSelectionChange.emit({ uniqueId, selected, single: true, target: true })
+    this.lightSelectionChange.emit({
+      uniqueId,
+      selected,
+      single: true,
+      target: true,
+    })
   }
 
   public isControlTarget(service: ServiceTypeX): boolean {
     return !this.isOwnPublishedAccessory(service)
-      && ['Switch', 'Outlet', 'Fan', 'Fanv2', 'HeaterCooler', 'Thermostat', 'AirPurifier'].includes(service.type || '')
+      && [
+        'Switch',
+        'Outlet',
+        'Fan',
+        'Fanv2',
+        'HeaterCooler',
+        'Thermostat',
+        'AirPurifier',
+      ].includes(service.type || '')
       && service.serviceCharacteristics.some(characteristic => characteristic.canWrite && ['On', 'Active', 'TargetHeatingCoolingState'].includes(characteristic.type))
   }
 

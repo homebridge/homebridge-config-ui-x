@@ -183,13 +183,15 @@ describe('ConfigEditorController (e2e)', () => {
         username: '0E:75:1E:81:C7:1D',
         pin: '031-45-154',
       },
-      smartAutomations: [{
-        id: 'automation-1',
-        name: 'Garage Door Ajar',
-        type: 'door-ajar',
-        uniqueIds: ['garage-door'],
-        enabled: true,
-      }],
+      smartAutomations: [
+        {
+          id: 'automation-1',
+          name: 'Garage Door Ajar',
+          type: 'door-ajar',
+          uniqueIds: ['garage-door'],
+          enabled: true,
+        },
+      ],
     }
 
     const create = await app.inject({
@@ -240,7 +242,9 @@ describe('ConfigEditorController (e2e)', () => {
       method: 'POST',
       path: '/config-editor/plugin/not-a-real-platform',
       headers: { authorization },
-      payload: [{ platform: 'not-a-real-platform' }],
+      payload: [
+        { platform: 'not-a-real-platform' },
+      ],
     })
 
     expect(response.statusCode).toBe(404)

@@ -91,19 +91,29 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     // A door rule watches one door, so picking another replaces the choice
     // rather than quietly adding a second the engine would ignore
     if (single) {
-      this.selectedLightUniqueIds.set(selected ? [uniqueId] : [])
+      this.selectedLightUniqueIds.set(selected
+        ? [uniqueId]
+        : [])
       this.prefillAutomationName(uniqueId, selected)
       return
     }
     const next = selected
-      ? [...new Set([...this.selectedLightUniqueIds(), uniqueId])]
+      ? [
+          ...new Set([
+            ...this.selectedLightUniqueIds(),
+            uniqueId,
+          ]),
+        ]
       : this.selectedLightUniqueIds().filter(id => id !== uniqueId)
     this.selectedLightUniqueIds.set(next)
     this.prefillAutomationName(uniqueId, selected)
   }
 
   public editSmartAutomation(automation: SmartAutomation): void {
-    this.smartAutomationDraft = { ...automation, uniqueIds: [...automation.uniqueIds] }
+    this.smartAutomationDraft = {
+      ...automation,
+      uniqueIds: [...automation.uniqueIds],
+    }
     this.selectedLightUniqueIds.set([...automation.uniqueIds])
     this.selectedTargetUniqueId.set(automation.targetUniqueId || '')
   }
@@ -121,7 +131,9 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   public async saveSmartAutomation(): Promise<void> {
     try {
       const type = this.smartAutomationDraft.type || 'smart-light-group'
-      const selected = [...new Set(this.selectedLightUniqueIds())]
+      const selected = [
+        ...new Set(this.selectedLightUniqueIds()),
+      ]
       const onHumidity = this.toHumidity(this.smartAutomationDraft.onHumidity, 60)
       const offHumidity = Math.min(
         this.toHumidity(this.smartAutomationDraft.offHumidity, 50),
@@ -179,7 +191,9 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       const current = this.smartAutomations()
       const exists = current.some(item => item.id === saved.id)
       const next = exists
-        ? current.map(item => item.id === saved.id ? saved : item)
+        ? current.map(item => item.id === saved.id
+            ? saved
+            : item)
         : [...current, saved]
       await this.syncSmartAutomationChildBridgeConfig(next)
       this.smartAutomations.set(next)
@@ -208,7 +222,9 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
         ...automation,
         enabled,
       }
-      const next = this.smartAutomations().map(item => item.id === saved.id ? saved : item)
+      const next = this.smartAutomations().map(item => item.id === saved.id
+        ? saved
+        : item)
       await this.syncSmartAutomationChildBridgeConfig(next)
       this.smartAutomations.set(next)
     } catch (error) {
@@ -321,7 +337,9 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
   private toHumidity(value: unknown, fallback: number): number {
     const humidity = Number(value)
-    return Number.isFinite(humidity) ? Math.min(Math.max(Math.round(humidity), 0), 100) : fallback
+    return Number.isFinite(humidity)
+      ? Math.min(Math.max(Math.round(humidity), 0), 100)
+      : fallback
   }
 
   private getServiceName(uniqueId: string | undefined): string | undefined {

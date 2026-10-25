@@ -60,7 +60,9 @@ export class SmartAutomationPlatform {
 
     const automations = this.getAutomations()
     let publishedAccessories = 0
-    this.log.info(`Starting engine with ${automations.length} configured automation${automations.length === 1 ? '' : 's'}.`)
+    this.log.info(`Starting engine with ${automations.length} configured automation${automations.length === 1
+      ? ''
+      : 's'}.`)
 
     for (const automation of automations) {
       if (automation.type === 'humidity-control') {
@@ -83,15 +85,21 @@ export class SmartAutomationPlatform {
         this.log.debug(`${automation.name}: configuration id=${automation.id}, type=${automation.type}, enabled=${automation.enabled}, door=${automation.uniqueIds[0]}.`)
         this.configureAjarSensor(accessory, automation)
       } else if (automation.type === 'average-temperature') {
-        this.log.info(`${automation.name}: averaging ${automation.uniqueIds.length} temperature sensor${automation.uniqueIds.length === 1 ? '' : 's'} and removing sensors after ${clampMinutes(automation.removeAfterMinutes, 30)} minutes without an update.`)
+        this.log.info(`${automation.name}: averaging ${automation.uniqueIds.length} temperature sensor${automation.uniqueIds.length === 1
+          ? ''
+          : 's'} and removing sensors after ${clampMinutes(automation.removeAfterMinutes, 30)} minutes without an update.`)
         this.log.debug(`${automation.name}: configuration id=${automation.id}, type=${automation.type}, sensors=[${automation.uniqueIds.join(', ')}].`)
         this.configureAverageTemperatureSensor(accessory, automation)
       } else if (automation.type === 'security-system') {
-        this.log.info(`${automation.name}: monitoring ${automation.uniqueIds.length} contact and motion sensor${automation.uniqueIds.length === 1 ? '' : 's'}.`)
+        this.log.info(`${automation.name}: monitoring ${automation.uniqueIds.length} contact and motion sensor${automation.uniqueIds.length === 1
+          ? ''
+          : 's'}.`)
         this.configureSecuritySystem(accessory, automation)
       } else {
         const rulesEngine = this.createRulesEngine(automation)
-        this.log.info(`${automation.name}: configured ${automation.lightbulbType} trigger light for ${automation.uniqueIds.length} group light${automation.uniqueIds.length === 1 ? '' : 's'}.`)
+        this.log.info(`${automation.name}: configured ${automation.lightbulbType} trigger light for ${automation.uniqueIds.length} group light${automation.uniqueIds.length === 1
+          ? ''
+          : 's'}.`)
         this.log.debug(`${automation.name}: configuration id=${automation.id}, type=${automation.type}, publishedLight=${automation.lightbulbType}, enabled=${automation.enabled}, lights=[${automation.uniqueIds.join(', ')}].`)
         this.configureTriggerLightbulb(accessory, automation, rulesEngine)
       }
@@ -102,7 +110,9 @@ export class SmartAutomationPlatform {
       this.log.debug(`${automation.name}: ${existing ? 'restored cached' : 'created new'} accessory; uuid=${uuid}.`)
     }
 
-    const staleAccessories = [...this.accessories.entries()]
+    const staleAccessories = [
+      ...this.accessories.entries(),
+    ]
       .filter(([uuid]) => !desiredUuids.has(uuid))
       .map(([, accessory]) => accessory)
     staleAccessories.forEach((accessory) => {
@@ -120,7 +130,11 @@ export class SmartAutomationPlatform {
       this.api.unregisterPlatformAccessories(this.pluginName, PLATFORM_NAME, staleAccessories)
     }
 
-    this.log.info(`Engine ready; published ${publishedAccessories} automation accessor${publishedAccessories === 1 ? 'y' : 'ies'} and started ${this.monitors.length} monitor${this.monitors.length === 1 ? '' : 's'}.`)
+    this.log.info(`Engine ready; published ${publishedAccessories} automation accessor${publishedAccessories === 1
+      ? 'y'
+      : 'ies'} and started ${this.monitors.length} monitor${this.monitors.length === 1
+      ? ''
+      : 's'}.`)
   }
 
   private createRulesEngine(automation: SmartLightGroupConfig): SmartAutomationRulesEngine {
@@ -353,13 +367,23 @@ export class SmartAutomationPlatform {
   }
 
   private getAutomations(): SmartAutomationConfig[] {
-    const automations = Array.isArray(this.config.smartAutomations) ? this.config.smartAutomations : []
+    const automations = Array.isArray(this.config.smartAutomations)
+      ? this.config.smartAutomations
+      : []
     return automations
-      .filter(automation => ['smart-light-group', 'door-ajar', 'humidity-control', 'average-temperature', 'security-system'].includes(automation?.type) && typeof automation.id === 'string')
+      .filter(automation => [
+        'smart-light-group',
+        'door-ajar',
+        'humidity-control',
+        'average-temperature',
+        'security-system',
+      ].includes(automation?.type) && typeof automation.id === 'string')
       .map((automation) => {
         const shared = {
           ...automation,
-          uniqueIds: [...new Set(automation.uniqueIds || [])].filter(Boolean),
+          uniqueIds: [
+            ...new Set(automation.uniqueIds || []),
+          ].filter(Boolean),
           enabled: automation.enabled ?? true,
         }
 
@@ -407,7 +431,12 @@ export class SmartAutomationPlatform {
         return {
           ...shared,
           name: automation.name?.trim() || 'Smart Light Group',
-          lightbulbType: ['on-off', 'dimmable', 'colour', 'temperature'].includes(automation.lightbulbType)
+          lightbulbType: [
+            'on-off',
+            'dimmable',
+            'colour',
+            'temperature',
+          ].includes(automation.lightbulbType)
             ? automation.lightbulbType
             : 'on-off',
         } as SmartLightGroupConfig

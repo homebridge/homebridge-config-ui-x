@@ -2036,9 +2036,13 @@ export class PluginsService implements OnModuleDestroy {
       child.once('message', (data: any) => {
         const aliases = Array.isArray(data.pluginAliases)
           ? data.pluginAliases
-          : [{ pluginAlias: data.pluginAlias, pluginType: data.pluginType }]
+          : [
+              { pluginAlias: data.pluginAlias, pluginType: data.pluginType },
+            ]
         const valid = aliases.filter((alias: PluginAlias) => alias.pluginAlias && alias.pluginType)
-        valid.length ? res(valid) : rej(new Error('Invalid Response'))
+        valid.length
+          ? res(valid)
+          : rej(new Error('Invalid Response'))
       })
 
       child.once('close', (code) => {

@@ -43,7 +43,9 @@ describe('SmartLightGroupRulesEngine', () => {
   it('stores each On state, turns the group on, then restores and clears the state', async () => {
     const first = createLight('light-1', false)
     const second = createLight('light-2', true)
-    const accessories = { getServices: vi.fn(async () => [first.service, second.service]) }
+    const accessories = {
+      getServices: vi.fn(async () => [first.service, second.service]),
+    }
     const engine = new SmartLightGroupRulesEngine(config, accessories, {
       debug: vi.fn(),
       info: vi.fn(),
@@ -69,7 +71,9 @@ describe('SmartLightGroupRulesEngine', () => {
   it('turns the configured lights off when Off is received without saved state', async () => {
     const first = createLight('light-1', true)
     const second = createLight('light-2', true)
-    const accessories = { getServices: vi.fn(async () => [first.service, second.service]) }
+    const accessories = {
+      getServices: vi.fn(async () => [first.service, second.service]),
+    }
     const engine = new SmartLightGroupRulesEngine(config, accessories, {
       debug: vi.fn(),
       info: vi.fn(),
@@ -87,7 +91,9 @@ describe('SmartLightGroupRulesEngine', () => {
     const hue = createCharacteristic('Hue', 120)
     const name = createCharacteristic('Name', 'Porch Light', false)
     const light = createLight('light-1', false, [brightness, hue, name])
-    const accessories = { getServices: vi.fn(async () => [light.service]) }
+    const accessories = {
+      getServices: vi.fn(async () => [light.service]),
+    }
     const engine = new SmartLightGroupRulesEngine(config, accessories, {
       debug: vi.fn(),
       info: vi.fn(),
@@ -113,7 +119,9 @@ describe('SmartLightGroupRulesEngine', () => {
   it('logs detailed characteristic snapshots and old-to-new writes at debug level', async () => {
     const brightness = createCharacteristic('Brightness', 42)
     const light = createLight('light-1', false, [brightness])
-    const accessories = { getServices: vi.fn(async () => [light.service]) }
+    const accessories = {
+      getServices: vi.fn(async () => [light.service]),
+    }
     const log = {
       debug: vi.fn(),
       info: vi.fn(),
@@ -135,7 +143,9 @@ describe('SmartLightGroupRulesEngine', () => {
   it('passes published light settings through while active and restores the original values on Off', async () => {
     const brightness = createCharacteristic('Brightness', 20)
     const light = createLight('light-1', true, [brightness])
-    const accessories = { getServices: vi.fn(async () => [light.service]) }
+    const accessories = {
+      getServices: vi.fn(async () => [light.service]),
+    }
     const log = {
       debug: vi.fn(),
       info: vi.fn(),

@@ -21,8 +21,12 @@ export class SmartLightGroupRulesEngine implements SmartAutomationRulesEngine {
 
   public async setOn(value: boolean): Promise<void> {
     const lights = await this.getLights()
-    this.log.debug(`${this.config.name}: processing ${value ? 'On' : 'Off'} for ${lights.length} resolved light${lights.length === 1 ? '' : 's'}.`)
-    await (value ? this.turnOn(lights) : this.turnOff(lights))
+    this.log.debug(`${this.config.name}: processing ${value ? 'On' : 'Off'} for ${lights.length} resolved light${lights.length === 1
+      ? ''
+      : 's'}.`)
+    await (value
+      ? this.turnOn(lights)
+      : this.turnOff(lights))
   }
 
   public async setCharacteristic(type: string, value: string | number | boolean): Promise<void> {
@@ -32,8 +36,12 @@ export class SmartLightGroupRulesEngine implements SmartAutomationRulesEngine {
     }
 
     const lights = await this.getLights()
-    this.log.info(`${this.config.name}: passing ${type}=${String(value)} through to ${lights.length} light${lights.length === 1 ? '' : 's'}.`)
-    this.log.debug(`${this.config.name}: passing through ${type}=${String(value)} to ${lights.length} resolved light${lights.length === 1 ? '' : 's'}.`)
+    this.log.info(`${this.config.name}: passing ${type}=${String(value)} through to ${lights.length} light${lights.length === 1
+      ? ''
+      : 's'}.`)
+    this.log.debug(`${this.config.name}: passing through ${type}=${String(value)} to ${lights.length} resolved light${lights.length === 1
+      ? ''
+      : 's'}.`)
     await this.writeCharacteristicStates(lights, type, () => value, `set ${type}`)
   }
 
@@ -74,10 +82,14 @@ export class SmartLightGroupRulesEngine implements SmartAutomationRulesEngine {
 
         return characteristics.length === 0
           ? []
-          : [{ uniqueId: light.uniqueId, characteristics }]
+          : [
+              { uniqueId: light.uniqueId, characteristics },
+            ]
       })
       const characteristicCount = this.savedState.reduce((count, state) => count + state.characteristics.length, 0)
-      this.log.info(`${this.config.name}: saved ${characteristicCount} writable characteristics across ${this.savedState.length} light${this.savedState.length === 1 ? '' : 's'}.`)
+      this.log.info(`${this.config.name}: saved ${characteristicCount} writable characteristics across ${this.savedState.length} light${this.savedState.length === 1
+        ? ''
+        : 's'}.`)
     } else {
       this.log.debug(`${this.config.name}: repeated On received; keeping the original saved state (${this.savedState.length} lights).`)
     }
