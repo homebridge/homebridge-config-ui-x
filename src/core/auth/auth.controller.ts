@@ -13,7 +13,6 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 import { PluginsSettingsUiTicketService } from '../../modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
@@ -24,6 +23,7 @@ import { Logger } from '../logger/logger.service.js'
 import { AuthDto, LogoutDto, RefreshTokenDto } from './auth.dto.js'
 import { AuthService } from './auth.service.js'
 import { CustomGuard } from './guards/custom.guard.js'
+import { JwtAuthGuard } from './guards/jwt-auth.guard.js'
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -94,7 +94,7 @@ export class AuthController {
 
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Check to see if an authentication token is still valid.' })
-  @UseGuards(AuthGuard())
+  @UseGuards(JwtAuthGuard)
   @Get('/check')
   checkAuth() {
     return { status: 'OK' }
@@ -102,7 +102,7 @@ export class AuthController {
 
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Refresh the authentication token to extend the session.' })
-  @UseGuards(AuthGuard())
+  @UseGuards(JwtAuthGuard)
   @Post('/refresh')
   async refreshToken(
     @Request() req: any,
@@ -159,7 +159,9 @@ export class AuthController {
     // person out of every browser they use, or drop the plugin ui tickets they
     // are in the middle of using. `refreshToken` refuses them for the same
     // reason.
-    const account = req.user?.service === undefined ? req.user?.username : undefined
+    const account = req.user?.service === undefined
+      ? req.user?.username
+      : undefined
     const username = account ?? this.readLogoutUsername(req.headers.authorization)
 
     // The cookies clear and the in-memory tickets go BEFORE the revocation
@@ -244,7 +246,9 @@ export class AuthController {
       if (payload?.service !== undefined) {
         return undefined
       }
-      return typeof payload?.username === 'string' ? payload.username : undefined
+      return typeof payload?.username === 'string'
+        ? payload.username
+        : undefined
     } catch {
       return undefined
     }

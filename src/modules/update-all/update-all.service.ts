@@ -137,7 +137,9 @@ export class UpdateAllService {
       // The same resolution performPackageUpdate uses after installing, so
       // the modal's restart prediction always matches what the finale does.
       // Only included items can be selected - exclusions skip the lookup.
-      const childBridgeUsernames = reason === null ? await this.pluginsService.getPluginChildBridgeUsernames(plugin.name) : []
+      const childBridgeUsernames = reason === null
+        ? await this.pluginsService.getPluginChildBridgeUsernames(plugin.name)
+        : []
       return { plugin, reason, childBridgeUsernames }
     }))
 
@@ -152,7 +154,11 @@ export class UpdateAllService {
         childBridgeUsernames,
         // A main-bridge plugin (no child bridges) restarts Homebridge - the
         // one place that semantic lives; the client only folds impacts
-        ...(reason === null ? { restartImpact: (childBridgeUsernames.length ? 'child-bridges' : 'homebridge') as UpdateAllRestartImpact } : {}),
+        ...(reason === null
+          ? {
+              restartImpact: (childBridgeUsernames.length ? 'child-bridges' : 'homebridge') as UpdateAllRestartImpact,
+            }
+          : {}),
       }, reason)
     }
 
@@ -241,7 +247,16 @@ export class UpdateAllService {
     try {
       const plan = await this.computePlan()
       const items = this.matchConfirmedToPlan(confirmed, plan)
-      const runId = await this.journalService.startRun(items.map(x => ({ type: x.type, name: x.name, displayName: x.displayName, icon: x.icon, childBridgeUsernames: x.childBridgeUsernames, restartImpact: x.restartImpact, from: x.from, to: x.to })))
+      const runId = await this.journalService.startRun(items.map(x => ({
+        type: x.type,
+        name: x.name,
+        displayName: x.displayName,
+        icon: x.icon,
+        childBridgeUsernames: x.childBridgeUsernames,
+        restartImpact: x.restartImpact,
+        from: x.from,
+        to: x.to,
+      })))
       this.logger.log(`Update All run ${runId} started: ${items.map(x => `${x.name}@${x.to}`).join(', ')}.`)
       this.runningPromise = this.executeRun(runId, items)
       return { runId }
@@ -336,7 +351,11 @@ export class UpdateAllService {
       // the user has already confirmed.
       await this.backupService.runScheduledBackupJob()
 
-      const needs: RestartNeeds = { homebridge: false, ui: false, childBridgeUsernames: new Set() }
+      const needs: RestartNeeds = {
+        homebridge: false,
+        ui: false,
+        childBridgeUsernames: new Set(),
+      }
       let homebridgeFailed = false
 
       for (const item of items) {
@@ -364,13 +383,18 @@ export class UpdateAllService {
         try {
           const result = await this.pluginsService.performPackageUpdate(item.name, item.to, client)
           if (result.ok) {
-            await this.journalService.updateItem(item.name, 'ok', { logTail: getLogTail() })
+            await this.journalService.updateItem(item.name, 'ok', {
+              logTail: getLogTail(),
+            })
             this.emitEvent('item-result', { name: item.name, status: 'ok' })
             needs.homebridge = needs.homebridge || result.restart.homebridge
             needs.ui = needs.ui || result.restart.ui
             result.restart.childBridgeUsernames.forEach(x => needs.childBridgeUsernames.add(x))
           } else {
-            await this.journalService.updateItem(item.name, 'failed', { reason: result.error, logTail: getLogTail() })
+            await this.journalService.updateItem(item.name, 'failed', {
+              reason: result.error,
+              logTail: getLogTail(),
+            })
             this.emitEvent('item-result', { name: item.name, status: 'failed' })
             homebridgeFailed = homebridgeFailed || item.type === 'homebridge'
           }
@@ -378,7 +402,10 @@ export class UpdateAllService {
           // performPackageUpdate reports expected failures in its result -
           // this is the unexpected kind. Record it and carry on: one broken
           // item must not strand the rest of the confirmed list.
-          await this.journalService.updateItem(item.name, 'failed', { reason: e.message, logTail: getLogTail() })
+          await this.journalService.updateItem(item.name, 'failed', {
+            reason: e.message,
+            logTail: getLogTail(),
+          })
           this.emitEvent('item-result', { name: item.name, status: 'failed' })
           homebridgeFailed = homebridgeFailed || item.type === 'homebridge'
         }
@@ -520,7 +547,10 @@ export class UpdateAllService {
     let buffer = ''
     client.on('stdout', (data: string | Buffer) => {
       buffer = (buffer + String(data)).slice(-16384)
-      this.emitEvent('stdout', { name, data: String(data) })
+      this.emitEvent('stdout', {
+        name,
+        data: String(data),
+      })
     })
     return {
       client,

@@ -32,7 +32,11 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () => import('@/app/modules/status/status.component').then(m => m.StatusComponent),
-        canDeactivate: [(component: any) => component.canDeactivate ? component.canDeactivate() : true],
+        canDeactivate: [
+          (component: any) => component.canDeactivate
+            ? component.canDeactivate()
+            : true,
+        ],
       },
       {
         path: 'restart',
@@ -43,13 +47,21 @@ export const routes: Routes = [
         path: 'plugins',
         loadComponent: () => import('@/app/modules/plugins/plugins.component').then(m => m.PluginsComponent),
         canActivate: [authGuard],
-        canDeactivate: [(component: any, _currentRoute: any, _currentState: any, nextState?: any) => component.canDeactivate ? component.canDeactivate(nextState?.url) : true],
+        canDeactivate: [
+          (component: any, _currentRoute: any, _currentState: any, nextState?: any) => component.canDeactivate
+            ? component.canDeactivate(nextState?.url)
+            : true,
+        ],
       },
       {
         path: 'config',
         loadComponent: () => import('@/app/modules/config-editor/config-editor.component').then(m => m.ConfigEditorComponent),
         canActivate: [adminGuard],
-        canDeactivate: [(component: any) => component.canDeactivate ? component.canDeactivate() : true],
+        canDeactivate: [
+          (component: any) => component.canDeactivate
+            ? component.canDeactivate()
+            : true,
+        ],
         resolve: {
           config: configEditorResolver,
         },
@@ -71,7 +83,11 @@ export const routes: Routes = [
         path: 'logs',
         loadComponent: () => import('@/app/modules/logs/logs.component').then(m => m.LogsComponent),
         canActivate: [logsGuard],
-        canDeactivate: [(component: any, _currentRoute: any, _currentState: any, nextState?: any) => component.canDeactivate ? component.canDeactivate(nextState?.url) : true],
+        canDeactivate: [
+          (component: any, _currentRoute: any, _currentState: any, nextState?: any) => component.canDeactivate
+            ? component.canDeactivate(nextState?.url)
+            : true,
+        ],
       },
       {
         path: 'users',

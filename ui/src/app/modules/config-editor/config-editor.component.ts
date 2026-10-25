@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
@@ -16,6 +16,7 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
+import { redactConfig } from '@/app/core/helpers/config-redaction.helper'
 import { createHapSchema } from '@/app/core/helpers/hap-schema.helper'
 import { createMatterSchema } from '@/app/core/helpers/matter-schema.helper'
 import { CONFIG_RESTORE_MODAL_DATA, CONFIRM_MODAL_DATA, RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
@@ -39,6 +40,15 @@ declare const monaco: any
 declare global {
   interface Window {
     editor?: any
+  }
+}
+
+/** A true/false preference saved in this browser, or false when storage is unavailable. */
+function readStoredFlag(key: string): boolean {
+  try {
+    return typeof localStorage !== 'undefined' && localStorage.getItem(key) === 'true'
+  } catch {
+    return false
   }
 }
 
@@ -85,15 +95,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private isHapDisableIdentifyingMaterialEnabled = this.$settings.isFeatureEnabled('hapDisableIdentifyingMaterial')
 
   public readonly homebridgeConfig = signal<string>('')
+  // Masked by default, so a screenshot for support does not leak passwords. Once
+  // someone reveals the config in this browser it stays revealed for them, so it
+  // is one click once rather than on every visit
+  public readonly secretsRevealed = signal<boolean>(readStoredFlag('hb_config_editor_revealed'))
+  public readonly redactedConfig = computed(() => redactConfig(this.homebridgeConfig()))
   public readonly originalConfig = signal<string>('')
   public readonly saveInProgress = signal(false)
   public readonly isMobile = signal<boolean>(false)
   // Lets screen-reader users opt into a plain <textarea> instead of the Monaco
   // editor, which has well-known SR-support gaps. Persisted in localStorage so
   // the choice survives reloads.
-  public readonly preferPlainTextEditor = signal<boolean>(
-    typeof localStorage !== 'undefined' && localStorage.getItem('hb_config_editor_plaintext') === 'true',
-  )
+  public readonly preferPlainTextEditor = signal<boolean>(readStoredFlag('hb_config_editor_plaintext'))
 
   public monacoEditor: any
   public editorOptions: any
@@ -123,7 +136,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     this.editorOptions = {
       language: 'json',
-      theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
+      theme: this.$settings.actualLightingMode === 'dark'
+        ? 'vs-dark'
+        : 'vs-light',
       renderSideBySide: this.renderSideBySide(),
       renderIndicators: true,
       ignoreTrimWhitespace: false,
@@ -156,7 +171,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.monacoEditorModel = {
       value: '{}',
       language: 'json',
-      uri: (window as any).monaco ? (window as any).monaco.Uri.parse('a://homebridge/config.json') : undefined,
+      uri: (window as any).monaco
+        ? (window as any).monaco.Uri.parse('a://homebridge/config.json')
+        : undefined,
     }
 
     // Set up diff editor models with initial content
@@ -219,8 +236,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   public onInitDiffEditor(editor: any) {
     this.monacoEditor = editor.getModifiedEditor()
-    this.updateDiffModels()
     window.editor = editor
+    this.updateDiffModels()
   }
 
   public setPlainTextEditor(enabled: boolean): void {
@@ -291,8 +308,30 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
   }
 
+  public toggleSecrets(): void {
+    const model = this.secretsRevealed() && this.isMonacoActive
+      ? this.monacoEditor?.getModel?.()
+      : undefined
+    if (model) {
+      // Preserve unsaved edits before Angular destroys the editing surface.
+      this.homebridgeConfig.set(model.getValue())
+    }
+    this.secretsRevealed.update(revealed => !revealed)
+    try {
+      localStorage.setItem('hb_config_editor_revealed', this.secretsRevealed()
+        ? 'true'
+        : 'false')
+    } catch {
+      // localStorage can be unavailable (private mode, quota); the choice then lasts for this visit only
+    }
+    if (!this.secretsRevealed()) {
+      this.monacoEditor = undefined
+      window.editor = undefined
+    }
+  }
+
   public async onSave() {
-    if (this.saveInProgress()) {
+    if (!this.secretsRevealed() || this.saveInProgress()) {
       return
     }
 
@@ -366,13 +405,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   public async onRestore(fromSettings = false): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: CONFIG_RESTORE_MODAL_DATA,
-      useValue: {
-        currentConfig: this.homebridgeConfig(),
-        fromSettings,
+    const injector = createEnvironmentInjector([
+      {
+        provide: CONFIG_RESTORE_MODAL_DATA,
+        useValue: {
+          currentConfig: this.homebridgeConfig(),
+          fromSettings,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ConfigRestoreComponent, {
       size: 'lg',
@@ -452,7 +493,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   public toggleSideBySide() {
     this.renderSideBySide.set(!this.renderSideBySide())
-    this.editorOptions = { ...this.editorOptions, renderSideBySide: this.renderSideBySide() }
+    this.editorOptions = {
+      ...this.editorOptions,
+      renderSideBySide: this.renderSideBySide(),
+    }
   }
 
   /**
@@ -486,16 +530,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   private confirmDiscardChanges(): Promise<boolean> {
-    const injector = createEnvironmentInjector([{
-      provide: CONFIRM_MODAL_DATA,
-      useValue: {
-        title: this.$translate.instant('config.label_unsaved_changes'),
-        message: this.$translate.instant('config.message_unsaved_changes'),
-        confirmButtonLabel: this.$translate.instant('form.button_discard'),
-        confirmButtonClass: 'btn-danger',
-        faIconClass: 'fas fa-triangle-exclamation orange-text',
+    const injector = createEnvironmentInjector([
+      {
+        provide: CONFIRM_MODAL_DATA,
+        useValue: {
+          title: this.$translate.instant('config.label_unsaved_changes'),
+          message: this.$translate.instant('config.message_unsaved_changes'),
+          confirmButtonLabel: this.$translate.instant('form.button_discard'),
+          confirmButtonClass: 'btn-danger',
+          faIconClass: 'fas fa-triangle-exclamation orange-text',
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
@@ -628,7 +674,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         )
 
         this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [
-          { range, options: { isWholeLine: true, linesDecorationsClassName: 'hb-monaco-editor-line-error' } },
+          {
+            range,
+            options: { isWholeLine: true, linesDecorationsClassName: 'hb-monaco-editor-line-error' },
+          },
         ])
       }
     })
@@ -658,7 +707,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       schemas: [
         {
           uri: 'http://homebridge/config.json',
-          fileMatch: [uri.toString()],
+          fileMatch: [
+            uri.toString(),
+          ],
           schema: {
             type: 'object',
             additionalProperties: false,
@@ -752,10 +803,17 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   },
                   hap: createHapSchema(this.$translate, this.isProtocolExternalsOnlyEnabled, 'main', this.isHapDisableIdentifyingMaterialEnabled),
                   ...this.isMatterSupported
-                    ? { matter: createMatterSchema(this.$translate, this.isProtocolExternalsOnlyEnabled, 'main', this.isMatterDisableIpv4Enabled) }
+                    ? {
+                        matter: createMatterSchema(this.$translate, this.isProtocolExternalsOnlyEnabled, 'main', this.isMatterDisableIpv4Enabled),
+                      }
                     : {},
                 },
-                default: { name: 'Homebridge', username: '0E:89:49:64:91:86', port: 51173, pin: '6302-7655' },
+                default: {
+                  name: 'Homebridge',
+                  username: '0E:89:49:64:91:86',
+                  port: 51173,
+                  pin: '6302-7655',
+                },
               },
               mdns: {
                 type: 'object',
@@ -823,7 +881,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'string',
                           title: 'Platform Name',
                           description: 'This is used by Homebridge to identify which plugin this platform belongs to.',
-                          not: { enum: ['config'] },
+                          not: {
+                            enum: ['config'],
+                          },
                         },
                         name: {
                           type: 'string',
@@ -881,19 +941,58 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'string',
                           default: 'orange',
                           oneOf: [
-                            { title: this.$translate.instant('settings.display.orange'), enum: ['orange'] },
-                            { title: this.$translate.instant('settings.display.red'), enum: ['red'] },
-                            { title: this.$translate.instant('settings.display.pink'), enum: ['pink'] },
-                            { title: this.$translate.instant('settings.display.purple'), enum: ['purple'] },
-                            { title: this.$translate.instant('settings.display.deep_purple'), enum: ['deep-purple'] },
-                            { title: this.$translate.instant('settings.display.indigo'), enum: ['indigo'] },
-                            { title: this.$translate.instant('settings.display.blue'), enum: ['blue'] },
-                            { title: this.$translate.instant('settings.display.bluegrey'), enum: ['blue-grey'] },
-                            { title: this.$translate.instant('settings.display.cyan'), enum: ['cyan'] },
-                            { title: this.$translate.instant('settings.display.green'), enum: ['green'] },
-                            { title: this.$translate.instant('settings.display.teal'), enum: ['teal'] },
-                            { title: this.$translate.instant('settings.display.grey'), enum: ['grey'] },
-                            { title: this.$translate.instant('settings.display.brown'), enum: ['brown'] },
+                            {
+                              title: this.$translate.instant('settings.display.orange'),
+                              enum: ['orange'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.red'),
+                              enum: ['red'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.pink'),
+                              enum: ['pink'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.purple'),
+                              enum: ['purple'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.deep_purple'),
+                              enum: ['deep-purple'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.indigo'),
+                              enum: ['indigo'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.blue'),
+                              enum: ['blue'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.bluegrey'),
+                              enum: ['blue-grey'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.cyan'),
+                              enum: ['cyan'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.green'),
+                              enum: ['green'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.teal'),
+                              enum: ['teal'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.grey'),
+                              enum: ['grey'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.brown'),
+                              enum: ['brown'],
+                            },
                           ],
                         },
                         lightingMode: {
@@ -902,9 +1001,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'string',
                           default: 'auto',
                           oneOf: [
-                            { title: this.$translate.instant('accessories.control.auto'), enum: ['auto'] },
-                            { title: this.$translate.instant('settings.display.light'), enum: ['light'] },
-                            { title: this.$translate.instant('settings.display.dark'), enum: ['dark'] },
+                            {
+                              title: this.$translate.instant('accessories.control.auto'),
+                              enum: ['auto'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.light'),
+                              enum: ['light'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.dark'),
+                              enum: ['dark'],
+                            },
                           ],
                         },
                         menuMode: {
@@ -913,8 +1021,14 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'string',
                           default: 'default',
                           oneOf: [
-                            { title: this.$translate.instant('settings.display.menu_default'), enum: ['default'] },
-                            { title: this.$translate.instant('settings.display.menu_freeze'), enum: ['freeze'] },
+                            {
+                              title: this.$translate.instant('settings.display.menu_default'),
+                              enum: ['default'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.menu_freeze'),
+                              enum: ['freeze'],
+                            },
                           ],
                         },
                         temp: {
@@ -928,8 +1042,14 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'string',
                           default: 'c',
                           oneOf: [
-                            { title: this.$translate.instant('settings.display.temp_units.c'), enum: ['c'] },
-                            { title: this.$translate.instant('settings.display.temp_units.f'), enum: ['f'] },
+                            {
+                              title: this.$translate.instant('settings.display.temp_units.c'),
+                              enum: ['c'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.temp_units.f'),
+                              enum: ['f'],
+                            },
                           ],
                         },
                         lang: {
@@ -938,36 +1058,126 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           default: 'auto',
                           description: 'The language used for the UI.',
                           oneOf: [
-                            { title: this.$translate.instant('form.select.auto'), enum: ['auto'] },
-                            { title: 'Bulgarian (bg)', enum: ['bg'] },
-                            { title: 'Catalan (ca)', enum: ['ca'] },
-                            { title: 'Chinese - Simplified (zh-CN)', enum: ['zh-CN'] },
-                            { title: 'Chinese - Traditional (zh-TW)', enum: ['zh-TW'] },
-                            { title: 'Czech (cs)', enum: ['cs'] },
-                            { title: 'Dutch (nl)', enum: ['nl'] },
-                            { title: 'English (en)', enum: ['en'] },
-                            { title: 'Finnish (fi)', enum: ['fi'] },
-                            { title: 'French (fr)', enum: ['fr'] },
-                            { title: 'German (de)', enum: ['de'] },
-                            { title: 'Hebrew (he)', enum: ['he'] },
-                            { title: 'Hungarian (hu)', enum: ['hu'] },
-                            { title: 'Indonesian (id)', enum: ['id'] },
-                            { title: 'Italian (it)', enum: ['it'] },
-                            { title: 'Japanese (ja)', enum: ['ja'] },
-                            { title: 'Korean (ko)', enum: ['ko'] },
-                            { title: 'Macedonian (mk)', enum: ['mk'] },
-                            { title: 'Norwegian (no)', enum: ['no'] },
-                            { title: 'Polish (pl)', enum: ['pl'] },
-                            { title: 'Portuguese (Brazil)', enum: ['pt-BR'] },
-                            { title: 'Portuguese (Portugal)', enum: ['pt'] },
-                            { title: 'Russian (ru)', enum: ['ru'] },
-                            { title: 'Slovenian (sl)', enum: ['sl'] },
-                            { title: 'Spanish (es)', enum: ['es'] },
-                            { title: 'Swedish (sv)', enum: ['sv'] },
-                            { title: 'Thai (th)', enum: ['th'] },
-                            { title: 'Turkish (tr)', enum: ['tr'] },
-                            { title: 'Ukrainian (uk)', enum: ['uk'] },
-                            { title: 'Vietnamese (vi)', enum: ['vi'] },
+                            {
+                              title: this.$translate.instant('form.select.auto'),
+                              enum: ['auto'],
+                            },
+                            {
+                              title: 'Bulgarian (bg)',
+                              enum: ['bg'],
+                            },
+                            {
+                              title: 'Catalan (ca)',
+                              enum: ['ca'],
+                            },
+                            {
+                              title: 'Chinese - Simplified (zh-CN)',
+                              enum: ['zh-CN'],
+                            },
+                            {
+                              title: 'Chinese - Traditional (zh-TW)',
+                              enum: ['zh-TW'],
+                            },
+                            {
+                              title: 'Czech (cs)',
+                              enum: ['cs'],
+                            },
+                            {
+                              title: 'Dutch (nl)',
+                              enum: ['nl'],
+                            },
+                            {
+                              title: 'English (en)',
+                              enum: ['en'],
+                            },
+                            {
+                              title: 'Finnish (fi)',
+                              enum: ['fi'],
+                            },
+                            {
+                              title: 'French (fr)',
+                              enum: ['fr'],
+                            },
+                            {
+                              title: 'German (de)',
+                              enum: ['de'],
+                            },
+                            {
+                              title: 'Hebrew (he)',
+                              enum: ['he'],
+                            },
+                            {
+                              title: 'Hungarian (hu)',
+                              enum: ['hu'],
+                            },
+                            {
+                              title: 'Indonesian (id)',
+                              enum: ['id'],
+                            },
+                            {
+                              title: 'Italian (it)',
+                              enum: ['it'],
+                            },
+                            {
+                              title: 'Japanese (ja)',
+                              enum: ['ja'],
+                            },
+                            {
+                              title: 'Korean (ko)',
+                              enum: ['ko'],
+                            },
+                            {
+                              title: 'Macedonian (mk)',
+                              enum: ['mk'],
+                            },
+                            {
+                              title: 'Norwegian (no)',
+                              enum: ['no'],
+                            },
+                            {
+                              title: 'Polish (pl)',
+                              enum: ['pl'],
+                            },
+                            {
+                              title: 'Portuguese (Brazil)',
+                              enum: ['pt-BR'],
+                            },
+                            {
+                              title: 'Portuguese (Portugal)',
+                              enum: ['pt'],
+                            },
+                            {
+                              title: 'Russian (ru)',
+                              enum: ['ru'],
+                            },
+                            {
+                              title: 'Slovenian (sl)',
+                              enum: ['sl'],
+                            },
+                            {
+                              title: 'Spanish (es)',
+                              enum: ['es'],
+                            },
+                            {
+                              title: 'Swedish (sv)',
+                              enum: ['sv'],
+                            },
+                            {
+                              title: 'Thai (th)',
+                              enum: ['th'],
+                            },
+                            {
+                              title: 'Turkish (tr)',
+                              enum: ['tr'],
+                            },
+                            {
+                              title: 'Ukrainian (uk)',
+                              enum: ['uk'],
+                            },
+                            {
+                              title: 'Vietnamese (vi)',
+                              enum: ['vi'],
+                            },
                           ],
                         },
                         wallpaper: {
@@ -1337,7 +1547,19 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                               type: ['string', 'number'],
                               description: this.$translate.instant('settings.terminal.font_weight_desc'),
                               default: '400',
-                              enum: ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal'],
+                              enum: [
+                                '100',
+                                '200',
+                                '300',
+                                '400',
+                                '500',
+                                '600',
+                                '700',
+                                '800',
+                                '900',
+                                'bold',
+                                'normal',
+                              ],
                             },
                             lightingMode: {
                               title: this.$translate.instant('settings.display.lighting_mode'),
@@ -1482,6 +1704,49 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return a.every(itemA => b.some(itemB => isEqual(itemA, itemB)))
   }
 
+  /**
+   * Pair an original platform/accessory block with its counterpart after save.
+   * Type name alone is not unique: two accessory blocks can share
+   * `accessory: "Sensor"`, and `find()` would compare both to the first.
+   * Prefer `_bridge.username`, then name, and never reuse a claimed row.
+   */
+  private findMatchingConfigEntry<T extends PlatformConfig | AccessoryConfig>(
+    original: T,
+    updated: T[],
+    typeKey: 'platform' | 'accessory',
+    claimed: Set<number>,
+  ): T | undefined {
+    const originalUsername = original._bridge?.username?.toUpperCase()
+    if (originalUsername) {
+      const byUsername = updated.findIndex((entry, index) =>
+        !claimed.has(index) && entry._bridge?.username?.toUpperCase() === originalUsername,
+      )
+      if (byUsername !== -1) {
+        claimed.add(byUsername)
+        return updated[byUsername]
+      }
+    }
+
+    const originalType = original[typeKey]
+    const byTypeAndName = updated.findIndex((entry, index) =>
+      !claimed.has(index) && entry[typeKey] === originalType && entry.name === original.name,
+    )
+    if (byTypeAndName !== -1) {
+      claimed.add(byTypeAndName)
+      return updated[byTypeAndName]
+    }
+
+    const byType = updated.findIndex((entry, index) =>
+      !claimed.has(index) && entry[typeKey] === originalType,
+    )
+    if (byType !== -1) {
+      claimed.add(byType)
+      return updated[byType]
+    }
+
+    return undefined
+  }
+
   private detectConfigPlatformChanges(): boolean {
     try {
       const originalConfigJson = this.latestSavedConfig
@@ -1598,13 +1863,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
 
     // For the rest of the checks, we need to find out which entries have changed
+    const claimedPlatforms = new Set<number>()
+    const claimedAccessories = new Set<number>()
     const changedPlatformEntries = originalPlatforms.filter((p: PlatformConfig) => {
-      return !isEqual(p, updatedPlatforms.find((up: PlatformConfig) => up.platform === p.platform))
+      return !isEqual(p, this.findMatchingConfigEntry(p, updatedPlatforms, 'platform', claimedPlatforms))
     })
     const changedAccessoryEntries = originalAccessories.filter((a: AccessoryConfig) => {
-      return !isEqual(a, updatedAccessories.find((ua: AccessoryConfig) => ua.accessory === a.accessory))
+      return !isEqual(a, this.findMatchingConfigEntry(a, updatedAccessories, 'accessory', claimedAccessories))
     })
-    const changedEntries = [...changedPlatformEntries, ...changedAccessoryEntries]
+    const changedEntries = [
+      ...changedPlatformEntries,
+      ...changedAccessoryEntries,
+    ]
 
     // Check seven: we need a full restart if the homebridge ui config entry has changed
     if (changedPlatformEntries.some((entry: PlatformConfig) => entry.platform === 'config')) {
@@ -1668,12 +1938,14 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       return
     }
 
-    const injector = createEnvironmentInjector([{
-      provide: RESTART_CHILD_BRIDGES_MODAL_DATA,
-      useValue: {
-        bridges: this.childBridgesToRestart,
+    const injector = createEnvironmentInjector([
+      {
+        provide: RESTART_CHILD_BRIDGES_MODAL_DATA,
+        useValue: {
+          bridges: this.childBridgesToRestart,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(RestartChildBridgesComponent, {
       size: 'lg',

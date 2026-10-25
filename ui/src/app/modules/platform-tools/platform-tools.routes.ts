@@ -50,6 +50,10 @@ export const PLATFORM_TOOLS_ROUTES: Routes = [
   {
     path: 'terminal',
     loadComponent: () => import('@/app/modules/platform-tools/terminal/terminal.component').then(m => m.TerminalComponent),
-    canDeactivate: [(component: any, _currentRoute: any, _currentState: any, nextState?: any) => component.canDeactivate ? component.canDeactivate(nextState?.url) : true],
+    canDeactivate: [
+      (component: any, _currentRoute: any, _currentState: any, nextState?: any) => component.canDeactivate
+        ? component.canDeactivate(nextState?.url)
+        : true,
+    ],
   },
 ]

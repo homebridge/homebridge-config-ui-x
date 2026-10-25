@@ -8,16 +8,16 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../../core/auth/guards/admin.guard.js'
+import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard.js'
 import { HbServiceStartupSettings } from './hb-service.dto.js'
 import { HbServiceService } from './hb-service.service.js'
 
 @ApiTags('Platform - HB Service')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 @Controller('platform-tools/hb-service')
 export class HbServiceController {
   constructor(
@@ -51,9 +51,21 @@ export class HbServiceController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Download the entire log file.' })
   @Get('log/download')
-  @ApiQuery({ name: 'colour', enum: ['yes', 'no'], required: false })
-  downloadLogFile(@Query('colour') colour?: string) {
-    return this.hbServiceService.downloadLogFile((colour !== 'yes'))
+  @ApiQuery({
+    name: 'color',
+    enum: ['yes', 'no'],
+    required: false,
+    description: 'Same as colour, and wins when a request sends both.',
+  })
+  @ApiQuery({
+    name: 'colour',
+    enum: ['yes', 'no'],
+    required: false,
+    description: 'Same as color.',
+  })
+  downloadLogFile(@Query('color') color?: string, @Query('colour') colour?: string) {
+    // Both spellings are honored, since existing clients already send colour.
+    return this.hbServiceService.downloadLogFile(((color ?? colour) !== 'yes'))
   }
 
   @UseGuards(AdminGuard)

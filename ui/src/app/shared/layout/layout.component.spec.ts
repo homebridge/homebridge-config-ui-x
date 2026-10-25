@@ -55,12 +55,18 @@ describe('layoutComponent', () => {
     admin?: boolean
   } = {}) {
     TestBed.resetTestingModule()
-    auth = makeAuth({ user: { admin: options.admin ?? true } })
+    auth = makeAuth({
+      user: { admin: options.admin ?? true },
+    })
     settings = makeSettings({
       // Matching the bundled version is the ordinary case: no mismatch, no modal
       uiVersion: options.uiVersion ?? environment.serverTarget,
-      ...(options.settingsLoaded === false ? { settingsLoaded: false } : {}),
-      ...(options.onSettingsLoaded ? { onSettingsLoaded: options.onSettingsLoaded } : {}),
+      ...(options.settingsLoaded === false
+        ? { settingsLoaded: false }
+        : {}),
+      ...(options.onSettingsLoaded
+        ? { onSettingsLoaded: options.onSettingsLoaded }
+        : {}),
     } as any)
     ws = fakeWs()
     io = ws.namespace('app')
@@ -76,7 +82,12 @@ describe('layoutComponent', () => {
     })
 
     // The sidebar and the routed page are each tested on their own
-    TestBed.overrideComponent(LayoutComponent, { set: { imports: [], schemas: [NO_ERRORS_SCHEMA] } })
+    TestBed.overrideComponent(LayoutComponent, {
+      set: {
+        imports: [],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
+    })
 
     const router = TestBed.inject(Router)
     navigate = vi.fn(async () => true)

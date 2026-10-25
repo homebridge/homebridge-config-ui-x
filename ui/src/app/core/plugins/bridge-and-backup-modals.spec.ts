@@ -72,7 +72,9 @@ describe('the bridge and backup modals', () => {
     TestBed.resetTestingModule()
     api = fakeApi()
     toastr = toastrStub()
-    settings = makeSettings({ env: { featureFlags: options.featureFlags ?? {} } })
+    settings = makeSettings({
+      env: { featureFlags: options.featureFlags ?? {} },
+    })
     activeModal = activeModalStub()
 
     saveAs = fakeSaveAs()
@@ -91,7 +93,10 @@ describe('the bridge and backup modals', () => {
     })
 
     TestBed.overrideComponent(type as any, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     options.arrange?.()
@@ -187,7 +192,13 @@ describe('the bridge and backup modals', () => {
     ] as any[]
 
     function bridgePairing(username: string, name: string, extra: Record<string, any> = {}) {
-      return { _category: 'bridge', _main: false, _username: username, name, ...extra }
+      return {
+        _category: 'bridge',
+        _main: false,
+        _username: username,
+        name,
+        ...extra,
+      }
     }
 
     function openModal(pairings: any[], options: { featureFlags?: Record<string, boolean>, arrange?: () => void } = {}) {
@@ -210,7 +221,12 @@ describe('the bridge and backup modals', () => {
     it('leaves the main bridge out of the list', async () => {
       // Resetting the main bridge is a different, far more destructive action
       const modal = await openModal([
-        { _category: 'bridge', _main: true, _username: '0E:11:11:11:11:11', name: 'Homebridge' },
+        {
+          _category: 'bridge',
+          _main: true,
+          _username: '0E:11:11:11:11:11',
+          name: 'Homebridge',
+        },
         bridgePairing('0E:22:22:22:22:22', 'Bridge Two'),
       ])
 
@@ -229,23 +245,33 @@ describe('the bridge and backup modals', () => {
     it('lists a bridge once per protocol when it has both', async () => {
       // HAP and Matter are reset separately, so each needs its own row
       const modal = await openModal(
-        [bridgePairing('0E:11:11:11:11:11', 'Bridge One', { _matter: true })],
-        { featureFlags: { matterSupport: true } },
+        [
+          bridgePairing('0E:11:11:11:11:11', 'Bridge One', { _matter: true }),
+        ],
+        {
+          featureFlags: { matterSupport: true },
+        },
       )
 
       expect(modal.pairings().map(pairing => pairing._protocol)).toEqual(['hap', 'matter'])
     })
 
     it('lists only the hap row when matter is not supported', async () => {
-      const modal = await openModal([bridgePairing('0E:11:11:11:11:11', 'Bridge One', { _matter: true })])
+      const modal = await openModal([
+        bridgePairing('0E:11:11:11:11:11', 'Bridge One', { _matter: true }),
+      ])
 
       expect(modal.pairings().map(pairing => pairing._protocol)).toEqual(['hap'])
     })
 
     it('includes a matter-only external accessory of this plugin', async () => {
       const modal = await openModal(
-        [{ _matterOnly: true, _plugin: 'homebridge-example', name: 'External Light' }],
-        { featureFlags: { matterSupport: true } },
+        [
+          { _matterOnly: true, _plugin: 'homebridge-example', name: 'External Light' },
+        ],
+        {
+          featureFlags: { matterSupport: true },
+        },
       )
 
       expect(modal.pairings().map(pairing => pairing.name)).toEqual(['External Light'])
@@ -254,8 +280,12 @@ describe('the bridge and backup modals', () => {
 
     it('leaves the matter-only accessory of another plugin alone', async () => {
       const modal = await openModal(
-        [{ _matterOnly: true, _plugin: 'homebridge-other', name: 'Not Mine' }],
-        { featureFlags: { matterSupport: true } },
+        [
+          { _matterOnly: true, _plugin: 'homebridge-other', name: 'Not Mine' },
+        ],
+        {
+          featureFlags: { matterSupport: true },
+        },
       )
 
       expect(modal.pairings()).toEqual([])
@@ -276,7 +306,9 @@ describe('the bridge and backup modals', () => {
     describe('choosing what to reset', () => {
       it('keeps the two protocols of one bridge separate', async () => {
         // Selecting Matter must not also select HAP on the same bridge
-        const modal = await openModal([], { featureFlags: { matterSupport: true } })
+        const modal = await openModal([], {
+          featureFlags: { matterSupport: true },
+        })
 
         modal.toggleList('0E:11:11:11:11:11', 'matter')
 
@@ -317,7 +349,9 @@ describe('the bridge and backup modals', () => {
 
         const call = api.lastCall('delete')
         expect(call?.url).toBe('/server/pairings/accessories')
-        expect(call?.options?.body).toEqual([{ id: '0E:11:11:11:11:11', protocol: 'hap' }])
+        expect(call?.options?.body).toEqual([
+          { id: '0E:11:11:11:11:11', protocol: 'hap' },
+        ])
       })
 
       it('sends the user to the restart page afterwards', async () => {
@@ -327,13 +361,17 @@ describe('the bridge and backup modals', () => {
 
         expect(toastr.success).toHaveBeenCalled()
         expect(activeModal.close).toHaveBeenCalled()
-        expect(navigate).toHaveBeenCalledWith(['/restart'], { queryParams: { restarting: true } })
+        expect(navigate).toHaveBeenCalledWith(['/restart'], {
+          queryParams: { restarting: true },
+        })
       })
 
       it('re-enables the button when the reset fails', async () => {
         // It used to stay disabled, so the only way to retry was to close the
         // modal and open it again
-        const modal = await openModal([], { arrange: () => api.fail('delete', '/server/pairings/accessories', new Error('permission denied')) })
+        const modal = await openModal([], {
+          arrange: () => api.fail('delete', '/server/pairings/accessories', new Error('permission denied')),
+        })
 
         await modal.cleanBridges()
 
@@ -365,7 +403,9 @@ describe('the bridge and backup modals', () => {
       return open(
         PluginExternalsComponent,
         PLUGIN_EXTERNALS_MODAL_DATA,
-        { plugin: makePlugin({ name: 'homebridge-example' }) },
+        {
+          plugin: makePlugin({ name: 'homebridge-example' }),
+        },
         { pairings: cache },
       )
     }
@@ -380,14 +420,18 @@ describe('the bridge and backup modals', () => {
     })
 
     it('lists a matter-only accessory as external too', async () => {
-      const modal = await openModal([{ _plugin: 'homebridge-example', _matterOnly: true, name: 'Matter Light' }])
+      const modal = await openModal([
+        { _plugin: 'homebridge-example', _matterOnly: true, name: 'Matter Light' },
+      ])
 
       expect(modal.accessories().map(accessory => accessory.name)).toEqual(['Matter Light'])
     })
 
     it('leaves a bridged accessory out', async () => {
       // Only externals need their own pairing code
-      const modal = await openModal([{ _plugin: 'homebridge-example', name: 'Bridged Switch' }])
+      const modal = await openModal([
+        { _plugin: 'homebridge-example', name: 'Bridged Switch' },
+      ])
 
       expect(modal.accessories()).toEqual([])
     })
@@ -450,7 +494,9 @@ describe('the bridge and backup modals', () => {
     })
 
     it('closes itself when the list cannot be read', async () => {
-      const modal = await openModal({ arrange: () => api.fail('get', '/config-editor/backups', new Error('no backups directory')) })
+      const modal = await openModal({
+        arrange: () => api.fail('get', '/config-editor/backups', new Error('no backups directory')),
+      })
 
       expect(modal.loading()).toBe(false)
       expect(toastr.error).toHaveBeenCalled()
@@ -467,7 +513,11 @@ describe('the bridge and backup modals', () => {
     })
 
     it('downloads one backup as formatted json', async () => {
-      const modal = await openModal({ arrange: () => api.respond('get', '/config-editor/backups/1700000000000', { bridge: { name: 'Homebridge' } }) })
+      const modal = await openModal({
+        arrange: () => api.respond('get', '/config-editor/backups/1700000000000', {
+          bridge: { name: 'Homebridge' },
+        }),
+      })
 
       await modal.download('1700000000000')
       expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'config-backup-1700000000000.json')
@@ -475,7 +525,9 @@ describe('the bridge and backup modals', () => {
     })
 
     it('re-enables the download button when the backup cannot be fetched', async () => {
-      const modal = await openModal({ arrange: () => api.fail('get', /\/config-editor\/backups\/\d+/, new Error('gone')) })
+      const modal = await openModal({
+        arrange: () => api.fail('get', /\/config-editor\/backups\/\d+/, new Error('gone')),
+      })
 
       await modal.download('1700000000000')
 
@@ -485,7 +537,9 @@ describe('the bridge and backup modals', () => {
 
     it('reloads the list after deleting one backup', async () => {
       // So the deleted row disappears without reopening the modal
-      const modal = await openModal({ arrange: () => api.respond('delete', '/config-editor/backups/1700000000000', {}) })
+      const modal = await openModal({
+        arrange: () => api.respond('delete', '/config-editor/backups/1700000000000', {}),
+      })
       api.clearCalls()
 
       await modal.delete('1700000000000')
@@ -496,7 +550,9 @@ describe('the bridge and backup modals', () => {
     })
 
     it('stops showing a row as deleting when the delete fails', async () => {
-      const modal = await openModal({ arrange: () => api.fail('delete', /\/config-editor\/backups\/\d+/, new Error('permission denied')) })
+      const modal = await openModal({
+        arrange: () => api.fail('delete', /\/config-editor\/backups\/\d+/, new Error('permission denied')),
+      })
 
       await modal.delete('1700000000000')
 
@@ -505,7 +561,9 @@ describe('the bridge and backup modals', () => {
     })
 
     it('empties the list when all the backups are deleted', async () => {
-      const modal = await openModal({ arrange: () => api.respond('delete', '/config-editor/backups', {}) })
+      const modal = await openModal({
+        arrange: () => api.respond('delete', '/config-editor/backups', {}),
+      })
 
       await modal.deleteAllBackups()
 
@@ -515,7 +573,9 @@ describe('the bridge and backup modals', () => {
     })
 
     it('keeps the list when deleting them all fails', async () => {
-      const modal = await openModal({ arrange: () => api.fail('delete', '/config-editor/backups', new Error('permission denied')) })
+      const modal = await openModal({
+        arrange: () => api.fail('delete', '/config-editor/backups', new Error('permission denied')),
+      })
 
       await modal.deleteAllBackups()
 

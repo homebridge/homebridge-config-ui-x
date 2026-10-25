@@ -29,7 +29,9 @@ export class QrcodeComponent implements OnChanges {
         margin: 0,
         color: {
           light: '#ffffff00',
-          dark: document.body.classList.contains('dark-mode') ? '#FFF' : '#000',
+          dark: document.body.classList.contains('dark-mode')
+            ? '#FFF'
+            : '#000',
         },
       })
       const svgElement = qrcodeElement.nativeElement.querySelector('svg') as SVGElement

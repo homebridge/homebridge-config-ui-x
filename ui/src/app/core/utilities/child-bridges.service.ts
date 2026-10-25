@@ -47,16 +47,18 @@ export class ChildBridgesService {
     // through to the full-Homebridge restart prompt instead of throwing
     // and silently losing the restart-required notice altogether.
     if (childBridges.length) {
-      const injector = createEnvironmentInjector([{
-        provide: RESTART_CHILD_BRIDGES_MODAL_DATA,
-        useValue: {
-          bridges: childBridges.map(childBridge => ({
-            name: childBridge.name,
-            username: childBridge.username,
-            matterSerialNumber: childBridge.matterSerialNumber,
-          })),
+      const injector = createEnvironmentInjector([
+        {
+          provide: RESTART_CHILD_BRIDGES_MODAL_DATA,
+          useValue: {
+            bridges: childBridges.map(childBridge => ({
+              name: childBridge.name,
+              username: childBridge.username,
+              matterSerialNumber: childBridge.matterSerialNumber,
+            })),
+          },
         },
-      }], this.injector)
+      ], this.injector)
 
       this.$modal.open(RestartChildBridgesComponent, {
         size: 'lg',

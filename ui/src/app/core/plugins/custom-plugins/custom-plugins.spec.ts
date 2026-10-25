@@ -80,12 +80,18 @@ describe('the custom plugin ui', () => {
       ws = fakeWs()
       io = ws.namespace('plugins/settings-ui')
       toastr = toastrStub()
-      settings = makeSettings({ env: { recommendChildBridges: options.recommendChildBridges ?? false } })
+      settings = makeSettings({
+        env: { recommendChildBridges: options.recommendChildBridges ?? false },
+      })
       modal = modalServiceSpy()
       activeModal = activeModalStub()
       accessoryCache = cachedAccessoriesStub(options.hapCache ?? [], options.matterCache ?? [])
-      childBridges = { openCorrectRestartModalWithBridges: vi.fn() }
-      managePlugins = { bridgeSettings: vi.fn() }
+      childBridges = {
+        openCorrectRestartModalWithBridges: vi.fn(),
+      }
+      managePlugins = {
+        bridgeSettings: vi.fn(),
+      }
 
       TestBed.configureTestingModule({
         imports: [CustomPluginsComponent],
@@ -100,8 +106,12 @@ describe('the custom plugin ui', () => {
             provide: CUSTOM_PLUGINS_MODAL_DATA,
             useValue: {
               plugin,
-              schema: 'schema' in options ? options.schema : makeSchema(),
-              pluginConfig: options.pluginConfig ?? [{ platform: 'Example', name: 'Example' }],
+              schema: 'schema' in options
+                ? options.schema
+                : makeSchema(),
+              pluginConfig: options.pluginConfig ?? [
+                { platform: 'Example', name: 'Example' },
+              ],
             },
           },
         ],
@@ -126,7 +136,9 @@ describe('the custom plugin ui', () => {
 
       // Stand in for the plugin's page inside the iframe
       iframe = fixture.nativeElement.querySelector('iframe')
-      pluginWindow = { postMessage: vi.fn() }
+      pluginWindow = {
+        postMessage: vi.fn(),
+      }
       Object.defineProperty(iframe, 'contentWindow', { value: pluginWindow, configurable: true })
 
       return component
@@ -153,7 +165,9 @@ describe('the custom plugin ui', () => {
      */
     async function post(data: Record<string, unknown>, overrides: { source?: unknown, origin?: string } = {}) {
       const event = {
-        source: 'source' in overrides ? overrides.source : pluginWindow,
+        source: 'source' in overrides
+          ? overrides.source
+          : pluginWindow,
         origin: overrides.origin ?? environment.api.origin,
         data,
       } as unknown as MessageEvent
@@ -185,7 +199,9 @@ describe('the custom plugin ui', () => {
 
     describe('starting up', () => {
       it('reads the alias and type out of the schema', async () => {
-        await open({ arrange: () => {} })
+        await open({
+          arrange: () => {},
+        })
 
         expect(component.pluginAlias()).toBe('Example')
         expect(component.pluginType()).toBe('platform')
@@ -385,7 +401,9 @@ describe('the custom plugin ui', () => {
         // reply would just have gone to the attacker instead.
         await open()
         await ready()
-        const foreign = { postMessage: vi.fn() }
+        const foreign = {
+          postMessage: vi.fn(),
+        }
 
         await post({ action: 'config.get', requestId: 'r1' }, { source: foreign })
 
@@ -398,7 +416,9 @@ describe('the custom plugin ui', () => {
         // any window that can reach this one, could assert the API origin
         await open()
         await ready()
-        const foreign = { postMessage: vi.fn() }
+        const foreign = {
+          postMessage: vi.fn(),
+        }
 
         await post({ action: 'config.save', requestId: 'r1' }, { source: foreign })
 
@@ -427,12 +447,18 @@ describe('the custom plugin ui', () => {
 
     describe('reading and writing the config', () => {
       it('hands over the config blocks on request', async () => {
-        await open({ pluginConfig: [{ platform: 'Example', name: 'Front Room' }] })
+        await open({
+          pluginConfig: [
+            { platform: 'Example', name: 'Front Room' },
+          ],
+        })
         await ready()
 
         await post({ action: 'config.get', requestId: 'r1' })
 
-        expect(lastReply()?.data).toEqual([{ platform: 'Example', name: 'Front Room' }])
+        expect(lastReply()?.data).toEqual([
+          { platform: 'Example', name: 'Front Room' },
+        ])
       })
 
       it('hands over the schema on request', async () => {
@@ -447,7 +473,14 @@ describe('the custom plugin ui', () => {
       it('answers a save only once it has actually saved', async () => {
         // Replying with the promise itself throws DataCloneError inside
         // postMessage and the acknowledgement is silently dropped (#2869)
-        await open({ arrange: () => api.respond('post', /config-editor\/plugin/, { config: [{ platform: 'Example' }], affectedBridges: [] }) })
+        await open({
+          arrange: () => api.respond('post', /config-editor\/plugin/, {
+            config: [
+              { platform: 'Example' },
+            ],
+            affectedBridges: [],
+          }),
+        })
         await ready()
 
         await post({ action: 'config.save', requestId: 'r1' })
@@ -460,7 +493,9 @@ describe('the custom plugin ui', () => {
       })
 
       it('tells the plugin the save failed rather than leaving it waiting', async () => {
-        await open({ arrange: () => api.fail('post', /config-editor\/plugin/, new Error('disk full')) })
+        await open({
+          arrange: () => api.fail('post', /config-editor\/plugin/, new Error('disk full')),
+        })
         await ready()
 
         await post({ action: 'config.save', requestId: 'r1' })
@@ -473,7 +508,11 @@ describe('the custom plugin ui', () => {
         await open()
         await ready()
 
-        await post({ action: 'config.update', requestId: 'r1', pluginConfig: { platform: 'Example' } })
+        await post({
+          action: 'config.update',
+          requestId: 'r1',
+          pluginConfig: { platform: 'Example' },
+        })
 
         expect(lastReply()).toMatchObject({ success: false })
         expect(toastr.error).toHaveBeenCalledWith('plugins.config.must_be_array', 'toast.title_error')
@@ -483,7 +522,11 @@ describe('the custom plugin ui', () => {
         await open()
         await ready()
 
-        await post({ action: 'config.update', requestId: 'r1', pluginConfig: ['not an object'] })
+        await post({
+          action: 'config.update',
+          requestId: 'r1',
+          pluginConfig: ['not an object'],
+        })
 
         expect(lastReply()).toMatchObject({ success: false })
         expect(toastr.error).toHaveBeenCalledWith('plugins.config.must_be_array_objects', 'toast.title_error')
@@ -494,7 +537,11 @@ describe('the custom plugin ui', () => {
         await open()
         await ready()
 
-        await post({ action: 'config.update', requestId: 'r1', pluginConfig: [[]] })
+        await post({
+          action: 'config.update',
+          requestId: 'r1',
+          pluginConfig: [[]],
+        })
 
         expect(lastReply()).toMatchObject({ success: false })
         expect(toastr.error).toHaveBeenCalledWith('plugins.config.must_be_array_objects', 'toast.title_error')
@@ -508,7 +555,10 @@ describe('the custom plugin ui', () => {
         await post({
           action: 'config.update',
           requestId: 'r1',
-          pluginConfig: [{ name: 'One' }, { name: 'Two' }],
+          pluginConfig: [
+            { name: 'One' },
+            { name: 'Two' },
+          ],
         })
 
         expect(component.pluginConfig).toEqual([
@@ -518,10 +568,19 @@ describe('the custom plugin ui', () => {
       })
 
       it('stamps an accessory plugin as an accessory', async () => {
-        await open({ schema: makeSchema({ pluginType: 'accessory' }), pluginConfig: [] })
+        await open({
+          schema: makeSchema({ pluginType: 'accessory' }),
+          pluginConfig: [],
+        })
         await ready()
 
-        await post({ action: 'config.update', requestId: 'r1', pluginConfig: [{ name: 'One' }] })
+        await post({
+          action: 'config.update',
+          requestId: 'r1',
+          pluginConfig: [
+            { name: 'One' },
+          ],
+        })
 
         expect(component.pluginConfig[0]).toEqual({ accessory: 'Example', name: 'One' })
       })
@@ -530,11 +589,21 @@ describe('the custom plugin ui', () => {
         // Deliberate: the array and its objects keep their identity so the
         // schema form bound to them is not reset on every plugin update. The
         // side effect is that a key the plugin dropped stays behind
-        await open({ pluginConfig: [{ platform: 'Example', name: 'One', legacyOption: true }] })
+        await open({
+          pluginConfig: [
+            { platform: 'Example', name: 'One', legacyOption: true },
+          ],
+        })
         await ready()
         const blockBefore = component.pluginConfig[0]
 
-        await post({ action: 'config.update', requestId: 'r1', pluginConfig: [{ name: 'Renamed' }] })
+        await post({
+          action: 'config.update',
+          requestId: 'r1',
+          pluginConfig: [
+            { name: 'Renamed' },
+          ],
+        })
 
         expect(component.pluginConfig[0]).toBe(blockBefore)
         expect(component.pluginConfig[0]).toEqual({ platform: 'Example', name: 'Renamed', legacyOption: true })
@@ -549,7 +618,13 @@ describe('the custom plugin ui', () => {
         })
         await ready()
 
-        await post({ action: 'config.update', requestId: 'r1', pluginConfig: [{ name: 'One' }] })
+        await post({
+          action: 'config.update',
+          requestId: 'r1',
+          pluginConfig: [
+            { name: 'One' },
+          ],
+        })
 
         expect(component.pluginConfig).toHaveLength(1)
       })
@@ -581,7 +656,9 @@ describe('the custom plugin ui', () => {
         await post({ action: 'i18n.translations', requestId: 'r1' })
 
         // The file is flat, keyed by the dotted names the app uses
-        expect(lastReply()?.data).toMatchObject({ 'menu.label_settings': expect.any(String) })
+        expect(lastReply()?.data).toMatchObject({
+          'menu.label_settings': expect.any(String),
+        })
       })
 
       it('falls back to english for a language the app does not ship', async () => {
@@ -593,7 +670,9 @@ describe('the custom plugin ui', () => {
 
         await post({ action: 'i18n.translations', requestId: 'r1' })
 
-        expect(lastReply()?.data).toMatchObject({ 'menu.label_settings': expect.any(String) })
+        expect(lastReply()?.data).toMatchObject({
+          'menu.label_settings': expect.any(String),
+        })
       })
     })
 
@@ -683,7 +762,9 @@ describe('the custom plugin ui', () => {
 
         await post({ action: 'cachedAccessories.get', requestId: 'r1' })
 
-        expect(lastReply()?.data).toEqual([{ plugin: 'homebridge-example', displayName: 'Mine' }])
+        expect(lastReply()?.data).toEqual([
+          { plugin: 'homebridge-example', displayName: 'Mine' },
+        ])
       })
 
       it('gives the plugin only its own matter accessories', async () => {
@@ -697,7 +778,9 @@ describe('the custom plugin ui', () => {
 
         await post({ action: 'cachedMatterAccessories.get', requestId: 'r1' })
 
-        expect(lastReply()?.data).toEqual([{ plugin: 'homebridge-example', displayName: 'Mine' }])
+        expect(lastReply()?.data).toEqual([
+          { plugin: 'homebridge-example', displayName: 'Mine' },
+        ])
       })
 
       it.each([
@@ -789,7 +872,12 @@ describe('the custom plugin ui', () => {
       it('clears the custom form when the plugin ends it', async () => {
         await open()
         await ready()
-        await post({ action: 'form.create', formId: 'pairing', schema: {}, data: {} })
+        await post({
+          action: 'form.create',
+          formId: 'pairing',
+          schema: {},
+          data: {},
+        })
 
         await post({ action: 'form.end' })
         await new Promise(resolve => setTimeout(resolve, 0))
@@ -803,7 +891,12 @@ describe('the custom plugin ui', () => {
         async function withForm() {
           await open()
           await ready()
-          await post({ action: 'form.create', formId: 'pairing', schema: { type: 'object' }, data: { code: '' } })
+          await post({
+            action: 'form.create',
+            formId: 'pairing',
+            schema: { type: 'object' },
+            data: { code: '' },
+          })
           pluginWindow.postMessage.mockClear()
         }
 
@@ -829,11 +922,16 @@ describe('the custom plugin ui', () => {
           component.formUpdatedSubject.next({ code: '1234' })
           vi.advanceTimersByTime(200)
 
-          expect(streams().map(entry => entry.message)).toEqual([{
-            action: 'stream',
-            event: 'pairing',
-            data: { formEvent: 'change', formData: { code: '1234' } },
-          }])
+          expect(streams().map(entry => entry.message)).toEqual([
+            {
+              action: 'stream',
+              event: 'pairing',
+              data: {
+                formEvent: 'change',
+                formData: { code: '1234' },
+              },
+            },
+          ])
         })
 
         it('sends only the last edit of a burst of typing', async () => {
@@ -850,7 +948,9 @@ describe('the custom plugin ui', () => {
           component.formUpdatedSubject.next({ code: '123' })
           vi.advanceTimersByTime(200)
 
-          expect(streams().map(entry => entry.message.data.formData)).toEqual([{ code: '123' }])
+          expect(streams().map(entry => entry.message.data.formData)).toEqual([
+            { code: '123' },
+          ])
         })
 
         it.each(['submit', 'cancel'] as const)('tells the plugin page the form was %sed, with what it holds', async (formEvent) => {
@@ -859,11 +959,16 @@ describe('the custom plugin ui', () => {
 
           component.formActionSubject.next(formEvent)
 
-          expect(streams().map(entry => entry.message)).toEqual([{
-            action: 'stream',
-            event: 'pairing',
-            data: { formEvent, formData: { code: '1234' } },
-          }])
+          expect(streams().map(entry => entry.message)).toEqual([
+            {
+              action: 'stream',
+              event: 'pairing',
+              data: {
+                formEvent,
+                formData: { code: '1234' },
+              },
+            },
+          ])
         })
 
         it('addresses the plugin page rather than any listening window', async () => {
@@ -925,7 +1030,11 @@ describe('the custom plugin ui', () => {
       })
 
       it('tells the plugin when the generated form is edited', async () => {
-        await open({ pluginConfig: [{ name: 'Example' }] })
+        await open({
+          pluginConfig: [
+            { name: 'Example' },
+          ],
+        })
         await ready()
         pluginWindow.postMessage.mockClear()
 
@@ -943,7 +1052,11 @@ describe('the custom plugin ui', () => {
       })
 
       it('says nothing on the form being built', async () => {
-        await open({ pluginConfig: [{ name: 'Example' }] })
+        await open({
+          pluginConfig: [
+            { name: 'Example' },
+          ],
+        })
         await ready()
         pluginWindow.postMessage.mockClear()
 
@@ -960,7 +1073,11 @@ describe('the custom plugin ui', () => {
         // ⚠️ The guard is one-shot, so the sequence matters: emit once to get past
         // the skipped build emission, refresh, then emit twice. Only the second of
         // those two may reach the plugin
-        await open({ pluginConfig: [{ name: 'Example' }] })
+        await open({
+          pluginConfig: [
+            { name: 'Example' },
+          ],
+        })
         await ready()
         await post({ action: 'schema.show' })
         component.schemaFormUpdatedSubject.next({})
@@ -983,7 +1100,11 @@ describe('the custom plugin ui', () => {
         // ⚠️ ng-formworks does not pick up a config replaced underneath it, so the
         // form is taken away and put back. Without it the boxes keep showing what
         // the user typed over what the plugin wrote
-        await open({ pluginConfig: [{ name: 'Example' }] })
+        await open({
+          pluginConfig: [
+            { name: 'Example' },
+          ],
+        })
         await ready()
         await post({ action: 'schema.show' })
         // ⚠️ Watched through the setter rather than the value: the off and the on
@@ -999,7 +1120,11 @@ describe('the custom plugin ui', () => {
       })
 
       it('leaves the generated form alone when it is not being shown', async () => {
-        await open({ pluginConfig: [{ name: 'Example' }] })
+        await open({
+          pluginConfig: [
+            { name: 'Example' },
+          ],
+        })
         await ready()
 
         ;(component as any).schemaFormRefreshSubject.next({})
@@ -1014,7 +1139,12 @@ describe('the custom plugin ui', () => {
         await open({
           pluginConfig: [],
           recommendChildBridges: true,
-          arrange: () => api.respond('post', /config-editor\/plugin/, { config: [{ platform: 'Example' }], affectedBridges: [] }),
+          arrange: () => api.respond('post', /config-editor\/plugin/, {
+            config: [
+              { platform: 'Example' },
+            ],
+            affectedBridges: [],
+          }),
         })
         await ready()
 
@@ -1026,10 +1156,17 @@ describe('the custom plugin ui', () => {
       })
 
       it('goes straight to the restart prompt on a later save', async () => {
-        const affectedBridges = [{ identifier: 'bridge-1' }]
+        const affectedBridges = [
+          { identifier: 'bridge-1' },
+        ]
         await open({
           recommendChildBridges: true,
-          arrange: () => api.respond('post', /config-editor\/plugin/, { config: [{ platform: 'Example' }], affectedBridges }),
+          arrange: () => api.respond('post', /config-editor\/plugin/, {
+            config: [
+              { platform: 'Example' },
+            ],
+            affectedBridges,
+          }),
         })
         await ready()
 
@@ -1043,7 +1180,12 @@ describe('the custom plugin ui', () => {
         await open({
           pluginConfig: [],
           recommendChildBridges: false,
-          arrange: () => api.respond('post', /config-editor\/plugin/, { config: [{ platform: 'Example' }], affectedBridges: [] }),
+          arrange: () => api.respond('post', /config-editor\/plugin/, {
+            config: [
+              { platform: 'Example' },
+            ],
+            affectedBridges: [],
+          }),
         })
         await ready()
 
@@ -1054,7 +1196,9 @@ describe('the custom plugin ui', () => {
       })
 
       it('stays open and toasts when the save fails', async () => {
-        await open({ arrange: () => api.fail('post', /config-editor\/plugin/, new Error('disk full')) })
+        await open({
+          arrange: () => api.fail('post', /config-editor\/plugin/, new Error('disk full')),
+        })
         await ready()
 
         const saved = await component.savePluginConfig(true)
@@ -1066,7 +1210,14 @@ describe('the custom plugin ui', () => {
       })
 
       it('saves without closing when only the save button was pressed', async () => {
-        await open({ arrange: () => api.respond('post', /config-editor\/plugin/, { config: [{ platform: 'Example' }], affectedBridges: [] }) })
+        await open({
+          arrange: () => api.respond('post', /config-editor\/plugin/, {
+            config: [
+              { platform: 'Example' },
+            ],
+            affectedBridges: [],
+          }),
+        })
         await ready()
 
         await component.savePluginConfig()
@@ -1111,7 +1262,9 @@ describe('the custom plugin ui', () => {
       })
 
       it('closes anyway when the session cannot be revoked', async () => {
-        await open({ arrange: () => api.fail('post', /session\/revoke$/, new Error('server gone')) })
+        await open({
+          arrange: () => api.fail('post', /session\/revoke$/, new Error('server gone')),
+        })
         await ready()
 
         await component.dismissModal()
@@ -1166,7 +1319,9 @@ describe('the custom plugin ui', () => {
 
     function create() {
       TestBed.resetTestingModule()
-      api = fakeApi().respond('get', /config-editor\/plugin/, [{ platform: 'Example', name: 'Loaded' }])
+      api = fakeApi().respond('get', /config-editor\/plugin/, [
+        { platform: 'Example', name: 'Loaded' },
+      ])
       modal = modalServiceSpy()
 
       TestBed.configureTestingModule({
@@ -1208,18 +1363,26 @@ describe('the custom plugin ui', () => {
       await settle()
 
       expect(api.lastCall('get')?.url).toBe('/config-editor/plugin/homebridge-example')
-      expect(modal.dataFor(CUSTOM_PLUGINS_MODAL_DATA)?.pluginConfig).toEqual([{ platform: 'Example', name: 'Loaded' }])
+      expect(modal.dataFor(CUSTOM_PLUGINS_MODAL_DATA)?.pluginConfig).toEqual([
+        { platform: 'Example', name: 'Loaded' },
+      ])
     })
 
     it('uses the config the caller already had, without a round trip', async () => {
       // The config editor opens this modal with the blocks it is already editing
-      const editorContext = { config: [{ platform: 'Example', name: 'Unsaved edit' }] } as any
+      const editorContext = {
+        config: [
+          { platform: 'Example', name: 'Unsaved edit' },
+        ],
+      } as any
 
       void service.openCustomSettingsUi(plugin, makeSchema(), editorContext)
       await settle()
 
       expect(api.callsTo('get')).toEqual([])
-      expect(modal.dataFor(CUSTOM_PLUGINS_MODAL_DATA)?.pluginConfig).toEqual([{ platform: 'Example', name: 'Unsaved edit' }])
+      expect(modal.dataFor(CUSTOM_PLUGINS_MODAL_DATA)?.pluginConfig).toEqual([
+        { platform: 'Example', name: 'Unsaved edit' },
+      ])
     })
 
     it('encodes a scoped plugin name in the url', async () => {

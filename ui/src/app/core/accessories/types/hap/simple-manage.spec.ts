@@ -45,7 +45,9 @@ describe('the simple HAP manage modals', () => {
     accessoryData = new Subject()
     return {
       accessoryData,
-      accessories: { services: [current] },
+      accessories: {
+        services: [current],
+      },
     } as unknown as AccessoriesService
   }
 
@@ -68,17 +70,28 @@ describe('the simple HAP manage modals', () => {
       providers: [
         provideTestTranslate(),
         provideFakes({ toastr }),
-        { provide: NgbActiveModal, useValue: activeModalStub() },
+        {
+          provide: NgbActiveModal,
+          useValue: activeModalStub(),
+        },
         {
           provide: ACCESSORY_MANAGE_MODAL_DATA,
-          useValue: { service: target, $accessories: accessoriesStub(target) },
+          useValue: {
+            service: target,
+            $accessories: accessoriesStub(target),
+          },
         },
       ],
     })
 
     TestBed.overrideComponent(type as any, {
       set: {
-        imports: [TranslatePipe, DurationPipe, DecimalPipe, UpperCasePipe],
+        imports: [
+          TranslatePipe,
+          DurationPipe,
+          DecimalPipe,
+          UpperCasePipe,
+        ],
         schemas: [NO_ERRORS_SCHEMA],
       },
     })
@@ -116,7 +129,9 @@ describe('the simple HAP manage modals', () => {
   }
 
   function mouseEvent() {
-    return { target: document.createElement('button') } as unknown as MouseEvent
+    return {
+      target: document.createElement('button'),
+    } as unknown as MouseEvent
   }
 
   beforeEach(() => {
@@ -166,7 +181,9 @@ describe('the simple HAP manage modals', () => {
         component.onTargetPositionChange()
       })
 
-      expect(writesTo(service)).toEqual([{ type: 'TargetPosition', value: 80 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'TargetPosition', value: 80 },
+      ])
     })
 
     it('shows it as opening while it moves towards the new position', async () => {
@@ -250,7 +267,9 @@ describe('the simple HAP manage modals', () => {
 
       component.setTargetMode(true, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'Mute', value: true }])
+      expect(writesTo(service)).toEqual([
+        { type: 'Mute', value: true },
+      ])
     })
 
     it('writes the volume slider to Volume', async () => {
@@ -262,7 +281,9 @@ describe('the simple HAP manage modals', () => {
         component.onVolumeStateChange()
       })
 
-      expect(writesTo(service)).toEqual([{ type: 'Volume', value: 25 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'Volume', value: 25 },
+      ])
     })
 
     it('writes the active buttons to Active', () => {
@@ -271,7 +292,9 @@ describe('the simple HAP manage modals', () => {
 
       component.setActive(0, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'Active', value: 0 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'Active', value: 0 },
+      ])
     })
 
     it('writes the media buttons to TargetMediaState', () => {
@@ -280,7 +303,9 @@ describe('the simple HAP manage modals', () => {
 
       component.setTargetState(1, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'TargetMediaState', value: 1 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'TargetMediaState', value: 1 },
+      ])
     })
 
     it('follows a mute change made elsewhere', () => {
@@ -323,8 +348,20 @@ describe('the simple HAP manage modals', () => {
     }
 
     it.each([
-      ['horizontal', { horizontal: 0 }, 'targetHorizontalTilt', 'onTargetHorizontalTiltChange', 'TargetHorizontalTiltAngle'],
-      ['vertical', { vertical: 0 }, 'targetVerticalTilt', 'onTargetVerticalTiltChange', 'TargetVerticalTiltAngle'],
+      [
+        'horizontal',
+        { horizontal: 0 },
+        'targetHorizontalTilt',
+        'onTargetHorizontalTiltChange',
+        'TargetHorizontalTiltAngle',
+      ],
+      [
+        'vertical',
+        { vertical: 0 },
+        'targetVerticalTilt',
+        'onTargetVerticalTiltChange',
+        'TargetVerticalTiltAngle',
+      ],
     ])('writes the %s slider to its own characteristic', async (_case, axes, field, method, type) => {
       const service = blind(axes)
       const component = create(WindowCoveringManageComponent, service) as any
@@ -334,7 +371,9 @@ describe('the simple HAP manage modals', () => {
         component[method]()
       })
 
-      expect(writesTo(service)).toEqual([{ type, value: 45 }])
+      expect(writesTo(service)).toEqual([
+        { type, value: 45 },
+      ])
     })
 
     it('keeps the two axes apart on a blind that has both', async () => {
@@ -348,7 +387,9 @@ describe('the simple HAP manage modals', () => {
         component.onTargetHorizontalTiltChange()
       })
 
-      expect(writesTo(service)).toEqual([{ type: 'TargetHorizontalTiltAngle', value: 30 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'TargetHorizontalTiltAngle', value: 30 },
+      ])
     })
 
     it('takes the slider bounds from the accessory, not the full tilt range', () => {
@@ -441,7 +482,9 @@ describe('the simple HAP manage modals', () => {
 
       component.setTargetMode(true, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'On', value: true }])
+      expect(writesTo(service)).toEqual([
+        { type: 'On', value: true },
+      ])
     })
 
     it('writes a number to Active for a v2 fan', () => {
@@ -451,7 +494,9 @@ describe('the simple HAP manage modals', () => {
 
       component.setTargetMode(true, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'Active', value: 1 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'Active', value: 1 },
+      ])
     })
 
     it('writes zero rather than false when a v2 fan is switched off', () => {
@@ -460,7 +505,9 @@ describe('the simple HAP manage modals', () => {
 
       component.setTargetMode(false, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'Active', value: 0 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'Active', value: 0 },
+      ])
     })
 
     it('switches the fan on when the speed is raised off zero', async () => {
@@ -527,8 +574,18 @@ describe('the simple HAP manage modals', () => {
     })
 
     it.each([
-      ['a v1 fan', () => fanV1(true, 50), () => fanV1(false, 20), false],
-      ['a v2 fan', () => fanV2(1, 50), () => fanV2(0, 20), false],
+      [
+        'a v1 fan',
+        () => fanV1(true, 50),
+        () => fanV1(false, 20),
+        false,
+      ],
+      [
+        'a v2 fan',
+        () => fanV2(1, 50),
+        () => fanV2(0, 20),
+        false,
+      ],
     ])('follows a change made elsewhere on %s', async (_case, initial, changed, expectedMode) => {
       const component = create(FanManageComponent, initial())
 
@@ -549,7 +606,9 @@ describe('the simple HAP manage modals', () => {
         component.onTargetRotationSpeedChange()
       })
 
-      expect(writesTo(service)).toEqual([{ type: 'RotationSpeed', value: 90 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'RotationSpeed', value: 90 },
+      ])
     })
 
     it('moves the slider to full when switching on a fan sitting at zero', () => {
@@ -572,7 +631,9 @@ describe('the simple HAP manage modals', () => {
 
       component.setRotationDirection(1, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'RotationDirection', value: 1 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'RotationDirection', value: 1 },
+      ])
     })
   })
 
@@ -593,7 +654,9 @@ describe('the simple HAP manage modals', () => {
 
       component.setTargetMode(true, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'Active', value: true }])
+      expect(writesTo(service)).toEqual([
+        { type: 'Active', value: true },
+      ])
     })
 
     it('writes the run time to SetDuration', async () => {
@@ -605,26 +668,40 @@ describe('the simple HAP manage modals', () => {
         component.onSetDurationStateChange()
       })
 
-      expect(writesTo(service)).toEqual([{ type: 'SetDuration', value: 600 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'SetDuration', value: 600 },
+      ])
     })
 
     it('reads the run time range off the characteristic', () => {
       const component = create(ValveManageComponent, valveService(0, 300))
 
-      expect(component.targetSetDuration).toEqual({ value: 300, min: 0, max: 3600, step: 60 })
+      expect(component.targetSetDuration).toEqual({
+        value: 300,
+        min: 0,
+        max: 3600,
+        step: 60,
+      })
     })
 
     it('offers no run time control to a valve without one', () => {
       const component = create(ValveManageComponent, hapService({
         type: 'Valve',
-        characteristics: [characteristic('Active', 0)],
+        characteristics: [
+          characteristic('Active', 0),
+        ],
       }))
 
       expect(component.targetSetDuration).toBeUndefined()
     })
 
     it('survives a live update on a valve with no run time', () => {
-      const service = hapService({ type: 'Valve', characteristics: [characteristic('Active', 0)] })
+      const service = hapService({
+        type: 'Valve',
+        characteristics: [
+          characteristic('Active', 0),
+        ],
+      })
       const component = create(ValveManageComponent, service)
 
       expect(() => accessoryData.next([service])).not.toThrow()
@@ -669,7 +746,9 @@ describe('the simple HAP manage modals', () => {
 
       component.setTargetMode(0, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'LockTargetState', value: 0 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'LockTargetState', value: 0 },
+      ])
     })
 
     it('offers no auto-relock control on a lock with no management service', () => {
@@ -685,7 +764,12 @@ describe('the simple HAP manage modals', () => {
       const component = create(LockMechanismManageComponent, service)
 
       expect(component.serviceManagement).toBe(managementOf(service))
-      expect(component.targetLockManagementAutoSecurityTimeout).toEqual({ value: 300, min: 0, max: 3600, step: 10 })
+      expect(component.targetLockManagementAutoSecurityTimeout).toEqual({
+        value: 300,
+        min: 0,
+        max: 3600,
+        step: 10,
+      })
     })
 
     it('writes the auto-relock time to the management service, not the lock', async () => {

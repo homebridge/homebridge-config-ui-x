@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, OnDestroy, OnInit, output, signal } from '@angular/core'
 import { JsonSchemaFormModule } from '@ng-formworks/core'
 
+import { ConfigInputComponent } from '@/app/core/components/schema-form/config-input.component'
 import { JsonSchemaFormPatchDirective } from '@/app/core/directives/json-schema-form-patch.directive'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
@@ -16,9 +17,21 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 })
 export class SchemaFormComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)
-  private availableLanguages = ['de', 'en', 'es', 'fr', 'it', 'pt', 'zh']
+  private availableLanguages = [
+    'de',
+    'en',
+    'es',
+    'fr',
+    'it',
+    'pt',
+    'zh',
+  ]
 
   readonly configSchema = input.required<any>()
+  // Deliberately not a model(): onChanges updates the caller's object in place
+  // and emits that SAME reference, which a model's set() would swallow as "no
+  // change" - so the parent would never hear about an edit
+  // eslint-disable-next-line angular/prefer-signal-model
   readonly data = input.required<any>()
 
   readonly dataChange = output<any>()
@@ -27,6 +40,7 @@ export class SchemaFormComponent implements OnInit, OnDestroy {
 
   public readonly currentData = signal<any>(null)
   public readonly language = signal('en')
+  public readonly widgets = { text: ConfigInputComponent, password: ConfigInputComponent }
   public jsonFormOptions = {
     addSubmit: false,
     loadExternalAssets: false,

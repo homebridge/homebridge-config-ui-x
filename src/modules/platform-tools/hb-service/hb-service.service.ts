@@ -8,7 +8,7 @@ import { pathExists, readJson, writeJsonSync } from 'fs-extra/esm'
 
 import { ConfigService } from '../../../core/config/config.service.js'
 import { Logger } from '../../../core/logger/logger.service.js'
-import { RE_ANSI_COLOUR } from '../../../core/regex.constants.js'
+import { RE_ANSI_COLOUR, RE_ANSI_COLOUR_UNFINISHED } from '../../../core/regex.constants.js'
 import { HbServiceStartupSettings } from './hb-service.dto.js'
 
 @Injectable()
@@ -33,7 +33,9 @@ export class HbServiceService {
         return {
           HOMEBRIDGE_DEBUG: settings.debugMode,
           HOMEBRIDGE_KEEP_ORPHANS: settings.keepOrphans,
-          HOMEBRIDGE_INSECURE: typeof settings.insecureMode === 'boolean' ? settings.insecureMode : this.configService.homebridgeInsecureMode,
+          HOMEBRIDGE_INSECURE: typeof settings.insecureMode === 'boolean'
+            ? settings.insecureMode
+            : this.configService.homebridgeInsecureMode,
           ENV_DEBUG: settings.env.DEBUG,
           ENV_NODE_OPTIONS: settings.env.NODE_OPTIONS,
         }
@@ -93,18 +95,37 @@ export class HbServiceService {
       throw new BadRequestException('Cannot read log file. Check the log file permissions.')
     }
 
+    // The colored log is sent exactly as it is on disk, so it streams as raw
+    // bytes. Decoded utf8 strings would only be re-encoded on the way out, and
+    // string chunks holding multi-byte characters can stall a chunked response
+    // under backpressure (https://github.com/nodejs/node/issues/66781).
     if (!shouldRemoveColour) {
-      return createReadStream(this.configService.ui.log.path, { encoding: 'utf8' })
+      return createReadStream(this.configService.ui.log.path)
     }
 
-    const removeColour = new Transform({
-      transform(chunk, _encoding, callback) {
-        callback(null, chunk.toString().replace(RE_ANSI_COLOUR, ''))
+    // Color codes are stripped chunk by chunk, so a code that a chunk boundary
+    // cuts short is held back and stripped once the next chunk finishes it. The
+    // stream decodes utf8 so multi-byte characters stay whole across chunks.
+    let unfinished = ''
+
+    const removeColor = new Transform({
+      decodeStrings: false,
+      transform(chunk: string, _encoding, callback) {
+        const text = unfinished + chunk
+        const lastEscape = text.lastIndexOf('\u001B')
+
+        unfinished = (lastEscape !== -1 && RE_ANSI_COLOUR_UNFINISHED.test(text.slice(lastEscape)))
+          ? text.slice(lastEscape)
+          : ''
+        callback(null, text.slice(0, text.length - unfinished.length).replace(RE_ANSI_COLOUR, ''))
+      },
+      flush(callback) {
+        callback(null, unfinished)
       },
     })
 
     return createReadStream(this.configService.ui.log.path, { encoding: 'utf8' })
-      .pipe(removeColour)
+      .pipe(removeColor)
   }
 
   /**

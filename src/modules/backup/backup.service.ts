@@ -102,7 +102,9 @@ export class BackupService {
         }
         pending--
         if (pending === 0) {
-          firstError ? rej(firstError) : res()
+          firstError
+            ? rej(firstError)
+            : res()
         }
       }
 

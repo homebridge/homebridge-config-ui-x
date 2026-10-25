@@ -34,18 +34,54 @@ describe('destructive accessory and bridge modals', () => {
   let toastr: ReturnType<typeof toastrStub>
 
   const pairings = [
-    { _id: 'main-bridge', _username: '0E:AA:AA:AA:AA:AA', _main: true, _category: 'bridge', name: 'Homebridge' },
-    { _id: 'hue-bridge', _username: '0E:BB:BB:BB:BB:BB', _main: false, _category: 'bridge', name: 'Hue', _matter: true },
-    { _id: 'ring-bridge', _username: '0E:CC:CC:CC:CC:CC', _main: false, _category: 'bridge', name: 'Ring', _couldBeStale: true },
-    { _id: 'camera', _username: '0E:DD:DD:DD:DD:DD', _main: false, _category: 'camera', name: 'Doorbell' },
+    {
+      _id: 'main-bridge',
+      _username: '0E:AA:AA:AA:AA:AA',
+      _main: true,
+      _category: 'bridge',
+      name: 'Homebridge',
+    },
+    {
+      _id: 'hue-bridge',
+      _username: '0E:BB:BB:BB:BB:BB',
+      _main: false,
+      _category: 'bridge',
+      name: 'Hue',
+      _matter: true,
+    },
+    {
+      _id: 'ring-bridge',
+      _username: '0E:CC:CC:CC:CC:CC',
+      _main: false,
+      _category: 'bridge',
+      name: 'Ring',
+      _couldBeStale: true,
+    },
+    {
+      _id: 'camera',
+      _username: '0E:DD:DD:DD:DD:DD',
+      _main: false,
+      _category: 'camera',
+      name: 'Doorbell',
+    },
   ]
 
   const hapAccessories = [
-    { UUID: 'uuid-1', displayName: 'Lamp', $cacheFile: 'cachedAccessories.hue-bridge', services: [] },
+    {
+      UUID: 'uuid-1',
+      displayName: 'Lamp',
+      $cacheFile: 'cachedAccessories.hue-bridge',
+      services: [],
+    },
   ]
 
   const matterAccessories = [
-    { uuid: 'uuid-2', displayName: 'Plug', $deviceId: 'device-2', services: [] },
+    {
+      uuid: 'uuid-2',
+      displayName: 'Plug',
+      $deviceId: 'device-2',
+      services: [],
+    },
   ]
 
   function configure(matterSupport = true) {
@@ -58,7 +94,9 @@ describe('destructive accessory and bridge modals', () => {
       get: vi.fn(async () => ({ hapAccessories, matterAccessories, pairings })),
       invalidate: vi.fn(),
     }
-    cache = { invalidateAll: vi.fn() }
+    cache = {
+      invalidateAll: vi.fn(),
+    }
     toastr = toastrStub()
 
     TestBed.configureTestingModule({
@@ -67,13 +105,20 @@ describe('destructive accessory and bridge modals', () => {
         provideTestTranslate(),
         provideFakes({
           api,
-          settings: makeSettings({ env: { featureFlags: { matterSupport } } }),
+          settings: makeSettings({
+            env: {
+              featureFlags: { matterSupport },
+            },
+          }),
           toastr,
           activeModal,
         }),
         { provide: AccessoryOverviewCacheService, useValue: overview },
         { provide: TtlCacheService, useValue: cache },
-        { provide: REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA, useValue: { selectedBridge: 'hue-bridge' } },
+        {
+          provide: REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA,
+          useValue: { selectedBridge: 'hue-bridge' },
+        },
       ],
     })
 
@@ -109,7 +154,9 @@ describe('destructive accessory and bridge modals', () => {
 
       expect(overview.invalidate).toHaveBeenCalled()
       expect(activeModal.close).toHaveBeenCalled()
-      expect(navigate).toHaveBeenCalledWith(['/restart'], { queryParams: { restarting: true } })
+      expect(navigate).toHaveBeenCalledWith(['/restart'], {
+        queryParams: { restarting: true },
+      })
     })
 
     it('lets the user try again when it fails', async () => {
@@ -140,7 +187,9 @@ describe('destructive accessory and bridge modals', () => {
       // A delete with a body is unusual enough that a refactor could easily
       // drop it and silently delete nothing
       expect(api.lastCall('delete', '/server/pairings/accessories')?.options).toEqual({
-        body: [{ id: 'hue-bridge', protocol: 'hap' }],
+        body: [
+          { id: 'hue-bridge', protocol: 'hap' },
+        ],
       })
     })
 
@@ -154,7 +203,9 @@ describe('destructive accessory and bridge modals', () => {
 
       expect(overview.invalidate).toHaveBeenCalled()
       expect(activeModal.close).toHaveBeenCalled()
-      expect(navigate).toHaveBeenCalledWith(['/restart'], { queryParams: { restarting: true } })
+      expect(navigate).toHaveBeenCalledWith(['/restart'], {
+        queryParams: { restarting: true },
+      })
     })
 
     it('lets the user try again when the removal fails', async () => {
@@ -206,32 +257,42 @@ describe('destructive accessory and bridge modals', () => {
       modal.toggleList('hue-bridge', 'hap')
 
       // Un-ticking the hap row must not take the matter row with it
-      expect(modal.toDelete()).toEqual([{ id: 'hue-bridge', protocol: 'matter' }])
+      expect(modal.toDelete()).toEqual([
+        { id: 'hue-bridge', protocol: 'matter' },
+      ])
     })
   })
 
   describe('removing individual accessories', () => {
     it('sends hap accessories with their cache file', async () => {
       const modal = await open(RemoveIndividualAccessoriesComponent)
-      modal.toDelete.set([{ uuid: 'uuid-1', cacheFile: 'cachedAccessories.hue-bridge', protocol: 'hap' } as any])
+      modal.toDelete.set([
+        { uuid: 'uuid-1', cacheFile: 'cachedAccessories.hue-bridge', protocol: 'hap' } as any,
+      ])
 
       await modal.removeAccessories()
 
       expect(api.lastCall('delete', '/server/cached-accessories')?.options).toEqual({
-        body: [{ uuid: 'uuid-1', cacheFile: 'cachedAccessories.hue-bridge' }],
+        body: [
+          { uuid: 'uuid-1', cacheFile: 'cachedAccessories.hue-bridge' },
+        ],
       })
     })
 
     it('sends matter accessories with their device id instead', async () => {
       const modal = await open(RemoveIndividualAccessoriesComponent)
-      modal.toDelete.set([{ uuid: 'uuid-2', deviceId: 'device-2', protocol: 'matter' } as any])
+      modal.toDelete.set([
+        { uuid: 'uuid-2', deviceId: 'device-2', protocol: 'matter' } as any,
+      ])
 
       await modal.removeAccessories()
 
       // The two protocols use different endpoints and different payload
       // shapes, which is easy to blur together when editing this
       expect(api.lastCall('delete', '/server/matter-accessories')?.options).toEqual({
-        body: [{ uuid: 'uuid-2', deviceId: 'device-2' }],
+        body: [
+          { uuid: 'uuid-2', deviceId: 'device-2' },
+        ],
       })
     })
 
@@ -267,7 +328,9 @@ describe('destructive accessory and bridge modals', () => {
       await modal.removeBridges()
 
       expect(api.lastCall('delete', '/server/pairings')?.options).toEqual({
-        body: [{ id: 'hue-bridge', resetPairingInfo: true }],
+        body: [
+          { id: 'hue-bridge', resetPairingInfo: true },
+        ],
       })
     })
 
@@ -291,7 +354,9 @@ describe('destructive accessory and bridge modals', () => {
       await modal.removeBridges()
 
       expect(overview.invalidate).toHaveBeenCalled()
-      expect(navigate).toHaveBeenCalledWith(['/restart'], { queryParams: { restarting: true } })
+      expect(navigate).toHaveBeenCalledWith(['/restart'], {
+        queryParams: { restarting: true },
+      })
     })
   })
 

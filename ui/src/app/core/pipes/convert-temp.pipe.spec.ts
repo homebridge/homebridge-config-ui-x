@@ -8,7 +8,12 @@ describe('ConvertTempPipe', () => {
   function createPipe(temperatureUnits: 'c' | 'f'): ConvertTempPipe {
     TestBed.configureTestingModule({
       providers: [
-        { provide: SettingsService, useValue: { env: { temperatureUnits } } },
+        {
+          provide: SettingsService,
+          useValue: {
+            env: { temperatureUnits },
+          },
+        },
       ],
     })
     return TestBed.runInInjectionContext(() => new ConvertTempPipe())

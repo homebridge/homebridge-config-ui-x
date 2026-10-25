@@ -68,7 +68,15 @@ describe('ChildBridges (e2e)', () => {
   describe('ChildBridgesGateway', () => {
     it('should return child bridge metadata when IPC responds', async () => {
       const mockMetadata = [
-        { status: 'ok', username: '0E:AA:BB:CC:DD:EE', name: 'Test Bridge', plugin: 'test-plugin', identifier: 'test', pin: '123-45-678', manuallyStopped: false },
+        {
+          status: 'ok',
+          username: '0E:AA:BB:CC:DD:EE',
+          name: 'Test Bridge',
+          plugin: 'test-plugin',
+          identifier: 'test',
+          pin: '123-45-678',
+          manuallyStopped: false,
+        },
       ]
 
       // Simulate IPC responding to the metadata request

@@ -29,6 +29,13 @@ export class CpuWidgetComponent extends BaseChartWidgetComponent {
 
   // Signals
   public readonly cpuTemperature = signal<CpuWidgetData['cpuTemperature']>({})
+
+  /** Whether there is a real temperature to show. -1 is the no-sensor sentinel. */
+  public hasTemperatureReading(): boolean {
+    const main = this.cpuTemperature().main
+    return main !== undefined && main !== null && main !== -1
+  }
+
   public readonly currentLoad = signal<number | undefined>(undefined)
 
   // Other properties

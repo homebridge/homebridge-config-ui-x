@@ -20,6 +20,12 @@ import { StatusGateway } from '../../src/modules/status/status.gateway.js'
 import { StatusModule } from '../../src/modules/status/status.module.js'
 import { StatusService } from '../../src/modules/status/status.service.js'
 
+// Near the top of the file (after imports)
+const NETWORK_TEST_TIMEOUT
+  = process.platform === 'win32' && process.arch === 'arm64'
+    ? 60_000
+    : 30_000
+
 describe('StatusGateway (e2e)', () => {
   let app: NestFastifyApplication
 
@@ -88,7 +94,10 @@ describe('StatusGateway (e2e)', () => {
 
   describe('Dashboard Layout', () => {
     it('should save and return dashboard layout', async () => {
-      const layout = [{ widget: 'cpu', order: 1 }, { widget: 'memory', order: 2 }]
+      const layout = [
+        { widget: 'cpu', order: 1 },
+        { widget: 'memory', order: 2 },
+      ]
 
       const setResult = await statusGateway.setDashboardLayout(client, layout)
       expect(setResult).toEqual({ status: 'ok' })
@@ -106,7 +115,9 @@ describe('StatusGateway (e2e)', () => {
   })
 
   describe('Dashboard Init', () => {
-    const mockLayout = [{ widget: 'cpu', order: 1 }] as any
+    const mockLayout = [
+      { widget: 'cpu', order: 1 },
+    ] as any
 
     it('returns just the layout on non-Raspberry-Pi hosts', async () => {
       vi.spyOn(statusService, 'getDashboardLayout').mockResolvedValue(mockLayout)
@@ -148,7 +159,12 @@ describe('StatusGateway (e2e)', () => {
 
   describe('Version Checks', () => {
     it('should return homebridge version info', async () => {
-      const mockPackage = { name: 'homebridge', installedVersion: '1.7.0', latestVersion: '1.8.0', updateAvailable: true }
+      const mockPackage = {
+        name: 'homebridge',
+        installedVersion: '1.7.0',
+        latestVersion: '1.8.0',
+        updateAvailable: true,
+      }
       vi.spyOn(pluginsService, 'getHomebridgePackage').mockResolvedValue(mockPackage as any)
 
       const result = await statusGateway.homebridgeVersionCheck()
@@ -248,7 +264,9 @@ describe('StatusGateway (e2e)', () => {
 
   describe('Out of Date Plugins', () => {
     it('should return out of date plugins list', async () => {
-      const mockPlugins = [{ name: 'homebridge-test', installedVersion: '1.0.0', latestVersion: '2.0.0' }]
+      const mockPlugins = [
+        { name: 'homebridge-test', installedVersion: '1.0.0', latestVersion: '2.0.0' },
+      ]
       vi.spyOn(pluginsService, 'getOutOfDatePlugins').mockResolvedValue(mockPlugins as any)
 
       const result = await statusGateway.getOutOfDatePlugins()
@@ -270,13 +288,29 @@ describe('StatusGateway (e2e)', () => {
       nodeVersion: 'v22.0.0',
     } as any
     const mockNode = { currentVersion: 'v22.0.0', latestVersion: 'v22.0.0', updateAvailable: false } as any
-    const mockHomebridge = { name: 'homebridge', installedVersion: '2.0.0', latestVersion: '2.0.0', updateAvailable: false } as any
+    const mockHomebridge = {
+      name: 'homebridge',
+      installedVersion: '2.0.0',
+      latestVersion: '2.0.0',
+      updateAvailable: false,
+    } as any
     const mockHomebridgeUi = { name: 'homebridge-config-ui-x', installedVersion: '5.0.0' } as any
-    const mockOutOfDatePlugins = [{ name: 'homebridge-test', installedVersion: '1.0.0', latestVersion: '2.0.0' }] as any
+    const mockOutOfDatePlugins = [
+      { name: 'homebridge-test', installedVersion: '1.0.0', latestVersion: '2.0.0' },
+    ] as any
     const mockHbV2ReadyPlugins = [
-      { name: 'homebridge-config-ui-x', engines: { homebridge: '^1.6.0 || ^2.0.0' } },
-      { name: 'homebridge-foo', engines: { homebridge: '^2.0.0' } },
-      { name: 'homebridge-bar', engines: { homebridge: '>=2.0.0-beta.0' } },
+      {
+        name: 'homebridge-config-ui-x',
+        engines: { homebridge: '^1.6.0 || ^2.0.0' },
+      },
+      {
+        name: 'homebridge-foo',
+        engines: { homebridge: '^2.0.0' },
+      },
+      {
+        name: 'homebridge-bar',
+        engines: { homebridge: '>=2.0.0-beta.0' },
+      },
     ] as any
 
     const mockAllForHappyPath = () => {
@@ -302,7 +336,12 @@ describe('StatusGateway (e2e)', () => {
     })
 
     it('should return docker details when running in docker', async () => {
-      const mockDocker = { currentVersion: '2024-01-01', latestVersion: '2024-02-01', updateAvailable: true, latestReleaseBody: '' }
+      const mockDocker = {
+        currentVersion: '2024-01-01',
+        latestVersion: '2024-02-01',
+        updateAvailable: true,
+        latestReleaseBody: '',
+      }
       vi.spyOn(statusService, 'getHomebridgeServerInfo').mockResolvedValue({ ...mockServerInfo, homebridgeRunningInDocker: true })
       vi.spyOn(statusService, 'getNodeVersionInfo').mockResolvedValue(mockNode)
       vi.spyOn(pluginsService, 'getHomebridgePackage').mockResolvedValue(mockHomebridge)
@@ -340,8 +379,14 @@ describe('StatusGateway (e2e)', () => {
       vi.spyOn(pluginsService, 'getHomebridgeUiPackage').mockResolvedValue(mockHomebridgeUi)
       vi.spyOn(pluginsService, 'getOutOfDatePlugins').mockResolvedValue([])
       vi.spyOn(pluginsService, 'getInstalledPlugins').mockResolvedValue([
-        { name: 'homebridge-foo', engines: { homebridge: '^2.0.0' } },
-        { name: 'homebridge-bar', engines: { homebridge: '^1.6.0' } },
+        {
+          name: 'homebridge-foo',
+          engines: { homebridge: '^2.0.0' },
+        },
+        {
+          name: 'homebridge-bar',
+          engines: { homebridge: '^1.6.0' },
+        },
       ] as any)
 
       const result = await statusGateway.getVersionOverview() as any
@@ -356,8 +401,14 @@ describe('StatusGateway (e2e)', () => {
       vi.spyOn(pluginsService, 'getOutOfDatePlugins').mockResolvedValue([])
       vi.spyOn(pluginsService, 'getInstalledPlugins').mockResolvedValue([
         // UI plugin without a v2 range — must NOT block hbV2Ready
-        { name: 'homebridge-config-ui-x', engines: { homebridge: '^1.6.0' } },
-        { name: 'homebridge-foo', engines: { homebridge: '^2.0.0' } },
+        {
+          name: 'homebridge-config-ui-x',
+          engines: { homebridge: '^1.6.0' },
+        },
+        {
+          name: 'homebridge-foo',
+          engines: { homebridge: '^2.0.0' },
+        },
       ] as any)
 
       const result = await statusGateway.getVersionOverview() as any
@@ -428,7 +479,7 @@ describe('StatusGateway (e2e)', () => {
       const result = await statusGateway.getServerNetworkInfo(client, { netInterfaces: [] })
       expect(result).toHaveProperty('net')
       expect(result).toHaveProperty('point')
-    }, 30000)
+    }, NETWORK_TEST_TIMEOUT)
 
     it('should return uptime info', async () => {
       const result = await statusGateway.getServerUptimeInfo()
@@ -540,10 +591,30 @@ describe('StatusGateway (e2e)', () => {
 
   describe('Docker Version Checking', () => {
     const mockReleases = [
-      { tag_name: '2025-12-15', published_at: '2025-12-15T00:00:00Z', prerelease: false, body: 'Stable release notes' },
-      { tag_name: '2025-12-01', published_at: '2025-12-01T00:00:00Z', prerelease: false, body: 'Older stable' },
-      { tag_name: 'beta-2025-12-20', published_at: '2025-12-20T00:00:00Z', prerelease: true, body: 'Beta notes' },
-      { tag_name: 'test-2025-12-18', published_at: '2025-12-18T00:00:00Z', prerelease: true, body: 'Test notes' },
+      {
+        tag_name: '2025-12-15',
+        published_at: '2025-12-15T00:00:00Z',
+        prerelease: false,
+        body: 'Stable release notes',
+      },
+      {
+        tag_name: '2025-12-01',
+        published_at: '2025-12-01T00:00:00Z',
+        prerelease: false,
+        body: 'Older stable',
+      },
+      {
+        tag_name: 'beta-2025-12-20',
+        published_at: '2025-12-20T00:00:00Z',
+        prerelease: true,
+        body: 'Beta notes',
+      },
+      {
+        tag_name: 'test-2025-12-18',
+        published_at: '2025-12-18T00:00:00Z',
+        prerelease: true,
+        body: 'Test notes',
+      },
     ]
 
     it('getRecentReleases should parse and tag releases correctly', async () => {

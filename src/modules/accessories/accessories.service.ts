@@ -25,6 +25,18 @@ import {
   MatterStateUpdate,
 } from '../../core/matter/matter.interfaces.js'
 
+/**
+ * Whether a hap-client error is a characteristic answering with a HAP error
+ * status (a device that is off or not responding), rather than a failed request.
+ *
+ * Since hap-client 5.4.0 a refresh throws this after it has applied every value
+ * that did answer, so the service is still current apart from the parts that
+ * did not. The class is not exported, so it is recognised by its name.
+ */
+function isNotRespondingError(error: unknown): boolean {
+  return (error as Error | undefined)?.name === 'HapCharacteristicError'
+}
+
 @Injectable()
 export class AccessoriesService {
   public hapClient: HapClient
@@ -67,6 +79,7 @@ export class AccessoriesService {
       this.hapClient = new HapClient({
         pin: this.configService.homebridgeConfig.bridge.pin,
         pins: this.getChildBridgePins(),
+        ownUsernames: this.getOwnBridgeUsernames(),
         logger: this.logger,
         config: this.configService.ui.accessoryControl || {},
       })
@@ -84,6 +97,39 @@ export class AccessoriesService {
   }
 
   /**
+   * The usernames of every bridge that belongs to THIS Homebridge: the main
+   * bridge plus each child bridge in the config.
+   *
+   * Discovery finds every Homebridge on the network, and another install's
+   * bridges refuse our pin by design - their pin belongs to whoever runs them.
+   * Telling hap-client which bridges are ours lets it log those refusals at
+   * debug instead of warning the owner to fix a pin that is not theirs
+   * (#2979, #3001). A child bridge of ours that refuses the pin still warns.
+   */
+  private getOwnBridgeUsernames(): string[] {
+    const config = this.configService.homebridgeConfig
+    const blocks = [
+      ...(Array.isArray(config?.platforms)
+        ? config.platforms
+        : []),
+      ...(Array.isArray(config?.accessories)
+        ? config.accessories
+        : []),
+    ]
+
+    const usernames = new Set<string>()
+    if (config?.bridge?.username) {
+      usernames.add(config.bridge.username)
+    }
+    for (const block of blocks) {
+      if (block?._bridge?.username) {
+        usernames.add(block._bridge.username)
+      }
+    }
+    return [...usernames]
+  }
+
+  /**
    * The pin for each child bridge that sets its own, keyed by username.
    *
    * ⚠️ Even in insecure mode a bridge checks the `Authorization` header against
@@ -98,8 +144,12 @@ export class AccessoriesService {
   private getChildBridgePins(): Record<string, string> {
     const config = this.configService.homebridgeConfig
     const blocks = [
-      ...(Array.isArray(config?.platforms) ? config.platforms : []),
-      ...(Array.isArray(config?.accessories) ? config.accessories : []),
+      ...(Array.isArray(config?.platforms)
+        ? config.platforms
+        : []),
+      ...(Array.isArray(config?.accessories)
+        ? config.accessories
+        : []),
     ]
 
     const pins: Record<string, string> = {}
@@ -180,13 +230,18 @@ export class AccessoriesService {
       }
 
       // Merge both for caching and legacy compatibility
-      services = [...hapServices, ...matterServices]
+      services = [
+        ...hapServices,
+        ...matterServices,
+      ]
       this.accessoriesCache.set('services', services)
     }
 
     // Expose this session's reload so a repeat `get-accessories` for this same
     // socket re-fetches in place rather than re-registering listeners.
-    this.clientSessions.set(client, { reload: () => loadAllAccessories(true) })
+    this.clientSessions.set(client, {
+      reload: () => loadAllAccessories(true),
+    })
 
     // Ensure Matter monitoring is started (idempotent — one-shot per UI
     // process lifetime, shared across concurrent connects). Every client
@@ -233,7 +288,10 @@ export class AccessoriesService {
                 this.refreshCharacteristics(hapServices)
               }, 1500)
               // Update services list with new HAP services
-              services = [...hapServices, ...this.matterAccessories]
+              services = [
+                ...hapServices,
+                ...this.matterAccessories,
+              ]
             } catch (e) {
               client.emit('accessory-control-failure', e.message)
             }
@@ -328,6 +386,12 @@ export class AccessoriesService {
   private refreshCharacteristics(services: ServiceType[]) {
     Promise.all(services.map(service =>
       service.refreshCharacteristics().catch((error) => {
+        // A device that is off is normal, and this runs on every page load, so
+        // say so quietly - its other values were still refreshed
+        if (isNotRespondingError(error)) {
+          this.logger.debug(`Some characteristics of service ${service.uniqueId} did not respond: ${error.message}`)
+          return
+        }
         this.logger.error(`Failed to refresh characteristics for service ${service.uniqueId}: ${error.message}`)
       }),
     )).catch((error) => {
@@ -377,6 +441,11 @@ export class AccessoriesService {
       await service.refreshCharacteristics()
       return service
     } catch (e) {
+      // Still return the accessory: each characteristic's status says which
+      // parts did not respond, and the rest are current
+      if (isNotRespondingError(e)) {
+        return service
+      }
       throw new BadRequestException(e.message)
     }
   }
@@ -487,6 +556,11 @@ export class AccessoriesService {
       await service.refreshCharacteristics()
       return service
     } catch (e) {
+      // The value was set; only the read-back found a part not responding, so
+      // reporting a failure here would make a caller retry a change that worked
+      if (isNotRespondingError(e)) {
+        return service
+      }
       throw new BadRequestException(e.message)
     }
   }
@@ -565,7 +639,9 @@ export class AccessoriesService {
    * Build a Matter uniqueId from components
    */
   private buildMatterUniqueId(uuid: string, partId?: string): string {
-    return partId ? `matter:${uuid}:${partId}` : `matter:${uuid}`
+    return partId
+      ? `matter:${uuid}:${partId}`
+      : `matter:${uuid}`
   }
 
   /**

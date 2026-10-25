@@ -55,7 +55,10 @@ export class SetupWizardComponent implements OnInit {
   private io!: IoNamespace
   public createUserForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
-    password: new FormControl('', [Validators.required, Validators.minLength(4)]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(4),
+    ]),
     passwordConfirm: new FormControl('', [Validators.required]),
   }, this.matchPassword)
 
@@ -281,13 +284,17 @@ export class SetupWizardComponent implements OnInit {
     const passwordConfirm = passwordConfirmCtrl.value
     // Preserve any other validator errors already on passwordConfirm
     // (e.g. `required`) and only flip our `matchPassword` key on/off.
-    const otherErrors = { ...(passwordConfirmCtrl.errors ?? {}) }
+    const otherErrors = {
+      ...(passwordConfirmCtrl.errors ?? {}),
+    }
     delete otherErrors.matchPassword
     if (password !== passwordConfirm) {
       passwordConfirmCtrl.setErrors({ ...otherErrors, matchPassword: true })
       return { matchPassword: true }
     }
-    passwordConfirmCtrl.setErrors(Object.keys(otherErrors).length ? otherErrors : null)
+    passwordConfirmCtrl.setErrors(Object.keys(otherErrors).length
+      ? otherErrors
+      : null)
     return null
   }
 }

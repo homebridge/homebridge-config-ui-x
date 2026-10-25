@@ -127,7 +127,11 @@ describe('loginComponent', () => {
 
     it('sends a non-admin home instead of to an admin-only page', async () => {
       window.sessionStorage.setItem('target_route', '/config')
-      const { page } = await open({ auth: makeAuth({ user: { admin: false } }) })
+      const { page } = await open({
+        auth: makeAuth({
+          user: { admin: false },
+        }),
+      })
       page.form.setValue({ username: 'bob', password: 'letmein', otp: '' })
 
       await page.onSubmit()
@@ -138,9 +142,18 @@ describe('loginComponent', () => {
     })
 
     it('lets a non-admin through to the pages they are allowed', async () => {
-      for (const route of ['/accessories', '/plugins', '/logs', '/support']) {
+      for (const route of [
+        '/accessories',
+        '/plugins',
+        '/logs',
+        '/support',
+      ]) {
         window.sessionStorage.setItem('target_route', route)
-        const { page } = await open({ auth: makeAuth({ user: { admin: false } }) })
+        const { page } = await open({
+          auth: makeAuth({
+            user: { admin: false },
+          }),
+        })
         page.form.setValue({ username: 'bob', password: 'letmein', otp: '' })
 
         await page.onSubmit()
@@ -150,7 +163,11 @@ describe('loginComponent', () => {
     })
 
     it('shows a failure without saying which half was wrong', async () => {
-      const { page } = await open({ auth: makeAuth({ login: vi.fn(async () => Promise.reject(httpError(401))) as any }) })
+      const { page } = await open({
+        auth: makeAuth({
+          login: vi.fn(async () => Promise.reject(httpError(401))) as any,
+        }),
+      })
       page.form.setValue({ username: 'admin', password: 'wrong', otp: '' })
 
       await page.onSubmit()
@@ -162,7 +179,9 @@ describe('loginComponent', () => {
 
     it('clears a previous failure when trying again', async () => {
       const login = vi.fn(async (): Promise<void> => Promise.reject(httpError(401)))
-      const { page } = await open({ auth: makeAuth({ login: login as any }) })
+      const { page } = await open({
+        auth: makeAuth({ login: login as any }),
+      })
       page.form.setValue({ username: 'admin', password: 'wrong', otp: '' })
       await page.onSubmit()
 
@@ -175,7 +194,11 @@ describe('loginComponent', () => {
     })
 
     it('re-enables the button even when the request throws', async () => {
-      const { page } = await open({ auth: makeAuth({ login: vi.fn(async () => Promise.reject(httpError(500))) as any }) })
+      const { page } = await open({
+        auth: makeAuth({
+          login: vi.fn(async () => Promise.reject(httpError(500))) as any,
+        }),
+      })
       page.form.setValue({ username: 'admin', password: 'letmein', otp: '' })
 
       await page.onSubmit()
@@ -188,7 +211,11 @@ describe('loginComponent', () => {
 
   describe('two factor authentication', () => {
     it('asks for a code when the server says one is needed', async () => {
-      const { page } = await open({ auth: makeAuth({ login: vi.fn(async () => Promise.reject(httpError(412))) as any }) })
+      const { page } = await open({
+        auth: makeAuth({
+          login: vi.fn(async () => Promise.reject(httpError(412))) as any,
+        }),
+      })
       page.form.setValue({ username: 'admin', password: 'letmein', otp: '' })
 
       await page.onSubmit()
@@ -199,7 +226,11 @@ describe('loginComponent', () => {
     })
 
     it('starts requiring a six digit code once asked', async () => {
-      const { page } = await open({ auth: makeAuth({ login: vi.fn(async () => Promise.reject(httpError(412))) as any }) })
+      const { page } = await open({
+        auth: makeAuth({
+          login: vi.fn(async () => Promise.reject(httpError(412))) as any,
+        }),
+      })
       page.form.setValue({ username: 'admin', password: 'letmein', otp: '' })
       await page.onSubmit()
 
@@ -215,7 +246,11 @@ describe('loginComponent', () => {
     })
 
     it('marks the code as wrong on a second refusal', async () => {
-      const { page } = await open({ auth: makeAuth({ login: vi.fn(async () => Promise.reject(httpError(412))) as any }) })
+      const { page } = await open({
+        auth: makeAuth({
+          login: vi.fn(async () => Promise.reject(httpError(412))) as any,
+        }),
+      })
       page.form.setValue({ username: 'admin', password: 'letmein', otp: '' })
       await page.onSubmit()
 
@@ -231,7 +266,9 @@ describe('loginComponent', () => {
 
     it('sends the code with the next attempt', async () => {
       const login = vi.fn(async (): Promise<void> => Promise.reject(httpError(412)))
-      const { page } = await open({ auth: makeAuth({ login: login as any }) })
+      const { page } = await open({
+        auth: makeAuth({ login: login as any }),
+      })
       page.form.setValue({ username: 'admin', password: 'letmein', otp: '' })
       await page.onSubmit()
 
@@ -245,7 +282,9 @@ describe('loginComponent', () => {
 
     it('clears the wrong-code marker when trying again', async () => {
       const login = vi.fn(async (): Promise<void> => Promise.reject(httpError(412)))
-      const { page } = await open({ auth: makeAuth({ login: login as any }) })
+      const { page } = await open({
+        auth: makeAuth({ login: login as any }),
+      })
       page.form.setValue({ username: 'admin', password: 'letmein', otp: '' })
       await page.onSubmit()
       page.form.controls.otp.setValue('000000')
@@ -300,7 +339,11 @@ describe('loginComponent', () => {
 
   describe('the background', () => {
     it('uses the custom wallpaper when one is set', async () => {
-      const { page } = await open({ settings: makeSettings({ env: { customWallpaperHash: 'abc123' } }) })
+      const { page } = await open({
+        settings: makeSettings({
+          env: { customWallpaperHash: 'abc123' },
+        }),
+      })
 
       expect(page.backgroundStyle()).toContain('/auth/wallpaper/abc123')
       expect(page.backgroundStyle()).toContain('center/cover')
@@ -316,7 +359,10 @@ describe('loginComponent', () => {
       // The login page is often the first thing to render, before /auth/settings
       // has answered, so reading the hash too early would miss the wallpaper
       const { page } = await open({
-        settings: makeSettings({ settingsLoaded: false, env: { customWallpaperHash: 'abc123' } }),
+        settings: makeSettings({
+          settingsLoaded: false,
+          env: { customWallpaperHash: 'abc123' },
+        }),
       })
 
       expect(page.backgroundStyle()).toContain('abc123')
@@ -337,6 +383,22 @@ describe('loginComponent', () => {
       // iOS will not open the keyboard without a gesture, so focusing here would
       // show a focus ring and nothing else
       expect(document.activeElement).not.toBe(fixture.nativeElement.querySelector('#form-username'))
+    })
+
+    it('moves the cursor to the code box once it appears', async () => {
+      const { fixture, page } = await open({
+        auth: makeAuth({
+          login: vi.fn(async () => Promise.reject(httpError(412))) as any,
+        }),
+      })
+      page.form.setValue({ username: 'admin', password: 'letmein', otp: '' })
+
+      await page.onSubmit()
+      await fixture.whenStable()
+
+      // Focused after the render that adds the field, not on a timer - a timer
+      // could fire after the page is gone
+      expect(document.activeElement).toBe(fixture.nativeElement.querySelector('#form-ota'))
     })
   })
 })

@@ -40,7 +40,11 @@ describe('pluginBridgeComponent', () => {
   let modalService: ReturnType<typeof modalServiceSpy>
   let managePlugins: { bridgeSettings: ReturnType<typeof vi.fn>, settings: ReturnType<typeof vi.fn> }
 
-  const schema = { pluginAlias: 'TestPlatform', pluginType: 'platform', schema: { type: 'object', properties: {} } }
+  const schema = {
+    pluginAlias: 'TestPlatform',
+    pluginType: 'platform',
+    schema: { type: 'object', properties: {} },
+  }
 
   /**
    * Build the modal.
@@ -62,18 +66,33 @@ describe('pluginBridgeComponent', () => {
   } = {}): Promise<PluginBridgeComponent> {
     TestBed.resetTestingModule()
     api = fakeApi()
-    settings = makeSettings({ env: { featureFlags: options.featureFlags ?? {}, ...options.env } })
+    settings = makeSettings({
+      env: { featureFlags: options.featureFlags ?? {}, ...options.env },
+    })
     toastr = toastrStub()
     activeModal = activeModalStub()
-    childBridges = { getAll: vi.fn(async () => []), invalidate: vi.fn(), openCorrectRestartModalWithBridges: vi.fn() }
+    childBridges = {
+      getAll: vi.fn(async () => []),
+      invalidate: vi.fn(),
+      openCorrectRestartModalWithBridges: vi.fn(),
+    }
     modalService = modalServiceSpy()
-    managePlugins = { bridgeSettings: vi.fn(), settings: vi.fn() }
+    managePlugins = {
+      bridgeSettings: vi.fn(),
+      settings: vi.fn(),
+    }
 
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
         provideTestTranslate(),
-        provideFakes({ api, settings, toastr, activeModal, modal: modalService }),
+        provideFakes({
+          api,
+          settings,
+          toastr,
+          activeModal,
+          modal: modalService,
+        }),
         { provide: ChildBridgesService, useValue: childBridges },
         { provide: ManagePluginsService, useValue: managePlugins },
         {
@@ -94,7 +113,10 @@ describe('pluginBridgeComponent', () => {
     // The template is enormous and full of bootstrap accordions and child
     // components; none of it is what these rules live in
     TestBed.overrideComponent(PluginBridgeComponent, {
-      set: { imports: [TranslatePipe, InterpolateMdPipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe, InterpolateMdPipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     navigate = vi.fn(async () => true)
@@ -126,7 +148,9 @@ describe('pluginBridgeComponent', () => {
    * @param checked - the new checkbox state
    */
   function checkboxEvent(checked: boolean): Event {
-    return { target: { checked } } as unknown as Event
+    return {
+      target: { checked },
+    } as unknown as Event
   }
 
   beforeEach(() => {
@@ -137,7 +161,11 @@ describe('pluginBridgeComponent', () => {
   describe('reading the saved config', () => {
     it('marks a block with a bridge as enabled', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', name: 'One', _bridge: { username: '0E:11:11:11:11:11', port: 51001 } },
+        {
+          platform: 'TestPlatform',
+          name: 'One',
+          _bridge: { username: '0E:11:11:11:11:11', port: 51001 },
+        },
         { platform: 'TestPlatform', name: 'Two' },
       ])
 
@@ -147,7 +175,10 @@ describe('pluginBridgeComponent', () => {
 
     it('treats hap as enabled unless the config says otherwise', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11' },
+        },
       ])
 
       expect(modal.hapEnabledBlocks()[0]).toBe(true)
@@ -155,7 +186,10 @@ describe('pluginBridgeComponent', () => {
 
     it('reads the legacy boolean form of a disabled hap bridge', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', hap: false } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11', hap: false },
+        },
       ])
 
       // What older Homebridge versions wrote, and what is still in plenty of
@@ -165,7 +199,13 @@ describe('pluginBridgeComponent', () => {
 
     it('reads the nested object form of a disabled hap bridge', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', hap: { enabled: false } } },
+        {
+          platform: 'TestPlatform',
+          _bridge: {
+            username: '0E:11:11:11:11:11',
+            hap: { enabled: false },
+          },
+        },
       ])
 
       expect(modal.hapEnabledBlocks()[0]).toBe(false)
@@ -173,8 +213,18 @@ describe('pluginBridgeComponent', () => {
 
     it('surfaces the externals-only flag when the runtime supports it', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', hap: { enabled: false, externalsOnly: true } } }],
-        { featureFlags: { protocolExternalsOnly: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: {
+              username: '0E:11:11:11:11:11',
+              hap: { enabled: false, externalsOnly: true },
+            },
+          },
+        ],
+        {
+          featureFlags: { protocolExternalsOnly: true },
+        },
       )
 
       expect(modal.hapExternalsOnlyBlocks()[0]).toBe(true)
@@ -182,7 +232,15 @@ describe('pluginBridgeComponent', () => {
 
     it('ignores the externals-only flag when the runtime does not support it', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', hap: { enabled: false, externalsOnly: true } } }],
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: {
+              username: '0E:11:11:11:11:11',
+              hap: { enabled: false, externalsOnly: true },
+            },
+          },
+        ],
       )
 
       // Showing a toggle the running Homebridge would reject is worse than not
@@ -192,7 +250,12 @@ describe('pluginBridgeComponent', () => {
 
     it('never reads an accessory bridge as having hap disabled', async () => {
       const modal = await open(
-        [{ accessory: 'TestAccessory', _bridge: { username: '0E:11:11:11:11:11', hap: false } }],
+        [
+          {
+            accessory: 'TestAccessory',
+            _bridge: { username: '0E:11:11:11:11:11', hap: false },
+          },
+        ],
         { pluginType: 'accessory' },
       )
 
@@ -211,17 +274,41 @@ describe('pluginBridgeComponent', () => {
         providers: [
           provideRouter([]),
           provideTestTranslate(),
-          provideFakes({ api, settings: makeSettings(), toastr, activeModal, modal: modalServiceSpy() }),
-          { provide: ChildBridgesService, useValue: { getAll: vi.fn(async () => []), invalidate: vi.fn() } },
-          { provide: ManagePluginsService, useValue: { bridgeSettings: vi.fn() } },
+          provideFakes({
+            api,
+            settings: makeSettings(),
+            toastr,
+            activeModal,
+            modal: modalServiceSpy(),
+          }),
+          {
+            provide: ChildBridgesService,
+            useValue: {
+              getAll: vi.fn(async () => []),
+              invalidate: vi.fn(),
+            },
+          },
+          {
+            provide: ManagePluginsService,
+            useValue: {
+              bridgeSettings: vi.fn(),
+            },
+          },
           {
             provide: PLUGIN_BRIDGE_MODAL_DATA,
-            useValue: { plugin: makePlugin(), schema, editorContext: { config: [] } },
+            useValue: {
+              plugin: makePlugin(),
+              schema,
+              editorContext: { config: [] },
+            },
           },
         ],
       })
       TestBed.overrideComponent(PluginBridgeComponent, {
-        set: { imports: [TranslatePipe, InterpolateMdPipe], schemas: [NO_ERRORS_SCHEMA] },
+        set: {
+          imports: [TranslatePipe, InterpolateMdPipe],
+          schemas: [NO_ERRORS_SCHEMA],
+        },
       })
       api.fail('get', /^\/plugins\/alias\//, new Error('offline'))
 
@@ -241,7 +328,10 @@ describe('pluginBridgeComponent', () => {
   describe('the bridge name', () => {
     it('rejects a name that does not start with a letter or number', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', name: ' Kitchen' } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11', name: ' Kitchen' },
+        },
       ])
 
       // HAP's own check, which Homebridge applies when it starts the bridge
@@ -250,7 +340,10 @@ describe('pluginBridgeComponent', () => {
 
     it('rejects a name containing punctuation', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', name: 'Kitchen - Lights' } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11', name: 'Kitchen - Lights' },
+        },
       ])
 
       expect(modal.getHapNameValidationError('0')).toBe(true)
@@ -258,7 +351,10 @@ describe('pluginBridgeComponent', () => {
 
     it('accepts letters, numbers, spaces and apostrophes', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', name: `Bob's Kitchen 2` } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11', name: `Bob's Kitchen 2` },
+        },
       ])
 
       expect(modal.getHapNameValidationError('0')).toBe(false)
@@ -266,7 +362,10 @@ describe('pluginBridgeComponent', () => {
 
     it('treats an empty name as fine', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11' },
+        },
       ])
 
       // Homebridge falls back to the plugin name, so this is not an error
@@ -274,8 +373,12 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('cleans up the plugin name when generating one', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }], {
-        data: { plugin: makePlugin({ displayName: '  Test - Plugin!  ' }) },
+      const modal = await open([
+        { platform: 'TestPlatform' },
+      ], {
+        data: {
+          plugin: makePlugin({ displayName: '  Test - Plugin!  ' }),
+        },
       })
       const block = modal.configBlocks()[0]
 
@@ -292,7 +395,10 @@ describe('pluginBridgeComponent', () => {
   describe('the hap port', () => {
     it('accepts an empty port', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11' },
+        },
       ])
 
       // Homebridge allocates one, which is the normal case
@@ -301,7 +407,10 @@ describe('pluginBridgeComponent', () => {
 
     it('rejects a port below the allowed range', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', port: 80 } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11', port: 80 },
+        },
       ])
 
       expect(modal.getHapPortValidationError('0')).toBe(true)
@@ -309,7 +418,10 @@ describe('pluginBridgeComponent', () => {
 
     it('rejects a port above the allowed range', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', port: 65534 } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11', port: 65534 },
+        },
       ])
 
       expect(modal.getHapPortValidationError('0')).toBe(true)
@@ -317,8 +429,16 @@ describe('pluginBridgeComponent', () => {
 
     it('rejects a port two enabled bridges both want', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', name: 'One', _bridge: { username: '0E:11:11:11:11:11', port: 51001 } },
-        { platform: 'TestPlatform', name: 'Two', _bridge: { username: '0E:22:22:22:22:22', port: 51001 } },
+        {
+          platform: 'TestPlatform',
+          name: 'One',
+          _bridge: { username: '0E:11:11:11:11:11', port: 51001 },
+        },
+        {
+          platform: 'TestPlatform',
+          name: 'Two',
+          _bridge: { username: '0E:22:22:22:22:22', port: 51001 },
+        },
       ])
 
       // Two bridges on one port start, then fight, and the symptom is one of
@@ -329,7 +449,11 @@ describe('pluginBridgeComponent', () => {
 
     it('ignores a clash with a bridge that is switched off', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', name: 'One', _bridge: { username: '0E:11:11:11:11:11', port: 51001 } },
+        {
+          platform: 'TestPlatform',
+          name: 'One',
+          _bridge: { username: '0E:11:11:11:11:11', port: 51001 },
+        },
         { platform: 'TestPlatform', name: 'Two' },
       ])
       // A disabled block's old port is not in use, so it cannot conflict
@@ -342,7 +466,11 @@ describe('pluginBridgeComponent', () => {
       const modal = await open([
         {
           platform: 'TestPlatform',
-          _bridge: { username: '0E:11:11:11:11:11', port: 5540, matter: { port: 5540 } },
+          _bridge: {
+            username: '0E:11:11:11:11:11',
+            port: 5540,
+            matter: { port: 5540 },
+          },
         },
       ])
 
@@ -353,8 +481,15 @@ describe('pluginBridgeComponent', () => {
   describe('the matter port', () => {
     it('accepts an empty port', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } }],
-        { featureFlags: { matterSupport: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: { username: '0E:11:11:11:11:11' },
+          },
+        ],
+        {
+          featureFlags: { matterSupport: true },
+        },
       )
 
       expect(modal.getMatterPortValidationError('0')).toBe(false)
@@ -362,8 +497,18 @@ describe('pluginBridgeComponent', () => {
 
     it('rejects a privileged port', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', matter: { port: 443 } } }],
-        { featureFlags: { matterSupport: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: {
+              username: '0E:11:11:11:11:11',
+              matter: { port: 443 },
+            },
+          },
+        ],
+        {
+          featureFlags: { matterSupport: true },
+        },
       )
 
       expect(modal.getMatterPortValidationError('0')).toBe(true)
@@ -372,8 +517,18 @@ describe('pluginBridgeComponent', () => {
     it('rejects the ports other services already own', async () => {
       for (const port of [5353, 8080, 8443]) {
         const modal = await open(
-          [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', matter: { port } } }],
-          { featureFlags: { matterSupport: true } },
+          [
+            {
+              platform: 'TestPlatform',
+              _bridge: {
+                username: '0E:11:11:11:11:11',
+                matter: { port },
+              },
+            },
+          ],
+          {
+            featureFlags: { matterSupport: true },
+          },
         )
 
         // 5353 is mDNS, which Homebridge's own discovery needs; the other two
@@ -384,8 +539,19 @@ describe('pluginBridgeComponent', () => {
 
     it('rejects a matter port that clashes with hap on the same bridge', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', port: 5540, matter: { port: 5540 } } }],
-        { featureFlags: { matterSupport: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: {
+              username: '0E:11:11:11:11:11',
+              port: 5540,
+              matter: { port: 5540 },
+            },
+          },
+        ],
+        {
+          featureFlags: { matterSupport: true },
+        },
       )
 
       expect(modal.getMatterPortValidationError('0')).toBe(true)
@@ -395,7 +561,11 @@ describe('pluginBridgeComponent', () => {
   describe('naming the bridge that blocks the save', () => {
     it('reports no problem when everything is valid', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', name: 'One', _bridge: { username: '0E:11:11:11:11:11', name: 'Kitchen' } },
+        {
+          platform: 'TestPlatform',
+          name: 'One',
+          _bridge: { username: '0E:11:11:11:11:11', name: 'Kitchen' },
+        },
       ])
 
       expect(modal.hasValidationErrors).toBe(false)
@@ -404,8 +574,16 @@ describe('pluginBridgeComponent', () => {
 
     it('names the offending bridge even when it is not the one on screen', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', name: 'One', _bridge: { username: '0E:11:11:11:11:11', name: 'Kitchen' } },
-        { platform: 'TestPlatform', name: 'Two', _bridge: { username: '0E:22:22:22:22:22', name: 'Bad - Name' } },
+        {
+          platform: 'TestPlatform',
+          name: 'One',
+          _bridge: { username: '0E:11:11:11:11:11', name: 'Kitchen' },
+        },
+        {
+          platform: 'TestPlatform',
+          name: 'Two',
+          _bridge: { username: '0E:22:22:22:22:22', name: 'Bad - Name' },
+        },
       ])
 
       // The save button is disabled with no explanation otherwise, and the user
@@ -416,7 +594,11 @@ describe('pluginBridgeComponent', () => {
 
     it('falls back through the names it has when the bridge is unnamed', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', name: 'Block Name', _bridge: { username: '0E:11:11:11:11:11', port: 80 } },
+        {
+          platform: 'TestPlatform',
+          name: 'Block Name',
+          _bridge: { username: '0E:11:11:11:11:11', port: 80 },
+        },
       ])
 
       expect(modal.validationErrorBridgeName).toBe('Block Name')
@@ -424,7 +606,11 @@ describe('pluginBridgeComponent', () => {
 
     it('ignores a problem on a bridge that is switched off', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', name: 'One', _bridge: { username: '0E:11:11:11:11:11', name: 'Kitchen' } },
+        {
+          platform: 'TestPlatform',
+          name: 'One',
+          _bridge: { username: '0E:11:11:11:11:11', name: 'Kitchen' },
+        },
         { platform: 'TestPlatform', name: 'Two' },
       ])
       modal.configBlocks()[1]._bridge = { username: '0E:22:22:22:22:22', name: 'Bad - Name' }
@@ -440,7 +626,12 @@ describe('pluginBridgeComponent', () => {
   describe('switching hap off', () => {
     it('refuses on an accessory bridge', async () => {
       const modal = await open(
-        [{ accessory: 'TestAccessory', _bridge: { username: '0E:11:11:11:11:11' } }],
+        [
+          {
+            accessory: 'TestAccessory',
+            _bridge: { username: '0E:11:11:11:11:11' },
+          },
+        ],
         { pluginType: 'accessory' },
       )
       const block = modal.configBlocks()[0]
@@ -457,8 +648,15 @@ describe('pluginBridgeComponent', () => {
 
     it('refuses when matter is not on to take over', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } }],
-        { featureFlags: { matterSupport: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: { username: '0E:11:11:11:11:11' },
+          },
+        ],
+        {
+          featureFlags: { matterSupport: true },
+        },
       )
       const block = modal.configBlocks()[0]
       const event = checkboxEvent(false)
@@ -474,8 +672,15 @@ describe('pluginBridgeComponent', () => {
 
     it('allows it when the running homebridge supports no protocols at all', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } }],
-        { featureFlags: { matterSupport: true, disableAllProtocols: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: { username: '0E:11:11:11:11:11' },
+          },
+        ],
+        {
+          featureFlags: { matterSupport: true, disableAllProtocols: true },
+        },
       )
       const block = modal.configBlocks()[0]
 
@@ -486,8 +691,15 @@ describe('pluginBridgeComponent', () => {
 
     it('writes the legacy boolean for an older homebridge', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } }],
-        { featureFlags: { disableAllProtocols: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: { username: '0E:11:11:11:11:11' },
+          },
+        ],
+        {
+          featureFlags: { disableAllProtocols: true },
+        },
       )
       const block = modal.configBlocks()[0]
 
@@ -498,8 +710,15 @@ describe('pluginBridgeComponent', () => {
 
     it('writes the nested object for a newer homebridge', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } }],
-        { featureFlags: { disableAllProtocols: true, protocolExternalsOnly: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: { username: '0E:11:11:11:11:11' },
+          },
+        ],
+        {
+          featureFlags: { disableAllProtocols: true, protocolExternalsOnly: true },
+        },
       )
       const block = modal.configBlocks()[0]
 
@@ -512,11 +731,18 @@ describe('pluginBridgeComponent', () => {
 
     it('keeps the identifying-material preference across the switch', async () => {
       const modal = await open(
-        [{
-          platform: 'TestPlatform',
-          _bridge: { username: '0E:11:11:11:11:11', hap: { disableIdentifyingMaterial: true } },
-        }],
-        { featureFlags: { disableAllProtocols: true, hapDisableIdentifyingMaterial: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: {
+              username: '0E:11:11:11:11:11',
+              hap: { disableIdentifyingMaterial: true },
+            },
+          },
+        ],
+        {
+          featureFlags: { disableAllProtocols: true, hapDisableIdentifyingMaterial: true },
+        },
       )
       const block = modal.configBlocks()[0]
 
@@ -530,7 +756,9 @@ describe('pluginBridgeComponent', () => {
 
   describe('switching hap back on', () => {
     it('fills in the details a matter-only bridge is missing', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }])
+      const modal = await open([
+        { platform: 'TestPlatform' },
+      ])
       const block = modal.configBlocks()[0]
 
       await modal.toggleHapBridge(block, true, '0')
@@ -541,7 +769,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('falls back to a random port when the server cannot allocate one', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }])
+      const modal = await open([
+        { platform: 'TestPlatform' },
+      ])
       api.fail('get', '/server/port/new', new Error('offline'))
       const block = modal.configBlocks()[0]
 
@@ -553,9 +783,30 @@ describe('pluginBridgeComponent', () => {
       expect(block._bridge.port).toBeLessThanOrEqual(60000)
     })
 
+    it('shows the reason and leaves the port blank when the server has no free port', async () => {
+      const modal = await open([
+        { platform: 'TestPlatform' },
+      ])
+      api.fail('get', '/server/port/new', {
+        status: 500,
+        error: { message: 'No available child bridge ports' },
+      })
+      const block = modal.configBlocks()[0]
+
+      await modal.toggleHapBridge(block, true, '0')
+
+      // The server ruled out every port in the window, so a random guess would
+      // likely collide; a blank port is still valid and the user can set one
+      expect(block._bridge.port).toBeUndefined()
+      expect(toastr.error).toHaveBeenCalledWith('No available child bridge ports', 'toast.title_error')
+    })
+
     it('leaves a port the user already chose alone', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', port: 51999, hap: false } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11', port: 51999, hap: false },
+        },
       ])
       const block = modal.configBlocks()[0]
 
@@ -567,7 +818,13 @@ describe('pluginBridgeComponent', () => {
 
     it('clears the disabled flag entirely', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', hap: { enabled: false } } },
+        {
+          platform: 'TestPlatform',
+          _bridge: {
+            username: '0E:11:11:11:11:11',
+            hap: { enabled: false },
+          },
+        },
       ])
       const block = modal.configBlocks()[0]
 
@@ -578,11 +835,18 @@ describe('pluginBridgeComponent', () => {
 
     it('clears a lingering externals-only setting', async () => {
       const modal = await open(
-        [{
-          platform: 'TestPlatform',
-          _bridge: { username: '0E:11:11:11:11:11', hap: { enabled: false, externalsOnly: true } },
-        }],
-        { featureFlags: { protocolExternalsOnly: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: {
+              username: '0E:11:11:11:11:11',
+              hap: { enabled: false, externalsOnly: true },
+            },
+          },
+        ],
+        {
+          featureFlags: { protocolExternalsOnly: true },
+        },
       )
       const block = modal.configBlocks()[0]
 
@@ -596,11 +860,18 @@ describe('pluginBridgeComponent', () => {
 
     it('keeps the identifying-material preference', async () => {
       const modal = await open(
-        [{
-          platform: 'TestPlatform',
-          _bridge: { username: '0E:11:11:11:11:11', hap: { enabled: false, disableIdentifyingMaterial: true } },
-        }],
-        { featureFlags: { hapDisableIdentifyingMaterial: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: {
+              username: '0E:11:11:11:11:11',
+              hap: { enabled: false, disableIdentifyingMaterial: true },
+            },
+          },
+        ],
+        {
+          featureFlags: { hapDisableIdentifyingMaterial: true },
+        },
       )
       const block = modal.configBlocks()[0]
 
@@ -613,8 +884,18 @@ describe('pluginBridgeComponent', () => {
   describe('the externals-only toggle', () => {
     it('writes the flag alongside the disabled state', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', hap: { enabled: false } } }],
-        { featureFlags: { protocolExternalsOnly: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: {
+              username: '0E:11:11:11:11:11',
+              hap: { enabled: false },
+            },
+          },
+        ],
+        {
+          featureFlags: { protocolExternalsOnly: true },
+        },
       )
 
       modal.toggleHapExternalsOnly(checkboxEvent(true), 0)
@@ -624,11 +905,18 @@ describe('pluginBridgeComponent', () => {
 
     it('removes the flag rather than writing false', async () => {
       const modal = await open(
-        [{
-          platform: 'TestPlatform',
-          _bridge: { username: '0E:11:11:11:11:11', hap: { enabled: false, externalsOnly: true } },
-        }],
-        { featureFlags: { protocolExternalsOnly: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: {
+              username: '0E:11:11:11:11:11',
+              hap: { enabled: false, externalsOnly: true },
+            },
+          },
+        ],
+        {
+          featureFlags: { protocolExternalsOnly: true },
+        },
       )
 
       modal.toggleHapExternalsOnly(checkboxEvent(false), 0)
@@ -640,8 +928,15 @@ describe('pluginBridgeComponent', () => {
 
     it('does nothing while hap is still enabled', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } }],
-        { featureFlags: { protocolExternalsOnly: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            _bridge: { username: '0E:11:11:11:11:11' },
+          },
+        ],
+        {
+          featureFlags: { protocolExternalsOnly: true },
+        },
       )
 
       modal.toggleHapExternalsOnly(checkboxEvent(true), 0)
@@ -652,7 +947,10 @@ describe('pluginBridgeComponent', () => {
 
     it('does nothing at all when the runtime does not support it', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', hap: false } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11', hap: false },
+        },
       ])
 
       modal.toggleHapExternalsOnly(checkboxEvent(true), 0)
@@ -665,7 +963,10 @@ describe('pluginBridgeComponent', () => {
   describe('hiding the unpairing warning', () => {
     it('reports nothing hidden for a bridge with no saved preference', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11' },
+        },
       ])
 
       expect(modal.isUnpairingHidden('0E:11:11:11:11:11', 'hap')).toBe(false)
@@ -673,7 +974,10 @@ describe('pluginBridgeComponent', () => {
 
     it('remembers the choice per protocol', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11' },
+        },
       ])
 
       modal.toggleHideUnpairing('0E:11:11:11:11:11', 'hap')
@@ -686,7 +990,10 @@ describe('pluginBridgeComponent', () => {
 
     it('matches the bridge id whatever case it is written in', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11' },
+        },
       ])
 
       modal.toggleHideUnpairing('0e:11:11:11:11:11', 'hap')
@@ -697,7 +1004,10 @@ describe('pluginBridgeComponent', () => {
 
     it('switches the choice back off again', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11' },
+        },
       ])
 
       modal.toggleHideUnpairing('0E:11:11:11:11:11', 'hap')
@@ -709,7 +1019,11 @@ describe('pluginBridgeComponent', () => {
 
   describe('naming a matter fabric', () => {
     it('names the controllers it recognises', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }], { featureFlags: { matterSupport: true } })
+      const modal = await open([
+        { platform: 'TestPlatform' },
+      ], {
+        featureFlags: { matterSupport: true },
+      })
 
       expect(modal.getMatterFabricLabel({ vendorId: 0x1349 })).toBe('Apple Home')
       expect(modal.getMatterFabricLabel({ vendorId: 0x6006 })).toBe('Google Home')
@@ -717,7 +1031,11 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('reads the raw field name the child bridge metadata uses', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }], { featureFlags: { matterSupport: true } })
+      const modal = await open([
+        { platform: 'TestPlatform' },
+      ], {
+        featureFlags: { matterSupport: true },
+      })
 
       // Two paths supply this: one maps the field to vendorId, the other passes
       // matter.js's own rootVendorId straight through
@@ -725,13 +1043,21 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('adds the home name when the fabric carries one', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }], { featureFlags: { matterSupport: true } })
+      const modal = await open([
+        { platform: 'TestPlatform' },
+      ], {
+        featureFlags: { matterSupport: true },
+      })
 
       expect(modal.getMatterFabricLabel({ vendorId: 0x1349, label: 'Our House' })).toBe('Apple Home · Our House')
     })
 
     it('shows the raw id for a controller it does not know', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }], { featureFlags: { matterSupport: true } })
+      const modal = await open([
+        { platform: 'TestPlatform' },
+      ], {
+        featureFlags: { matterSupport: true },
+      })
 
       expect(modal.getMatterFabricLabel({ vendorId: 0xABCD })).toBe('0xABCD')
       expect(modal.getMatterFabricLabel({})).toBe('0x0')
@@ -740,7 +1066,9 @@ describe('pluginBridgeComponent', () => {
 
   describe('leaving the modal', () => {
     it('sends the user to the full config editor', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }])
+      const modal = await open([
+        { platform: 'TestPlatform' },
+      ])
 
       modal.openFullConfigEditor()
 
@@ -749,7 +1077,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('dismisses without saving', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }])
+      const modal = await open([
+        { platform: 'TestPlatform' },
+      ])
 
       modal.dismissModal()
 
@@ -784,7 +1114,12 @@ describe('pluginBridgeComponent', () => {
     }
 
     it('refuses on an accessory block, because matter is platform-only', async () => {
-      const modal = await open([{ accessory: 'TestAccessory', _bridge: { username: '0E:11:11:11:11:11', port: 51001 } }], { pluginType: 'accessory' })
+      const modal = await open([
+        {
+          accessory: 'TestAccessory',
+          _bridge: { username: '0E:11:11:11:11:11', port: 51001 },
+        },
+      ], { pluginType: 'accessory' })
       const block = modal.configBlocks()[0]
 
       await modal.toggleMatterBridge(block, true, '0')
@@ -794,7 +1129,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('refuses to switch matter off when hap is not on to take over', async () => {
-      const modal = await open([matterBlock()])
+      const modal = await open([
+        matterBlock(),
+      ])
       modal.hapEnabledBlocks.set({ 0: false })
 
       await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
@@ -804,7 +1141,11 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('allows it when the running homebridge supports no protocols at all', async () => {
-      const modal = await open([matterBlock()], { featureFlags: { disableAllProtocols: true } })
+      const modal = await open([
+        matterBlock(),
+      ], {
+        featureFlags: { disableAllProtocols: true },
+      })
       modal.hapEnabledBlocks.set({ 0: false })
 
       await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
@@ -814,7 +1155,12 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('allocates a matter port the first time it is switched on', async () => {
-      const modal = await open([{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', port: 51001, env: {} } }])
+      const modal = await open([
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11', port: 51001, env: {} },
+        },
+      ])
 
       await modal.toggleMatterBridge(modal.configBlocks()[0], true, '0')
 
@@ -822,16 +1168,25 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('builds a bridge block for a matter-only plugin that has none', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }])
+      const modal = await open([
+        { platform: 'TestPlatform' },
+      ])
 
       await modal.toggleMatterBridge(modal.configBlocks()[0], true, '0')
 
-      expect(modal.configBlocks()[0]._bridge).toEqual({ env: {}, matter: { port: 5540 } })
+      expect(modal.configBlocks()[0]._bridge).toEqual({
+        env: {},
+        matter: { port: 5540 },
+      })
     })
 
     it('keeps the commissioning by marking it disabled in place on a newer homebridge', async () => {
       // Tearing the block out would force the user to re-pair from scratch
-      const modal = await open([matterBlock()], { featureFlags: { matterDisableInPlace: true } })
+      const modal = await open([
+        matterBlock(),
+      ], {
+        featureFlags: { matterDisableInPlace: true },
+      })
       modal.hapEnabledBlocks.set({ 0: true })
 
       await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
@@ -841,7 +1196,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('tears the block out on an older homebridge', async () => {
-      const modal = await open([matterBlock()])
+      const modal = await open([
+        matterBlock(),
+      ])
       modal.hapEnabledBlocks.set({ 0: true })
 
       await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
@@ -850,7 +1207,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('restores the port it had rather than allocating a new one', async () => {
-      const modal = await open([matterBlock()])
+      const modal = await open([
+        matterBlock(),
+      ])
       modal.hapEnabledBlocks.set({ 0: true })
 
       await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
@@ -860,7 +1219,11 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('carries the ipv4 preference across a disable and re-enable', async () => {
-      const modal = await open([matterBlock({ matter: { port: 5541, disableIpv4: true } })], {
+      const modal = await open([
+        matterBlock({
+          matter: { port: 5541, disableIpv4: true },
+        }),
+      ], {
         featureFlags: { matterDisableIpv4: true },
       })
       modal.hapEnabledBlocks.set({ 0: true })
@@ -874,7 +1237,11 @@ describe('pluginBridgeComponent', () => {
 
     it('clears a lingering externals-only flag when matter comes back on', async () => {
       // The runtime rejects `enabled: true` together with `externalsOnly: true`
-      const modal = await open([matterBlock({ matter: { port: 5541, externalsOnly: true } })], {
+      const modal = await open([
+        matterBlock({
+          matter: { port: 5541, externalsOnly: true },
+        }),
+      ], {
         featureFlags: { protocolExternalsOnly: true },
       })
 
@@ -890,13 +1257,21 @@ describe('pluginBridgeComponent', () => {
     function existingBridge(overrides: Record<string, any> = {}) {
       return {
         platform: 'TestPlatform',
-        _bridge: { username: '0E:11:11:11:11:11', port: 51001, name: 'Test Bridge', env: {}, ...overrides },
+        _bridge: {
+          username: '0E:11:11:11:11:11',
+          port: 51001,
+          name: 'Test Bridge',
+          env: {},
+          ...overrides,
+        },
       }
     }
 
     it('queues an orphaned bridge for deletion when the child bridge is switched off', async () => {
       // Otherwise the pairing record is left behind for a bridge nothing uses
-      const modal = await open([existingBridge()], {
+      const modal = await open([
+        existingBridge(),
+      ], {
         arrange: () => api.respond('get', /^\/server\/pairings\//, { name: 'Test Bridge', _isPaired: false }),
       })
 
@@ -909,7 +1284,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('flags that a paired bridge is about to go, so the user can be warned', async () => {
-      const modal = await open([existingBridge()], {
+      const modal = await open([
+        existingBridge(),
+      ], {
         arrange: () => api.respond('get', /^\/server\/pairings\//, { name: 'Test Bridge', _isPaired: true }),
       })
 
@@ -920,7 +1297,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('takes the bridge back off the deletion list when it is switched on again', async () => {
-      const modal = await open([existingBridge()])
+      const modal = await open([
+        existingBridge(),
+      ])
       await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
 
       await modal.toggleExternalBridge(modal.configBlocks()[0], true, '0')
@@ -930,7 +1309,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('queues it only once across an off, on, off cycle', async () => {
-      const modal = await open([existingBridge()])
+      const modal = await open([
+        existingBridge(),
+      ])
 
       await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
       await modal.toggleExternalBridge(modal.configBlocks()[0], true, '0')
@@ -942,7 +1323,9 @@ describe('pluginBridgeComponent', () => {
     it('does not queue a bridge the server never had', async () => {
       // A bridge created and then switched off again in the same sitting has
       // nothing on disk to clean up
-      const modal = await open([{ platform: 'TestPlatform' }])
+      const modal = await open([
+        { platform: 'TestPlatform' },
+      ])
       await modal.toggleExternalBridge(modal.configBlocks()[0], true, '0')
 
       await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
@@ -955,7 +1338,16 @@ describe('pluginBridgeComponent', () => {
     /** Two accessory blocks, the first with a bridge the second can share. */
     function twoAccessories() {
       return [
-        { accessory: 'TestAccessory', name: 'First', _bridge: { username: '0E:11:11:11:11:11', port: 51001, name: 'Shared Bridge', env: {} } },
+        {
+          accessory: 'TestAccessory',
+          name: 'First',
+          _bridge: {
+            username: '0E:11:11:11:11:11',
+            port: 51001,
+            name: 'Shared Bridge',
+            env: {},
+          },
+        },
         { accessory: 'TestAccessory', name: 'Second' },
       ]
     }
@@ -965,8 +1357,21 @@ describe('pluginBridgeComponent', () => {
       // Read as two bridges they would both claim the same port, and only one of
       // them would ever publish
       const modal = await open([
-        { accessory: 'TestAccessory', name: 'First', _bridge: { username: '0E:11:11:11:11:11', port: 51001, name: 'Shared Bridge', env: {} } },
-        { accessory: 'TestAccessory', name: 'Second', _bridge: { username: '0E:11:11:11:11:11', port: 51001, name: 'Shared Bridge' } },
+        {
+          accessory: 'TestAccessory',
+          name: 'First',
+          _bridge: {
+            username: '0E:11:11:11:11:11',
+            port: 51001,
+            name: 'Shared Bridge',
+            env: {},
+          },
+        },
+        {
+          accessory: 'TestAccessory',
+          name: 'Second',
+          _bridge: { username: '0E:11:11:11:11:11', port: 51001, name: 'Shared Bridge' },
+        },
       ], { pluginType: 'accessory' })
 
       expect(modal.accessoryBridgeLinks()).toEqual([
@@ -979,8 +1384,25 @@ describe('pluginBridgeComponent', () => {
       // ⚠️ The bridge is one process, so a second set of variables on the follower
       // would be written to the config and silently ignored
       const modal = await open([
-        { accessory: 'TestAccessory', name: 'First', _bridge: { username: '0E:11:11:11:11:11', port: 51001, name: 'Shared Bridge', env: { DEBUG: 'a' } } },
-        { accessory: 'TestAccessory', name: 'Second', _bridge: { username: '0E:11:11:11:11:11', port: 51001, env: { DEBUG: 'b' } } },
+        {
+          accessory: 'TestAccessory',
+          name: 'First',
+          _bridge: {
+            username: '0E:11:11:11:11:11',
+            port: 51001,
+            name: 'Shared Bridge',
+            env: { DEBUG: 'a' },
+          },
+        },
+        {
+          accessory: 'TestAccessory',
+          name: 'Second',
+          _bridge: {
+            username: '0E:11:11:11:11:11',
+            port: 51001,
+            env: { DEBUG: 'b' },
+          },
+        },
       ], { pluginType: 'accessory' })
 
       expect(modal.configBlocks()[1]._bridge.env).toEqual({})
@@ -990,8 +1412,20 @@ describe('pluginBridgeComponent', () => {
       // ⚠️ Left in place it would be written back on save, and homebridge would
       // try to publish a matter bridge for something that cannot have one
       const modal = await open([
-        { accessory: 'TestAccessory', name: 'First', _bridge: { username: '0E:11:11:11:11:11', port: 51001, env: {}, matter: { port: 5551 } } },
-      ], { pluginType: 'accessory', featureFlags: { matterSupport: true } })
+        {
+          accessory: 'TestAccessory',
+          name: 'First',
+          _bridge: {
+            username: '0E:11:11:11:11:11',
+            port: 51001,
+            env: {},
+            matter: { port: 5551 },
+          },
+        },
+      ], {
+        pluginType: 'accessory',
+        featureFlags: { matterSupport: true },
+      })
 
       expect(modal.configBlocks()[0]._bridge.matter).toBeUndefined()
     })
@@ -1015,7 +1449,10 @@ describe('pluginBridgeComponent', () => {
 
     it('offers nothing on a platform block', async () => {
       const modal = await open([
-        { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', port: 51001, env: {} } },
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11', port: 51001, env: {} },
+        },
         { platform: 'TestPlatform' },
       ])
 
@@ -1066,7 +1503,13 @@ describe('pluginBridgeComponent', () => {
     function bridgeBlock(overrides: Record<string, any> = {}) {
       return {
         platform: 'TestPlatform',
-        _bridge: { username: '0E:11:11:11:11:11', port: 51001, name: 'Test Bridge', env: {}, ...overrides },
+        _bridge: {
+          username: '0E:11:11:11:11:11',
+          port: 51001,
+          name: 'Test Bridge',
+          env: {},
+          ...overrides,
+        },
       }
     }
 
@@ -1079,7 +1522,9 @@ describe('pluginBridgeComponent', () => {
 
     describe('what it refuses to write', () => {
       it('refuses a bridge with no protocol at all', async () => {
-        const modal = await open([bridgeBlock()])
+        const modal = await open([
+          bridgeBlock(),
+        ])
         modal.hapEnabledBlocks.set({ 0: false })
         modal.matterEnabledBlocks.set({ 0: false })
 
@@ -1091,7 +1536,11 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('allows no protocol at all on a homebridge that supports it', async () => {
-        const modal = await open([bridgeBlock()], { featureFlags: { disableAllProtocols: true } })
+        const modal = await open([
+          bridgeBlock(),
+        ], {
+          featureFlags: { disableAllProtocols: true },
+        })
         modal.hapEnabledBlocks.set({ 0: false })
         modal.matterEnabledBlocks.set({ 0: false })
 
@@ -1102,7 +1551,17 @@ describe('pluginBridgeComponent', () => {
 
       it('treats an accessory block as having hap on even when nothing set the flag', async () => {
         // A linked accessory block never gets its own hap flag set
-        const modal = await open([{ accessory: 'TestAccessory', _bridge: { username: '0E:11:11:11:11:11', port: 51001, name: 'Test Bridge', env: {} } }], { pluginType: 'accessory' })
+        const modal = await open([
+          {
+            accessory: 'TestAccessory',
+            _bridge: {
+              username: '0E:11:11:11:11:11',
+              port: 51001,
+              name: 'Test Bridge',
+              env: {},
+            },
+          },
+        ], { pluginType: 'accessory' })
         modal.hapEnabledBlocks.set({})
         modal.matterEnabledBlocks.set({ 0: false })
 
@@ -1113,7 +1572,9 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('refuses an invalid bridge name', async () => {
-        const modal = await open([bridgeBlock({ name: '!! bad name' })])
+        const modal = await open([
+          bridgeBlock({ name: '!! bad name' }),
+        ])
 
         await save(modal)
 
@@ -1122,7 +1583,9 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('refuses an invalid hap port, naming the protocol', async () => {
-        const modal = await open([bridgeBlock({ port: 80 })])
+        const modal = await open([
+          bridgeBlock({ port: 80 }),
+        ])
 
         await save(modal)
 
@@ -1131,7 +1594,11 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('refuses an invalid matter port', async () => {
-        const modal = await open([bridgeBlock({ matter: { port: 80 } })])
+        const modal = await open([
+          bridgeBlock({
+            matter: { port: 80 },
+          }),
+        ])
         modal.matterEnabledBlocks.set({ 0: true })
 
         await save(modal)
@@ -1142,7 +1609,12 @@ describe('pluginBridgeComponent', () => {
 
       it('skips the hap checks entirely when hap is switched off', async () => {
         // An invalid port on a disabled protocol must not block the save
-        const modal = await open([bridgeBlock({ port: 80, matter: { port: 5541 } })])
+        const modal = await open([
+          bridgeBlock({
+            port: 80,
+            matter: { port: 5541 },
+          }),
+        ])
         modal.hapEnabledBlocks.set({ 0: false })
         modal.matterEnabledBlocks.set({ 0: true })
 
@@ -1152,7 +1624,10 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('ignores a problem on a bridge that is switched off', async () => {
-        const modal = await open([bridgeBlock(), bridgeBlock({ username: '0E:22:22:22:22:22', port: 80 })])
+        const modal = await open([
+          bridgeBlock(),
+          bridgeBlock({ username: '0E:22:22:22:22:22', port: 80 }),
+        ])
         modal.enabledBlocks.set({ 0: true, 1: false })
         modal.hapEnabledBlocks.set({ 0: true, 1: false })
 
@@ -1164,7 +1639,9 @@ describe('pluginBridgeComponent', () => {
 
     describe('what it writes', () => {
       it('posts the config blocks to the plugin endpoint', async () => {
-        const modal = await open([bridgeBlock()])
+        const modal = await open([
+          bridgeBlock(),
+        ])
 
         await save(modal)
 
@@ -1174,7 +1651,11 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('drops a matter block with no port rather than writing an empty one', async () => {
-        const modal = await open([bridgeBlock({ matter: { port: null } })])
+        const modal = await open([
+          bridgeBlock({
+            matter: { port: null },
+          }),
+        ])
 
         await save(modal)
 
@@ -1182,7 +1663,11 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('keeps a matter port of zero, which is a real request for any port', async () => {
-        const modal = await open([bridgeBlock({ matter: { port: 0 } })])
+        const modal = await open([
+          bridgeBlock({
+            matter: { port: 0 },
+          }),
+        ])
         modal.matterEnabledBlocks.set({ 0: false })
 
         await save(modal)
@@ -1191,7 +1676,11 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('writes the externals-only flag only while hap is off', async () => {
-        const modal = await open([bridgeBlock({ matter: { port: 5541 } })], {
+        const modal = await open([
+          bridgeBlock({
+            matter: { port: 5541 },
+          }),
+        ], {
           featureFlags: { protocolExternalsOnly: true },
         })
         modal.hapEnabledBlocks.set({ 0: false })
@@ -1204,7 +1693,11 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('does not write externals-only while hap is still on', async () => {
-        const modal = await open([bridgeBlock()], { featureFlags: { protocolExternalsOnly: true } })
+        const modal = await open([
+          bridgeBlock(),
+        ], {
+          featureFlags: { protocolExternalsOnly: true },
+        })
         modal.hapEnabledBlocks.set({ 0: true })
         modal.hapExternalsOnlyBlocks.set({ 0: true })
 
@@ -1216,7 +1709,9 @@ describe('pluginBridgeComponent', () => {
 
     describe('cleaning up afterwards', () => {
       it('deletes the pairing of a bridge the user switched off', async () => {
-        const modal = await open([bridgeBlock()])
+        const modal = await open([
+          bridgeBlock(),
+        ])
         await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
 
         await save(modal)
@@ -1226,7 +1721,9 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('carries on and reports a deletion that fails', async () => {
-        const modal = await open([bridgeBlock()], {
+        const modal = await open([
+          bridgeBlock(),
+        ], {
           arrange: () => api.fail('delete', /^\/server\/pairings\//, new Error('not found')),
         })
         await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
@@ -1241,8 +1738,14 @@ describe('pluginBridgeComponent', () => {
       it('does not delete matter storage separately when the whole pairing has gone', async () => {
         // The pairing endpoint removes the matter commissioning too, so a
         // second delete would just 404
-        const modal = await open([bridgeBlock({ matter: { port: 5541 } })])
-        modal.originalMatterBridges.set([{ username: '0E:11:11:11:11:11', port: 5541 } as any])
+        const modal = await open([
+          bridgeBlock({
+            matter: { port: 5541 },
+          }),
+        ])
+        modal.originalMatterBridges.set([
+          { username: '0E:11:11:11:11:11', port: 5541 } as any,
+        ])
         modal.hapEnabledBlocks.set({ 0: true })
         modal.matterEnabledBlocks.set({ 0: true })
         await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
@@ -1253,8 +1756,14 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('deletes only the matter storage when just matter was switched off', async () => {
-        const modal = await open([bridgeBlock({ matter: { port: 5541 } })])
-        modal.originalMatterBridges.set([{ username: '0E:11:11:11:11:11', port: 5541 } as any])
+        const modal = await open([
+          bridgeBlock({
+            matter: { port: 5541 },
+          }),
+        ])
+        modal.originalMatterBridges.set([
+          { username: '0E:11:11:11:11:11', port: 5541 } as any,
+        ])
         modal.hapEnabledBlocks.set({ 0: true })
         modal.matterEnabledBlocks.set({ 0: true })
         await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
@@ -1267,7 +1776,9 @@ describe('pluginBridgeComponent', () => {
 
     describe('which exit it takes', () => {
       it('offers a restart when the bridge config changed', async () => {
-        const modal = await open([{ platform: 'TestPlatform' }])
+        const modal = await open([
+          { platform: 'TestPlatform' },
+        ])
         await modal.toggleExternalBridge(modal.configBlocks()[0], true, '0')
 
         await save(modal)
@@ -1277,7 +1788,9 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('closes quietly when nothing at all changed', async () => {
-        const modal = await open([bridgeBlock()])
+        const modal = await open([
+          bridgeBlock(),
+        ])
 
         await save(modal)
 
@@ -1287,7 +1800,9 @@ describe('pluginBridgeComponent', () => {
 
       it('closes asking for a refresh when only an alert preference changed', async () => {
         // No restart is needed for a purely cosmetic preference
-        const modal = await open([bridgeBlock()])
+        const modal = await open([
+          bridgeBlock(),
+        ])
         modal.toggleHideUnpairing('0E:11:11:11:11:11', 'hap')
 
         await save(modal)
@@ -1300,7 +1815,11 @@ describe('pluginBridgeComponent', () => {
         // The plugin config modal skipped its own restart prompt and left it to
         // this one, so declining the child bridge must not close silently -
         // that looked like the config had not saved at all (#2946)
-        const modal = await open([bridgeBlock()], { data: { justInstalled: true } })
+        const modal = await open([
+          bridgeBlock(),
+        ], {
+          data: { justInstalled: true },
+        })
 
         await save(modal)
 
@@ -1308,7 +1827,9 @@ describe('pluginBridgeComponent', () => {
       })
 
       it('reports a failed save and stays open', async () => {
-        const modal = await open([bridgeBlock()], {
+        const modal = await open([
+          bridgeBlock(),
+        ], {
           arrange: () => api.fail('post', /config-editor\/plugin/, new Error('config.json is not writable')),
         })
 
@@ -1339,7 +1860,9 @@ describe('pluginBridgeComponent', () => {
     const plain = () => ({ platform: 'TestPlatform', name: 'Test' })
 
     it('writes a bridge with a username, a port and a name', async () => {
-      const modal = await open([plain()])
+      const modal = await open([
+        plain(),
+      ])
       const block: any = plain()
 
       await modal.toggleExternalBridge(block, true, '0')
@@ -1351,7 +1874,9 @@ describe('pluginBridgeComponent', () => {
 
     it('turns hap on with it', async () => {
       // A child bridge with neither protocol exposes nothing
-      const modal = await open([plain()])
+      const modal = await open([
+        plain(),
+      ])
       const block: any = plain()
 
       await modal.toggleExternalBridge(block, true, '0')
@@ -1361,8 +1886,18 @@ describe('pluginBridgeComponent', () => {
 
     it('gives the username back when it is re-enabled', async () => {
       // ⚠️ A fresh username means re-pairing the bridge in the Home app
-      const modal = await open([{ platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }])
-      const block: any = { platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }
+      const modal = await open([
+        {
+          platform: 'TestPlatform',
+          name: 'Test',
+          _bridge: { username: '0E:11:22:33:44:55', port: 51820 },
+        },
+      ])
+      const block: any = {
+        platform: 'TestPlatform',
+        name: 'Test',
+        _bridge: { username: '0E:11:22:33:44:55', port: 51820 },
+      }
 
       await modal.toggleExternalBridge(block, false, '0')
       await modal.toggleExternalBridge(block, true, '0')
@@ -1371,8 +1906,18 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('keeps the name the user gave the bridge', async () => {
-      const modal = await open([{ platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820, name: 'My Bridge' } }])
-      const block: any = { platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820, name: 'My Bridge' } }
+      const modal = await open([
+        {
+          platform: 'TestPlatform',
+          name: 'Test',
+          _bridge: { username: '0E:11:22:33:44:55', port: 51820, name: 'My Bridge' },
+        },
+      ])
+      const block: any = {
+        platform: 'TestPlatform',
+        name: 'Test',
+        _bridge: { username: '0E:11:22:33:44:55', port: 51820, name: 'My Bridge' },
+      }
 
       await modal.toggleExternalBridge(block, false, '0')
       await modal.toggleExternalBridge(block, true, '0')
@@ -1382,10 +1927,26 @@ describe('pluginBridgeComponent', () => {
 
     it('marks the bridge for deletion when switched off', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }],
-        { arrange: () => api.respond('get', '/config-editor/ui', { childBridges: [{ username: '0E:11:22:33:44:55', displayName: 'Test Bridge' }] }) },
+        [
+          {
+            platform: 'TestPlatform',
+            name: 'Test',
+            _bridge: { username: '0E:11:22:33:44:55', port: 51820 },
+          },
+        ],
+        {
+          arrange: () => api.respond('get', '/config-editor/ui', {
+            childBridges: [
+              { username: '0E:11:22:33:44:55', displayName: 'Test Bridge' },
+            ],
+          }),
+        },
       )
-      const block: any = { platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }
+      const block: any = {
+        platform: 'TestPlatform',
+        name: 'Test',
+        _bridge: { username: '0E:11:22:33:44:55', port: 51820 },
+      }
 
       await modal.toggleExternalBridge(block, false, '0')
 
@@ -1394,10 +1955,26 @@ describe('pluginBridgeComponent', () => {
 
     it('takes it off the deletion list when switched back on', async () => {
       const modal = await open(
-        [{ platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }],
-        { arrange: () => api.respond('get', '/config-editor/ui', { childBridges: [{ username: '0E:11:22:33:44:55', displayName: 'Test Bridge' }] }) },
+        [
+          {
+            platform: 'TestPlatform',
+            name: 'Test',
+            _bridge: { username: '0E:11:22:33:44:55', port: 51820 },
+          },
+        ],
+        {
+          arrange: () => api.respond('get', '/config-editor/ui', {
+            childBridges: [
+              { username: '0E:11:22:33:44:55', displayName: 'Test Bridge' },
+            ],
+          }),
+        },
       )
-      const block: any = { platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }
+      const block: any = {
+        platform: 'TestPlatform',
+        name: 'Test',
+        _bridge: { username: '0E:11:22:33:44:55', port: 51820 },
+      }
 
       await modal.toggleExternalBridge(block, false, '0')
       await modal.toggleExternalBridge(block, true, '0')
@@ -1409,9 +1986,15 @@ describe('pluginBridgeComponent', () => {
       const withMatter = {
         platform: 'TestPlatform',
         name: 'Test',
-        _bridge: { username: '0E:11:22:33:44:55', port: 51820, matter: { port: 5551 } },
+        _bridge: {
+          username: '0E:11:22:33:44:55',
+          port: 51820,
+          matter: { port: 5551 },
+        },
       }
-      const modal = await open([withMatter], { featureFlags: { matterSupport: true } })
+      const modal = await open([withMatter], {
+        featureFlags: { matterSupport: true },
+      })
       const block: any = JSON.parse(JSON.stringify(withMatter))
 
       await modal.toggleExternalBridge(block, false, '0')
@@ -1422,7 +2005,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('does nothing at all without a plugin', async () => {
-      const modal = await open([plain()])
+      const modal = await open([
+        plain(),
+      ])
       ;(modal as any).plugin = undefined
       const block: any = plain()
 
@@ -1443,13 +2028,21 @@ describe('pluginBridgeComponent', () => {
     const bridged = (hap?: any) => ({
       platform: 'TestPlatform',
       name: 'Test',
-      _bridge: { username: '0E:11:22:33:44:55', port: 51820, ...(hap === undefined ? {} : { hap }) },
+      _bridge: {
+        username: '0E:11:22:33:44:55',
+        port: 51820,
+        ...(hap === undefined
+          ? {}
+          : { hap }),
+      },
     })
 
     const flags = { hapDisableIdentifyingMaterial: true }
 
     it('writes the flag into the block', async () => {
-      const modal = await open([bridged()], { featureFlags: flags })
+      const modal = await open([
+        bridged(),
+      ], { featureFlags: flags })
 
       modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
@@ -1460,7 +2053,9 @@ describe('pluginBridgeComponent', () => {
     it('takes the whole hap object away again when nothing else is in it', async () => {
       // ⚠️ An empty `hap: {}` left behind is not harmless: it is the object form,
       // and homebridge reads a present object differently from an absent one
-      const modal = await open([bridged()], { featureFlags: flags })
+      const modal = await open([
+        bridged(),
+      ], { featureFlags: flags })
 
       modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
       modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(false), 0)
@@ -1471,7 +2066,9 @@ describe('pluginBridgeComponent', () => {
     it('keeps hap switched off while the flag is added', async () => {
       // ⚠️ The one that matters most here: a rebuild that dropped `enabled: false`
       // would quietly switch the bridge's hap back on
-      const modal = await open([bridged({ enabled: false })], { featureFlags: flags })
+      const modal = await open([
+        bridged({ enabled: false }),
+      ], { featureFlags: flags })
 
       modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
@@ -1480,7 +2077,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('keeps hap switched off after the flag is taken away', async () => {
-      const modal = await open([bridged({ enabled: false })], { featureFlags: flags })
+      const modal = await open([
+        bridged({ enabled: false }),
+      ], { featureFlags: flags })
 
       modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(false), 0)
 
@@ -1490,7 +2089,9 @@ describe('pluginBridgeComponent', () => {
     it('turns the legacy boolean form into an object', async () => {
       // `hap: false` is the old way of saying disabled, and the flag has nowhere to
       // live until it becomes an object
-      const modal = await open([bridged(false)], { featureFlags: flags })
+      const modal = await open([
+        bridged(false),
+      ], { featureFlags: flags })
 
       modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
@@ -1500,7 +2101,11 @@ describe('pluginBridgeComponent', () => {
 
     it('writes enabled false for a bridge the user just switched off', async () => {
       // The block still says nothing about hap, but the screen does
-      const modal = await open([bridged()], { featureFlags: { ...flags, matterSupport: true } })
+      const modal = await open([
+        bridged(),
+      ], {
+        featureFlags: { ...flags, matterSupport: true },
+      })
       modal.hapEnabledBlocks.set({ 0: false })
 
       modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
@@ -1510,7 +2115,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('keeps the other hap settings it finds', async () => {
-      const modal = await open([bridged({ enabled: false, externalsOnly: true })], { featureFlags: flags })
+      const modal = await open([
+        bridged({ enabled: false, externalsOnly: true }),
+      ], { featureFlags: flags })
 
       modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
@@ -1521,7 +2128,9 @@ describe('pluginBridgeComponent', () => {
     it('still remembers the tick for a block with no bridge', async () => {
       // The toggle is offered before the child bridge is created, and the answer
       // has to survive until it is
-      const modal = await open([{ platform: 'TestPlatform', name: 'Test' }], { featureFlags: flags })
+      const modal = await open([
+        { platform: 'TestPlatform', name: 'Test' },
+      ], { featureFlags: flags })
 
       modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
@@ -1529,7 +2138,11 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('does nothing while the runtime does not support it', async () => {
-      const modal = await open([bridged()], { featureFlags: { hapDisableIdentifyingMaterial: false } })
+      const modal = await open([
+        bridged(),
+      ], {
+        featureFlags: { hapDisableIdentifyingMaterial: false },
+      })
 
       modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
@@ -1545,13 +2158,21 @@ describe('pluginBridgeComponent', () => {
     const bridged = (matter?: any) => ({
       platform: 'TestPlatform',
       name: 'Test',
-      _bridge: { username: '0E:11:22:33:44:55', port: 51820, ...(matter === undefined ? {} : { matter }) },
+      _bridge: {
+        username: '0E:11:22:33:44:55',
+        port: 51820,
+        ...(matter === undefined
+          ? {}
+          : { matter }),
+      },
     })
 
     const flags = { matterSupport: true, matterDisableIpv4: true }
 
     it('writes the flag into the matter block', async () => {
-      const modal = await open([bridged({ port: 5551 })], { featureFlags: flags })
+      const modal = await open([
+        bridged({ port: 5551 }),
+      ], { featureFlags: flags })
 
       modal.toggleMatterDisableIpv4(checkboxEvent(true), 0)
 
@@ -1562,7 +2183,9 @@ describe('pluginBridgeComponent', () => {
     it('removes the flag rather than writing it false', async () => {
       // ⚠️ `disableIpv4: false` and no key at all mean the same thing to homebridge,
       // but only the missing key keeps the config file clean
-      const modal = await open([bridged({ port: 5551, disableIpv4: true })], { featureFlags: flags })
+      const modal = await open([
+        bridged({ port: 5551, disableIpv4: true }),
+      ], { featureFlags: flags })
 
       modal.toggleMatterDisableIpv4(checkboxEvent(false), 0)
 
@@ -1570,7 +2193,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('remembers the tick for a bridge with no matter block yet', async () => {
-      const modal = await open([bridged()], { featureFlags: flags })
+      const modal = await open([
+        bridged(),
+      ], { featureFlags: flags })
 
       modal.toggleMatterDisableIpv4(checkboxEvent(true), 0)
 
@@ -1581,7 +2206,9 @@ describe('pluginBridgeComponent', () => {
     it('keeps the flag across switching matter off and on again', async () => {
       // ⚠️ The cache is what carries it: switching matter off removes the block, so
       // without this the preference is lost on the round trip
-      const modal = await open([bridged({ port: 5551 })], { featureFlags: flags })
+      const modal = await open([
+        bridged({ port: 5551 }),
+      ], { featureFlags: flags })
 
       modal.toggleMatterDisableIpv4(checkboxEvent(true), 0)
 
@@ -1589,7 +2216,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('does nothing while the runtime does not support it', async () => {
-      const modal = await open([bridged({ port: 5551 })], {
+      const modal = await open([
+        bridged({ port: 5551 }),
+      ], {
         featureFlags: { matterSupport: true, matterDisableIpv4: false },
       })
 
@@ -1614,7 +2243,9 @@ describe('pluginBridgeComponent', () => {
       ['hap', 'hideHapAlert'],
       ['matter', 'hideMatterAlert'],
     ])('hides the %s notice', async (protocol, key) => {
-      const modal = await open([bridged()])
+      const modal = await open([
+        bridged(),
+      ])
 
       modal.toggleHideUnpairing('0E:11:22:33:44:55', protocol as 'hap' | 'matter')
 
@@ -1623,7 +2254,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it.each(['hap', 'matter'])('shows the %s notice again on a second click', async (protocol) => {
-      const modal = await open([bridged()])
+      const modal = await open([
+        bridged(),
+      ])
 
       modal.toggleHideUnpairing('0E:11:22:33:44:55', protocol as 'hap' | 'matter')
       modal.toggleHideUnpairing('0E:11:22:33:44:55', protocol as 'hap' | 'matter')
@@ -1633,7 +2266,11 @@ describe('pluginBridgeComponent', () => {
 
     it('keeps the two protocols apart', async () => {
       // They are separate notices about separate pairings
-      const modal = await open([bridged()], { featureFlags: { matterSupport: true } })
+      const modal = await open([
+        bridged(),
+      ], {
+        featureFlags: { matterSupport: true },
+      })
 
       modal.toggleHideUnpairing('0E:11:22:33:44:55', 'hap')
 
@@ -1641,7 +2278,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('finds the bridge whatever case was passed in', async () => {
-      const modal = await open([bridged()])
+      const modal = await open([
+        bridged(),
+      ])
 
       modal.toggleHideUnpairing('0e:11:22:33:44:55', 'hap')
 
@@ -1649,7 +2288,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('records it for a bridge the settings never listed', async () => {
-      const modal = await open([bridged()])
+      const modal = await open([
+        bridged(),
+      ])
 
       modal.toggleHideUnpairing('0E:11:22:33:44:66', 'hap')
 
@@ -1659,8 +2300,14 @@ describe('pluginBridgeComponent', () => {
     it('saves it as a refresh rather than a restart', async () => {
       // ⚠️ Homebridge reads nothing here, so a restart prompt is downtime over a
       // notice the user chose to stop seeing
-      const modal = await open([bridged()], {
-        env: { bridges: [{ username: '0E:11:22:33:44:55', name: 'Test' }] },
+      const modal = await open([
+        bridged(),
+      ], {
+        env: {
+          bridges: [
+            { username: '0E:11:22:33:44:55', name: 'Test' },
+          ],
+        },
       })
 
       modal.toggleHideUnpairing('0E:11:22:33:44:55', 'hap')
@@ -1683,13 +2330,29 @@ describe('pluginBridgeComponent', () => {
     function withBridge(bridgeOverrides: Record<string, any> = {}, savedOverrides: Record<string, any> = {}) {
       const username = '0E:11:22:33:44:55'
       return {
-        config: [{
-          platform: 'TestPlatform',
-          name: 'Test',
-          _bridge: { username, port: 51820, name: 'Test Bridge', ...bridgeOverrides },
-        }],
-        env: { bridges: [{ username, name: 'Test' }] },
-        saved: { username, port: 51820, name: 'Test Bridge', ...savedOverrides },
+        config: [
+          {
+            platform: 'TestPlatform',
+            name: 'Test',
+            _bridge: {
+              username,
+              port: 51820,
+              name: 'Test Bridge',
+              ...bridgeOverrides,
+            },
+          },
+        ],
+        env: {
+          bridges: [
+            { username, name: 'Test' },
+          ],
+        },
+        saved: {
+          username,
+          port: 51820,
+          name: 'Test Bridge',
+          ...savedOverrides,
+        },
       }
     }
 
@@ -1700,7 +2363,10 @@ describe('pluginBridgeComponent', () => {
      */
     async function savedWithOriginal(bridgeOverrides: Record<string, any>, savedOverrides: Record<string, any>) {
       const { config, env, saved } = withBridge(bridgeOverrides, savedOverrides)
-      const modal = await open(config, { env, featureFlags: { childBridgeDebugMode: true } })
+      const modal = await open(config, {
+        env,
+        featureFlags: { childBridgeDebugMode: true },
+      })
       // ⚠️ Set after opening: `originalBridges` is filled from the config the modal
       // was given, so a difference has to be introduced here rather than in the
       // fixture, or there would be nothing to compare against
@@ -1712,14 +2378,42 @@ describe('pluginBridgeComponent', () => {
     }
 
     it.each([
-      ['the bridge name', { name: 'Renamed Bridge' }],
-      ['the port', { port: 51999 }],
-      ['the model', { model: 'Something Else' }],
-      ['the manufacturer', { manufacturer: 'Someone Else' }],
-      ['the firmware revision', { firmwareRevision: '9.9.9' }],
-      ['the debug setting', { debugModeEnabled: true }],
-      ['the debug environment variable', { env: { DEBUG: 'homebridge*' } }],
-      ['the node options', { env: { NODE_OPTIONS: '--max-old-space-size=256' } }],
+      [
+        'the bridge name',
+        { name: 'Renamed Bridge' },
+      ],
+      [
+        'the port',
+        { port: 51999 },
+      ],
+      [
+        'the model',
+        { model: 'Something Else' },
+      ],
+      [
+        'the manufacturer',
+        { manufacturer: 'Someone Else' },
+      ],
+      [
+        'the firmware revision',
+        { firmwareRevision: '9.9.9' },
+      ],
+      [
+        'the debug setting',
+        { debugModeEnabled: true },
+      ],
+      [
+        'the debug environment variable',
+        {
+          env: { DEBUG: 'homebridge*' },
+        },
+      ],
+      [
+        'the node options',
+        {
+          env: { NODE_OPTIONS: '--max-old-space-size=256' },
+        },
+      ],
     ])('offers a restart when %s changed', async (_case, overrides) => {
       await savedWithOriginal(overrides, {})
 
@@ -1731,7 +2425,10 @@ describe('pluginBridgeComponent', () => {
       // the save normalises the block from the toggles first, so a hand-written
       // `hap` that the screen disagrees with is rewritten before the comparison
       const { config, env, saved } = withBridge()
-      const modal = await open(config, { env, featureFlags: { matterSupport: true } })
+      const modal = await open(config, {
+        env,
+        featureFlags: { matterSupport: true },
+      })
       modal.originalBridges.set([saved] as any)
       modal.hapEnabledBlocks.set({ 0: false })
       modal.matterEnabledBlocks.set({ 0: true })
@@ -1747,7 +2444,12 @@ describe('pluginBridgeComponent', () => {
         env,
         featureFlags: { matterSupport: true, protocolExternalsOnly: true },
       })
-      modal.originalBridges.set([{ ...saved, hap: { enabled: false } }] as any)
+      modal.originalBridges.set([
+        {
+          ...saved,
+          hap: { enabled: false },
+        },
+      ] as any)
       modal.hapEnabledBlocks.set({ 0: false })
       modal.matterEnabledBlocks.set({ 0: true })
       modal.hapExternalsOnlyBlocks.set({ 0: true })
@@ -1775,7 +2477,9 @@ describe('pluginBridgeComponent', () => {
       // ⚠️ `hap: false` and `hap: { enabled: false }` both mean off, and treating
       // them as different would ask for a restart over a rewrite that changed
       // nothing the bridge can see
-      await savedWithOriginal({ hap: { enabled: false } }, { hap: false })
+      await savedWithOriginal({
+        hap: { enabled: false },
+      }, { hap: false })
 
       expect(modalService.opened).toEqual([])
     })
@@ -1794,7 +2498,9 @@ describe('pluginBridgeComponent', () => {
     it('closes this modal before opening the other one', async () => {
       // ⚠️ Two modals stacked over each other both write the same config, and the
       // one underneath saves whatever it was holding when the top one closes
-      const modal = await open([bridged()])
+      const modal = await open([
+        bridged(),
+      ])
 
       modal.openPluginConfig()
 
@@ -1805,7 +2511,9 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('does nothing without a plugin', async () => {
-      const modal = await open([bridged()])
+      const modal = await open([
+        bridged(),
+      ])
       ;(modal as any).plugin = undefined
 
       modal.openPluginConfig()
@@ -1834,10 +2542,18 @@ describe('pluginBridgeComponent', () => {
 
     /** The page with one saved bridge, marked for deletion. */
     async function withDeletedBridge() {
-      const modal = await open([bridged()], {
-        env: { bridges: [{ username, name: 'Test' }] },
+      const modal = await open([
+        bridged(),
+      ], {
+        env: {
+          bridges: [
+            { username, name: 'Test' },
+          ],
+        },
       })
-      modal.deleteBridges.set([{ id: username, name: 'Test' }] as any)
+      modal.deleteBridges.set([
+        { id: username, name: 'Test' },
+      ] as any)
       return modal
     }
 
@@ -1862,8 +2578,14 @@ describe('pluginBridgeComponent', () => {
     it('still writes them for a bridge that is staying', async () => {
       // The guard on both cases above: without it they would pass on a page that
       // never wrote these at all
-      const modal = await open([bridged()], {
-        env: { bridges: [{ username, name: 'Test' }] },
+      const modal = await open([
+        bridged(),
+      ], {
+        env: {
+          bridges: [
+            { username, name: 'Test' },
+          ],
+        },
       })
       modal.toggleHideUnpairing(username, 'hap')
       modal.onScheduledRestartCronChange('0 4 * * *', username)
@@ -1881,14 +2603,24 @@ describe('pluginBridgeComponent', () => {
     const bridged = () => ({
       platform: 'TestPlatform',
       name: 'Test',
-      _bridge: { username, port: 51820, matter: { port: 5551 } },
+      _bridge: {
+        username,
+        port: 51820,
+        matter: { port: 5551 },
+      },
     })
 
     it('writes it to its own endpoint, separately from the hap one', async () => {
       // ⚠️ Two separate notices about two separate pairings. One endpoint for both
       // would silence a notice the user is still relying on
-      const modal = await open([bridged()], {
-        env: { bridges: [{ username, name: 'Test' }] },
+      const modal = await open([
+        bridged(),
+      ], {
+        env: {
+          bridges: [
+            { username, name: 'Test' },
+          ],
+        },
         featureFlags: { matterSupport: true },
       })
 
@@ -1901,8 +2633,14 @@ describe('pluginBridgeComponent', () => {
 
     it('saves the rest when the notice write fails', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => {})
-      const modal = await open([bridged()], {
-        env: { bridges: [{ username, name: 'Test' }] },
+      const modal = await open([
+        bridged(),
+      ], {
+        env: {
+          bridges: [
+            { username, name: 'Test' },
+          ],
+        },
         featureFlags: { matterSupport: true },
         arrange: () => api.fail('put', /hide-matter-alert/, new Error('config not writable')),
       })
@@ -1923,7 +2661,15 @@ describe('pluginBridgeComponent', () => {
    */
   describe('the restart schedule', () => {
     const withCron = (cron?: string) => ({
-      bridges: [{ username: '0E:11:22:33:44:55', name: 'Test', ...(cron ? { scheduledRestartCron: cron } : {}) }],
+      bridges: [
+        {
+          username: '0E:11:22:33:44:55',
+          name: 'Test',
+          ...(cron
+            ? { scheduledRestartCron: cron }
+            : {}),
+        },
+      ],
     })
 
     const bridged = () => ({
@@ -1936,13 +2682,21 @@ describe('pluginBridgeComponent', () => {
     const CRON_URL = '/config-editor/ui/bridges/0E%3A11%3A22%3A33%3A44%3A55/scheduled-restart-cron'
 
     it('shows the schedule a bridge already has', async () => {
-      const modal = await open([bridged()], { env: withCron('0 4 * * *') })
+      const modal = await open([
+        bridged(),
+      ], {
+        env: withCron('0 4 * * *'),
+      })
 
       expect(modal.getScheduledRestartCron('0E:11:22:33:44:55')).toBe('0 4 * * *')
     })
 
     it('finds it however the username is cased', async () => {
-      const modal = await open([bridged()], { env: withCron('0 4 * * *') })
+      const modal = await open([
+        bridged(),
+      ], {
+        env: withCron('0 4 * * *'),
+      })
 
       expect(modal.getScheduledRestartCron('0e:11:22:33:44:55')).toBe('0 4 * * *')
     })
@@ -1951,19 +2705,29 @@ describe('pluginBridgeComponent', () => {
       ['a bridge with no schedule', '0E:11:22:33:44:55'],
       ['a bridge it has never seen', 'FF:FF:FF:FF:FF:FF'],
     ])('shows nothing for %s', async (_case, username) => {
-      const modal = await open([bridged()], { env: withCron() })
+      const modal = await open([
+        bridged(),
+      ], {
+        env: withCron(),
+      })
 
       expect(modal.getScheduledRestartCron(username)).toBe('')
     })
 
     it('shows nothing when there is no username to look up', async () => {
-      const modal = await open([bridged()])
+      const modal = await open([
+        bridged(),
+      ])
 
       expect(modal.getScheduledRestartCron(undefined)).toBe('')
     })
 
     it('writes a new schedule to the bridge endpoint on save', async () => {
-      const modal = await open([bridged()], { env: withCron() })
+      const modal = await open([
+        bridged(),
+      ], {
+        env: withCron(),
+      })
 
       modal.onScheduledRestartCronChange('0 4 * * *', '0E:11:22:33:44:55')
       await modal.save()
@@ -1972,7 +2736,11 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('records it against the bridge whatever case was typed', async () => {
-      const modal = await open([bridged()], { env: withCron() })
+      const modal = await open([
+        bridged(),
+      ], {
+        env: withCron(),
+      })
 
       modal.onScheduledRestartCronChange('0 4 * * *', '0e:11:22:33:44:55')
 
@@ -1980,7 +2748,11 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('clears the schedule when the box is emptied', async () => {
-      const modal = await open([bridged()], { env: withCron('0 4 * * *') })
+      const modal = await open([
+        bridged(),
+      ], {
+        env: withCron('0 4 * * *'),
+      })
 
       modal.onScheduledRestartCronChange('', '0E:11:22:33:44:55')
       await modal.save()
@@ -1989,7 +2761,11 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('treats a box of spaces as empty', async () => {
-      const modal = await open([bridged()], { env: withCron('0 4 * * *') })
+      const modal = await open([
+        bridged(),
+      ], {
+        env: withCron('0 4 * * *'),
+      })
 
       modal.onScheduledRestartCronChange('   ', '0E:11:22:33:44:55')
 
@@ -1998,7 +2774,9 @@ describe('pluginBridgeComponent', () => {
 
     it('keeps a schedule for a bridge the settings did not list', async () => {
       // A bridge added in this very modal has no saved entry to update
-      const modal = await open([bridged()])
+      const modal = await open([
+        bridged(),
+      ])
 
       modal.onScheduledRestartCronChange('0 4 * * *', '0E:11:22:33:44:66')
 
@@ -2006,7 +2784,11 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('ignores a change with no bridge to attach it to', async () => {
-      const modal = await open([bridged()], { env: withCron() })
+      const modal = await open([
+        bridged(),
+      ], {
+        env: withCron(),
+      })
 
       expect(() => modal.onScheduledRestartCronChange('0 4 * * *', '')).not.toThrow()
 
@@ -2016,7 +2798,11 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('writes nothing when the schedule was not changed', async () => {
-      const modal = await open([bridged()], { env: withCron('0 4 * * *') })
+      const modal = await open([
+        bridged(),
+      ], {
+        env: withCron('0 4 * * *'),
+      })
 
       await modal.save()
 
@@ -2024,7 +2810,11 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('asks for a full service restart, because the schedule lives outside homebridge', async () => {
-      const modal = await open([bridged()], { env: withCron() })
+      const modal = await open([
+        bridged(),
+      ], {
+        env: withCron(),
+      })
 
       modal.onScheduledRestartCronChange('0 4 * * *', '0E:11:22:33:44:55')
       await modal.save()
@@ -2035,7 +2825,9 @@ describe('pluginBridgeComponent', () => {
     it('carries on when the schedule write fails', async () => {
       // The config itself has already saved, so the restart still has to be offered
       vi.spyOn(console, 'error').mockImplementation(() => {})
-      const modal = await open([bridged()], {
+      const modal = await open([
+        bridged(),
+      ], {
         env: withCron(),
         arrange: () => api.fail('put', CRON_URL, new Error('config not writable')),
       })
@@ -2060,18 +2852,30 @@ describe('pluginBridgeComponent', () => {
     const HIDE_URL = '/config-editor/ui/plugins/hide-child-bridge-setup-for'
 
     it('starts ticked for a plugin already on the list', async () => {
-      const modal = await open([bridged()], {
-        env: { plugins: { hideChildBridgeSetupFor: ['homebridge-test'] } },
+      const modal = await open([
+        bridged(),
+      ], {
+        env: {
+          plugins: {
+            hideChildBridgeSetupFor: ['homebridge-test'],
+          },
+        },
       })
 
       expect(modal.hideChildBridgeSetup()).toBe(true)
     })
 
     it('adds the plugin to the list', async () => {
-      const modal = await open([bridged()], {
+      const modal = await open([
+        bridged(),
+      ], {
         env: {
-          bridges: [{ username: '0E:11:22:33:44:55', name: 'Test' }],
-          plugins: { hideChildBridgeSetupFor: ['homebridge-other'] },
+          bridges: [
+            { username: '0E:11:22:33:44:55', name: 'Test' },
+          ],
+          plugins: {
+            hideChildBridgeSetupFor: ['homebridge-other'],
+          },
         },
       })
 
@@ -2080,26 +2884,42 @@ describe('pluginBridgeComponent', () => {
 
       // ⚠️ Sorted, and sent whole: the endpoint replaces the list, so an unsorted
       // or partial one silently reorders or drops other people's plugins
-      expect(api.lastCall('put', HIDE_URL)?.body).toEqual({ body: ['homebridge-other', 'homebridge-test'] })
+      expect(api.lastCall('put', HIDE_URL)?.body).toEqual({
+        body: ['homebridge-other', 'homebridge-test'],
+      })
     })
 
     it('takes the plugin off the list again', async () => {
-      const modal = await open([bridged()], {
+      const modal = await open([
+        bridged(),
+      ], {
         env: {
-          bridges: [{ username: '0E:11:22:33:44:55', name: 'Test' }],
-          plugins: { hideChildBridgeSetupFor: ['homebridge-other', 'homebridge-test'] },
+          bridges: [
+            { username: '0E:11:22:33:44:55', name: 'Test' },
+          ],
+          plugins: {
+            hideChildBridgeSetupFor: ['homebridge-other', 'homebridge-test'],
+          },
         },
       })
 
       modal.toggleHideChildBridgeSetup()
       await modal.save()
 
-      expect(api.lastCall('put', HIDE_URL)?.body).toEqual({ body: ['homebridge-other'] })
+      expect(api.lastCall('put', HIDE_URL)?.body).toEqual({
+        body: ['homebridge-other'],
+      })
     })
 
     it('keeps the local copy in step, so the plugins page agrees', async () => {
-      const modal = await open([bridged()], {
-        env: { bridges: [{ username: '0E:11:22:33:44:55', name: 'Test' }] },
+      const modal = await open([
+        bridged(),
+      ], {
+        env: {
+          bridges: [
+            { username: '0E:11:22:33:44:55', name: 'Test' },
+          ],
+        },
       })
 
       modal.toggleHideChildBridgeSetup()
@@ -2111,8 +2931,14 @@ describe('pluginBridgeComponent', () => {
     it('closes for a refresh rather than a restart', async () => {
       // ⚠️ Nothing homebridge reads has changed, so a restart prompt here is a
       // minute of downtime over a preference in the UI
-      const modal = await open([bridged()], {
-        env: { bridges: [{ username: '0E:11:22:33:44:55', name: 'Test' }] },
+      const modal = await open([
+        bridged(),
+      ], {
+        env: {
+          bridges: [
+            { username: '0E:11:22:33:44:55', name: 'Test' },
+          ],
+        },
       })
 
       modal.toggleHideChildBridgeSetup()
@@ -2123,8 +2949,14 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('writes nothing when the toggle was not touched', async () => {
-      const modal = await open([bridged()], {
-        env: { bridges: [{ username: '0E:11:22:33:44:55', name: 'Test' }] },
+      const modal = await open([
+        bridged(),
+      ], {
+        env: {
+          bridges: [
+            { username: '0E:11:22:33:44:55', name: 'Test' },
+          ],
+        },
       })
 
       await modal.save()
@@ -2134,8 +2966,14 @@ describe('pluginBridgeComponent', () => {
 
     it('saves the rest when the preference write fails', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => {})
-      const modal = await open([bridged()], {
-        env: { bridges: [{ username: '0E:11:22:33:44:55', name: 'Test' }] },
+      const modal = await open([
+        bridged(),
+      ], {
+        env: {
+          bridges: [
+            { username: '0E:11:22:33:44:55', name: 'Test' },
+          ],
+        },
         arrange: () => api.fail('put', HIDE_URL, new Error('config not writable')),
       })
 
@@ -2157,11 +2995,19 @@ describe('pluginBridgeComponent', () => {
     const bridged = () => ({
       platform: 'TestPlatform',
       name: 'Test',
-      _bridge: { username: '0E:11:22:33:44:55', port: 51820, matter: { port: 5551 } },
+      _bridge: {
+        username: '0E:11:22:33:44:55',
+        port: 51820,
+        matter: { port: 5551 },
+      },
     })
 
     it('marks the block when it is ticked', async () => {
-      const modal = await open([bridged()], { featureFlags: { matterSupport: true, protocolExternalsOnly: true } })
+      const modal = await open([
+        bridged(),
+      ], {
+        featureFlags: { matterSupport: true, protocolExternalsOnly: true },
+      })
 
       await modal.toggleMatterExternalsOnly(checkboxEvent(true), 0)
 
@@ -2170,7 +3016,11 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('clears it again when unticked', async () => {
-      const modal = await open([bridged()], { featureFlags: { matterSupport: true, protocolExternalsOnly: true } })
+      const modal = await open([
+        bridged(),
+      ], {
+        featureFlags: { matterSupport: true, protocolExternalsOnly: true },
+      })
       await modal.toggleMatterExternalsOnly(checkboxEvent(true), 0)
 
       await modal.toggleMatterExternalsOnly(checkboxEvent(false), 0)
@@ -2182,8 +3032,16 @@ describe('pluginBridgeComponent', () => {
     it('builds a matter block for a bridge that has none', async () => {
       // The flag has nowhere to live otherwise
       const modal = await open(
-        [{ platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }],
-        { featureFlags: { matterSupport: true, protocolExternalsOnly: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            name: 'Test',
+            _bridge: { username: '0E:11:22:33:44:55', port: 51820 },
+          },
+        ],
+        {
+          featureFlags: { matterSupport: true, protocolExternalsOnly: true },
+        },
       )
 
       await modal.toggleMatterExternalsOnly(checkboxEvent(true), 0)
@@ -2195,8 +3053,16 @@ describe('pluginBridgeComponent', () => {
       // ⚠️ The block only existed to carry the flag; leaving `{ port, enabled:
       // false }` behind writes matter config the user never asked for
       const modal = await open(
-        [{ platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }],
-        { featureFlags: { matterSupport: true, protocolExternalsOnly: true } },
+        [
+          {
+            platform: 'TestPlatform',
+            name: 'Test',
+            _bridge: { username: '0E:11:22:33:44:55', port: 51820 },
+          },
+        ],
+        {
+          featureFlags: { matterSupport: true, protocolExternalsOnly: true },
+        },
       )
       await modal.toggleMatterExternalsOnly(checkboxEvent(true), 0)
 
@@ -2207,7 +3073,9 @@ describe('pluginBridgeComponent', () => {
 
     it('does nothing on an accessory block', async () => {
       // Accessories have no matter configuration of their own
-      const modal = await open([{ accessory: 'TestAccessory', name: 'Test' }], {
+      const modal = await open([
+        { accessory: 'TestAccessory', name: 'Test' },
+      ], {
         pluginType: 'accessory',
         featureFlags: { matterSupport: true, protocolExternalsOnly: true },
       })
@@ -2218,7 +3086,11 @@ describe('pluginBridgeComponent', () => {
     })
 
     it('does nothing while the runtime does not support it', async () => {
-      const modal = await open([bridged()], { featureFlags: { matterSupport: true, protocolExternalsOnly: false } })
+      const modal = await open([
+        bridged(),
+      ], {
+        featureFlags: { matterSupport: true, protocolExternalsOnly: false },
+      })
 
       await modal.toggleMatterExternalsOnly(checkboxEvent(true), 0)
 

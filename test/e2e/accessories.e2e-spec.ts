@@ -202,6 +202,88 @@ describe('AccessoriesController (e2e)', () => {
     expect(res.statusCode).toBe(400)
   })
 
+  // Since hap-client 5.4.0 a refresh throws when a characteristic answers with
+  // a HAP error status, such as a device that is switched off. It has applied
+  // every value that did answer by then, so the accessory is still worth
+  // returning - an error here would hide the whole accessory over one part
+  function notResponding() {
+    return Object.assign(new Error('Characteristic 1.10 returned HAP status -70402'), { name: 'HapCharacteristicError' })
+  }
+
+  it('GET /accessories/:uniqueId still returns an accessory with a part that does not respond', async () => {
+    refreshCharacteristics.mockRejectedValueOnce(notResponding())
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/accessories/c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().uniqueId).toBe('c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c')
+  })
+
+  it('GET /accessories/:uniqueId still reports a refresh that failed outright', async () => {
+    refreshCharacteristics.mockRejectedValueOnce(new Error('connect ECONNREFUSED'))
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/accessories/c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('PUT /accessories/:uniqueId reports success when only the read-back finds a part not responding', async () => {
+    getCharacteristic.mockReturnValueOnce(booleanCharacteristic)
+    refreshCharacteristics.mockRejectedValueOnce(notResponding())
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/accessories/c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c',
+      headers: {
+        authorization,
+      },
+      payload: {
+        characteristicType: 'On',
+        value: 'true',
+      },
+    })
+
+    // The change was made, so a 400 would make the caller retry it
+    expect(setValue).toHaveBeenCalledWith(true)
+    expect(res.statusCode).toBe(200)
+  })
+
+  it('logs a part that does not respond at debug when the accessories page refreshes', async () => {
+    const logger = (accessoriesService as any).logger
+    const debug = vi.spyOn(logger, 'debug').mockImplementation(() => {})
+    const error = vi.spyOn(logger, 'error').mockImplementation(() => {})
+
+    ;(accessoriesService as any).refreshCharacteristics([
+      {
+        uniqueId: 'off',
+        refreshCharacteristics: vi.fn().mockRejectedValue(notResponding()),
+      },
+      {
+        uniqueId: 'gone',
+        refreshCharacteristics: vi.fn().mockRejectedValue(new Error('connect ECONNREFUSED')),
+      },
+    ])
+    await vi.waitFor(() => expect(error).toHaveBeenCalled())
+
+    // A device that is off is normal and this runs on every page load; a
+    // request that failed outright is still an error
+    expect(debug).toHaveBeenCalledWith(expect.stringContaining('off'))
+    expect(error).toHaveBeenCalledTimes(1)
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('gone'))
+  })
+
   it('PUT /accessories/:uniqueId (boolean - valid)', async () => {
     getCharacteristic.mockReturnValueOnce(booleanCharacteristic)
 
@@ -441,7 +523,12 @@ describe('AccessoriesController (e2e)', () => {
 
   it('service.saveAccessoryLayout should save and return layout', async () => {
     const layout = {
-      rooms: [{ name: 'Living Room', services: ['abc'] }],
+      rooms: [
+        {
+          name: 'Living Room',
+          services: ['abc'],
+        },
+      ],
     }
 
     const result = await accessoriesService.saveAccessoryLayout('admin', layout as any)
@@ -548,26 +635,38 @@ describe('AccessoriesController (e2e)', () => {
    * appeared on the Accessories page (#2936).
    */
   describe('per-child-bridge pins (#2936)', () => {
-    const originalConfig = { platforms: undefined, accessories: undefined }
+    const originalConfig = { platforms: undefined, accessories: undefined, username: undefined }
 
     beforeEach(() => {
       originalConfig.platforms = configService.homebridgeConfig.platforms
       originalConfig.accessories = configService.homebridgeConfig.accessories
+      originalConfig.username = configService.homebridgeConfig.bridge.username
     })
 
     afterEach(() => {
       configService.homebridgeConfig.platforms = originalConfig.platforms
       configService.homebridgeConfig.accessories = originalConfig.accessories
+      configService.homebridgeConfig.bridge.username = originalConfig.username
     })
 
     it('collects the pin of every child bridge that sets one', () => {
       configService.homebridgeConfig.platforms = [
-        { platform: 'WithPin', _bridge: { username: '0E:AA:BB:CC:DD:EE', pin: '999-88-777' } },
-        { platform: 'NoPin', _bridge: { username: '0E:11:22:33:44:55' } },
+        {
+          platform: 'WithPin',
+          _bridge: { username: '0E:AA:BB:CC:DD:EE', pin: '999-88-777' },
+        },
+        {
+          platform: 'NoPin',
+          _bridge: { username: '0E:11:22:33:44:55' },
+        },
         { platform: 'NoBridge' },
       ] as any
       configService.homebridgeConfig.accessories = [
-        { accessory: 'AccWithPin', name: 'A', _bridge: { username: '0E:99:88:77:66:55', pin: '111-22-333' } },
+        {
+          accessory: 'AccWithPin',
+          name: 'A',
+          _bridge: { username: '0E:99:88:77:66:55', pin: '111-22-333' },
+        },
       ] as any
 
       const pins = (accessoriesService as any).getChildBridgePins()
@@ -579,9 +678,47 @@ describe('AccessoriesController (e2e)', () => {
       })
     })
 
+    // Another Homebridge on the network refuses our pin by design. Naming which
+    // bridges are ours is what lets hap-client keep those refusals out of the
+    // warnings (#2979, #3001).
+    it('names the main bridge and every child bridge as our own', () => {
+      configService.homebridgeConfig.bridge.username = '0E:00:11:22:33:44'
+      configService.homebridgeConfig.platforms = [
+        {
+          platform: 'WithPin',
+          _bridge: { username: '0E:AA:BB:CC:DD:EE', pin: '999-88-777' },
+        },
+        {
+          platform: 'NoPin',
+          _bridge: { username: '0E:11:22:33:44:55' },
+        },
+        { platform: 'NoBridge' },
+      ] as any
+      configService.homebridgeConfig.accessories = [
+        {
+          accessory: 'Acc',
+          name: 'A',
+          _bridge: { username: '0E:99:88:77:66:55' },
+        },
+      ] as any
+
+      const own = (accessoriesService as any).getOwnBridgeUsernames()
+
+      // the main bridge, then every child bridge whether or not it sets a pin
+      expect(own).toEqual([
+        '0E:00:11:22:33:44',
+        '0E:AA:BB:CC:DD:EE',
+        '0E:11:22:33:44:55',
+        '0E:99:88:77:66:55',
+      ])
+    })
+
     it('returns an empty map when nothing sets its own pin', () => {
       configService.homebridgeConfig.platforms = [
-        { platform: 'NoPin', _bridge: { username: '0E:11:22:33:44:55' } },
+        {
+          platform: 'NoPin',
+          _bridge: { username: '0E:11:22:33:44:55' },
+        },
       ] as any
       configService.homebridgeConfig.accessories = undefined
 
@@ -636,7 +773,9 @@ describe('AccessoriesController (e2e)', () => {
     })
 
     it('on "ok" with viewers connected, re-arms monitoring and tells them to re-fetch', async () => {
-      const client = { emit: vi.fn() }
+      const client = {
+        emit: vi.fn(),
+      }
       svc.activeClients.add(client)
       const ensureSpy = vi.spyOn(svc, 'ensureMatterMonitoringStarted').mockImplementation(async () => {
         svc.matterMonitoringActive = true
@@ -661,7 +800,9 @@ describe('AccessoriesController (e2e)', () => {
     })
 
     it('does not emit the re-fetch event when the start returned early (matter off)', async () => {
-      const client = { emit: vi.fn() }
+      const client = {
+        emit: vi.fn(),
+      }
       svc.activeClients.add(client)
       // resolves without flipping matterMonitoringActive - the "matter not
       // supported / not enabled" early-return shape

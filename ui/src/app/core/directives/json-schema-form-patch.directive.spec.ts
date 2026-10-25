@@ -53,7 +53,9 @@ describe('jsonSchemaFormPatchDirective', () => {
    */
   async function patch(markup: string) {
     TestBed.resetTestingModule()
-    TestBed.configureTestingModule({ imports: [HostComponent] })
+    TestBed.configureTestingModule({
+      imports: [HostComponent],
+    })
 
     fixture = TestBed.createComponent(HostComponent)
     fixture.detectChanges()
@@ -137,7 +139,9 @@ describe('jsonSchemaFormPatchDirective', () => {
         <div class="list-group-item"><legend>Second</legend><button class="btn-close"></button></div>
       `)
 
-      const labels = [...host.querySelectorAll('button.btn-close')].map(button => button.getAttribute('aria-label'))
+      const labels = [
+        ...host.querySelectorAll('button.btn-close'),
+      ].map(button => button.getAttribute('aria-label'))
       expect(labels).toEqual(['Delete First', 'Delete Second'])
     })
 

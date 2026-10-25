@@ -1,13 +1,13 @@
 import { Controller, ForbiddenException, Get, Inject, Param, Post, Query, Request, UseGuards } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js'
 import { PluginsService } from './plugins.service.js'
 
 @ApiTags('Plugins')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 @Controller('plugins')
 export class PluginsController {
   constructor(
@@ -92,7 +92,12 @@ export class PluginsController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Get the GitHub release notes and changelog for a specific version of a plugin.' })
   @ApiParam({ name: 'pluginName', type: 'string' })
-  @ApiQuery({ name: 'version', type: 'string', required: false, description: 'Target version or dist-tag (e.g. "1.2.3", "beta", "latest")' })
+  @ApiQuery({
+    name: 'version',
+    type: 'string',
+    required: false,
+    description: 'Target version or dist-tag (e.g. "1.2.3", "beta", "latest")',
+  })
   @Get('release/:pluginName')
   getPluginRelease(@Param('pluginName') pluginName, @Query('version') version?: string) {
     return this.pluginsService.getPluginRelease(pluginName, version)
@@ -126,12 +131,22 @@ export class PluginsController {
           type: 'object',
           properties: {
             pluginAlias: { type: 'string', nullable: true },
-            pluginType: { type: 'string', enum: ['platform', 'accessory'], nullable: true },
+            pluginType: {
+              type: 'string',
+              enum: ['platform', 'accessory'],
+              nullable: true,
+            },
           },
         },
         configSchema: { type: 'object', nullable: true },
-        config: { type: 'array', items: { type: 'object' } },
-        childBridges: { type: 'array', items: { type: 'object' } },
+        config: {
+          type: 'array',
+          items: { type: 'object' },
+        },
+        childBridges: {
+          type: 'array',
+          items: { type: 'object' },
+        },
       },
     },
   })

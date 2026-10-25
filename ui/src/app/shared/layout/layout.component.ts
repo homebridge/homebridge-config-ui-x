@@ -81,18 +81,20 @@ export class LayoutComponent implements OnInit, OnDestroy {
     if (!this.$router.url.endsWith('/restart') && lt(this.$settings.uiVersion, environment.serverTarget)) {
       // eslint-disable-next-line no-console
       console.log(`Server restart required. UI Version: ${environment.serverTarget} - Server Version: ${this.$settings.uiVersion} `)
-      const injector = createEnvironmentInjector([{
-        provide: CONFIRM_MODAL_DATA,
-        useValue: {
-          title: this.$translate.instant('platform.version.service_restart_required'),
-          message: this.$translate.instant('platform.version.restart_required', {
-            serverVersion: this.$settings.uiVersion,
-            uiVersion: environment.serverTarget,
-          }),
-          confirmButtonLabel: this.$translate.instant('menu.tooltip_restart'),
-          faIconClass: 'fas fa-power-off orange-text',
+      const injector = createEnvironmentInjector([
+        {
+          provide: CONFIRM_MODAL_DATA,
+          useValue: {
+            title: this.$translate.instant('platform.version.service_restart_required'),
+            message: this.$translate.instant('platform.version.restart_required', {
+              serverVersion: this.$settings.uiVersion,
+              uiVersion: environment.serverTarget,
+            }),
+            confirmButtonLabel: this.$translate.instant('menu.tooltip_restart'),
+            faIconClass: 'fas fa-power-off orange-text',
+          },
         },
-      }], this.injector)
+      ], this.injector)
 
       const ref = this.$modal.open(ConfirmComponent, {
         size: 'lg',

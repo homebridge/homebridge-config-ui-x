@@ -3,6 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 
 import type { HomebridgeConfig } from '../../src/core/config/config.interfaces.js'
 
+import { Buffer } from 'node:buffer'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -12,6 +13,7 @@ import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import FormData from 'form-data'
 import { copy, ensureDir, pathExists, readFile, readJson, remove, writeJson } from 'fs-extra'
+import forge from 'node-forge'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -235,7 +237,12 @@ describe('ServerController (e2e)', () => {
     const cachedAccessories = await readJson(resolve(accessoriesPath, 'cachedAccessories'))
     const uuid = cachedAccessories[0].UUID
 
-    for (const cacheFile of ['../../auth.json', 'auth.json', 'cachedAccessories.NOTHEX', 'random-file']) {
+    for (const cacheFile of [
+      '../../auth.json',
+      'auth.json',
+      'cachedAccessories.NOTHEX',
+      'random-file',
+    ]) {
       const res = await app.inject({
         method: 'DELETE',
         path: `/server/cached-accessories/${uuid}?cacheFile=${encodeURIComponent(cacheFile)}`,
@@ -675,6 +682,104 @@ describe('ServerController (e2e)', () => {
     expect(res.json().port).toBeLessThanOrEqual(60000)
   })
 
+  it('GET /server/port/new (should skip the external accessory ports range)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    config.ports = { start: 30000, end: 59999 }
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new',
+      headers: {
+        authorization,
+      },
+    })
+
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().port).toBe(60000)
+  })
+
+  it('GET /server/port/new (should skip ports already in the config)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    config.ports = { start: 30000, end: 59995 }
+    config.bridge.port = 59996
+    config.platforms.find(x => x.platform === 'config').port = 59997
+    config.platforms.push({
+      platform: 'TestPlatform',
+      _bridge: { username: '02:00:00:00:00:01', port: 59998 },
+    })
+    config.accessories.push({
+      accessory: 'TestAccessory',
+      name: 'Test Accessory',
+      _bridge: { username: '02:00:00:00:00:02', port: 59999 },
+    })
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new',
+      headers: {
+        authorization,
+      },
+    })
+
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().port).toBe(60000)
+  })
+
+  it('GET /server/port/new (should skip a port written as text in the config)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    config.ports = { start: 30000, end: 59998 }
+    config.bridge.port = 51826
+    config.platforms.find(x => x.platform === 'config').port = 8581
+    config.platforms.push({
+      platform: 'TestPlatform',
+      _bridge: { username: '02:00:00:00:00:01', port: '59999' as any },
+    })
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new',
+      headers: {
+        authorization,
+      },
+    })
+
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    // 59999 is taken, even though it was written as "59999"
+    expect(res.statusCode).toBe(200)
+    expect(res.json().port).toBe(60000)
+  })
+
+  it('GET /server/port/new (should return an error when no port is available)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    config.ports = { start: 30000, end: 60000 }
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new',
+      headers: {
+        authorization,
+      },
+    })
+
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    expect(res.statusCode).toBe(500)
+    expect(res.json().message).toContain('No available child bridge ports')
+  })
+
   it('POST /server/wallpaper', async () => {
     // create multipart form
     const payload = new FormData()
@@ -851,7 +956,9 @@ describe('ServerController (e2e)', () => {
       headers: {
         authorization,
       },
-      payload: [{ deviceId: '../../etc', uuid: 'some-uuid' }],
+      payload: [
+        { deviceId: '../../etc', uuid: 'some-uuid' },
+      ],
     })
 
     expect(res.statusCode).toBe(400)
@@ -955,6 +1062,50 @@ describe('ServerController (e2e)', () => {
     expect(returnedPort).not.toBe(5531)
     expect(returnedPort).toBeGreaterThanOrEqual(5530)
     expect(returnedPort).toBeLessThanOrEqual(5541)
+  })
+
+  it('GET /server/port/new/matter (should skip a Matter port written as text)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+    const config = await readJson(configService.configPath)
+    config.matterPorts = { start: 5530, end: 5531 }
+    config.bridge.matter = { port: '5530' }
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new/matter',
+      headers: {
+        authorization,
+      },
+    })
+
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().port).toBe(5531)
+  })
+
+  it('GET /server/port/new/matter (should skip a HAP port inside the Matter range)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+    const config = await readJson(configService.configPath)
+    // a matterPorts range that overlaps the main bridge's HAP port
+    config.matterPorts = { start: 51826, end: 51827 }
+    config.bridge.port = 51826
+    delete config.bridge.matter
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new/matter',
+      headers: {
+        authorization,
+      },
+    })
+
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().port).toBe(51827)
   })
 
   it('DELETE /server/pairings/:deviceId/matter (should remove Matter config from child bridge)', async () => {
@@ -1118,7 +1269,9 @@ describe('ServerController (e2e)', () => {
       headers: {
         authorization,
       },
-      payload: [{ uuid: cachedAccessories[0].UUID, cacheFile: 'cachedAccessories' }],
+      payload: [
+        { uuid: cachedAccessories[0].UUID, cacheFile: 'cachedAccessories' },
+      ],
     })
 
     expect(res.statusCode).toBe(204)
@@ -1137,7 +1290,9 @@ describe('ServerController (e2e)', () => {
         method: 'DELETE',
         path: '/server/cached-accessories',
         headers: { authorization },
-        payload: [{ uuid: 'some-uuid', cacheFile }],
+        payload: [
+          { uuid: 'some-uuid', cacheFile },
+        ],
       })
       expect(res.statusCode).toBe(400)
     }
@@ -1153,7 +1308,9 @@ describe('ServerController (e2e)', () => {
       headers: {
         authorization,
       },
-      payload: [{ id: '67E41F0EA05D', resetPairingInfo: false }],
+      payload: [
+        { id: '67E41F0EA05D', resetPairingInfo: false },
+      ],
     })
 
     expect(res.statusCode).toBe(204)
@@ -1178,7 +1335,9 @@ describe('ServerController (e2e)', () => {
       headers: {
         authorization,
       },
-      payload: [{ id: '67E41F0EA05D' }],
+      payload: [
+        { id: '67E41F0EA05D' },
+      ],
     })
 
     expect(res.statusCode).toBe(204)
@@ -1446,6 +1605,115 @@ describe('ServerController (e2e)', () => {
 
     expect(res.statusCode).toBe(400)
   })
+
+  it('POST /server/ssl/keycert (key + cert upload completes)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    // Generate a matching key/cert pair to upload
+    const genRes = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/selfsigned/generate',
+      headers: {
+        authorization,
+      },
+      payload: {
+        hostnames: ['localhost'],
+        mode: 'keycert',
+      },
+    })
+    expect(genRes.statusCode).toBe(201)
+    const keyPem = await readFile(genRes.json().keyPath)
+    const certPem = await readFile(genRes.json().certPath)
+
+    const payload = new FormData()
+    payload.append('key', keyPem, 'privkey.pem')
+    payload.append('cert', certPem, 'fullchain.pem')
+
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/keycert',
+      headers,
+      payload,
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json().ok).toBe(true)
+    expect(res.json().type).toBe('keycert')
+    expect((await readFile(res.json().keyPath)).equals(keyPem)).toBe(true)
+    expect((await readFile(res.json().certPath)).equals(certPem)).toBe(true)
+
+    const config = await readJson(configService.configPath)
+    const uiBlock = config.platforms.find(x => x.platform === 'config')
+    expect(uiBlock.ssl.key).toBe(res.json().keyPath)
+    expect(uiBlock.ssl.cert).toBe(res.json().certPath)
+  }, 10000)
+
+  it('POST /server/ssl/pfx (pfx + passphrase upload completes)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    const genRes = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/selfsigned/generate',
+      headers: {
+        authorization,
+      },
+      payload: {
+        hostnames: ['localhost'],
+        mode: 'keycert',
+      },
+    })
+    expect(genRes.statusCode).toBe(201)
+    const key = forge.pki.privateKeyFromPem((await readFile(genRes.json().keyPath)).toString())
+    const cert = forge.pki.certificateFromPem((await readFile(genRes.json().certPath)).toString())
+    const pfx = Buffer.from(forge.asn1.toDer(forge.pkcs12.toPkcs12Asn1(key, [cert], 'test-pass', { algorithm: '3des' })).getBytes(), 'binary')
+
+    // File part first, then the passphrase field: the file stream must be consumed before the next part is yielded
+    const payload = new FormData()
+    payload.append('pfx', pfx, 'ui.pfx')
+    payload.append('passphrase', 'test-pass')
+
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/pfx',
+      headers,
+      payload,
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json().ok).toBe(true)
+    expect(res.json().type).toBe('pfx')
+
+    const config = await readJson(configService.configPath)
+    const uiBlock = config.platforms.find(x => x.platform === 'config')
+    expect(uiBlock.ssl.pfx).toBe(res.json().pfxPath)
+    expect(uiBlock.ssl.passphrase).toBe('test-pass')
+  }, 10000)
+
+  it('POST /server/ssl/pfx (too big a pfx is reported as too big)', async () => {
+    // With the passphrase after the file, asking for that next part used to fail
+    // first with a vaguer "request file too large" before the size was checked
+    const payload = new FormData()
+    payload.append('pfx', Buffer.alloc(globalThis.backup.maxBackupSize + 1), 'ui.pfx')
+    payload.append('passphrase', 'test-pass')
+
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/pfx',
+      headers,
+      payload,
+    })
+
+    expect(res.json().message).toContain('Upload exceeds maximum size')
+  }, 20000)
 
   it('POST /server/ssl/validate (selfsigned mode)', async () => {
     await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)

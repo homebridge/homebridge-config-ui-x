@@ -79,8 +79,12 @@ export class UpdateInfoWidgetComponent implements OnInit {
    */
   public readonly updateAllCount = computed(() =>
     this.homebridgePluginStatus().length
-    + (this.homebridgePkg().updateAvailable ? 1 : 0)
-    + (this.homebridgeUiPkg().updateAvailable ? 1 : 0),
+    + (this.homebridgePkg().updateAvailable
+      ? 1
+      : 0)
+    + (this.homebridgeUiPkg().updateAvailable
+      ? 1
+      : 0),
   )
 
   // Other properties
@@ -91,6 +95,16 @@ export class UpdateInfoWidgetComponent implements OnInit {
   public isAdmin = this.$auth.user.admin
   public nodeUpdatePolicy: NodeUpdatePolicy = 'all'
   public homebridgeUpdatePolicy: HomebridgeUpdatePolicy = 'all'
+
+  /** Whether to offer an admin the move to Homebridge v2 from here. */
+  public canOfferHbV2(): boolean {
+    return this.isHbV2Loaded()
+      && !this.isRunningHbV2()
+      && !!this.isAdmin
+      && this.homebridgeUpdatePolicy !== 'none'
+      && this.homebridgeUpdatePolicy !== 'major'
+  }
+
   public homebridgeUiUpdatePolicy: HomebridgeUiUpdatePolicy = 'all'
 
   public ngOnInit(): void {
@@ -175,24 +189,26 @@ export class UpdateInfoWidgetComponent implements OnInit {
   }
 
   public nodeVersionModal(compareVersion: string): void {
-    const injector = createEnvironmentInjector([{
-      provide: NODE_VERSION_MODAL_DATA,
-      useValue: {
-        nodeVersion: this.serverInfo()!.nodeVersion,
-        latestVersion: compareVersion,
-        showNodeUnsupportedWarning: this.nodejsInfo()!.showNodeUnsupportedWarning,
-        homebridgeRunningInSynologyPackage: this.serverInfo()!.homebridgeRunningInSynologyPackage,
-        homebridgeRunningInDocker: this.serverInfo()!.homebridgeRunningInDocker,
-        homebridgePkg: this.homebridgePkg(),
-        architecture: this.nodejsInfo()!.architecture,
-        supportsNodeJs24: this.nodejsInfo()!.supportsNodeJs24,
-        statusIo: this.io,
-        onUpdate: async () => {
+    const injector = createEnvironmentInjector([
+      {
+        provide: NODE_VERSION_MODAL_DATA,
+        useValue: {
+          nodeVersion: this.serverInfo()!.nodeVersion,
+          latestVersion: compareVersion,
+          showNodeUnsupportedWarning: this.nodejsInfo()!.showNodeUnsupportedWarning,
+          homebridgeRunningInSynologyPackage: this.serverInfo()!.homebridgeRunningInSynologyPackage,
+          homebridgeRunningInDocker: this.serverInfo()!.homebridgeRunningInDocker,
+          homebridgePkg: this.homebridgePkg(),
+          architecture: this.nodejsInfo()!.architecture,
+          supportsNodeJs24: this.nodejsInfo()!.supportsNodeJs24,
+          statusIo: this.io,
+          onUpdate: async () => {
           // Reload to refresh the widget display
-          await this.getNodeInfo()
+            await this.getNodeInfo()
+          },
         },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(NodeVersionModalComponent, {
       size: 'lg',
@@ -202,13 +218,15 @@ export class UpdateInfoWidgetComponent implements OnInit {
   }
 
   public readyForV2Modal(): void {
-    const injector = createEnvironmentInjector([{
-      provide: HB_V2_MODAL_DATA,
-      useValue: {
-        isUpdating: false,
-        skipIfCompatible: false,
+    const injector = createEnvironmentInjector([
+      {
+        provide: HB_V2_MODAL_DATA,
+        useValue: {
+          isUpdating: false,
+          skipIfCompatible: false,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(HbV2ModalComponent, {
       size: 'lg',
@@ -378,20 +396,22 @@ export class UpdateInfoWidgetComponent implements OnInit {
 
   public dockerUpdateModal(): void {
     const dockerInfo = this.dockerInfo()
-    const injector = createEnvironmentInjector([{
-      provide: INFORMATION_MODAL_DATA,
-      useValue: {
-        title: this.$translate.instant('status.widget.info.docker_update_title'),
-        message: this.$translate.instant('status.widget.info.docker_update_message'),
-        markdownMessage2: dockerInfo.latestReleaseBody,
-        subtitle: (dockerInfo.currentVersion && dockerInfo.latestVersion)
-          ? `${dockerInfo.currentVersion} &rarr; ${dockerInfo.latestVersion}`
-          : this.$translate.instant('accessories.control.unknown'),
-        ctaButtonLabel: this.$translate.instant('form.button_more_info'),
-        faIconClass: 'fab fa-docker primary-text',
-        ctaButtonLink: 'https://github.com/homebridge/docker-homebridge/wiki/How-To-Update-Docker-Homebridge',
+    const injector = createEnvironmentInjector([
+      {
+        provide: INFORMATION_MODAL_DATA,
+        useValue: {
+          title: this.$translate.instant('status.widget.info.docker_update_title'),
+          message: this.$translate.instant('status.widget.info.docker_update_message'),
+          markdownMessage2: dockerInfo.latestReleaseBody,
+          subtitle: (dockerInfo.currentVersion && dockerInfo.latestVersion)
+            ? `${dockerInfo.currentVersion} &rarr; ${dockerInfo.latestVersion}`
+            : this.$translate.instant('accessories.control.unknown'),
+          ctaButtonLabel: this.$translate.instant('form.button_more_info'),
+          faIconClass: 'fab fa-docker primary-text',
+          ctaButtonLink: 'https://github.com/homebridge/docker-homebridge/wiki/How-To-Update-Docker-Homebridge',
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(InformationComponent, {
       size: 'lg',

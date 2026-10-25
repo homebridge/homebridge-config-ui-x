@@ -58,7 +58,13 @@ describe('removeIndividualAccessoriesComponent', () => {
    * @param overrides - fields to change
    */
   function pairing(overrides: Record<string, any> = {}) {
-    return { _id: 'ABC123', _username: '0E:11:22:33:44:55', name: 'Kitchen Bridge', _main: false, ...overrides }
+    return {
+      _id: 'ABC123',
+      _username: '0E:11:22:33:44:55',
+      name: 'Kitchen Bridge',
+      _main: false,
+      ...overrides,
+    }
   }
 
   /**
@@ -84,12 +90,19 @@ describe('removeIndividualAccessoriesComponent', () => {
     TestBed.resetTestingModule()
     api = fakeApi()
     toastr = toastrStub()
-    activeModal = { close: vi.fn(), dismiss: vi.fn() }
+    activeModal = {
+      close: vi.fn(),
+      dismiss: vi.fn(),
+    }
     overview = {
       get: vi.fn(async () => ({
-        hapAccessories: options.hapAccessories ?? [hap('Kitchen Light')],
+        hapAccessories: options.hapAccessories ?? [
+          hap('Kitchen Light'),
+        ],
         matterAccessories: options.matterAccessories ?? [],
-        pairings: options.pairings ?? [pairing({ _main: true, _id: 'MAIN00' })],
+        pairings: options.pairings ?? [
+          pairing({ _main: true, _id: 'MAIN00' }),
+        ],
       })),
       invalidate: vi.fn(),
     }
@@ -103,7 +116,11 @@ describe('removeIndividualAccessoriesComponent', () => {
           api,
           toastr,
           activeModal,
-          settings: makeSettings({ env: { featureFlags: { matterSupport: options.matterSupported ?? true } } }),
+          settings: makeSettings({
+            env: {
+              featureFlags: { matterSupport: options.matterSupported ?? true },
+            },
+          }),
         }),
         { provide: AccessoryOverviewCacheService, useValue: overview },
         {
@@ -118,7 +135,10 @@ describe('removeIndividualAccessoriesComponent', () => {
     })
 
     TestBed.overrideComponent(RemoveIndividualAccessoriesComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     // ⚠️ The modal navigates to /restart with a bare `void`, and no route is
@@ -156,8 +176,12 @@ describe('removeIndividualAccessoriesComponent', () => {
   describe('the accessories it lists', () => {
     it('groups them under the bridge they belong to', async () => {
       const modal = open({
-        hapAccessories: [hap('Kitchen Light', 'cachedAccessories.ABC123')],
-        pairings: [pairing({ _id: 'ABC123', name: 'Kitchen Bridge' })],
+        hapAccessories: [
+          hap('Kitchen Light', 'cachedAccessories.ABC123'),
+        ],
+        pairings: [
+          pairing({ _id: 'ABC123', name: 'Kitchen Bridge' }),
+        ],
       })
       await settle()
 
@@ -168,8 +192,12 @@ describe('removeIndividualAccessoriesComponent', () => {
     it('puts an accessory with no bridge in the file name under the main bridge', async () => {
       // `cachedAccessories` with no suffix is the main bridge's own file
       const modal = open({
-        hapAccessories: [hap('Kitchen Light', 'cachedAccessories')],
-        pairings: [pairing({ _id: 'MAIN00', name: 'Homebridge', _main: true })],
+        hapAccessories: [
+          hap('Kitchen Light', 'cachedAccessories'),
+        ],
+        pairings: [
+          pairing({ _id: 'MAIN00', name: 'Homebridge', _main: true }),
+        ],
       })
       await settle()
 
@@ -180,8 +208,12 @@ describe('removeIndividualAccessoriesComponent', () => {
       // The pairing was deleted but its cache file is still on disk — which is
       // exactly the mess this modal exists to clear up
       const modal = open({
-        hapAccessories: [hap('Orphan', 'cachedAccessories.0E1122334455')],
-        pairings: [pairing({ _id: 'MAIN00', _main: true })],
+        hapAccessories: [
+          hap('Orphan', 'cachedAccessories.0E1122334455'),
+        ],
+        pairings: [
+          pairing({ _id: 'MAIN00', _main: true }),
+        ],
       })
       await settle()
 
@@ -192,8 +224,13 @@ describe('removeIndividualAccessoriesComponent', () => {
 
     it('lists the accessories of each bridge in name order', async () => {
       const modal = open({
-        hapAccessories: [hap('Zebra', 'cachedAccessories'), hap('Apple', 'cachedAccessories')],
-        pairings: [pairing({ _id: 'MAIN00', _main: true })],
+        hapAccessories: [
+          hap('Zebra', 'cachedAccessories'),
+          hap('Apple', 'cachedAccessories'),
+        ],
+        pairings: [
+          pairing({ _id: 'MAIN00', _main: true }),
+        ],
       })
       await settle()
 
@@ -220,7 +257,9 @@ describe('removeIndividualAccessoriesComponent', () => {
 
     it('leaves out a bridge with nothing cached', async () => {
       const modal = open({
-        hapAccessories: [hap('Kitchen Light', 'cachedAccessories')],
+        hapAccessories: [
+          hap('Kitchen Light', 'cachedAccessories'),
+        ],
         pairings: [
           pairing({ _id: 'MAIN00', name: 'Homebridge', _main: true }),
           pairing({ _id: 'EMPTY', name: 'Empty Bridge' }),
@@ -234,8 +273,12 @@ describe('removeIndividualAccessoriesComponent', () => {
     it('lists matter accessories under their device', async () => {
       const modal = open({
         hapAccessories: [],
-        matterAccessories: [matter('Matter Lamp', 'matter-device-1')],
-        pairings: [pairing({ _id: 'MAIN00', _main: true })],
+        matterAccessories: [
+          matter('Matter Lamp', 'matter-device-1'),
+        ],
+        pairings: [
+          pairing({ _id: 'MAIN00', _main: true }),
+        ],
       })
       await settle()
 
@@ -247,8 +290,12 @@ describe('removeIndividualAccessoriesComponent', () => {
     it('ignores matter accessories entirely when matter is off', async () => {
       const modal = open({
         hapAccessories: [],
-        matterAccessories: [matter('Matter Lamp')],
-        pairings: [pairing({ _id: 'MAIN00', _main: true })],
+        matterAccessories: [
+          matter('Matter Lamp'),
+        ],
+        pairings: [
+          pairing({ _id: 'MAIN00', _main: true }),
+        ],
         matterSupported: false,
       })
       await settle()
@@ -259,8 +306,14 @@ describe('removeIndividualAccessoriesComponent', () => {
     it('shows only the bridge it was opened for', async () => {
       // Reached from one accessory's own info modal
       const modal = open({
-        hapAccessories: [hap('Kitchen Light', 'cachedAccessories.ABC123'), hap('Hall Light', 'cachedAccessories.DEF456')],
-        pairings: [pairing({ _id: 'ABC123' }), pairing({ _id: 'DEF456', name: 'Hall Bridge' })],
+        hapAccessories: [
+          hap('Kitchen Light', 'cachedAccessories.ABC123'),
+          hap('Hall Light', 'cachedAccessories.DEF456'),
+        ],
+        pairings: [
+          pairing({ _id: 'ABC123' }),
+          pairing({ _id: 'DEF456', name: 'Hall Bridge' }),
+        ],
         selectedBridge: 'ABC123',
       })
       await settle()
@@ -271,8 +324,12 @@ describe('removeIndividualAccessoriesComponent', () => {
 
     it('selects the first bridge when none was asked for', async () => {
       const modal = open({
-        hapAccessories: [hap('Kitchen Light', 'cachedAccessories')],
-        pairings: [pairing({ _id: 'MAIN00', name: 'Homebridge', _main: true })],
+        hapAccessories: [
+          hap('Kitchen Light', 'cachedAccessories'),
+        ],
+        pairings: [
+          pairing({ _id: 'MAIN00', name: 'Homebridge', _main: true }),
+        ],
       })
       await settle()
 
@@ -281,7 +338,12 @@ describe('removeIndividualAccessoriesComponent', () => {
     })
 
     it('says there is nothing cached when there is nothing', async () => {
-      const modal = open({ hapAccessories: [], pairings: [pairing({ _main: true, _id: 'MAIN00' })] })
+      const modal = open({
+        hapAccessories: [],
+        pairings: [
+          pairing({ _main: true, _id: 'MAIN00' }),
+        ],
+      })
       await settle()
 
       expect(modal.accessoriesExist()).toBe(false)
@@ -301,12 +363,20 @@ describe('removeIndividualAccessoriesComponent', () => {
   describe('switching between bridges', () => {
     it('shows the accessories of the bridge just picked', async () => {
       const modal = open({
-        hapAccessories: [hap('Kitchen Light', 'cachedAccessories.ABC123'), hap('Hall Light', 'cachedAccessories.DEF456')],
-        pairings: [pairing({ _id: 'ABC123' }), pairing({ _id: 'DEF456', name: 'Hall Bridge' })],
+        hapAccessories: [
+          hap('Kitchen Light', 'cachedAccessories.ABC123'),
+          hap('Hall Light', 'cachedAccessories.DEF456'),
+        ],
+        pairings: [
+          pairing({ _id: 'ABC123' }),
+          pairing({ _id: 'DEF456', name: 'Hall Bridge' }),
+        ],
       })
       await settle()
 
-      modal.onBridgeChange({ target: { value: 'DEF456' } } as unknown as Event)
+      modal.onBridgeChange({
+        target: { value: 'DEF456' },
+      } as unknown as Event)
 
       expect(modal.selectedBridgeAccessories().map((a: any) => a.displayName)).toEqual(['Hall Light'])
     })
@@ -315,15 +385,21 @@ describe('removeIndividualAccessoriesComponent', () => {
       const modal = open()
       await settle()
 
-      modal.onBridgeChange({ target: { value: 'NOPE' } } as unknown as Event)
+      modal.onBridgeChange({
+        target: { value: 'NOPE' },
+      } as unknown as Event)
 
       expect(modal.selectedBridgeAccessories()).toEqual([])
     })
 
     it('names the selected bridge with its username', async () => {
       const modal = open({
-        hapAccessories: [hap('Kitchen Light', 'cachedAccessories.ABC123')],
-        pairings: [pairing({ _id: 'ABC123', name: 'Kitchen Bridge', _username: '0E:11:22:33:44:55' })],
+        hapAccessories: [
+          hap('Kitchen Light', 'cachedAccessories.ABC123'),
+        ],
+        pairings: [
+          pairing({ _id: 'ABC123', name: 'Kitchen Bridge', _username: '0E:11:22:33:44:55' }),
+        ],
       })
       await settle()
 
@@ -331,7 +407,12 @@ describe('removeIndividualAccessoriesComponent', () => {
     })
 
     it('names nothing when no bridge is selected', async () => {
-      const modal = open({ hapAccessories: [], pairings: [pairing({ _main: true, _id: 'MAIN00' })] })
+      const modal = open({
+        hapAccessories: [],
+        pairings: [
+          pairing({ _main: true, _id: 'MAIN00' }),
+        ],
+      })
       await settle()
 
       expect(modal.getCurrentlySelectedBridge()).toBe('')
@@ -387,7 +468,12 @@ describe('removeIndividualAccessoriesComponent', () => {
       modal.toggleList('uuid-1', 'matter-device-1', 'matter', 'matter-device-1')
 
       expect(modal.toDelete()).toEqual([
-        { cacheFile: 'matter-device-1', uuid: 'uuid-1', protocol: 'matter', deviceId: 'matter-device-1' },
+        {
+          cacheFile: 'matter-device-1',
+          uuid: 'uuid-1',
+          protocol: 'matter',
+          deviceId: 'matter-device-1',
+        },
       ])
     })
   })
@@ -395,8 +481,13 @@ describe('removeIndividualAccessoriesComponent', () => {
   describe('highlighting the accessory the user came from', () => {
     it('highlights it when there is more than one to choose between', async () => {
       const modal = open({
-        hapAccessories: [hap('One', 'cachedAccessories', 'uuid-1'), hap('Two', 'cachedAccessories', 'uuid-2')],
-        pairings: [pairing({ _id: 'MAIN00', _main: true })],
+        hapAccessories: [
+          hap('One', 'cachedAccessories', 'uuid-1'),
+          hap('Two', 'cachedAccessories', 'uuid-2'),
+        ],
+        pairings: [
+          pairing({ _id: 'MAIN00', _main: true }),
+        ],
         highlightUuid: 'uuid-1',
         highlightCacheFile: 'cachedAccessories',
       })
@@ -409,8 +500,12 @@ describe('removeIndividualAccessoriesComponent', () => {
     it('highlights nothing when there is only one accessory anyway', async () => {
       // Highlighting the only row on the page is noise
       const modal = open({
-        hapAccessories: [hap('One', 'cachedAccessories', 'uuid-1')],
-        pairings: [pairing({ _id: 'MAIN00', _main: true })],
+        hapAccessories: [
+          hap('One', 'cachedAccessories', 'uuid-1'),
+        ],
+        pairings: [
+          pairing({ _id: 'MAIN00', _main: true }),
+        ],
         highlightUuid: 'uuid-1',
         highlightCacheFile: 'cachedAccessories',
       })
@@ -421,8 +516,13 @@ describe('removeIndividualAccessoriesComponent', () => {
 
     it('highlights nothing when the caller asked for nothing', async () => {
       const modal = open({
-        hapAccessories: [hap('One', 'cachedAccessories', 'uuid-1'), hap('Two', 'cachedAccessories', 'uuid-2')],
-        pairings: [pairing({ _id: 'MAIN00', _main: true })],
+        hapAccessories: [
+          hap('One', 'cachedAccessories', 'uuid-1'),
+          hap('Two', 'cachedAccessories', 'uuid-2'),
+        ],
+        pairings: [
+          pairing({ _id: 'MAIN00', _main: true }),
+        ],
       })
       await settle()
 
@@ -431,8 +531,13 @@ describe('removeIndividualAccessoriesComponent', () => {
 
     it('does not highlight the same uuid in a different cache file', async () => {
       const modal = open({
-        hapAccessories: [hap('One', 'cachedAccessories', 'uuid-1'), hap('Two', 'cachedAccessories', 'uuid-2')],
-        pairings: [pairing({ _id: 'MAIN00', _main: true })],
+        hapAccessories: [
+          hap('One', 'cachedAccessories', 'uuid-1'),
+          hap('Two', 'cachedAccessories', 'uuid-2'),
+        ],
+        pairings: [
+          pairing({ _id: 'MAIN00', _main: true }),
+        ],
         highlightUuid: 'uuid-1',
         highlightCacheFile: 'cachedAccessories.OTHER',
       })
@@ -450,8 +555,13 @@ describe('removeIndividualAccessoriesComponent', () => {
       document.body.appendChild(row)
 
       open({
-        hapAccessories: [hap('One', 'cachedAccessories', 'uuid-1'), hap('Two', 'cachedAccessories', 'uuid-2')],
-        pairings: [pairing({ _id: 'MAIN00', _main: true })],
+        hapAccessories: [
+          hap('One', 'cachedAccessories', 'uuid-1'),
+          hap('Two', 'cachedAccessories', 'uuid-2'),
+        ],
+        pairings: [
+          pairing({ _id: 'MAIN00', _main: true }),
+        ],
         highlightUuid: 'uuid-1',
         highlightCacheFile: 'cachedAccessories',
       })
@@ -475,8 +585,13 @@ describe('removeIndividualAccessoriesComponent', () => {
       document.body.appendChild(row)
 
       open({
-        hapAccessories: [hap('One', 'cachedAccessories', 'uuid-1'), hap('Two', 'cachedAccessories', 'uuid-2')],
-        pairings: [pairing({ _id: 'MAIN00', _main: true })],
+        hapAccessories: [
+          hap('One', 'cachedAccessories', 'uuid-1'),
+          hap('Two', 'cachedAccessories', 'uuid-2'),
+        ],
+        pairings: [
+          pairing({ _id: 'MAIN00', _main: true }),
+        ],
         highlightUuid: 'uuid-1',
         highlightCacheFile: 'cachedAccessories',
       })
@@ -497,7 +612,9 @@ describe('removeIndividualAccessoriesComponent', () => {
       await modal.removeAccessories()
 
       expect(api.lastCall('delete', '/server/cached-accessories')?.options?.body)
-        .toEqual([{ uuid: 'uuid-1', cacheFile: 'cachedAccessories' }])
+        .toEqual([
+          { uuid: 'uuid-1', cacheFile: 'cachedAccessories' },
+        ])
     })
 
     it('sends the matter accessories to the matter endpoint', async () => {
@@ -509,7 +626,9 @@ describe('removeIndividualAccessoriesComponent', () => {
       await modal.removeAccessories()
 
       expect(api.lastCall('delete', '/server/matter-accessories')?.options?.body)
-        .toEqual([{ uuid: 'uuid-2', deviceId: 'matter-device-1' }])
+        .toEqual([
+          { uuid: 'uuid-2', deviceId: 'matter-device-1' },
+        ])
       expect(api.callsTo('delete', '/server/cached-accessories')).toEqual([])
     })
 
@@ -557,7 +676,9 @@ describe('removeIndividualAccessoriesComponent', () => {
 
       expect(overview.invalidate).toHaveBeenCalled()
       expect(activeModal.close).toHaveBeenCalled()
-      expect(navigate).toHaveBeenCalledWith(['/restart'], { queryParams: { restarting: true } })
+      expect(navigate).toHaveBeenCalledWith(['/restart'], {
+        queryParams: { restarting: true },
+      })
     })
 
     it('re-enables the button when the delete fails', async () => {

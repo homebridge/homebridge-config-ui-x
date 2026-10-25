@@ -37,7 +37,14 @@ describe('the dashboard widget host', () => {
 
     TestBed.configureTestingModule({
       imports: [WidgetsComponent],
-      providers: [provideTestTranslate(), provideFakes({ ws, settings: makeSettings(), toastr: toastrStub() })],
+      providers: [
+        provideTestTranslate(),
+        provideFakes({
+          ws,
+          settings: makeSettings(),
+          toastr: toastrStub(),
+        }),
+      ],
     })
 
     const fixture = TestBed.createComponent(WidgetsComponent)
@@ -102,8 +109,12 @@ describe('the dashboard widget host', () => {
     const widget = makeWidget('ClockWidgetComponent')
     const fixture = host(widget)
     const completed: string[] = []
-    widget.$resizeEvent.subscribe({ complete: () => completed.push('resize') })
-    widget.$configureEvent.subscribe({ complete: () => completed.push('configure') })
+    widget.$resizeEvent.subscribe({
+      complete: () => completed.push('resize'),
+    })
+    widget.$configureEvent.subscribe({
+      complete: () => completed.push('configure'),
+    })
 
     fixture.destroy()
 
@@ -114,7 +125,9 @@ describe('the dashboard widget host', () => {
     const widget = makeWidget('SomeWidgetFromTheFuture')
     const fixture = host(widget)
     const completed: string[] = []
-    widget.$resizeEvent.subscribe({ complete: () => completed.push('resize') })
+    widget.$resizeEvent.subscribe({
+      complete: () => completed.push('resize'),
+    })
 
     fixture.destroy()
 
@@ -152,11 +165,21 @@ describe('uptimeWidgetComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [UptimeWidgetComponent],
-      providers: [provideTestTranslate(), provideFakes({ ws, settings: makeSettings(), toastr: toastrStub() })],
+      providers: [
+        provideTestTranslate(),
+        provideFakes({
+          ws,
+          settings: makeSettings(),
+          toastr: toastrStub(),
+        }),
+      ],
     })
 
     TestBed.overrideComponent(UptimeWidgetComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     const fixture = TestBed.createComponent(UptimeWidgetComponent)

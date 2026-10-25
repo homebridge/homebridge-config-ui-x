@@ -193,7 +193,9 @@ export class ManageVersionComponent implements OnInit {
       )
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : this.$translate.instant('toast.title_error')
+      const message = error instanceof Error
+        ? error.message
+        : this.$translate.instant('toast.title_error')
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
       // Revert on error
       this.updatePreferenceControl.setValue(this.getCurrentUpdatePreference(), { emitEvent: false })
@@ -248,8 +250,12 @@ export class ManageVersionComponent implements OnInit {
       // Sort the versionsWithTags by tag, with ordering latest, next, beta, alpha, any other
       newVersionsWithTags.sort((a, b) => {
         const order = ['latest', 'next', 'beta', 'alpha']
-        const aOrder = !order.includes(a.tag) ? 999 : order.indexOf(a.tag)
-        const bOrder = !order.includes(b.tag) ? 999 : order.indexOf(b.tag)
+        const aOrder = !order.includes(a.tag)
+          ? 999
+          : order.indexOf(a.tag)
+        const bOrder = !order.includes(b.tag)
+          ? 999
+          : order.indexOf(b.tag)
         return aOrder - bOrder
       })
 
@@ -264,7 +270,9 @@ export class ManageVersionComponent implements OnInit {
       this.loading.set(false)
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? (error as any).error?.message || error.message : this.$translate.instant('toast.title_error')
+      const message = error instanceof Error
+        ? (error as any).error?.message || error.message
+        : this.$translate.instant('toast.title_error')
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
       this.$activeModal.dismiss()
     }

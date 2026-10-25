@@ -68,8 +68,13 @@ describe('plugin config modals', () => {
     settings = makeSettings()
     toastr = toastrStub()
     activeModal = activeModalStub()
-    childBridges = { openCorrectRestartModalWithBridges: vi.fn(), invalidate: vi.fn() }
-    managePlugins = { bridgeSettings: vi.fn(async () => undefined) }
+    childBridges = {
+      openCorrectRestartModalWithBridges: vi.fn(),
+      invalidate: vi.fn(),
+    }
+    managePlugins = {
+      bridgeSettings: vi.fn(async () => undefined),
+    }
 
     TestBed.configureTestingModule({
       providers: [
@@ -78,16 +83,30 @@ describe('plugin config modals', () => {
         provideFakes({ api, settings, toastr, activeModal }),
         { provide: ChildBridgesService, useValue: childBridges },
         { provide: ManagePluginsService, useValue: managePlugins },
-        { provide: MobileDetectService, useValue: { detect: { mobile: () => isMobile } } },
+        {
+          provide: MobileDetectService,
+          useValue: {
+            detect: {
+              mobile: () => isMobile,
+            },
+          },
+        },
         {
           provide: PLUGIN_MODAL_DATA,
-          useValue: { plugin: makePlugin(), schema: structuredClone(schema), ...data },
+          useValue: {
+            plugin: makePlugin(),
+            schema: structuredClone(schema),
+            ...data,
+          },
         },
       ],
     })
 
     TestBed.overrideComponent(type as any, {
-      set: { imports: [TranslatePipe, InterpolateMdPipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe, InterpolateMdPipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     navigate = vi.fn(async () => true)
@@ -146,13 +165,17 @@ describe('plugin config modals', () => {
     })
 
     it('opens the first panel so the user sees something', async () => {
-      const modal = await openForm([{ platform: 'TestPlatform', name: 'Kitchen' }])
+      const modal = await openForm([
+        { platform: 'TestPlatform', name: 'Kitchen' },
+      ])
 
       expect(modal.show()).toBe(modal.pluginConfig()[0].__uuid__)
     })
 
     it('falls back to the plugin alias when a block has no name', async () => {
-      const modal = await openForm([{ platform: 'TestPlatform' }])
+      const modal = await openForm([
+        { platform: 'TestPlatform' },
+      ])
 
       expect(modal.pluginConfig()[0].name).toBe('TestPlatform')
     })
@@ -176,7 +199,9 @@ describe('plugin config modals', () => {
     })
 
     it('treats a new block as invalid until the form says otherwise', async () => {
-      const modal = await openForm([{ platform: 'TestPlatform', name: 'Kitchen' }])
+      const modal = await openForm([
+        { platform: 'TestPlatform', name: 'Kitchen' },
+      ])
 
       modal.addBlock()
 
@@ -206,7 +231,9 @@ describe('plugin config modals', () => {
     })
 
     it('blocks the save while any block is invalid', async () => {
-      const modal = await openForm([{ platform: 'TestPlatform', name: 'Kitchen' }])
+      const modal = await openForm([
+        { platform: 'TestPlatform', name: 'Kitchen' },
+      ])
       const [block] = modal.pluginConfig()
 
       modal.onIsValid(false, block.__uuid__)
@@ -215,7 +242,9 @@ describe('plugin config modals', () => {
     })
 
     it('renames a panel from the name the user typed', async () => {
-      const modal = await openForm([{ platform: 'TestPlatform', name: 'Kitchen' }])
+      const modal = await openForm([
+        { platform: 'TestPlatform', name: 'Kitchen' },
+      ])
       const [block] = modal.pluginConfig()
       block.config.name = 'Kitchen Lights'
 
@@ -227,7 +256,9 @@ describe('plugin config modals', () => {
     })
 
     it('closes the open panel when it is collapsed', async () => {
-      const modal = await openForm([{ platform: 'TestPlatform', name: 'Kitchen' }])
+      const modal = await openForm([
+        { platform: 'TestPlatform', name: 'Kitchen' },
+      ])
       const [block] = modal.pluginConfig()
 
       modal.blockHidden(block.__uuid__)
@@ -236,21 +267,34 @@ describe('plugin config modals', () => {
     })
 
     it('saves the blocks and asks for the bridges that need restarting', async () => {
-      const modal = await openForm([{ platform: 'TestPlatform', name: 'Kitchen' }], {})
+      const modal = await openForm([
+        { platform: 'TestPlatform', name: 'Kitchen' },
+      ], {})
 
       await modal.save()
 
       expect(api.lastCall('post', '/config-editor/plugin/homebridge-test?include=restart-info')?.body)
-        .toEqual([{ platform: 'TestPlatform', name: 'Kitchen' }])
+        .toEqual([
+          { platform: 'TestPlatform', name: 'Kitchen' },
+        ])
       expect(activeModal.close).toHaveBeenCalled()
       expect(childBridges.openCorrectRestartModalWithBridges).toHaveBeenCalled()
     })
 
     it('passes the affected bridges straight through from the save response', async () => {
-      const affected = [makeChildBridge()]
+      const affected = [
+        makeChildBridge(),
+      ]
       const modal = await open(PluginConfigComponent, {}, () => {
-        api.respond('get', '/config-editor/plugin/homebridge-test', [{ platform: 'TestPlatform', name: 'Kitchen' }])
-        api.respond('post', /^\/config-editor\/plugin\//, { config: [{ platform: 'TestPlatform' }], affectedBridges: affected })
+        api.respond('get', '/config-editor/plugin/homebridge-test', [
+          { platform: 'TestPlatform', name: 'Kitchen' },
+        ])
+        api.respond('post', /^\/config-editor\/plugin\//, {
+          config: [
+            { platform: 'TestPlatform' },
+          ],
+          affectedBridges: affected,
+        })
       })
 
       await modal.save()
@@ -263,7 +307,12 @@ describe('plugin config modals', () => {
     it('offers a child bridge the first time a platform is configured', async () => {
       const modal = await open(PluginConfigComponent, {}, () => {
         api.respond('get', '/config-editor/plugin/homebridge-test', [])
-        api.respond('post', /^\/config-editor\/plugin\//, { config: [{ platform: 'TestPlatform' }], affectedBridges: [] })
+        api.respond('post', /^\/config-editor\/plugin\//, {
+          config: [
+            { platform: 'TestPlatform' },
+          ],
+          affectedBridges: [],
+        })
       })
 
       await modal.save()
@@ -276,7 +325,12 @@ describe('plugin config modals', () => {
     it('does not offer a child bridge when the setting is off', async () => {
       const modal = await open(PluginConfigComponent, {}, () => {
         api.respond('get', '/config-editor/plugin/homebridge-test', [])
-        api.respond('post', /^\/config-editor\/plugin\//, { config: [{ platform: 'TestPlatform' }], affectedBridges: [] })
+        api.respond('post', /^\/config-editor\/plugin\//, {
+          config: [
+            { platform: 'TestPlatform' },
+          ],
+          affectedBridges: [],
+        })
         settings.env.recommendChildBridges = false
       })
 
@@ -287,7 +341,9 @@ describe('plugin config modals', () => {
     })
 
     it('does not offer a child bridge on a later save', async () => {
-      const modal = await openForm([{ platform: 'TestPlatform', name: 'Kitchen' }])
+      const modal = await openForm([
+        { platform: 'TestPlatform', name: 'Kitchen' },
+      ])
 
       await modal.save()
 
@@ -296,9 +352,18 @@ describe('plugin config modals', () => {
     })
 
     it('reloads its own settings when the ui config is saved', async () => {
-      const modal = await open(PluginConfigComponent, { plugin: makePlugin({ name: 'homebridge-config-ui-x' }) }, () => {
-        api.respond('get', '/config-editor/plugin/homebridge-config-ui-x', [{ platform: 'config' }])
-        api.respond('post', /^\/config-editor\/plugin\//, { config: [{ platform: 'config' }], affectedBridges: [] })
+      const modal = await open(PluginConfigComponent, {
+        plugin: makePlugin({ name: 'homebridge-config-ui-x' }),
+      }, () => {
+        api.respond('get', '/config-editor/plugin/homebridge-config-ui-x', [
+          { platform: 'config' },
+        ])
+        api.respond('post', /^\/config-editor\/plugin\//, {
+          config: [
+            { platform: 'config' },
+          ],
+          affectedBridges: [],
+        })
       })
 
       await modal.save()
@@ -311,7 +376,9 @@ describe('plugin config modals', () => {
 
     it('stays open when the save fails', async () => {
       const modal = await open(PluginConfigComponent, {}, () => {
-        api.respond('get', '/config-editor/plugin/homebridge-test', [{ platform: 'TestPlatform' }])
+        api.respond('get', '/config-editor/plugin/homebridge-test', [
+          { platform: 'TestPlatform' },
+        ])
         api.fail('post', /^\/config-editor\/plugin\//, new Error('read only file system'))
       })
 
@@ -331,7 +398,11 @@ describe('plugin config modals', () => {
 
     it('reuses the config the editor already loaded', async () => {
       const modal = await open(PluginConfigComponent, {
-        editorContext: { config: [{ platform: 'TestPlatform', name: 'From Editor' }] },
+        editorContext: {
+          config: [
+            { platform: 'TestPlatform', name: 'From Editor' },
+          ],
+        },
       })
 
       expect(api.callsTo('get')).toHaveLength(0)
@@ -340,7 +411,9 @@ describe('plugin config modals', () => {
 
     it('tells the user when the config cannot be read', async () => {
       const modal = await open(PluginConfigComponent, {}, () =>
-        api.fail('get', '/config-editor/plugin/homebridge-test', { error: { message: 'config.json is not valid json' } }))
+        api.fail('get', '/config-editor/plugin/homebridge-test', {
+          error: { message: 'config.json is not valid json' },
+        }))
 
       // The server's own message is worth showing here: it names what is wrong
       // with the file
@@ -349,11 +422,15 @@ describe('plugin config modals', () => {
     })
 
     it('describes the hue bridge users so the form can render them', async () => {
-      const modal = await open(PluginConfigComponent, { plugin: makePlugin({ name: 'homebridge-hue' }) }, () =>
-        api.respond('get', '/config-editor/plugin/homebridge-hue', [{
-          platform: 'Hue',
-          users: { '0017880ae670': 'abc123', '0017880ae671': 'def456' },
-        }]))
+      const modal = await open(PluginConfigComponent, {
+        plugin: makePlugin({ name: 'homebridge-hue' }),
+      }, () =>
+        api.respond('get', '/config-editor/plugin/homebridge-hue', [
+          {
+            platform: 'Hue',
+            users: { '0017880ae670': 'abc123', '0017880ae671': 'def456' },
+          },
+        ]))
 
       // homebridge-hue's schema declares no shape for its users map, so the
       // keys the user already has are added to it by hand
@@ -361,8 +438,12 @@ describe('plugin config modals', () => {
     })
 
     it('copes with a hue config that has no users yet', async () => {
-      const modal = await open(PluginConfigComponent, { plugin: makePlugin({ name: 'homebridge-hue' }) }, () =>
-        api.respond('get', '/config-editor/plugin/homebridge-hue', [{ platform: 'Hue' }]))
+      const modal = await open(PluginConfigComponent, {
+        plugin: makePlugin({ name: 'homebridge-hue' }),
+      }, () =>
+        api.respond('get', '/config-editor/plugin/homebridge-hue', [
+          { platform: 'Hue' },
+        ]))
 
       expect(modal.schema.schema.properties.users.properties).toEqual({})
     })
@@ -381,13 +462,17 @@ describe('plugin config modals', () => {
     function fakeEditor() {
       return {
         getModel: () => ({
-          uri: { toString: () => 'inmemory://model/1' },
+          uri: {
+            toString: () => 'inmemory://model/1',
+          },
           getValue: () => editorValue,
           setValue: (value: string) => {
             editorValue = value
           },
         }),
-        getAction: () => ({ run: vi.fn() }),
+        getAction: () => ({
+          run: vi.fn(),
+        }),
         onDidChangeModelContent: vi.fn(),
         dispose: vi.fn(),
       }
@@ -398,7 +483,9 @@ describe('plugin config modals', () => {
      * @param config - the config blocks already saved for the plugin
      * @param data - overrides for the plugin modal data
      */
-    async function openEditor(config: any[] = [{ platform: 'TestPlatform', name: 'Kitchen' }], data: Record<string, any> = {}) {
+    async function openEditor(config: any[] = [
+      { platform: 'TestPlatform', name: 'Kitchen' },
+    ], data: Record<string, any> = {}) {
       const modal = await open(ManualConfigComponent, data, () => {
         api.respond('get', '/plugins/alias/homebridge-test', { pluginAlias: 'TestPlatform', pluginType: data.pluginType ?? 'platform' })
         api.respond('get', '/config-editor/plugin/homebridge-test', config)
@@ -422,7 +509,14 @@ describe('plugin config modals', () => {
             getModelMarkers: () => markers,
             onDidChangeMarkers: vi.fn(),
           },
-          languages: { json: { jsonDefaults: { diagnosticsOptions: { schemas: [] }, setDiagnosticsOptions: vi.fn() } } },
+          languages: {
+            json: {
+              jsonDefaults: {
+                diagnosticsOptions: { schemas: [] },
+                setDiagnosticsOptions: vi.fn(),
+              },
+            },
+          },
         },
       })
     })
@@ -453,7 +547,9 @@ describe('plugin config modals', () => {
       const modal = await openEditor([])
 
       expect(modal.isFirstSave()).toBe(true)
-      expect(modal.pluginConfig()).toEqual([{ platform: 'TestPlatform', name: 'TestPlatform' }])
+      expect(modal.pluginConfig()).toEqual([
+        { platform: 'TestPlatform', name: 'TestPlatform' },
+      ])
     })
 
     it('gives up quietly when the plugin has no alias', async () => {
@@ -473,7 +569,9 @@ describe('plugin config modals', () => {
     })
 
     it('uses the accessories array key for an accessory plugin', async () => {
-      const modal = await openEditor([{ accessory: 'TestPlatform', name: 'Lamp' }], { pluginType: 'accessory' })
+      const modal = await openEditor([
+        { accessory: 'TestPlatform', name: 'Lamp' },
+      ], { pluginType: 'accessory' })
 
       expect(modal.arrayKey()).toBe('accessories')
     })
@@ -528,7 +626,12 @@ describe('plugin config modals', () => {
       await modal.save()
 
       expect(api.lastCall('post', /include=restart-info/)?.body).toEqual([
-        { platform: 'TestPlatform', platforms: [{ platform: 'Other' }] },
+        {
+          platform: 'TestPlatform',
+          platforms: [
+            { platform: 'Other' },
+          ],
+        },
       ])
     })
 
@@ -539,7 +642,10 @@ describe('plugin config modals', () => {
       await modal.save()
 
       expect(api.lastCall('post', /include=restart-info/)?.body).toEqual([
-        { platform: 'TestPlatform', devices: ['one'] },
+        {
+          platform: 'TestPlatform',
+          devices: ['one'],
+        },
       ])
     })
 
@@ -579,7 +685,9 @@ describe('plugin config modals', () => {
     })
 
     it('insists an accessory block has a name', async () => {
-      const modal = await openEditor([{ accessory: 'TestPlatform', name: 'Lamp' }], { pluginType: 'accessory' })
+      const modal = await openEditor([
+        { accessory: 'TestPlatform', name: 'Lamp' },
+      ], { pluginType: 'accessory' })
       editorValue = '{ "accessory": "TestPlatform" }'
 
       await modal.save()
@@ -621,7 +729,9 @@ describe('plugin config modals', () => {
       // in a test environment that has already been torn down, which surfaces as an
       // unhandled "window is not defined" attributed to no test at all
       vi.useFakeTimers()
-      const modal = await openEditor([{ platform: 'TestPlatform', name: 'Kitchen' }])
+      const modal = await openEditor([
+        { platform: 'TestPlatform', name: 'Kitchen' },
+      ])
       const validate = vi.spyOn(modal, 'onValidationChange')
 
       modal.addBlock()
@@ -636,7 +746,9 @@ describe('plugin config modals', () => {
       // The guard on the case above: without this, a component that never
       // scheduled anything would pass it
       vi.useFakeTimers()
-      const modal = await openEditor([{ platform: 'TestPlatform', name: 'Kitchen' }])
+      const modal = await openEditor([
+        { platform: 'TestPlatform', name: 'Kitchen' },
+      ])
       const validate = vi.spyOn(modal, 'onValidationChange')
 
       modal.addBlock()
@@ -654,7 +766,9 @@ describe('plugin config modals', () => {
 
       modal.removeBlock(0)
 
-      expect(modal.pluginConfig()).toEqual([{ platform: 'TestPlatform', name: 'Garage' }])
+      expect(modal.pluginConfig()).toEqual([
+        { platform: 'TestPlatform', name: 'Garage' },
+      ])
       // Nothing is being edited any more, so the editor must not keep showing
       // the block that was just deleted
       expect(modal.currentBlockIndex()).toBeNull()
@@ -663,7 +777,9 @@ describe('plugin config modals', () => {
 
     it('counts a schema error against the block being edited', async () => {
       const modal = await openEditor()
-      markers = [{ severity: 8 }]
+      markers = [
+        { severity: 8 },
+      ]
 
       modal.onValidationChange()
 
@@ -673,7 +789,9 @@ describe('plugin config modals', () => {
 
     it('counts a schema warning as invalid too', async () => {
       const modal = await openEditor()
-      markers = [{ severity: 4 }]
+      markers = [
+        { severity: 4 },
+      ]
 
       modal.onValidationChange()
 
@@ -683,7 +801,10 @@ describe('plugin config modals', () => {
 
     it('ignores hints and information markers', async () => {
       const modal = await openEditor()
-      markers = [{ severity: 1 }, { severity: 2 }]
+      markers = [
+        { severity: 1 },
+        { severity: 2 },
+      ]
 
       modal.onValidationChange()
 
@@ -693,7 +814,9 @@ describe('plugin config modals', () => {
     it('treats a block as valid when there is no editor yet', async () => {
       const modal = await open(ManualConfigComponent, {}, () => {
         api.respond('get', '/plugins/alias/homebridge-test', { pluginAlias: 'TestPlatform', pluginType: 'platform' })
-        api.respond('get', '/config-editor/plugin/homebridge-test', [{ platform: 'TestPlatform' }])
+        api.respond('get', '/config-editor/plugin/homebridge-test', [
+          { platform: 'TestPlatform' },
+        ])
       })
 
       // Monaco loads asynchronously, so the save button must not be disabled
@@ -723,7 +846,9 @@ describe('plugin config modals', () => {
     it('stays open when the save fails', async () => {
       const modal = await open(ManualConfigComponent, {}, () => {
         api.respond('get', '/plugins/alias/homebridge-test', { pluginAlias: 'TestPlatform', pluginType: 'platform' })
-        api.respond('get', '/config-editor/plugin/homebridge-test', [{ platform: 'TestPlatform' }])
+        api.respond('get', '/config-editor/plugin/homebridge-test', [
+          { platform: 'TestPlatform' },
+        ])
         api.fail('post', /^\/config-editor\/plugin\//, new Error('read only file system'))
       })
       modal.monacoEditor = fakeEditor()

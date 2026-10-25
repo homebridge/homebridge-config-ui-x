@@ -47,7 +47,11 @@ export class Users2faEnableComponent implements OnInit {
   // Other properties
   private copyTimeout: NodeJS.Timeout | null = null
   public formGroup = new FormGroup({
-    code: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]),
+    code: new FormControl('', [
+      Validators.required,
+      Validators.minLength(6),
+      Validators.maxLength(6),
+    ]),
   })
 
   public ngOnInit(): void {

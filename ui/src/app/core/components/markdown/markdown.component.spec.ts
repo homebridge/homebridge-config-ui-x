@@ -31,7 +31,9 @@ describe('markdownComponent', () => {
    */
   function render(source: string) {
     TestBed.resetTestingModule()
-    TestBed.configureTestingModule({ imports: [MarkdownComponent] })
+    TestBed.configureTestingModule({
+      imports: [MarkdownComponent],
+    })
 
     fixture = TestBed.createComponent(MarkdownComponent)
     fixture.componentRef.setInput('data', source)
@@ -132,7 +134,9 @@ describe('markdownComponent', () => {
       // gets a handle on the Homebridge window through `window.opener`
       const host = render('[Docs](https://homebridge.io) and [more](https://github.com)')
 
-      const links = [...host.querySelectorAll('a')]
+      const links = [
+        ...host.querySelectorAll('a'),
+      ]
       expect(links).toHaveLength(2)
       for (const link of links) {
         expect(link.getAttribute('target')).toBe('_blank')
@@ -176,11 +180,31 @@ describe('markdownComponent', () => {
 
   describe('github style alert callouts', () => {
     it.each([
-      ['NOTE', 'note', 'fa-circle-info', 'Note'],
+      [
+        'NOTE',
+        'note',
+        'fa-circle-info',
+        'Note',
+      ],
       ['TIP', 'tip', 'fa-lightbulb', 'Tip'],
-      ['IMPORTANT', 'important', 'fa-circle-exclamation', 'Important'],
-      ['WARNING', 'warning', 'fa-triangle-exclamation', 'Warning'],
-      ['CAUTION', 'caution', 'fa-ban', 'Caution'],
+      [
+        'IMPORTANT',
+        'important',
+        'fa-circle-exclamation',
+        'Important',
+      ],
+      [
+        'WARNING',
+        'warning',
+        'fa-triangle-exclamation',
+        'Warning',
+      ],
+      [
+        'CAUTION',
+        'caution',
+        'fa-ban',
+        'Caution',
+      ],
     ])('turns a %s blockquote into a titled callout', (marker, kind, icon, label) => {
       const host = render(`> [!${marker}]\n> This release needs Node 22.`)
 
@@ -237,7 +261,9 @@ describe('markdownComponent', () => {
     it('promotes each of several alerts separately', () => {
       const host = render('> [!NOTE]\n> First.\n\n> [!WARNING]\n> Second.')
 
-      const quotes = [...host.querySelectorAll('blockquote')]
+      const quotes = [
+        ...host.querySelectorAll('blockquote'),
+      ]
       expect(quotes).toHaveLength(2)
       expect(quotes[0].classList.contains('md-alert-note')).toBe(true)
       expect(quotes[1].classList.contains('md-alert-warning')).toBe(true)

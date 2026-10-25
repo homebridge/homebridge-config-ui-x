@@ -11,4 +11,7 @@ on:
 
 jobs:
   analyze:
+    permissions:
+      contents: read
+      security-events: write
     uses: homebridge/.github/.github/workflows/codeql-analysis.yml@latest

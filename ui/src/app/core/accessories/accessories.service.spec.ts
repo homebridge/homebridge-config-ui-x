@@ -56,7 +56,15 @@ describe('AccessoriesService', () => {
 
   /** A raw HAP characteristic, as the socket delivers it - no `setValue` yet. */
   function rawCharacteristic(type: string, value: any, iid: number) {
-    return { aid: 1, iid, uuid: `0000-${type}`, type, value, format: 'bool', perms: ['pr', 'pw', 'ev'] }
+    return {
+      aid: 1,
+      iid,
+      uuid: `0000-${type}`,
+      type,
+      value,
+      format: 'bool',
+      perms: ['pr', 'pw', 'ev'],
+    }
   }
 
   /** A raw HAP service, as the socket delivers it - no `getCharacteristic` yet. */
@@ -69,7 +77,9 @@ describe('AccessoriesService', () => {
       type,
       humanType: type,
       serviceName: 'Test Switch',
-      serviceCharacteristics: [rawCharacteristic('On', false, 11)],
+      serviceCharacteristics: [
+        rawCharacteristic('On', false, 11),
+      ],
       accessoryInformation: {
         'Name': 'Test Switch',
         'Serial Number': 'SERIAL-1',
@@ -102,7 +112,9 @@ describe('AccessoriesService', () => {
       },
       instance: { name: 'Matter Bridge', username: BRIDGE_B },
       values: {},
-      clusters: { onOff: { onOff: false } },
+      clusters: {
+        onOff: { onOff: false },
+      },
       uniqueId: 'matter:light-1',
       ...overrides,
     } as unknown as ServiceType
@@ -156,7 +168,12 @@ describe('AccessoriesService', () => {
       providers: [
         provideTestTranslate(),
         provideFakes({ ws, toastr, modal }),
-        { provide: AuthService, useValue: makeAuth({ user: { admin: options.admin ?? true, username: 'admin' } }) },
+        {
+          provide: AuthService,
+          useValue: makeAuth({
+            user: { admin: options.admin ?? true, username: 'admin' },
+          }),
+        },
         { provide: CachedAccessoriesCacheService, useValue: accessoryCache },
         { provide: ServerPairingsCacheService, useValue: pairingCache },
       ],
@@ -241,7 +258,10 @@ describe('AccessoriesService', () => {
     })
 
     it('warns once when both caches fail, not once each', async () => {
-      create({ hapCacheError: new Error('hap down'), pairingCacheError: new Error('pairings down') })
+      create({
+        hapCacheError: new Error('hap down'),
+        pairingCacheError: new Error('pairings down'),
+      })
       await settle()
 
       expect(toastr.warning).toHaveBeenCalledTimes(1)
@@ -249,7 +269,12 @@ describe('AccessoriesService', () => {
     })
 
     it('still loads the pairing cache when the accessory cache fails', async () => {
-      create({ hapCacheError: new Error('hap down'), pairingCacheValue: [{ _id: 'pairing' }] })
+      create({
+        hapCacheError: new Error('hap down'),
+        pairingCacheValue: [
+          { _id: 'pairing' },
+        ],
+      })
       await settle()
 
       expect(pairingCache.get).toHaveBeenCalled()
@@ -257,7 +282,11 @@ describe('AccessoriesService', () => {
     })
 
     it('surfaces a server-supplied message rather than the generic one', async () => {
-      create({ hapCacheError: { error: { message: 'Cached accessories unavailable' } } })
+      create({
+        hapCacheError: {
+          error: { message: 'Cached accessories unavailable' },
+        },
+      })
       await settle()
 
       expect(toastr.shown[0].message).toBe('Cached accessories unavailable')
@@ -265,8 +294,12 @@ describe('AccessoriesService', () => {
 
     it('hands both caches to the modal', async () => {
       await start({
-        hapCacheValue: [{ aid: 1 }],
-        pairingCacheValue: [{ _id: 'pairing' }],
+        hapCacheValue: [
+          { aid: 1 },
+        ],
+        pairingCacheValue: [
+          { _id: 'pairing' },
+        ],
       })
       await settle()
       sendData(rawHap())
@@ -275,8 +308,12 @@ describe('AccessoriesService', () => {
       await settle()
 
       const data = modal.dataFor(ACCESSORY_INFO_MODAL_DATA)
-      expect(data?.accessoryCache).toEqual([{ aid: 1 }])
-      expect(data?.pairingCache).toEqual([{ _id: 'pairing' }])
+      expect(data?.accessoryCache).toEqual([
+        { aid: 1 },
+      ])
+      expect(data?.pairingCache).toEqual([
+        { _id: 'pairing' },
+      ])
     })
   })
 
@@ -329,7 +366,9 @@ describe('AccessoriesService', () => {
 
       io.socket.fire('accessories-reload-required')
 
-      expect(io.socket.payloadsFor('accessory-control')).toEqual([{ refresh: true }])
+      expect(io.socket.payloadsFor('accessory-control')).toEqual([
+        { refresh: true },
+      ])
       // A full stop()/start() would re-bind every handler on the cached socket,
       // doubling the live listeners on each reload
       expect(ws.connectToNamespace).toHaveBeenCalledTimes(1)
@@ -345,7 +384,9 @@ describe('AccessoriesService', () => {
 
       expect(service.matterReadyForControl).toBe(false)
       expect(service.hapReadyForControl).toBe(true)
-      expect(io.socket.payloadsFor('accessory-control')).toEqual([{ refresh: true }])
+      expect(io.socket.payloadsFor('accessory-control')).toEqual([
+        { refresh: true },
+      ])
     })
   })
 
@@ -353,7 +394,10 @@ describe('AccessoriesService', () => {
     it('asks for the layout for the signed-in user', async () => {
       await start()
 
-      expect(io.requests[0]).toEqual({ resource: 'get-layout', payload: { user: 'admin' } })
+      expect(io.requests[0]).toEqual({
+        resource: 'get-layout',
+        payload: { user: 'admin' },
+      })
     })
 
     it('builds an empty room per saved room, in order', async () => {
@@ -410,7 +454,12 @@ describe('AccessoriesService', () => {
       await start({
         layout: [
           { name: 'Kitchen', isDefault: true, services: [] },
-          { name: 'Hallway', services: [layoutEntry()] },
+          {
+            name: 'Hallway',
+            services: [
+              layoutEntry(),
+            ],
+          },
         ],
       })
 
@@ -448,7 +497,12 @@ describe('AccessoriesService', () => {
       await start({
         layout: [
           { name: 'Kitchen', isDefault: true, services: [] },
-          { name: 'Hallway', services: [layoutEntry()] },
+          {
+            name: 'Hallway',
+            services: [
+              layoutEntry(),
+            ],
+          },
         ],
       })
 
@@ -461,16 +515,20 @@ describe('AccessoriesService', () => {
 
     it('applies the saved custom name, type, hidden and dashboard flags', async () => {
       await start({
-        layout: [{
-          name: 'Kitchen',
-          isDefault: true,
-          services: [layoutEntry({
-            customName: 'Kettle',
-            customType: 'Outlet',
-            hidden: true,
-            onDashboard: true,
-          })],
-        }],
+        layout: [
+          {
+            name: 'Kitchen',
+            isDefault: true,
+            services: [
+              layoutEntry({
+                customName: 'Kettle',
+                customType: 'Outlet',
+                hidden: true,
+                onDashboard: true,
+              }),
+            ],
+          },
+        ],
       })
 
       sendData(rawHap())
@@ -487,11 +545,21 @@ describe('AccessoriesService', () => {
       // detection, so the attributes have to be re-applied - otherwise the
       // custom icon reverts on the first live status update
       await start({
-        layout: [{ name: 'Kitchen', isDefault: true, services: [layoutEntry({ customType: 'Outlet' })] }],
+        layout: [
+          {
+            name: 'Kitchen',
+            isDefault: true,
+            services: [
+              layoutEntry({ customType: 'Outlet' }),
+            ],
+          },
+        ],
       })
 
       sendData(rawHap())
-      const second = rawHap({ values: { On: true } })
+      const second = rawHap({
+        values: { On: true },
+      })
       sendData(second)
 
       const current = room('Kitchen')!.services[0]
@@ -500,7 +568,11 @@ describe('AccessoriesService', () => {
     })
 
     it('points the room at the newest service object', async () => {
-      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: [] }] })
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: [] },
+        ],
+      })
 
       const first = rawHap()
       sendData(first)
@@ -512,10 +584,18 @@ describe('AccessoriesService', () => {
     })
 
     it('merges a late-discovered bridge into the existing rooms', async () => {
-      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: [] }] })
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: [] },
+        ],
+      })
 
       sendData(rawHap())
-      sendData(rawHap(), rawHap({ uniqueId: 'hap-2', serviceName: 'Late Switch', instance: { name: 'Bridge B', username: BRIDGE_B } }))
+      sendData(rawHap(), rawHap({
+        uniqueId: 'hap-2',
+        serviceName: 'Late Switch',
+        instance: { name: 'Bridge B', username: BRIDGE_B },
+      }))
 
       expect(idsIn('Kitchen')).toEqual(['hap-1', 'hap-2'])
     })
@@ -523,7 +603,12 @@ describe('AccessoriesService', () => {
     it('links services listed in `linked` to their siblings', async () => {
       await start()
 
-      const television = rawHap({ uniqueId: 'hap-tv', type: 'Television', iid: 20, linked: [21] })
+      const television = rawHap({
+        uniqueId: 'hap-tv',
+        type: 'Television',
+        iid: 20,
+        linked: [21],
+      })
       const speaker = rawHap({ uniqueId: 'hap-speaker', type: 'TelevisionSpeaker', iid: 21 })
       sendData(television, speaker)
 
@@ -536,10 +621,130 @@ describe('AccessoriesService', () => {
       await start({
         layout: [
           { name: 'Kitchen', isDefault: true, services: [] },
-          { name: 'Hallway', services: [saved] },
+          {
+            name: 'Hallway',
+            services: [saved],
+          },
         ],
       })
     }
+
+    it('keeps same-named outlets on different plugs separate through discovery and save', async () => {
+      const plugs = ['PLUG-A', 'PLUG-B'].map((serial, index) => layoutEntry({
+        uniqueId: `plug-${index}`,
+        serial,
+        nameBasedUniqueId: 'shared-outlet-name',
+        customName: `Custom ${index}`,
+      }))
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: plugs },
+        ],
+      })
+      sendData(...plugs.map(plug => rawHap({
+        uniqueId: plug.uniqueId,
+        nameBasedUniqueId: plug.nameBasedUniqueId,
+        accessoryInformation: { 'Serial Number': plug.serial },
+      })))
+      expect(service.rooms()[0].services.map(s => s.customName)).toEqual(['Custom 0', 'Custom 1'])
+      await service.saveLayout()
+      const saved = io.requests.find(entry => entry.resource === 'save-layout')!.payload.layout[0].services
+      expect(saved.map((s: AccessoryLayoutService) => s.customName)).toEqual(['Custom 0', 'Custom 1'])
+    })
+
+    it('preserves an offline plug when an online plug shares its name-based id', async () => {
+      const plugs = ['PLUG-A', 'PLUG-B'].map((serial, index) => layoutEntry({
+        uniqueId: `plug-${index}`,
+        serial,
+        nameBasedUniqueId: 'shared-outlet-name',
+        customName: `Custom ${index}`,
+      }))
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: plugs },
+        ],
+      })
+      sendData(rawHap({
+        uniqueId: 'plug-0',
+        nameBasedUniqueId: 'shared-outlet-name',
+        accessoryInformation: { 'Serial Number': 'PLUG-A' },
+      }))
+      await service.saveLayout()
+      const saved = io.requests.find(entry => entry.resource === 'save-layout')!.payload.layout[0].services
+      expect(saved.map((s: AccessoryLayoutService) => s.customName)).toEqual(['Custom 0', 'Custom 1'])
+    })
+
+    it('keeps the default serial number from merging same-named outlets on different plugs', async () => {
+      const plugs = [0, 1].map(index => layoutEntry({
+        uniqueId: `plug-${index}`,
+        serial: 'Default-SerialNumber',
+        nameBasedUniqueId: 'shared-outlet-name',
+        customName: `Custom ${index}`,
+      }))
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: plugs },
+        ],
+      })
+
+      // The second plug arrives first, so a first-match search would hand it plug 0's name
+      sendData(rawHap({
+        uniqueId: 'plug-1',
+        nameBasedUniqueId: 'shared-outlet-name',
+        accessoryInformation: { 'Serial Number': 'Default-SerialNumber' },
+      }))
+      await service.saveLayout()
+
+      const saved = io.requests.find(entry => entry.resource === 'save-layout')!.payload.layout[0].services
+      expect(saved.map((s: AccessoryLayoutService) => [s.uniqueId, s.customName])).toEqual([
+        ['plug-1', 'Custom 1'],
+        ['plug-0', 'Custom 0'],
+      ])
+    })
+
+    it('matches a lone saved entry by name across a restart when there is no serial number', async () => {
+      await withLayout(layoutEntry({ uniqueId: 'old', serial: '', nameBasedUniqueId: 'same-name' }))
+      sendData(rawHap({ uniqueId: 'new', nameBasedUniqueId: 'same-name', accessoryInformation: {} }))
+      expect(idsIn('Hallway')).toEqual(['new'])
+    })
+
+    it('treats a changed serial number as a different device, even with the same uniqueId', async () => {
+      await withLayout(layoutEntry({ uniqueId: 'hap-1', serial: 'PLUG-A', nameBasedUniqueId: 'nb-1' }))
+      sendData(rawHap({
+        uniqueId: 'hap-1',
+        nameBasedUniqueId: 'nb-1',
+        accessoryInformation: { 'Serial Number': 'PLUG-B' },
+      }))
+      expect(idsIn('Hallway')).toEqual([])
+      expect(idsIn('Kitchen')).toEqual(['hap-1'])
+    })
+
+    it('treats a changed serial number as a different device for a legacy entry', async () => {
+      await withLayout(layoutEntry({ uniqueId: 'hap-1', serial: 'PLUG-A' }))
+      sendData(rawHap({
+        uniqueId: 'hap-1',
+        accessoryInformation: { 'Serial Number': 'PLUG-B' },
+      }))
+      expect(idsIn('Hallway')).toEqual([])
+    })
+
+    it('does not give a saved outlet to a same-named outlet on a different serial', async () => {
+      await withLayout(layoutEntry({ uniqueId: 'plug-0', serial: 'PLUG-A', nameBasedUniqueId: 'shared-outlet-name' }))
+      sendData(rawHap({
+        uniqueId: 'plug-1',
+        nameBasedUniqueId: 'shared-outlet-name',
+        accessoryInformation: { 'Serial Number': 'PLUG-B' },
+      }))
+      expect(idsIn('Hallway')).toEqual([])
+    })
+
+    it('gives one saved entry to only one discovered service', async () => {
+      await withLayout(layoutEntry({ uniqueId: 'ancient-id', customName: 'Lamp' }))
+      sendData(rawHap({ uniqueId: 'fresh-1' }), rawHap({ uniqueId: 'fresh-2', iid: 20 }))
+      expect(idsIn('Hallway')).toEqual(['fresh-1'])
+      expect(idsIn('Kitchen')).toEqual(['fresh-2'])
+      expect((room('Kitchen')!.services[0] as ServiceTypeX).customName).toBeUndefined()
+    })
 
     it('prefers nameBasedUniqueId over a changed uniqueId', async () => {
       // uniqueId is only stable within a session, so a restarted child bridge
@@ -581,7 +786,10 @@ describe('AccessoriesService', () => {
     it('rejects the legacy fallback when the bridge differs', async () => {
       await withLayout(layoutEntry({ uniqueId: 'ancient-id', bridge: BRIDGE_A }))
 
-      sendData(rawHap({ uniqueId: 'fresh-id', instance: { name: 'Bridge B', username: BRIDGE_B } }))
+      sendData(rawHap({
+        uniqueId: 'fresh-id',
+        instance: { name: 'Bridge B', username: BRIDGE_B },
+      }))
 
       expect(idsIn('Hallway')).toEqual([])
       expect(idsIn('Kitchen')).toEqual(['fresh-id'])
@@ -635,15 +843,17 @@ describe('AccessoriesService', () => {
   describe('ordering the services inside a room', () => {
     it('follows the saved order, not the order the services arrived in', async () => {
       await start({
-        layout: [{
-          name: 'Kitchen',
-          isDefault: true,
-          services: [
-            layoutEntry({ uniqueId: 'hap-3', name: 'Third', uuid: 'uuid-3' }),
-            layoutEntry({ uniqueId: 'hap-1', name: 'First', uuid: 'uuid-1' }),
-            layoutEntry({ uniqueId: 'hap-2', name: 'Second', uuid: 'uuid-2' }),
-          ],
-        }],
+        layout: [
+          {
+            name: 'Kitchen',
+            isDefault: true,
+            services: [
+              layoutEntry({ uniqueId: 'hap-3', name: 'Third', uuid: 'uuid-3' }),
+              layoutEntry({ uniqueId: 'hap-1', name: 'First', uuid: 'uuid-1' }),
+              layoutEntry({ uniqueId: 'hap-2', name: 'Second', uuid: 'uuid-2' }),
+            ],
+          },
+        ],
       })
 
       sendData(
@@ -656,7 +866,11 @@ describe('AccessoriesService', () => {
     })
 
     it('leaves a room the layout no longer describes untouched', async () => {
-      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: [] }] })
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: [] },
+        ],
+      })
 
       sendData(rawHap({ uniqueId: 'hap-1' }), rawHap({ uniqueId: 'hap-2', uuid: 'uuid-2' }))
 
@@ -826,16 +1040,18 @@ describe('AccessoriesService', () => {
 
       await charFor(switchService, 'On').setValue(true)
 
-      expect(io.socket.payloadsFor('accessory-control')).toEqual([{
-        set: {
-          uniqueId: 'hap-1',
-          aid: 7,
-          // The service's own iid goes in `siid`; `iid` is the characteristic's
-          siid: 30,
-          iid: 11,
-          value: true,
+      expect(io.socket.payloadsFor('accessory-control')).toEqual([
+        {
+          set: {
+            uniqueId: 'hap-1',
+            aid: 7,
+            // The service's own iid goes in `siid`; `iid` is the characteristic's
+            siid: 30,
+            iid: 11,
+            value: true,
+          },
         },
-      }])
+      ])
     })
 
     it('keeps a helper the service already has', async () => {
@@ -879,18 +1095,25 @@ describe('AccessoriesService', () => {
       await start()
       io.socket.fire('matter-accessories-ready-for-control')
 
-      const light = rawMatter({ clusters: { onOff: { onOff: false }, levelControl: { currentLevel: 100 } } }) as ServiceTypeX
+      const light = rawMatter({
+        clusters: {
+          onOff: { onOff: false },
+          levelControl: { currentLevel: 100 },
+        },
+      }) as ServiceTypeX
       sendData(light)
 
       await light.getCluster!('levelControl')!.setAttributes({ currentLevel: 254 })
 
-      expect(io.socket.payloadsFor('accessory-control')).toEqual([{
-        set: {
-          uniqueId: 'matter:light-1',
-          cluster: 'levelControl',
-          attributes: { currentLevel: 254 },
+      expect(io.socket.payloadsFor('accessory-control')).toEqual([
+        {
+          set: {
+            uniqueId: 'matter:light-1',
+            cluster: 'levelControl',
+            attributes: { currentLevel: 254 },
+          },
         },
-      }])
+      ])
     })
 
     it('gives a matter service no HAP characteristic helper', async () => {
@@ -906,11 +1129,20 @@ describe('AccessoriesService', () => {
   describe('saving the layout', () => {
     it('sends the room names and the fields the layout needs', async () => {
       await start({
-        layout: [{
-          name: 'Kitchen',
-          isDefault: true,
-          services: [layoutEntry({ customName: 'Kettle', customType: 'Outlet', hidden: true, onDashboard: true })],
-        }],
+        layout: [
+          {
+            name: 'Kitchen',
+            isDefault: true,
+            services: [
+              layoutEntry({
+                customName: 'Kettle',
+                customType: 'Outlet',
+                hidden: true,
+                onDashboard: true,
+              }),
+            ],
+          },
+        ],
       })
       sendData(rawHap({ nameBasedUniqueId: 'nb-1' }))
 
@@ -919,28 +1151,36 @@ describe('AccessoriesService', () => {
 
       const payload = io.requests.find(entry => entry.resource === 'save-layout')!
       expect(payload.payload.user).toBe('admin')
-      expect(payload.payload.layout).toEqual([{
-        name: 'Kitchen',
-        isDefault: true,
-        services: [{
-          uniqueId: 'hap-1',
-          nameBasedUniqueId: 'nb-1',
-          name: 'Test Switch',
-          serial: 'SERIAL-1',
-          bridge: BRIDGE_A,
-          aid: 1,
-          iid: 10,
-          uuid: '0000-Switch',
-          customName: 'Kettle',
-          customType: 'Outlet',
-          hidden: true,
-          onDashboard: true,
-        }],
-      }])
+      expect(payload.payload.layout).toEqual([
+        {
+          name: 'Kitchen',
+          isDefault: true,
+          services: [
+            {
+              uniqueId: 'hap-1',
+              nameBasedUniqueId: 'nb-1',
+              name: 'Test Switch',
+              serial: 'SERIAL-1',
+              bridge: BRIDGE_A,
+              aid: 1,
+              iid: 10,
+              uuid: '0000-Switch',
+              customName: 'Kettle',
+              customType: 'Outlet',
+              hidden: true,
+              onDashboard: true,
+            },
+          ],
+        },
+      ])
     })
 
     it('leaves the optional fields off rather than writing false', async () => {
-      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: [] }] })
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: [] },
+        ],
+      })
       sendData(rawHap())
 
       service.saveLayout()
@@ -954,7 +1194,11 @@ describe('AccessoriesService', () => {
     })
 
     it('flags the first room as default when nothing is flagged', async () => {
-      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: [] }] })
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: [] },
+        ],
+      })
       // Simulate the page having cleared every default flag
       service.rooms.update(rooms => rooms.map(entry => ({ ...entry, isDefault: undefined })))
 
@@ -969,14 +1213,21 @@ describe('AccessoriesService', () => {
       // A child bridge that is currently offline must not lose its room or its
       // custom name just because it was missing from one payload
       await start({
-        layout: [{
-          name: 'Kitchen',
-          isDefault: true,
-          services: [
-            layoutEntry(),
-            layoutEntry({ uniqueId: 'hap-offline', name: 'Offline Switch', uuid: 'uuid-offline', customName: 'Garage' }),
-          ],
-        }],
+        layout: [
+          {
+            name: 'Kitchen',
+            isDefault: true,
+            services: [
+              layoutEntry(),
+              layoutEntry({
+                uniqueId: 'hap-offline',
+                name: 'Offline Switch',
+                uuid: 'uuid-offline',
+                customName: 'Garage',
+              }),
+            ],
+          },
+        ],
       })
       sendData(rawHap())
 
@@ -992,7 +1243,12 @@ describe('AccessoriesService', () => {
       await start({
         layout: [
           { name: 'Kitchen', isDefault: true, services: [] },
-          { name: 'Garage', services: [layoutEntry({ uniqueId: 'hap-offline', name: 'Offline Switch', uuid: 'uuid-offline' })] },
+          {
+            name: 'Garage',
+            services: [
+              layoutEntry({ uniqueId: 'hap-offline', name: 'Offline Switch', uuid: 'uuid-offline' }),
+            ],
+          },
         ],
       })
       // The user deleted the Garage room while its accessory was offline
@@ -1010,11 +1266,15 @@ describe('AccessoriesService', () => {
       // ⚠️ There is nothing worth preserving about it, and keeping it would write
       // a nameless accessory back into the layout on every save for ever
       await start({
-        layout: [{
-          name: 'Kitchen',
-          isDefault: true,
-          services: [layoutEntry({ uniqueId: 'hap-nameless', name: '', uuid: 'uuid-nameless' })],
-        }],
+        layout: [
+          {
+            name: 'Kitchen',
+            isDefault: true,
+            services: [
+              layoutEntry({ uniqueId: 'hap-nameless', name: '', uuid: 'uuid-nameless' }),
+            ],
+          },
+        ],
       })
       sendData(rawHap())
 
@@ -1032,7 +1292,12 @@ describe('AccessoriesService', () => {
       await start({
         layout: [
           { name: 'Kitchen', isDefault: true, services: [] },
-          { name: 'Garage', services: [layoutEntry({ uniqueId: 'hap-offline', name: 'Offline Switch', uuid: 'uuid-offline' })] },
+          {
+            name: 'Garage',
+            services: [
+              layoutEntry({ uniqueId: 'hap-offline', name: 'Offline Switch', uuid: 'uuid-offline' }),
+            ],
+          },
         ],
       })
       service.rooms.set([])
@@ -1045,8 +1310,15 @@ describe('AccessoriesService', () => {
     })
 
     it('keeps an empty room the user created', async () => {
-      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: [] }] })
-      service.rooms.update(rooms => [...rooms, { name: 'New Room', services: [] }])
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: [] },
+        ],
+      })
+      service.rooms.update(rooms => [
+        ...rooms,
+        { name: 'New Room', services: [] },
+      ])
 
       service.saveLayout()
       await settle()
@@ -1068,7 +1340,9 @@ describe('AccessoriesService', () => {
 
     it('toasts a failed save', async () => {
       await start()
-      io.socket.respondTo('save-layout', () => ({ error: { message: 'Layout could not be written' } }))
+      io.socket.respondTo('save-layout', () => ({
+        error: { message: 'Layout could not be written' },
+      }))
 
       service.saveLayout()
       await settle()
@@ -1080,7 +1354,11 @@ describe('AccessoriesService', () => {
 
   describe('the accessory information modal', () => {
     async function open() {
-      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: [] }] })
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: [] },
+        ],
+      })
       await settle()
       sendData(rawHap())
 
@@ -1107,7 +1385,12 @@ describe('AccessoriesService', () => {
       // re-checks the page, not the tile - the custom icon would stay stale
       const { target, ref } = await open()
 
-      ref.close({ customName: 'Kettle', customType: 'Outlet', hidden: false, onDashboard: true })
+      ref.close({
+        customName: 'Kettle',
+        customType: 'Outlet',
+        hidden: false,
+        onDashboard: true,
+      })
       await settle()
 
       const current = service.rooms()[0].services[0]
@@ -1120,7 +1403,12 @@ describe('AccessoriesService', () => {
     it('keeps the flat accessory list pointing at the same object', async () => {
       const { ref } = await open()
 
-      ref.close({ customName: 'Kettle', customType: 'Outlet', hidden: false, onDashboard: false })
+      ref.close({
+        customName: 'Kettle',
+        customType: 'Outlet',
+        hidden: false,
+        onDashboard: false,
+      })
       await settle()
 
       expect(service.accessories.services[0]).toBe(service.rooms()[0].services[0])
@@ -1129,7 +1417,12 @@ describe('AccessoriesService', () => {
     it('saves the layout when the modal is confirmed', async () => {
       const { ref } = await open()
 
-      ref.close({ customName: 'Kettle', customType: undefined, hidden: false, onDashboard: false })
+      ref.close({
+        customName: 'Kettle',
+        customType: undefined,
+        hidden: false,
+        onDashboard: false,
+      })
       await settle()
 
       expect(io.requests.some(entry => entry.resource === 'save-layout')).toBe(true)
@@ -1150,11 +1443,18 @@ describe('AccessoriesService', () => {
       // modal was opened with, so the result is matched back by uniqueId
       const { target, ref } = await open()
 
-      const replacement = rawHap({ values: { On: true } })
+      const replacement = rawHap({
+        values: { On: true },
+      })
       sendData(replacement)
       expect(service.rooms()[0].services[0]).not.toBe(target)
 
-      ref.close({ customName: 'Kettle', customType: undefined, hidden: false, onDashboard: false })
+      ref.close({
+        customName: 'Kettle',
+        customType: undefined,
+        hidden: false,
+        onDashboard: false,
+      })
       await settle()
 
       const current = service.rooms()[0].services[0]
@@ -1165,7 +1465,11 @@ describe('AccessoriesService', () => {
 
   describe('stopping a session', () => {
     it('ends the socket and clears the state', async () => {
-      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: [] }] })
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: [] },
+        ],
+      })
       sendData(rawHap())
 
       service.stop()
@@ -1178,7 +1482,11 @@ describe('AccessoriesService', () => {
     it('drops an accessories-data event that lands after the stop', async () => {
       // The payload can be in flight between `io.end()` and the socket
       // actually closing; pushing it would resurrect stale services
-      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: [] }] })
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: [] },
+        ],
+      })
 
       service.stop()
       sendData(rawHap())

@@ -38,7 +38,9 @@ export class DonateComponent implements OnInit {
     }
 
     // Override author for homebridge-config-ui-x
-    this.authorName.set(this.plugin.name === 'homebridge-config-ui-x' ? 'oznu' : this.plugin.author)
+    this.authorName.set(this.plugin.name === 'homebridge-config-ui-x'
+      ? 'oznu'
+      : this.plugin.author)
 
     // Normalize the different funding attribute formats
     const funding = this.plugin.funding

@@ -33,12 +33,21 @@ describe('ConfigEditorComponent', () => {
   let component: ConfigEditorComponent
 
   const validConfig = {
-    bridge: { name: 'Homebridge', username: '0E:12:34:56:78:9A', port: 51826, pin: '031-45-154' },
+    bridge: {
+      name: 'Homebridge',
+      username: '0E:12:34:56:78:9A',
+      port: 51826,
+      pin: '031-45-154',
+    },
     accessories: [],
-    platforms: [{ platform: 'config', name: 'Config' }],
+    platforms: [
+      { platform: 'config', name: 'Config' },
+    ],
   }
 
   function create(config: Record<string, any> = validConfig): ConfigEditorComponent {
+    // The reveal choice is remembered in the browser, so start every test masked
+    localStorage.removeItem('hb_config_editor_revealed')
     api = fakeApi().respond('post', /^\/config-editor/, { config, affectedBridges: [] })
     toastr = toastrStub()
     modal = modalServiceSpy()
@@ -48,11 +57,37 @@ describe('ConfigEditorComponent', () => {
       providers: [
         provideRouter([]),
         provideTestTranslate(),
-        provideFakes({ api, settings: makeSettings(), toastr, modal }),
+        provideFakes({
+          api,
+          settings: makeSettings(),
+          toastr,
+          modal,
+        }),
         // Plain text mode: no Monaco anywhere in the component
-        { provide: MobileDetectService, useValue: { detect: { mobile: () => 'iPhone' }, disableTouchMove: vi.fn(), enableTouchMove: vi.fn() } },
-        { provide: ChildBridgesService, useValue: { getAll: vi.fn(async () => []) } },
-        { provide: ActivatedRoute, useValue: { data: of({ config: JSON.stringify(config, null, 4) }) } },
+        {
+          provide: MobileDetectService,
+          useValue: {
+            detect: {
+              mobile: () => 'iPhone',
+            },
+            disableTouchMove: vi.fn(),
+            enableTouchMove: vi.fn(),
+          },
+        },
+        {
+          provide: ChildBridgesService,
+          useValue: {
+            getAll: vi.fn(async () => []),
+          },
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            data: of({
+              config: JSON.stringify(config, null, 4),
+            }),
+          },
+        },
         // ⚠️ One case flips the editor back out of plain text, and the real
         // monaco component is then built by the change detection that follows.
         // Without its config token that throws asynchronously, outside any test:
@@ -63,6 +98,8 @@ describe('ConfigEditorComponent', () => {
 
     fixture = TestBed.createComponent(ConfigEditorComponent)
     component = fixture.componentInstance
+    fixture.detectChanges()
+    component.toggleSecrets()
     fixture.detectChanges()
     return component
   }
@@ -102,6 +139,142 @@ describe('ConfigEditorComponent', () => {
     document.querySelector('.content')?.remove()
   })
 
+  describe('secret privacy', () => {
+    it('starts with a masked read-only preview and cannot save it', async () => {
+      fixture.destroy()
+      localStorage.removeItem('hb_config_editor_revealed')
+      fixture = TestBed.createComponent(ConfigEditorComponent)
+      component = fixture.componentInstance
+      fixture.detectChanges()
+      component.homebridgeConfig.set(JSON.stringify({ ...validConfig, password: 'synthetic-password' }))
+      fixture.detectChanges()
+      const preview = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement
+      expect(component.secretsRevealed()).toBe(false)
+      expect(preview.readOnly).toBe(true)
+      expect(preview.value).not.toContain('synthetic-password')
+      expect(preview.value).toContain('********')
+      await component.onSave()
+      expect(api.calls.filter(call => call.method === 'post')).toHaveLength(0)
+    })
+
+    it('reveals and hides through the rendered button without changing the credential', async () => {
+      component.homebridgeConfig.set(JSON.stringify({ ...validConfig, password: 'original-secret' }))
+      fixture.detectChanges()
+      const toggle = fixture.nativeElement.querySelector('button') as HTMLButtonElement
+      toggle.click()
+      fixture.detectChanges()
+      expect(fixture.nativeElement.querySelector('textarea').value).not.toContain('original-secret')
+      toggle.click()
+      fixture.detectChanges()
+      await fixture.whenStable()
+      expect(fixture.nativeElement.querySelector('textarea').value).toContain('original-secret')
+      expect(JSON.parse(component.homebridgeConfig()).password).toBe('original-secret')
+    })
+
+    it('fails closed for incomplete edits and keeps those edits when revealed again', () => {
+      component.homebridgeConfig.set('{"password":"unfinished')
+      component.toggleSecrets()
+      fixture.detectChanges()
+      expect(fixture.nativeElement.querySelector('textarea')).toBeNull()
+      expect(fixture.nativeElement.textContent).not.toContain('unfinished')
+      component.toggleSecrets()
+      expect(component.homebridgeConfig()).toBe('{"password":"unfinished')
+    })
+
+    it('keeps edited backup content when the diff editor is hidden and recreated', () => {
+      component.isMobile.set(false)
+      component.preferPlainTextEditor.set(false)
+      component.originalConfig.set('{"password":"before-restore"}')
+      component.homebridgeConfig.set('{"password":"backup-value"}')
+      component.monacoEditor = {
+        getModel: () => ({
+          getValue: () => '{"password":"edited-backup"}',
+        }),
+      }
+      component.toggleSecrets()
+      expect(component.redactedConfig()).not.toContain('edited-backup')
+      component.toggleSecrets()
+      let recreatedContent = '{"password":"backup-value"}'
+      const modifiedEditor = {
+        getModel: () => ({
+          setValue: (value: string) => {
+            recreatedContent = value
+          },
+        }),
+      }
+      const originalModel = {
+        setValue: vi.fn(),
+      }
+      const originalEditor = {
+        getModel: () => originalModel,
+      }
+      component.onInitDiffEditor({
+        getModifiedEditor: () => modifiedEditor,
+        getOriginalEditor: () => originalEditor,
+      })
+      expect(recreatedContent).toBe('{"password":"edited-backup"}')
+      expect(originalEditor.getModel().setValue).toHaveBeenCalledWith('{"password":"before-restore"}')
+      window.editor = undefined
+      component.monacoEditor = undefined
+    })
+
+    it('remembers in this browser that the config was revealed, and hidden again', () => {
+      // create() revealed it, so a fresh visit starts revealed
+      fixture.destroy()
+      fixture = TestBed.createComponent(ConfigEditorComponent)
+      expect(fixture.componentInstance.secretsRevealed()).toBe(true)
+
+      fixture.componentInstance.toggleSecrets()
+      fixture.destroy()
+      fixture = TestBed.createComponent(ConfigEditorComponent)
+      expect(fixture.componentInstance.secretsRevealed()).toBe(false)
+      component = fixture.componentInstance
+    })
+
+    it('starts masked when the browser will not let it read the saved choice', () => {
+      fixture.destroy()
+      const getItem = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+        throw new Error('SecurityError')
+      })
+      try {
+        // Before, the plain-text editor setting was read without a guard, so
+        // the whole page failed to open in a browser that blocks storage
+        fixture = TestBed.createComponent(ConfigEditorComponent)
+        component = fixture.componentInstance
+      } finally {
+        getItem.mockRestore()
+      }
+
+      expect(component.secretsRevealed()).toBe(false)
+      expect(component.preferPlainTextEditor()).toBe(false)
+    })
+
+    it('hides without failing when the Monaco editor has no model yet', () => {
+      component.isMobile.set(false)
+      component.preferPlainTextEditor.set(false)
+      component.monacoEditor = {
+        getModel: () => null,
+      }
+
+      expect(() => component.toggleSecrets()).not.toThrow()
+      expect(component.secretsRevealed()).toBe(false)
+    })
+
+    it('captures unsaved Monaco edits before hiding', () => {
+      component.isMobile.set(false)
+      component.preferPlainTextEditor.set(false)
+      component.monacoEditor = {
+        getModel: () => ({
+          getValue: () => '{"password":"edited-secret"}',
+        }),
+      }
+      component.toggleSecrets()
+      expect(component.homebridgeConfig()).toContain('edited-secret')
+      expect(component.redactedConfig()).not.toContain('edited-secret')
+      expect(component.monacoEditor).toBeUndefined()
+    })
+  })
+
   describe('refusing a config that would break homebridge', () => {
     it.each([
       [
@@ -116,47 +289,81 @@ describe('ConfigEditorComponent', () => {
       ],
       [
         'a malformed bridge username',
-        { bridge: { username: 'not-a-mac' } },
+        {
+          bridge: { username: 'not-a-mac' },
+        },
         'config.config_username_error',
       ],
       [
         'accessories that are not a list',
-        { bridge: validConfig.bridge, accessories: { first: {} } },
+        {
+          bridge: validConfig.bridge,
+          accessories: { first: {} },
+        },
         'config.config_accessory_must_be_array',
       ],
       [
         'platforms that are not a list',
-        { bridge: validConfig.bridge, platforms: { first: {} } },
+        {
+          bridge: validConfig.bridge,
+          platforms: { first: {} },
+        },
         'config.config_platform_must_be_array',
       ],
       [
         'a platform entry that is not an object',
-        { bridge: validConfig.bridge, platforms: ['config'] },
+        {
+          bridge: validConfig.bridge,
+          platforms: ['config'],
+        },
         'config.error_blocks_objects',
       ],
       [
         'a platform entry with no platform name',
-        { bridge: validConfig.bridge, platforms: [{ name: 'Config' }] },
+        {
+          bridge: validConfig.bridge,
+          platforms: [
+            { name: 'Config' },
+          ],
+        },
         'config.error_blocks_type',
       ],
       [
         'a platform name that is not text',
-        { bridge: validConfig.bridge, platforms: [{ platform: 42 }] },
+        {
+          bridge: validConfig.bridge,
+          platforms: [
+            { platform: 42 },
+          ],
+        },
         'config.error_string_type',
       ],
       [
         'an accessory entry with no accessory name',
-        { bridge: validConfig.bridge, accessories: [{ name: 'Lamp' }] },
+        {
+          bridge: validConfig.bridge,
+          accessories: [
+            { name: 'Lamp' },
+          ],
+        },
         'config.error_blocks_type',
       ],
       [
         'a plugin list holding something other than names',
-        { bridge: validConfig.bridge, plugins: ['homebridge-hue', 42] },
+        {
+          bridge: validConfig.bridge,
+          plugins: ['homebridge-hue', 42],
+        },
         'config.error_string_array',
       ],
       [
         'a disabled plugin list holding something other than names',
-        { bridge: validConfig.bridge, disabledPlugins: [{ name: 'homebridge-hue' }] },
+        {
+          bridge: validConfig.bridge,
+          disabledPlugins: [
+            { name: 'homebridge-hue' },
+          ],
+        },
         'config.error_string_array',
       ],
     ])('refuses %s', async (_case, config, expectedError) => {
@@ -230,7 +437,10 @@ describe('ConfigEditorComponent', () => {
     })
 
     it('asks before dropping unsaved edits', async () => {
-      component.homebridgeConfig.set(JSON.stringify({ ...validConfig, bridge: { ...validConfig.bridge, name: 'Renamed' } }))
+      component.homebridgeConfig.set(JSON.stringify({
+        ...validConfig,
+        bridge: { ...validConfig.bridge, name: 'Renamed' },
+      }))
 
       const decision = component.canDeactivate()
       modal.lastOpened()!.ref.close(true)
@@ -240,7 +450,10 @@ describe('ConfigEditorComponent', () => {
     })
 
     it('keeps the user on the page when they change their mind', async () => {
-      component.homebridgeConfig.set(JSON.stringify({ ...validConfig, bridge: { ...validConfig.bridge, name: 'Renamed' } }))
+      component.homebridgeConfig.set(JSON.stringify({
+        ...validConfig,
+        bridge: { ...validConfig.bridge, name: 'Renamed' },
+      }))
 
       const decision = component.canDeactivate()
       modal.lastOpened()!.ref.dismiss()
@@ -293,13 +506,21 @@ describe('ConfigEditorComponent', () => {
 
     it('restarts everything when homebridge is already waiting to restart', async () => {
       // Whatever else changed, the pending change still has to be applied
-      const saved = { bridge: { name: 'Homebridge' }, platforms: [bridged('example')] }
+      const saved = {
+        bridge: { name: 'Homebridge' },
+        platforms: [
+          bridged('example'),
+        ],
+      }
 
       expect(await restartFor({ saved, pending: true })).toBe('full')
     })
 
     it('restarts nothing when the config is unchanged', async () => {
-      const saved = { bridge: { name: 'Homebridge' }, platforms: [] }
+      const saved = {
+        bridge: { name: 'Homebridge' },
+        platforms: [],
+      }
 
       expect(await restartFor({ saved })).toBe('none')
       expect(toastr.at('info').at(-1)?.title).toBe('config.config_saved')
@@ -307,64 +528,164 @@ describe('ConfigEditorComponent', () => {
 
     it('still restarts when nothing changed but a bridge is already queued', async () => {
       // The queue comes from an earlier save in the same visit
-      const saved = { bridge: { name: 'Homebridge' }, platforms: [] }
+      const saved = {
+        bridge: { name: 'Homebridge' },
+        platforms: [],
+      }
 
-      expect(await restartFor({ saved, queued: [{ username: 'AA' }] })).not.toBe('none')
+      expect(await restartFor({
+        saved,
+        queued: [
+          { username: 'AA' },
+        ],
+      })).not.toBe('none')
     })
 
     it('restarts everything when a top level key is added', async () => {
-      const saved = { bridge: { name: 'Homebridge' }, platforms: [bridged('example')] }
+      const saved = {
+        bridge: { name: 'Homebridge' },
+        platforms: [
+          bridged('example'),
+        ],
+      }
 
-      expect(await restartFor({ saved, edited: { ...saved, mdns: { interface: 'eth0' } } })).toBe('full')
+      expect(await restartFor({
+        saved,
+        edited: {
+          ...saved,
+          mdns: { interface: 'eth0' },
+        },
+      })).toBe('full')
     })
 
     it('restarts everything when a top level key is removed', async () => {
-      const saved = { bridge: { name: 'Homebridge' }, ports: { start: 52100 }, platforms: [bridged('example')] }
-      const edited = { bridge: { name: 'Homebridge' }, platforms: [bridged('example')] }
+      const saved = {
+        bridge: { name: 'Homebridge' },
+        ports: { start: 52100 },
+        platforms: [
+          bridged('example'),
+        ],
+      }
+      const edited = {
+        bridge: { name: 'Homebridge' },
+        platforms: [
+          bridged('example'),
+        ],
+      }
 
       expect(await restartFor({ saved, edited })).toBe('full')
     })
 
     it('restarts everything when nothing runs on a child bridge', async () => {
       // There is nothing smaller to restart
-      const saved = { bridge: { name: 'Homebridge' }, platforms: [{ platform: 'example', name: 'Example' }] }
-      const edited = { bridge: { name: 'Homebridge' }, platforms: [{ platform: 'example', name: 'Changed' }] }
+      const saved = {
+        bridge: { name: 'Homebridge' },
+        platforms: [
+          { platform: 'example', name: 'Example' },
+        ],
+      }
+      const edited = {
+        bridge: { name: 'Homebridge' },
+        platforms: [
+          { platform: 'example', name: 'Changed' },
+        ],
+      }
 
       expect(await restartFor({ saved, edited })).toBe('full')
     })
 
     it('treats an empty bridge block as not being on a child bridge', async () => {
-      const saved = { bridge: { name: 'Homebridge' }, platforms: [{ platform: 'example', _bridge: {} }] }
-      const edited = { bridge: { name: 'Homebridge' }, platforms: [{ platform: 'example', _bridge: {}, name: 'Changed' }] }
+      const saved = {
+        bridge: { name: 'Homebridge' },
+        platforms: [
+          { platform: 'example', _bridge: {} },
+        ],
+      }
+      const edited = {
+        bridge: { name: 'Homebridge' },
+        platforms: [
+          { platform: 'example', _bridge: {}, name: 'Changed' },
+        ],
+      }
 
       expect(await restartFor({ saved, edited })).toBe('full')
     })
 
     it('restarts everything when a bridge setting changed', async () => {
-      const saved = { bridge: { name: 'Homebridge', port: 51826 }, platforms: [bridged('example')] }
-      const edited = { bridge: { name: 'Homebridge', port: 51827 }, platforms: [bridged('example')] }
+      const saved = {
+        bridge: { name: 'Homebridge', port: 51826 },
+        platforms: [
+          bridged('example'),
+        ],
+      }
+      const edited = {
+        bridge: { name: 'Homebridge', port: 51827 },
+        platforms: [
+          bridged('example'),
+        ],
+      }
 
       expect(await restartFor({ saved, edited })).toBe('full')
     })
 
     it('restarts everything when a platform is added', async () => {
-      const saved = { bridge: {}, platforms: [bridged('example')] }
-      const edited = { bridge: {}, platforms: [bridged('example'), bridged('other', 'AA:BB:CC:DD:EE:FF')] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+          bridged('other', 'AA:BB:CC:DD:EE:FF'),
+        ],
+      }
 
       expect(await restartFor({ saved, edited })).toBe('full')
     })
 
     it('restarts everything when an accessory is removed', async () => {
-      const saved = { bridge: {}, platforms: [bridged('example')], accessories: [{ accessory: 'Light', _bridge: { username: 'AA' } }] }
-      const edited = { bridge: {}, platforms: [bridged('example')], accessories: [] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+        ],
+        accessories: [
+          {
+            accessory: 'Light',
+            _bridge: { username: 'AA' },
+          },
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+        ],
+        accessories: [],
+      }
 
       expect(await restartFor({ saved, edited })).toBe('full')
     })
 
     it('restarts everything when a plugin is moved onto a child bridge', async () => {
       // The bridge itself has to be created, which homebridge only does at startup
-      const saved = { bridge: {}, platforms: [{ platform: 'example' }, bridged('other', 'AA:BB:CC:DD:EE:FF')] }
-      const edited = { bridge: {}, platforms: [bridged('example'), bridged('other', 'AA:BB:CC:DD:EE:FF')] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          { platform: 'example' },
+          bridged('other', 'AA:BB:CC:DD:EE:FF'),
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+          bridged('other', 'AA:BB:CC:DD:EE:FF'),
+        ],
+      }
 
       expect(await restartFor({ saved, edited })).toBe('full')
     })
@@ -375,8 +696,20 @@ describe('ConfigEditorComponent', () => {
       // ⚠️ Both bridges are supplied deliberately. Without them the lookup below
       // fails to find either one and answers 'full' for that reason instead, and
       // this case passes whether the ui-config check exists or not
-      const saved = { bridge: {}, platforms: [bridged('config'), bridged('example', 'AA:BB:CC:DD:EE:FF')] }
-      const edited = { bridge: {}, platforms: [bridged('config', '0E:11:22:33:44:55', { port: 8582 }), bridged('example', 'AA:BB:CC:DD:EE:FF')] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('config'),
+          bridged('example', 'AA:BB:CC:DD:EE:FF'),
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('config', '0E:11:22:33:44:55', { port: 8582 }),
+          bridged('example', 'AA:BB:CC:DD:EE:FF'),
+        ],
+      }
 
       const decision = await restartFor({
         saved,
@@ -391,21 +724,45 @@ describe('ConfigEditorComponent', () => {
     })
 
     it('restarts everything when a changed plugin is not on a bridge', async () => {
-      const saved = { bridge: {}, platforms: [bridged('example'), { platform: 'other', name: 'Other' }] }
-      const edited = { bridge: {}, platforms: [bridged('example'), { platform: 'other', name: 'Renamed' }] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+          { platform: 'other', name: 'Other' },
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+          { platform: 'other', name: 'Renamed' },
+        ],
+      }
 
       expect(await restartFor({ saved, edited })).toBe('full')
     })
 
     it('restarts just the child bridge of the plugin that changed', async () => {
       // The whole point of the exercise
-      const saved = { bridge: {}, platforms: [bridged('example')] }
-      const edited = { bridge: {}, platforms: [bridged('example', '0E:11:22:33:44:55', { debug: true })] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example', '0E:11:22:33:44:55', { debug: true }),
+        ],
+      }
 
       const decision = await restartFor({
         saved,
         edited,
-        bridges: [{ name: 'Example Bridge', username: '0E:11:22:33:44:55' }],
+        bridges: [
+          { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+        ],
       })
 
       expect(decision).toBe('child')
@@ -414,64 +771,271 @@ describe('ConfigEditorComponent', () => {
       ])
     })
 
-    it('matches the bridge whatever case the config wrote its username in', async () => {
-      const saved = { bridge: {}, platforms: [bridged('example', '0e:11:22:33:44:55')] }
-      const edited = { bridge: {}, platforms: [bridged('example', '0e:11:22:33:44:55', { debug: true })] }
+    it('does not queue an unchanged accessory bridge when a platform changed', async () => {
+      const accessory = {
+        accessory: 'Sensor',
+        name: 'Sensor',
+        _bridge: { username: '0E:22:33:44:55:66' },
+      }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example', '0E:11:22:33:44:55'),
+        ],
+        accessories: [accessory],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example', '0E:11:22:33:44:55', { token: 'new' }),
+        ],
+        accessories: [accessory],
+      }
 
       const decision = await restartFor({
         saved,
         edited,
-        bridges: [{ name: 'Example Bridge', username: '0E:11:22:33:44:55' }],
+        bridges: [
+          { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+          { name: 'Sensor', username: '0E:22:33:44:55:66' },
+        ],
+      })
+
+      expect(decision).toBe('child')
+      expect((component as any).childBridgesToRestart).toEqual([
+        { name: 'Example Bridge', username: '0E:11:22:33:44:55', matterSerialNumber: undefined },
+      ])
+    })
+
+    it('does not treat a second accessory of the same type as changed', async () => {
+      // Matching only on `accessory` would compare both blocks to the first
+      const first = {
+        accessory: 'Sensor',
+        name: 'One',
+        serialNumber: '1111111111',
+        _bridge: { username: '0E:22:33:44:55:66' },
+      }
+      const second = {
+        accessory: 'Sensor',
+        name: 'Two',
+        serialNumber: '2222222222',
+        _bridge: { username: '0E:33:44:55:66:77' },
+      }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example', '0E:11:22:33:44:55'),
+        ],
+        accessories: [first, second],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example', '0E:11:22:33:44:55', { token: 'new' }),
+        ],
+        accessories: [first, second],
+      }
+
+      const decision = await restartFor({
+        saved,
+        edited,
+        bridges: [
+          { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+          { name: 'One', username: '0E:22:33:44:55:66' },
+          { name: 'Two', username: '0E:33:44:55:66:77' },
+        ],
+      })
+
+      expect(decision).toBe('child')
+      expect((component as any).childBridgesToRestart).toEqual([
+        { name: 'Example Bridge', username: '0E:11:22:33:44:55', matterSerialNumber: undefined },
+      ])
+    })
+
+    it('restarts only the accessory bridge that actually changed', async () => {
+      const first = {
+        accessory: 'Sensor',
+        name: 'One',
+        serialNumber: '1111111111',
+        _bridge: { username: '0E:22:33:44:55:66' },
+      }
+      const second = {
+        accessory: 'Sensor',
+        name: 'Two',
+        serialNumber: '2222222222',
+        _bridge: { username: '0E:33:44:55:66:77' },
+      }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+        ],
+        accessories: [first, second],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+        ],
+        accessories: [
+          first,
+          { ...second, debug: true },
+        ],
+      }
+
+      const decision = await restartFor({
+        saved,
+        edited,
+        bridges: [
+          { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+          { name: 'One', username: '0E:22:33:44:55:66' },
+          { name: 'Two', username: '0E:33:44:55:66:77' },
+        ],
+      })
+
+      expect(decision).toBe('child')
+      expect((component as any).childBridgesToRestart).toEqual([
+        { name: 'Two', username: '0E:33:44:55:66:77', matterSerialNumber: undefined },
+      ])
+    })
+
+    it('matches the bridge whatever case the config wrote its username in', async () => {
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example', '0e:11:22:33:44:55'),
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example', '0e:11:22:33:44:55', { debug: true }),
+        ],
+      }
+
+      const decision = await restartFor({
+        saved,
+        edited,
+        bridges: [
+          { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+        ],
       })
 
       expect(decision).toBe('child')
     })
 
     it('carries the matter serial number, so a matter bridge can be found', async () => {
-      const saved = { bridge: {}, platforms: [bridged('example')] }
-      const edited = { bridge: {}, platforms: [bridged('example', '0E:11:22:33:44:55', { debug: true })] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example', '0E:11:22:33:44:55', { debug: true }),
+        ],
+      }
 
       await restartFor({
         saved,
         edited,
-        bridges: [{ name: 'Example Bridge', username: '0E:11:22:33:44:55', matterSerialNumber: 'MTR-1' }],
+        bridges: [
+          { name: 'Example Bridge', username: '0E:11:22:33:44:55', matterSerialNumber: 'MTR-1' },
+        ],
       })
 
       expect((component as any).childBridgesToRestart[0].matterSerialNumber).toBe('MTR-1')
     })
 
     it('queues a bridge once, however many of its entries changed', async () => {
-      const saved = { bridge: {}, platforms: [bridged('a'), bridged('b')] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('a'),
+          bridged('b'),
+        ],
+      }
       const edited = {
         bridge: {},
-        platforms: [bridged('a', '0E:11:22:33:44:55', { debug: true }), bridged('b', '0E:11:22:33:44:55', { debug: true })],
+        platforms: [
+          bridged('a', '0E:11:22:33:44:55', { debug: true }),
+          bridged('b', '0E:11:22:33:44:55', { debug: true }),
+        ],
       }
 
-      await restartFor({ saved, edited, bridges: [{ name: 'Shared', username: '0E:11:22:33:44:55' }] })
+      await restartFor({
+        saved,
+        edited,
+        bridges: [
+          { name: 'Shared', username: '0E:11:22:33:44:55' },
+        ],
+      })
 
       expect((component as any).childBridgesToRestart).toHaveLength(1)
     })
 
     it('restarts everything when the bridge it needs is not running', async () => {
       // Nothing to send the restart to
-      const saved = { bridge: {}, platforms: [bridged('example')] }
-      const edited = { bridge: {}, platforms: [bridged('example', '0E:11:22:33:44:55', { debug: true })] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example', '0E:11:22:33:44:55', { debug: true }),
+        ],
+      }
 
       expect(await restartFor({ saved, edited, bridges: [] })).toBe('full')
     })
 
     it('restarts everything when a bridge block has no username', async () => {
-      const saved = { bridge: {}, platforms: [{ platform: 'example', _bridge: { port: 52100 } }, bridged('other', 'AA:BB:CC:DD:EE:FF')] }
-      const edited = { bridge: {}, platforms: [{ platform: 'example', _bridge: { port: 52101 } }, bridged('other', 'AA:BB:CC:DD:EE:FF')] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          {
+            platform: 'example',
+            _bridge: { port: 52100 },
+          },
+          bridged('other', 'AA:BB:CC:DD:EE:FF'),
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          {
+            platform: 'example',
+            _bridge: { port: 52101 },
+          },
+          bridged('other', 'AA:BB:CC:DD:EE:FF'),
+        ],
+      }
 
       expect(await restartFor({ saved, edited })).toBe('full')
     })
 
     it('asks the server for the bridges when the save did not report them', async () => {
-      const saved = { bridge: {}, platforms: [bridged('example')] }
-      const edited = { bridge: {}, platforms: [bridged('example', '0E:11:22:33:44:55', { debug: true })] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example', '0E:11:22:33:44:55', { debug: true }),
+        ],
+      }
       const childBridges = TestBed.inject(ChildBridgesService)
-      vi.mocked(childBridges.getAll).mockResolvedValue([{ name: 'Example Bridge', username: '0E:11:22:33:44:55' }] as any)
+      vi.mocked(childBridges.getAll).mockResolvedValue([
+        { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+      ] as any)
 
       expect(await restartFor({ saved, edited })).toBe('child')
       expect(childBridges.getAll).toHaveBeenCalled()
@@ -479,20 +1043,46 @@ describe('ConfigEditorComponent', () => {
 
     it('does not ask when the save already reported them', async () => {
       // Saved a round trip in Phase 7
-      const saved = { bridge: {}, platforms: [bridged('example')] }
-      const edited = { bridge: {}, platforms: [bridged('example', '0E:11:22:33:44:55', { debug: true })] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example', '0E:11:22:33:44:55', { debug: true }),
+        ],
+      }
       const childBridges = TestBed.inject(ChildBridgesService)
       vi.mocked(childBridges.getAll).mockClear()
 
-      await restartFor({ saved, edited, bridges: [{ name: 'Example Bridge', username: '0E:11:22:33:44:55' }] })
+      await restartFor({
+        saved,
+        edited,
+        bridges: [
+          { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+        ],
+      })
 
       expect(childBridges.getAll).not.toHaveBeenCalled()
     })
 
     it('restarts everything when the bridge list cannot be read', async () => {
       // The safe answer: a full restart applies the change either way
-      const saved = { bridge: {}, platforms: [bridged('example')] }
-      const edited = { bridge: {}, platforms: [bridged('example', '0E:11:22:33:44:55', { debug: true })] }
+      const saved = {
+        bridge: {},
+        platforms: [
+          bridged('example'),
+        ],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [
+          bridged('example', '0E:11:22:33:44:55', { debug: true }),
+        ],
+      }
       const childBridges = TestBed.inject(ChildBridgesService)
       vi.mocked(childBridges.getAll).mockRejectedValue(new Error('server unavailable'))
       vi.spyOn(console, 'error').mockImplementation(() => {})
@@ -515,8 +1105,14 @@ describe('ConfigEditorComponent', () => {
      * @param value - what the model currently holds
      */
     function withMonaco(value: string) {
-      const model = { getValue: vi.fn(() => value), setValue: vi.fn() }
-      const editor = { getModel: vi.fn(() => model), focus: vi.fn() }
+      const model = {
+        getValue: vi.fn(() => value),
+        setValue: vi.fn(),
+      }
+      const editor = {
+        getModel: vi.fn(() => model),
+        focus: vi.fn(),
+      }
       ;(component as any).monacoEditor = editor
       component.preferPlainTextEditor.set(false)
       // ⚠️ Monaco counts as active only when the page is not in mobile mode. The
@@ -643,7 +1239,9 @@ describe('ConfigEditorComponent', () => {
     })
 
     it('loads the chosen backup into the editor, formatted', async () => {
-      api.respond('get', '/config-editor/backups/12345', { bridge: { name: 'Restored' } })
+      api.respond('get', '/config-editor/backups/12345', {
+        bridge: { name: 'Restored' },
+      })
 
       void component.onRestore()
       await Promise.resolve()
@@ -774,7 +1372,9 @@ describe('ConfigEditorComponent', () => {
 
     it('clears what was owed once the restart is accepted', async () => {
       const { page, pending } = await restartAfter('full', {
-        queued: [{ name: 'Example Bridge', username: '0E:11:22:33:44:55' }],
+        queued: [
+          { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+        ],
       })
 
       modal.lastOpened()!.ref.close()
@@ -794,7 +1394,9 @@ describe('ConfigEditorComponent', () => {
     })
 
     it('offers the child bridge prompt with the bridges it queued', async () => {
-      const queued = [{ name: 'Example Bridge', username: '0E:11:22:33:44:55' }]
+      const queued = [
+        { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+      ]
 
       const { pending } = await restartAfter('child', { queued })
 
@@ -807,7 +1409,9 @@ describe('ConfigEditorComponent', () => {
 
     it('empties the queue once the child bridges have restarted', async () => {
       const { page, pending } = await restartAfter('child', {
-        queued: [{ name: 'Example Bridge', username: '0E:11:22:33:44:55' }],
+        queued: [
+          { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+        ],
       })
 
       modal.lastOpened()!.ref.close()
@@ -819,7 +1423,9 @@ describe('ConfigEditorComponent', () => {
     it('keeps the bridges queued when the user says not now', async () => {
       // ⚠️ They are still running the old config, so dropping them here would lose
       // the restart entirely
-      const queued = [{ name: 'Example Bridge', username: '0E:11:22:33:44:55' }]
+      const queued = [
+        { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+      ]
 
       const { page, pending } = await restartAfter('child', { queued })
 
@@ -856,16 +1462,32 @@ describe('ConfigEditorComponent', () => {
      */
     function withGlobalMonaco(present: string[]) {
       const disposed: string[] = []
-      const models = new Map(present.map(uri => [uri, { dispose: () => disposed.push(uri) }]))
+      const models = new Map(present.map(uri => [
+        uri,
+        {
+          dispose: () => disposed.push(uri),
+        },
+      ]))
       const diagnostics = {
-        schemas: [{ uri: 'http://homebridge/config.json' }, { uri: 'http://someone-else/schema.json' }],
+        schemas: [
+          { uri: 'http://homebridge/config.json' },
+          { uri: 'http://someone-else/schema.json' },
+        ],
       }
       const setDiagnosticsOptions = vi.fn()
 
       ;(window as any).monaco = {
-        Uri: { parse: (uri: string) => uri },
-        editor: { getModel: (uri: string) => models.get(uri) },
-        languages: { json: { jsonDefaults: { diagnosticsOptions: diagnostics, setDiagnosticsOptions } } },
+        Uri: {
+          parse: (uri: string) => uri,
+        },
+        editor: {
+          getModel: (uri: string) => models.get(uri),
+        },
+        languages: {
+          json: {
+            jsonDefaults: { diagnosticsOptions: diagnostics, setDiagnosticsOptions },
+          },
+        },
       }
 
       return { disposed, setDiagnosticsOptions }
@@ -903,7 +1525,11 @@ describe('ConfigEditorComponent', () => {
       component.ngOnDestroy()
 
       expect(setDiagnosticsOptions).toHaveBeenCalledWith(
-        expect.objectContaining({ schemas: [{ uri: 'http://someone-else/schema.json' }] }),
+        expect.objectContaining({
+          schemas: [
+            { uri: 'http://someone-else/schema.json' },
+          ],
+        }),
       )
     })
 
@@ -971,28 +1597,59 @@ describe('ConfigEditorComponent', () => {
       return page.detectConfigPlatformChanges()
     }
 
-    const ui = (overrides: Record<string, any> = {}) => ({ platform: 'config', name: 'Config', port: 8581, ...overrides })
+    const ui = (overrides: Record<string, any> = {}) => ({
+      platform: 'config',
+      name: 'Config',
+      port: 8581,
+      ...overrides,
+    })
 
     it('says yes when a ui setting changed', () => {
       expect(serviceRestartFor(
-        { platforms: [ui()] },
-        { platforms: [ui({ port: 8582 })] },
+        {
+          platforms: [
+            ui(),
+          ],
+        },
+        {
+          platforms: [
+            ui({ port: 8582 }),
+          ],
+        },
       )).toBe(true)
     })
 
     it('says yes when the ui entry was added', () => {
-      expect(serviceRestartFor({ platforms: [] }, { platforms: [ui()] })).toBe(true)
+      expect(serviceRestartFor({ platforms: [] }, {
+        platforms: [
+          ui(),
+        ],
+      })).toBe(true)
     })
 
     it('says yes when the ui entry was removed', () => {
       // Which stops the UI coming back at all, so the service has to restart
-      expect(serviceRestartFor({ platforms: [ui()] }, { platforms: [] })).toBe(true)
+      expect(serviceRestartFor({
+        platforms: [
+          ui(),
+        ],
+      }, { platforms: [] })).toBe(true)
     })
 
     it('says no when the ui entry is untouched', () => {
       expect(serviceRestartFor(
-        { platforms: [ui(), { platform: 'other', name: 'Other' }] },
-        { platforms: [ui(), { platform: 'other', name: 'Renamed' }] },
+        {
+          platforms: [
+            ui(),
+            { platform: 'other', name: 'Other' },
+          ],
+        },
+        {
+          platforms: [
+            ui(),
+            { platform: 'other', name: 'Renamed' },
+          ],
+        },
       )).toBe(false)
     })
 
@@ -1011,7 +1668,11 @@ describe('ConfigEditorComponent', () => {
       // alone. This is only reachable if the config parsed well enough to save and
       // then failed to parse here, so it is a belt-and-braces branch either way
       const page = component as any
-      page.latestSavedConfig = { platforms: [ui()] }
+      page.latestSavedConfig = {
+        platforms: [
+          ui(),
+        ],
+      }
       component.homebridgeConfig.set('{ not json')
       vi.spyOn(console, 'error').mockImplementation(() => {})
 

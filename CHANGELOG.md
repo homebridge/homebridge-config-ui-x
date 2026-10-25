@@ -2,22 +2,41 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.29.1 (pending)
+## v5.29.1 (Pending Release)
 
 ### Highlights
 
 
 ### UI Changes
 
+- fix: add crossorigin attribute to manifest link for when using cf tunnels (#3005) (@Macleykun)
+- chore(status): drop the unused tooltip import from the bridges widget
+- fix(accessories): stop saved names colliding between separate outlets on the same accessory (#3009) (@msrivas-7)
+- fix(i18n): correct Korean plugin verification messages (#3007) (@chazepps)
+- fix(login): focus the 2fa code box after render, not on a timer (#3082) (@tbaur)
+- fix(plugins): pick child bridge ports outside the external accessory range (#3081) (@tbaur)
+- feat: preview config with common secrets masked by default (#3011) (@msrivas-7)
+- feat(plugins): mask secret fields in generated plugin forms (#3013) (@msrivas-7)
+- fix(accessories): stop the light controls undoing a dragged brightness or a later power press (#3017) (@msrivas-7)
 
 ### Other Changes
 
+- chore(deps): dependency updates
 - Update of @homebridge/node-pty-prebuilt-multiarch to `v0.15.0`
-- ci: improve beta release notes and workflow summaries
+- fix(accessories): tell hap-client our bridges, so a stranger's refused pin is a debug line (#2979)
+- fix(hb-service): quote paths with spaces when registering the Windows service (#3037) (@xLarry)
+- ci: improve beta release notes and workflow summaries (#3004)
+- test: give the status tests a longer timeout on windows arm64
+- ci: update github actions to their latest versions (#3071)
+- fix(hb-service): stop the macos installer failing when npm's path has spaces or shell characters (#3026) (@smitty078)
+- fix(server): consume multipart file streams in ssl keycert/pfx upload (#3067) (@aashishvanand)
+- fix(plugins): pick matter ports at random, skipping ports written as text and hap ports
+- fix(auth): log when a guarded route gets no bearer token (#3070) (@tbaur)
+- fix(hb-service): stop the colored log download stalling on node 24.22+ and 26.9+ (#3083) (@hjdhjd)
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.3.0`
+- `@homebridge/hap-client` @ `v5.4.0-beta.4`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
 - `@homebridge/plugin-ui-utils` @ `v2.2.6`
 

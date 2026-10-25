@@ -31,7 +31,10 @@ describe('the room modals', () => {
       providers: [
         provideTestTranslate(),
         provideFakes({ activeModal }),
-        { provide: ADD_ROOM_MODAL_DATA, useValue: { existingRooms } },
+        {
+          provide: ADD_ROOM_MODAL_DATA,
+          useValue: { existingRooms },
+        },
       ],
     })
 
@@ -78,7 +81,9 @@ describe('the room modals', () => {
 
   /** A mouse event whose target can be blurred. */
   function clickEvent(): MouseEvent {
-    return { target: document.createElement('button') } as unknown as MouseEvent
+    return {
+      target: document.createElement('button'),
+    } as unknown as MouseEvent
   }
 
   const threeRooms = [
@@ -296,7 +301,9 @@ describe('the room modals', () => {
     })
 
     it('will not let the only room stop being the default', async () => {
-      const modal = await openEdit([{ name: 'Default Room', isDefault: true }], 0)
+      const modal = await openEdit([
+        { name: 'Default Room', isDefault: true },
+      ], 0)
 
       expect(modal.isOnlyRoom()).toBe(true)
       expect(modal.roomForm.controls.isDefault.disabled).toBe(true)
@@ -344,7 +351,10 @@ describe('the room modals', () => {
     })
 
     it('falls back to the first room when nothing is marked default', async () => {
-      const modal = await openEdit([{ name: 'Kitchen' }, { name: 'Hall' }], 1)
+      const modal = await openEdit([
+        { name: 'Kitchen' },
+        { name: 'Hall' },
+      ], 1)
 
       // An older saved layout may have no default at all
       expect(modal.targetRoomName()).toBe('Kitchen')

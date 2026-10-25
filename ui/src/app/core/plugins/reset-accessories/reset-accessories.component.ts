@@ -54,7 +54,10 @@ export class ResetAccessoriesComponent implements OnInit {
     if (currentList.some(item => item.id === id && item.protocol === protocol)) {
       this.toDelete.set(currentList.filter(item => item.id !== id || item.protocol !== protocol))
     } else {
-      this.toDelete.update(current => [...current, { id, protocol }])
+      this.toDelete.update(current => [
+        ...current,
+        { id, protocol },
+      ])
     }
   }
 
@@ -80,7 +83,9 @@ export class ResetAccessoriesComponent implements OnInit {
     } catch (error) {
       this.clicked.set(false)
       console.error(error)
-      const message = error instanceof Error ? error.message : 'Failed to clean bridges'
+      const message = error instanceof Error
+        ? error.message
+        : 'Failed to clean bridges'
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
     }
   }
@@ -95,7 +100,9 @@ export class ResetAccessoriesComponent implements OnInit {
       const { pairings: allPairings } = await this.$accessoryOverview.get<any, any, any>()
 
       // Get the plugin name from the first child bridge (all child bridges should have the same plugin)
-      const pluginName = this.childBridges.length > 0 ? this.childBridges[0].plugin : null
+      const pluginName = this.childBridges.length > 0
+        ? this.childBridges[0].plugin
+        : null
 
       // Filter HAP child bridges that belong to this plugin
       const rawPairings = allPairings
@@ -147,7 +154,9 @@ export class ResetAccessoriesComponent implements OnInit {
       this.pairings.set(newPairings)
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : 'Failed to load pairings'
+      const message = error instanceof Error
+        ? error.message
+        : 'Failed to load pairings'
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
       this.$activeModal.close()
     }

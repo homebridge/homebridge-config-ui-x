@@ -106,12 +106,14 @@ export class BackupComponent implements OnInit {
   public restore(backup: ScheduledBackup | null): void {
     // Close the backup modal and open the restore modal
     this.$activeModal.close()
-    const injector = createEnvironmentInjector([{
-      provide: RESTORE_MODAL_DATA,
-      useValue: {
-        selectedBackup: backup,
+    const injector = createEnvironmentInjector([
+      {
+        provide: RESTORE_MODAL_DATA,
+        useValue: {
+          selectedBackup: backup,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(RestoreComponent, {
       size: 'lg',

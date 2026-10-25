@@ -274,7 +274,9 @@ export class PluginsService implements OnModuleDestroy {
    * @private
    */
   private fixDisplayName(plugin: HomebridgePlugin): HomebridgePlugin {
-    plugin.displayName = plugin.displayName || (plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name)
+    plugin.displayName = plugin.displayName || (plugin.name.charAt(0) === '@'
+      ? plugin.name.split('/')[1]
+      : plugin.name)
       .replace(RE_HYPHEN_GLOBAL, ' ')
       .replace(RE_WORD_SEQUENCE, (txt: string) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase())
     return plugin
@@ -337,7 +339,9 @@ export class PluginsService implements OnModuleDestroy {
             const isRunningUi = isUi && resolve(plugin.installPath) === dirname(resolve(process.env.UIX_BASE_PATH))
             if (!existingPlugin) {
               plugins.push(plugin)
-            } else if (isUi ? isRunningUi : (!plugin.globalInstall && existingPlugin.globalInstall === true)) {
+            } else if (isUi
+              ? isRunningUi
+              : (!plugin.globalInstall && existingPlugin.globalInstall === true)) {
               const index = plugins.indexOf(existingPlugin)
               plugins[index] = plugin
             }
@@ -499,7 +503,9 @@ export class PluginsService implements OnModuleDestroy {
     }
 
     const searchTerms = this.extractTerms(query, RE_WHITESPACE) // Separator: whitespace (spaces, tabs and new lines) characters
-    const normalizedQuery = searchTerms.length > 0 ? searchTerms.join(' ') : 'homebridge'
+    const normalizedQuery = searchTerms.length > 0
+      ? searchTerms.join(' ')
+      : 'homebridge'
 
     if (
       (normalizedQuery.startsWith('homebridge-') || this.isScopedPlugin(normalizedQuery))
@@ -559,7 +565,9 @@ export class PluginsService implements OnModuleDestroy {
           verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.package.name),
           supportsMatter: this.supportsMatter(pkg.package.keywords),
           supportsHap: this.supportsHap(pkg.package.keywords),
-          icon: this.pluginIcons[pkg.package.name] ? `${this.pluginListUrl}${this.pluginIcons[pkg.package.name]}` : null,
+          icon: this.pluginIcons[pkg.package.name]
+            ? `${this.pluginListUrl}${this.pluginIcons[pkg.package.name]}`
+            : null,
           isHbScoped: pkg.package.name.startsWith('@homebridge-plugins/'),
           newHbScope: this.newScopePlugins[pkg.package.name],
           isUnmaintained: this.unmaintainedPlugins.includes(pkg.package.name),
@@ -629,7 +637,10 @@ export class PluginsService implements OnModuleDestroy {
     const scopedResults = allResults.filter(p => p.isHbScoped)
     const unscopedResults = allResults.filter(p => !p.isHbScoped)
 
-    return [...orderPlugins(scopedResults), ...orderPlugins(unscopedResults)]
+    return [
+      ...orderPlugins(scopedResults),
+      ...orderPlugins(unscopedResults),
+    ]
       .slice(0, 30)
       .map(plugin => this.fixDisplayName(plugin))
   }
@@ -694,10 +705,14 @@ export class PluginsService implements OnModuleDestroy {
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
         homepage: pkg.homepage,
-        bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
+        bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url
+          ? pkg.bugs.url
+          : null,
       }
       plugin.author = this.pluginAuthors[pkg.name]
-        || ((pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null)
+        || ((pkg.maintainers && pkg.maintainers.length)
+          ? pkg.maintainers[0].name
+          : null)
       plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name)
       plugin.verifiedPlusPlugin = this.verifiedPlusPlugins.includes(pkg.name)
       plugin.supportsMatter = this.supportsMatter(pkg.keywords)
@@ -709,7 +724,9 @@ export class PluginsService implements OnModuleDestroy {
       plugin.newHbScope = this.newScopePlugins[pkg.name]
       plugin.isUnmaintained = this.unmaintainedPlugins.includes(pkg.name)
 
-      return [this.fixDisplayName(plugin)]
+      return [
+        this.fixDisplayName(plugin),
+      ]
     } catch (e) {
       if (e.response?.status !== 404) {
         this.logger.error(`Failed to search the npm registry (see https://homebridge.io/w/JJSz6 for help) as ${e.message}.`)
@@ -812,7 +829,12 @@ export class PluginsService implements OnModuleDestroy {
 
     // Run the npm command
     await this.runNpmCommand(
-      [...this.npm, action, ...installOptions, npmPluginLabel],
+      [
+        ...this.npm,
+        action,
+        ...installOptions,
+        npmPluginLabel,
+      ],
       installPath,
       client,
       pluginAction.termCols,
@@ -904,7 +926,12 @@ export class PluginsService implements OnModuleDestroy {
 
     // Run the npm command
     await this.runNpmCommand(
-      [...this.npm, action, ...installOptions, npmPluginLabel],
+      [
+        ...this.npm,
+        action,
+        ...installOptions,
+        npmPluginLabel,
+      ],
       installPath,
       client,
       pluginAction.termCols,
@@ -1093,7 +1120,12 @@ export class PluginsService implements OnModuleDestroy {
     }
 
     await this.runNpmCommand(
-      [...this.npm, 'install', ...installOptions, `${homebridge.name}@${homebridgeUpdateAction.version}`],
+      [
+        ...this.npm,
+        'install',
+        ...installOptions,
+        `${homebridge.name}@${homebridgeUpdateAction.version}`,
+      ],
       installPath,
       client,
       homebridgeUpdateAction.termCols,
@@ -1251,7 +1283,13 @@ export class PluginsService implements OnModuleDestroy {
       }
       return { ok: true, name, version, restart }
     } catch (error) {
-      return { ok: false, name, version, error: error.message, restart }
+      return {
+        ok: false,
+        name,
+        version,
+        error: error.message,
+        restart,
+      }
     }
   }
 
@@ -1427,7 +1465,13 @@ export class PluginsService implements OnModuleDestroy {
     const pluginUpgradeInstallScriptPath = join(process.env.UIX_BASE_PATH, 'scripts/upgrade-install-plugin.sh')
     const repoVersion = this.getPluginReleaseTag(pluginAction.name)
     await this.runNpmCommand(
-      [pluginUpgradeInstallScriptPath, pluginAction.name, pluginAction.version, this.configService.customPluginPath, repoVersion],
+      [
+        pluginUpgradeInstallScriptPath,
+        pluginAction.name,
+        pluginAction.version,
+        this.configService.customPluginPath,
+        repoVersion,
+      ],
       this.configService.storagePath,
       client,
       pluginAction.termCols,
@@ -1440,8 +1484,12 @@ export class PluginsService implements OnModuleDestroy {
     if (pluginName.startsWith('@')) {
       return 'v2.0.0'
     }
-    const ch = pluginName.startsWith('homebridge-') ? pluginName.charAt(11) : pluginName.charAt(0)
-    return ch < 'n' ? 'v2.0.0-1' : 'v2.0.0-2'
+    const ch = pluginName.startsWith('homebridge-')
+      ? pluginName.charAt(11)
+      : pluginName.charAt(0)
+    return ch < 'n'
+      ? 'v2.0.0-1'
+      : 'v2.0.0-2'
   }
 
   /**
@@ -1487,7 +1535,22 @@ export class PluginsService implements OnModuleDestroy {
     const prefix = dirname(dirname(dirname(process.env.UIX_BASE_PATH)))
     const upgradeInstallScriptPath = join(process.env.UIX_BASE_PATH, 'scripts/upgrade-install.sh')
     await this.runNpmCommand(
-      this.configService.ui.sudo ? ['npm', 'run', 'upgrade-install', '--', pluginAction.version, prefix, githubReleaseName] : [upgradeInstallScriptPath, pluginAction.version, prefix, githubReleaseName],
+      this.configService.ui.sudo
+        ? [
+            'npm',
+            'run',
+            'upgrade-install',
+            '--',
+            pluginAction.version,
+            prefix,
+            githubReleaseName,
+          ]
+        : [
+            upgradeInstallScriptPath,
+            pluginAction.version,
+            prefix,
+            githubReleaseName,
+          ],
       process.env.UIX_BASE_PATH,
       client,
       pluginAction.termCols,
@@ -1537,7 +1600,9 @@ export class PluginsService implements OnModuleDestroy {
 
     const i18nPath = plugin.directories?.schemas
     if (i18nPath) {
-      const lang = this.configService.ui.lang === 'auto' ? 'en' : this.configService.ui.lang
+      const lang = this.configService.ui.lang === 'auto'
+        ? 'en'
+        : this.configService.ui.lang
 
       if (lang && lang !== 'en' && lang !== 'auto') {
         const i18nSchemaPath = resolve(plugin.installPath, pluginName, i18nPath, `config.schema.${lang}.json`)
@@ -1687,6 +1752,7 @@ export class PluginsService implements OnModuleDestroy {
   public async getPluginRelease(pluginName: string, version?: string) {
     let latestVersion: string | null = null
     let resolvedVersion: string | null = null
+    let repositoryDirectory: string | null = null
 
     try {
       const pkg: INpmRegistryModule = (await firstValueFrom((
@@ -1705,13 +1771,20 @@ export class PluginsService implements OnModuleDestroy {
         // version is already a specific semver
         resolvedVersion = version
       }
+
+      // monorepo plugins declare their package folder in repository.directory
+      const repository = pkg.versions?.[resolvedVersion]?.repository
+      if (typeof repository === 'object' && repository?.directory) {
+        repositoryDirectory = `${repository.directory.replace(/\/+$/, '')}/`
+      }
     } catch (e) {
       throw new NotFoundException()
     }
 
-    // Helper to fetch a GitHub release by tag, trying v-prefixed first then bare version
+    // Helper to fetch a GitHub release by tag, trying v-prefixed first, then bare version,
+    // then <plugin-name>@<version>
     const fetchReleaseByVersion = async (owner: string, repo: string, ver: string) => {
-      for (const tag of [`v${ver}`, ver]) {
+      for (const tag of [`v${ver}`, ver, `${pluginName}@${ver}`]) {
         try {
           const release = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`))
           return release.data
@@ -1730,7 +1803,9 @@ export class PluginsService implements OnModuleDestroy {
           params: { per_page: 100 },
         }))
         const matched = response.data.filter((b: any) => b.name.includes(keyword))
-        return matched.length > 0 ? matched.at(-1).name : null
+        return matched.length > 0
+          ? matched.at(-1).name
+          : null
       } catch { }
       return null
     }
@@ -1739,7 +1814,9 @@ export class PluginsService implements OnModuleDestroy {
       case 'homebridge':
       case 'homebridge-config-ui-x': {
         try {
-          const tag = resolvedVersion ? `v${resolvedVersion}` : null
+          const tag = resolvedVersion
+            ? `v${resolvedVersion}`
+            : null
           const release = tag
             ? await firstValueFrom(this.httpService.get(`https://api.github.com/repos/homebridge/${pluginName}/releases/tags/${tag}`)).then(r => r.data).catch(() => null)
             : null
@@ -1808,15 +1885,25 @@ export class PluginsService implements OnModuleDestroy {
         }
 
         // The plugin may have a custom changelog path from this.pluginChangelogs[pkg.package.name]
-        const changelogPath = this.pluginChangelogs[pluginName] || ''
+        const changelogPaths = this.pluginChangelogs[pluginName]
+          ? [this.pluginChangelogs[pluginName]]
+          // otherwise try the repo root, then the package folder from repository.directory
+          : [
+              '',
+              ...(repositoryDirectory
+                ? [repositoryDirectory]
+                : []),
+            ]
 
         // Helper to fetch a CHANGELOG.md from the repo, trying both cases
         const fetchChangelog = async (ref: string): Promise<string | null> => {
-          for (const filename of ['CHANGELOG.md', 'changelog.md']) {
-            try {
-              const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/${ref}/${changelogPath}${filename}`))
-              return changelog.data
-            } catch { }
+          for (const changelogPath of changelogPaths) {
+            for (const filename of ['CHANGELOG.md', 'changelog.md']) {
+              try {
+                const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/${ref}/${changelogPath}${filename}`))
+                return changelog.data
+              } catch { }
+            }
           }
           return null
         }
@@ -1837,7 +1924,9 @@ export class PluginsService implements OnModuleDestroy {
             }
           }
           if (!changelogData) {
-            const changelogRef = releaseTag ? `refs/tags/${releaseTag}` : 'HEAD'
+            const changelogRef = releaseTag
+              ? `refs/tags/${releaseTag}`
+              : 'HEAD'
             changelogData = await fetchChangelog(changelogRef)
           }
 
@@ -2008,7 +2097,9 @@ export class PluginsService implements OnModuleDestroy {
     if (!alias.pluginAlias) {
       return []
     }
-    const arrayKey = alias.pluginType === 'accessory' ? 'accessories' : 'platforms'
+    const arrayKey = alias.pluginType === 'accessory'
+      ? 'accessories'
+      : 'platforms'
     const blocks = (config[arrayKey] ?? []) as any[]
     return blocks.filter(block =>
       block[alias.pluginType] === alias.pluginAlias
@@ -2035,7 +2126,10 @@ export class PluginsService implements OnModuleDestroy {
     return Promise.all(plugins.map(async (plugin) => {
       try {
         const alias = await this.getPluginAlias(plugin.name)
-        return { ...plugin, config: this.filterConfigBlocksForPlugin(config, plugin.name, alias) }
+        return {
+          ...plugin,
+          config: this.filterConfigBlocksForPlugin(config, plugin.name, alias),
+        }
       } catch (e) {
         this.logger.error(`Failed to attach config blocks for plugin ${plugin.name}: ${e.message}.`)
         return { ...plugin, config: [] }
@@ -2060,7 +2154,9 @@ export class PluginsService implements OnModuleDestroy {
       // Read the config file
       const config: HomebridgeConfig = await readJson(this.configService.configPath)
 
-      const arrayKey = plugin.pluginType === 'accessory' ? 'accessories' : 'platforms'
+      const arrayKey = plugin.pluginType === 'accessory'
+        ? 'accessories'
+        : 'platforms'
       const usernamesSet = new Set<string>()
 
       // Find all config blocks for this plugin that have a _bridge property
@@ -2300,10 +2396,16 @@ export class PluginsService implements OnModuleDestroy {
       }
     } else {
       // In ESM, require.main is not available, so we use Module._nodeModulePaths instead
-      paths = [...paths, ...module._nodeModulePaths(dirname(require.resolve.paths('.')?.[0] || process.cwd()))]
+      paths = [
+        ...paths,
+        ...module._nodeModulePaths(dirname(require.resolve.paths('.')?.[0] || process.cwd())),
+      ]
 
       if (process.env.NODE_PATH) {
-        paths = [...process.env.NODE_PATH.split(delimiter).filter(p => !!p), ...paths]
+        paths = [
+          ...process.env.NODE_PATH.split(delimiter).filter(p => !!p),
+          ...paths,
+        ]
       } else {
         // Default paths for non-windows systems
         if ((platform() !== 'win32')) {
@@ -2317,7 +2419,9 @@ export class PluginsService implements OnModuleDestroy {
       paths = paths.filter(x => x !== join(process.env.UIX_BASE_PATH, 'node_modules'))
     }
     // Filter out duplicates and non-existent paths
-    return [...new Set(paths)].filter((requiredPath) => {
+    return [
+      ...new Set(paths),
+    ].filter((requiredPath) => {
       return existsSync(requiredPath)
     })
   }
@@ -2370,7 +2474,9 @@ export class PluginsService implements OnModuleDestroy {
     }
 
     const versions = await this.getAvailablePluginVersions(packageName)
-    const targetTag = preferBetas && !installedTag ? 'beta' : installedTag
+    const targetTag = preferBetas && !installedTag
+      ? 'beta'
+      : installedTag
     const candidate = versions.tags[targetTag]
 
     // Most packages publish no prerelease tag, so there is nothing to compare
@@ -2421,7 +2527,9 @@ export class PluginsService implements OnModuleDestroy {
       isHbScoped: pkgJson.name.startsWith('@homebridge-plugins/'),
       newHbScope: this.newScopePlugins[pkgJson.name],
       isUnmaintained: this.unmaintainedPlugins.includes(pkgJson.name),
-      installedVersion: installPath ? (pkgJson.version || '0.0.1') : null,
+      installedVersion: installPath
+        ? (pkgJson.version || '0.0.1')
+        : null,
       globalInstall: (installPath !== this.configService.customPluginPath),
       settingsSchema: await pathExists(resolve(installPath, pkgJson.name, 'config.schema.json')),
       engines: pkgJson.engines,
@@ -2429,7 +2537,9 @@ export class PluginsService implements OnModuleDestroy {
     }
 
     // Only verified plugins can show donation links
-    plugin.funding = (plugin.verifiedPlugin || plugin.verifiedPlusPlugin) ? pkgJson.funding : undefined
+    plugin.funding = (plugin.verifiedPlugin || plugin.verifiedPlusPlugin)
+      ? pkgJson.funding
+      : undefined
 
     // Add directories for i18n schema support
     plugin.directories = pkgJson.directories
@@ -2487,10 +2597,14 @@ export class PluginsService implements OnModuleDestroy {
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
         homepage: pkg.homepage,
-        bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
+        bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url
+          ? pkg.bugs.url
+          : null,
       }
       plugin.author = this.pluginAuthors[pkg.name]
-        || ((pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null)
+        || ((pkg.maintainers && pkg.maintainers.length)
+          ? pkg.maintainers[0].name
+          : null)
     } catch (e) {
       if (e.response?.status !== 404) {
         this.logger.log(`[${plugin.name}] failed to check registry.npmjs.org for updates (see https://homebridge.io/w/JJSz6 for help) as ${e.message}.`)
@@ -2594,7 +2708,10 @@ export class PluginsService implements OnModuleDestroy {
       this.logger.debug(`Could not read allowScripts for ${pluginName}@${pluginVersion}: ${error.message}`)
     }
 
-    return { allowed: [...allowed], withScripts: [...withScripts] }
+    return {
+      allowed: [...allowed],
+      withScripts: [...withScripts],
+    }
   }
 
   /**
@@ -2625,20 +2742,31 @@ export class PluginsService implements OnModuleDestroy {
   private filterLocallyHandledScripts(scriptPackages: string[], localAllowScripts: unknown): string[] {
     const splitKey = (key: string): { name: string, version?: string } => {
       const at = key.indexOf('@', 1)
-      return at === -1 ? { name: key } : { name: key.slice(0, at), version: key.slice(at + 1) }
+      return at === -1
+        ? { name: key }
+        : {
+            name: key.slice(0, at),
+            version: key.slice(at + 1),
+          }
     }
 
     const entries: Array<{ name: string, version?: string, enabled: boolean }> = []
     if (Array.isArray(localAllowScripts)) {
       for (const key of localAllowScripts) {
         if (typeof key === 'string' && key.length) {
-          entries.push({ ...splitKey(key), enabled: true })
+          entries.push({
+            ...splitKey(key),
+            enabled: true,
+          })
         }
       }
     } else if (localAllowScripts && typeof localAllowScripts === 'object') {
       for (const [key, enabled] of Object.entries(localAllowScripts)) {
         if (typeof enabled === 'boolean') {
-          entries.push({ ...splitKey(key), enabled })
+          entries.push({
+            ...splitKey(key),
+            enabled,
+          })
         }
       }
     }
@@ -2833,7 +2961,12 @@ export class PluginsService implements OnModuleDestroy {
    * plugin postinstall steps legitimately depend on it.
    */
   public sanitizeNpmEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
-    const droppedPrefixes = ['AWS_', 'AZURE_', 'GOOGLE_APPLICATION_', 'GCP_']
+    const droppedPrefixes = [
+      'AWS_',
+      'AZURE_',
+      'GOOGLE_APPLICATION_',
+      'GCP_',
+    ]
     const droppedExact = new Set(['GITHUB_TOKEN', 'GH_TOKEN', 'NPM_TOKEN'])
     const droppedPattern = /SECRET|PASSWORD|PASSWD|PRIVATE_KEY|_TOKEN$/i
     const result: NodeJS.ProcessEnv = {}
@@ -2876,7 +3009,12 @@ export class PluginsService implements OnModuleDestroy {
    * npm cache clean --force
    */
   private async cleanNpmCache() {
-    const command: string[] = [...this.npm, 'cache', 'clean', '--force']
+    const command: string[] = [
+      ...this.npm,
+      'cache',
+      'clean',
+      '--force',
+    ]
 
     if (this.configService.ui.sudo) {
       command.unshift('sudo', '-E', '-n')

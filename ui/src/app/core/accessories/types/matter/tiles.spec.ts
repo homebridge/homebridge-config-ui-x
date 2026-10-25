@@ -63,14 +63,33 @@ describe('the matter accessory tiles', () => {
       imports: [type as any],
       providers: [
         provideTestTranslate(),
-        provideFakes({ modal, settings, toastr: toastrStub() }),
-        { provide: AccessoriesServiceToken, useValue: { accessoryData: { subscribe: vi.fn() } } as unknown as AccessoriesService },
+        provideFakes({
+          modal,
+          settings,
+          toastr: toastrStub(),
+        }),
+        {
+          provide: AccessoriesServiceToken,
+          useValue: {
+            accessoryData: {
+              subscribe: vi.fn(),
+            },
+          } as unknown as AccessoriesService,
+        },
       ],
     })
 
     TestBed.overrideComponent(type as any, {
       set: {
-        imports: [TranslatePipe, LowerCasePipe, UpperCasePipe, DecimalPipe, ConvertTempPipe, ConvertMiredPipe, DurationPipe],
+        imports: [
+          TranslatePipe,
+          LowerCasePipe,
+          UpperCasePipe,
+          DecimalPipe,
+          ConvertTempPipe,
+          ConvertMiredPipe,
+          DurationPipe,
+        ],
         schemas: [NO_ERRORS_SCHEMA],
       },
     })
@@ -109,31 +128,42 @@ describe('the matter accessory tiles', () => {
     {
       name: 'on off light',
       type: OnOffLightComponent,
-      clusters: { onOff: { onOff: false } },
+      clusters: {
+        onOff: { onOff: false },
+      },
       cluster: 'onOff',
     },
     {
       name: 'on off light switch',
       type: OnOffLightSwitchComponent as unknown as TileCase['type'],
-      clusters: { onOff: { onOff: false } },
+      clusters: {
+        onOff: { onOff: false },
+      },
       cluster: 'onOff',
     },
     {
       name: 'on off plug in unit',
       type: OnOffPlugInUnitComponent as unknown as TileCase['type'],
-      clusters: { onOff: { onOff: false } },
+      clusters: {
+        onOff: { onOff: false },
+      },
       cluster: 'onOff',
     },
     {
       name: 'pump',
       type: MatterPumpComponent as unknown as TileCase['type'],
-      clusters: { onOff: { onOff: false } },
+      clusters: {
+        onOff: { onOff: false },
+      },
       cluster: 'onOff',
     },
     {
       name: 'dimmable light',
       type: DimmableLightComponent as unknown as TileCase['type'],
-      clusters: { onOff: { onOff: false }, levelControl: { currentLevel: 0 } },
+      clusters: {
+        onOff: { onOff: false },
+        levelControl: { currentLevel: 0 },
+      },
       // Switching a dimmable light ON restores the level AND writes onOff - a
       // raw level write alone does not run Matter's on/off coupling, so the
       // state would never read as on
@@ -142,37 +172,53 @@ describe('the matter accessory tiles', () => {
     {
       name: 'colour temperature light',
       type: ColorTemperatureLightComponent as unknown as TileCase['type'],
-      clusters: { onOff: { onOff: false }, levelControl: { currentLevel: 0 }, colorControl: { colorTemperatureMireds: 250 } },
+      clusters: {
+        onOff: { onOff: false },
+        levelControl: { currentLevel: 0 },
+        colorControl: { colorTemperatureMireds: 250 },
+      },
       cluster: ['levelControl', 'onOff'],
     },
     {
       name: 'extended colour light',
       type: ExtendedColorLightComponent as unknown as TileCase['type'],
-      clusters: { onOff: { onOff: false }, levelControl: { currentLevel: 0 }, colorControl: { currentHue: 50, currentSaturation: 200 } },
+      clusters: {
+        onOff: { onOff: false },
+        levelControl: { currentLevel: 0 },
+        colorControl: { currentHue: 50, currentSaturation: 200 },
+      },
       cluster: ['levelControl', 'onOff'],
     },
     {
       name: 'door lock',
       type: MatterDoorLockComponent as unknown as TileCase['type'],
-      clusters: { doorLock: { lockState: 1 } },
+      clusters: {
+        doorLock: { lockState: 1 },
+      },
       cluster: 'doorLock',
     },
     {
       name: 'fan',
       type: MatterFanComponent as unknown as TileCase['type'],
-      clusters: { fanControl: { fanMode: 0, percentSetting: 0 } },
+      clusters: {
+        fanControl: { fanMode: 0, percentSetting: 0 },
+      },
       cluster: 'fanControl',
     },
     {
       name: 'water valve',
       type: MatterWaterValveComponent as unknown as TileCase['type'],
-      clusters: { valveConfigurationAndControl: { currentState: 0, targetState: 0 } },
+      clusters: {
+        valveConfigurationAndControl: { currentState: 0, targetState: 0 },
+      },
       cluster: 'valveConfigurationAndControl',
     },
     {
       name: 'window covering',
       type: MatterWindowCoveringComponent as unknown as TileCase['type'],
-      clusters: { windowCovering: { currentPositionLiftPercent100ths: 0, targetPositionLiftPercent100ths: 0 } },
+      clusters: {
+        windowCovering: { currentPositionLiftPercent100ths: 0, targetPositionLiftPercent100ths: 0 },
+      },
       cluster: 'windowCovering',
     },
     {
@@ -180,7 +226,13 @@ describe('the matter accessory tiles', () => {
       type: RoboticVacuumCleanerComponent as unknown as TileCase['type'],
       deviceType: 'RoboticVacuumCleaner',
       clusters: {
-        rvcRunMode: { currentMode: 0, supportedModes: [{ label: 'Idle', mode: 0 }, { label: 'Clean', mode: 1 }] },
+        rvcRunMode: {
+          currentMode: 0,
+          supportedModes: [
+            { label: 'Idle', mode: 0 },
+            { label: 'Clean', mode: 1 },
+          ],
+        },
         rvcOperationalState: { operationalState: 0 },
       },
       cluster: 'rvcRunMode',
@@ -211,12 +263,53 @@ describe('the matter accessory tiles', () => {
 
   // Six of the tiles also open a manage modal on a long press
   describe.each([
-    ['dimmable light', DimmableLightComponent as unknown as new (...args: any[]) => { onLongClick: () => unknown }, { onOff: { onOff: true }, levelControl: { currentLevel: 120 } }],
-    ['colour temperature light', ColorTemperatureLightComponent as unknown as new (...args: any[]) => { onLongClick: () => unknown }, { onOff: { onOff: true }, levelControl: { currentLevel: 120 }, colorControl: { colorTemperatureMireds: 250 } }],
-    ['extended colour light', ExtendedColorLightComponent as unknown as new (...args: any[]) => { onLongClick: () => unknown }, { onOff: { onOff: true }, levelControl: { currentLevel: 120 }, colorControl: { currentHue: 50, currentSaturation: 200 } }],
-    ['fan', MatterFanComponent as unknown as new (...args: any[]) => { onLongClick: () => unknown }, { fanControl: { fanMode: 2, percentSetting: 50 } }],
-    ['door lock', MatterDoorLockComponent as unknown as new (...args: any[]) => { onLongClick: () => unknown }, { doorLock: { lockState: 1 } }],
-    ['window covering', MatterWindowCoveringComponent as unknown as new (...args: any[]) => { onLongClick: () => unknown }, { windowCovering: { currentPositionLiftPercent100ths: 5000, targetPositionLiftPercent100ths: 5000 } }],
+    [
+      'dimmable light',
+      DimmableLightComponent as unknown as new (...args: any[]) => { onLongClick: () => unknown },
+      {
+        onOff: { onOff: true },
+        levelControl: { currentLevel: 120 },
+      },
+    ],
+    [
+      'colour temperature light',
+      ColorTemperatureLightComponent as unknown as new (...args: any[]) => { onLongClick: () => unknown },
+      {
+        onOff: { onOff: true },
+        levelControl: { currentLevel: 120 },
+        colorControl: { colorTemperatureMireds: 250 },
+      },
+    ],
+    [
+      'extended colour light',
+      ExtendedColorLightComponent as unknown as new (...args: any[]) => { onLongClick: () => unknown },
+      {
+        onOff: { onOff: true },
+        levelControl: { currentLevel: 120 },
+        colorControl: { currentHue: 50, currentSaturation: 200 },
+      },
+    ],
+    [
+      'fan',
+      MatterFanComponent as unknown as new (...args: any[]) => { onLongClick: () => unknown },
+      {
+        fanControl: { fanMode: 2, percentSetting: 50 },
+      },
+    ],
+    [
+      'door lock',
+      MatterDoorLockComponent as unknown as new (...args: any[]) => { onLongClick: () => unknown },
+      {
+        doorLock: { lockState: 1 },
+      },
+    ],
+    [
+      'window covering',
+      MatterWindowCoveringComponent as unknown as new (...args: any[]) => { onLongClick: () => unknown },
+      {
+        windowCovering: { currentPositionLiftPercent100ths: 5000, targetPositionLiftPercent100ths: 5000 },
+      },
+    ],
   ])('a long press on the %s tile', (_name, type, clusters) => {
     it('opens nothing until the bridge is ready for control', async () => {
       const component = create(type, matterService({ clusters }), false)
@@ -282,22 +375,73 @@ describe('the matter accessory tiles', () => {
     }
 
     it('reads an on off light from its onOff cluster', () => {
-      expect(isOn(OnOffLightComponent, { onOff: { onOff: true } })).toBe(true)
-      expect(isOn(OnOffLightComponent, { onOff: { onOff: false } })).toBe(false)
+      expect(isOn(OnOffLightComponent, {
+        onOff: { onOff: true },
+      })).toBe(true)
+      expect(isOn(OnOffLightComponent, {
+        onOff: { onOff: false },
+      })).toBe(false)
     })
 
     it('reads a dimmable light as on whenever it has a level', () => {
       const type = DimmableLightComponent as unknown as new (...args: any[]) => { isOn: () => boolean }
 
-      expect(isOn(type, { onOff: { onOff: true }, levelControl: { currentLevel: 120 } })).toBe(true)
-      expect(isOn(type, { onOff: { onOff: false }, levelControl: { currentLevel: 0 } })).toBe(false)
+      expect(isOn(type, {
+        onOff: { onOff: true },
+        levelControl: { currentLevel: 120 },
+      })).toBe(true)
+      expect(isOn(type, {
+        onOff: { onOff: false },
+        levelControl: { currentLevel: 0 },
+      })).toBe(false)
     })
 
     it('reads a fan from its percent setting, not its mode', () => {
       const type = MatterFanComponent as unknown as new (...args: any[]) => { isOn: () => boolean }
 
-      expect(isOn(type, { fanControl: { fanMode: 2, percentSetting: 50 } })).toBe(true)
-      expect(isOn(type, { fanControl: { fanMode: 0, percentSetting: 0 } })).toBe(false)
+      expect(isOn(type, {
+        fanControl: { fanMode: 2, percentSetting: 50 },
+      })).toBe(true)
+      expect(isOn(type, {
+        fanControl: { fanMode: 0, percentSetting: 0 },
+      })).toBe(false)
+    })
+  })
+
+  // The state text used to be one long nested condition in each template. It now
+  // comes from the tile, and these pin it to what the template said
+  describe('what a tile says about its state', () => {
+    it.each([
+      [0, 'accessories.control.jammed'],
+      [1, 'accessories.control.locked'],
+      [2, 'accessories.control.unlocked'],
+      [3, ''],
+    ])('names lock state %s', (lockState, key) => {
+      const component = create(MatterDoorLockComponent, matterService({
+        deviceType: 'DoorLock',
+        clusters: {
+          doorLock: { lockState },
+        },
+      }))
+
+      expect(component.stateKey()).toBe(key)
+    })
+
+    it.each([
+      [0, 'accessories.control.off'],
+      [1, 'accessories.control.auto'],
+      [3, 'accessories.control.cool'],
+      [4, 'accessories.control.heat'],
+      [7, ''],
+    ])('names thermostat mode %s', (systemMode, key) => {
+      const component = create(MatterThermostatComponent, matterService({
+        deviceType: 'Thermostat',
+        clusters: {
+          thermostat: { localTemperature: 2050, systemMode },
+        },
+      }))
+
+      expect(component.modeKey()).toBe(key)
     })
   })
 })

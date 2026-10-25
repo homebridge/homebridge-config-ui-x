@@ -3,22 +3,7 @@
 @let hasCDS = 'CurrentDoorState' in values;
 @let obstructed = !!values?.ObstructionDetected;
 
-@let baseStateText =
-  hasCDS
-    ? cds === 0
-      ? ('accessories.control.open' | translate)
-      : cds === 1
-        ? ('accessories.control.closed' | translate)
-        : cds === 2
-          ? ('accessories.control.opening' | translate)
-          : cds === 3
-            ? ('accessories.control.closing' | translate)
-            : cds === 4
-              ? ('accessories.control.stopped' | translate)
-              : ''
-    : values?.On || values?.Active
-      ? ('accessories.control.open' | translate)
-      : ('accessories.control.closed' | translate);
+@let baseStateText = stateKey() | translate;
 
 @let stateText = obstructed ? `${baseStateText} (${('accessories.control.obstructed' | translate)})` : baseStateText;
 

@@ -55,7 +55,9 @@ export class PluginExternalsComponent implements OnInit {
       return undefined
     }
     const idx = Number.parseInt(this.selectedIndex(), 10)
-    return list[Number.isFinite(idx) ? idx : 0]
+    return list[Number.isFinite(idx)
+      ? idx
+      : 0]
   })
 
   public ngOnInit(): void {

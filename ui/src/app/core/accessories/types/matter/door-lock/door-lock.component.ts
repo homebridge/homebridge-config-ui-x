@@ -51,13 +51,15 @@ export class MatterDoorLockComponent {
     }
 
     const modalInjector = createEnvironmentInjector(
-      [{
-        provide: ACCESSORY_MANAGE_MODAL_DATA,
-        useValue: {
-          service: this.service(),
-          $accessories: this.$accessories,
+      [
+        {
+          provide: ACCESSORY_MANAGE_MODAL_DATA,
+          useValue: {
+            service: this.service(),
+            $accessories: this.$accessories,
+          },
         },
-      }],
+      ],
       this.injector,
     )
 
@@ -69,4 +71,18 @@ export class MatterDoorLockComponent {
   }
 
   public readonly lockState = computed(() => getDoorLockState(this.service()))
+
+  /** The translation key for the lock state, or '' when it is not known. */
+  public readonly stateKey = computed(() => {
+    switch (this.lockState()) {
+      case 0:
+        return 'accessories.control.jammed'
+      case 1:
+        return 'accessories.control.locked'
+      case 2:
+        return 'accessories.control.unlocked'
+      default:
+        return ''
+    }
+  })
 }

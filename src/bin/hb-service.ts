@@ -201,7 +201,9 @@ export class HomebridgeServiceHelper {
         break
       }
       case 'update-node': {
-        this.checkForNodejsUpdates(program.args.length === 2 ? program.args[1] : null)
+        this.checkForNodejsUpdates(program.args.length === 2
+          ? program.args[1]
+          : null)
         break
       }
       case 'update-homebridge': {
@@ -265,7 +267,14 @@ export class HomebridgeServiceHelper {
 
     // Certain commands are not supported when running in Docker
     if (process.env.CONFIG_UI_VERSION && process.env.HOMEBRIDGE_VERSION && process.env.QEMU_ARCH) {
-      if (platform() === 'linux' && ['install', 'uninstall', 'start', 'stop', 'restart', 'logs'].includes(this.action)) {
+      if (platform() === 'linux' && [
+        'install',
+        'uninstall',
+        'start',
+        'stop',
+        'restart',
+        'logs',
+      ].includes(this.action)) {
         this.logger.error(`Sorry, the ${this.action} command is not supported in Docker.`)
         process.exit(1)
       }
@@ -575,7 +584,9 @@ export class HomebridgeServiceHelper {
     let outBuf = ''
     let errBuf = ''
     const flushLines = (key: 'out' | 'err') => {
-      const buf = key === 'out' ? outBuf : errBuf
+      const buf = key === 'out'
+        ? outBuf
+        : errBuf
       let consumed = 0
       let idx = buf.indexOf('\n', consumed)
       while (idx !== -1) {
@@ -605,11 +616,15 @@ export class HomebridgeServiceHelper {
       outBuf += outDecoder.end()
       errBuf += errDecoder.end()
       if (outBuf) {
-        this.logFile.write(outBuf.endsWith('\n') ? outBuf : `${outBuf}\n`)
+        this.logFile.write(outBuf.endsWith('\n')
+          ? outBuf
+          : `${outBuf}\n`)
         outBuf = ''
       }
       if (errBuf) {
-        this.logFile.write(errBuf.endsWith('\n') ? errBuf : `${errBuf}\n`)
+        this.logFile.write(errBuf.endsWith('\n')
+          ? errBuf
+          : `${errBuf}\n`)
         errBuf = ''
       }
       this.handleHomebridgeClose(code, signal)
@@ -672,7 +687,9 @@ export class HomebridgeServiceHelper {
           ...process.env,
         },
       }).toString('utf8').trim()
-      return platform() === 'win32' ? join(npmPrefix, 'node_modules') : join(npmPrefix, 'lib', 'node_modules')
+      return platform() === 'win32'
+        ? join(npmPrefix, 'node_modules')
+        : join(npmPrefix, 'lib', 'node_modules')
     } catch (e) {
       return null
     }
@@ -945,7 +962,9 @@ export class HomebridgeServiceHelper {
     const port = await this.generatePort()
     const name = `Homebridge ${username.substring(username.length - 5).replace(RE_COLON, '')}`
     const pin = this.generatePin()
-    const advertiser = await this.isAvahiDaemonRunning() ? 'avahi' : 'bonjour-hap'
+    const advertiser = await this.isAvahiDaemonRunning()
+      ? 'avahi'
+      : 'bonjour-hap'
 
     return {
       name,
@@ -962,7 +981,9 @@ export class HomebridgeServiceHelper {
   private async createDefaultUiConfig() {
     return {
       name: 'Config',
-      port: this.action === 'install' ? this.uiPort : await this.getLastKnownUiPort(),
+      port: this.action === 'install'
+        ? this.uiPort
+        : await this.getLastKnownUiPort(),
       platform: 'config',
     }
   }
@@ -1129,7 +1150,9 @@ export class HomebridgeServiceHelper {
     }
 
     const logStats = await stat(this.logPath)
-    const logStartPosition = logStats.size <= 200000 ? 0 : logStats.size - 200000
+    const logStartPosition = logStats.size <= 200000
+      ? 0
+      : logStats.size - 200000
     const logStream = createReadStream(this.logPath, { start: logStartPosition })
 
     logStream.on('data', (buffer) => {
@@ -1162,7 +1185,9 @@ export class HomebridgeServiceHelper {
     }
 
     const logStats = await stat(this.logPath)
-    const logStartPosition = logStats.size <= 200000 ? 0 : logStats.size - 200000
+    const logStartPosition = logStats.size <= 200000
+      ? 0
+      : logStats.size - 200000
     const logStream = createReadStream(this.logPath, { start: logStartPosition })
 
     logStream.on('data', (buffer) => {
@@ -1456,7 +1481,14 @@ export class HomebridgeServiceHelper {
       this.logger.error(`Path does not exist: ${cwd}.`)
     }
 
-    const npmArgs = ['--prefix', cwd, action, action === 'add' ? `${target.name}@${target.version}` : target.name]
+    const npmArgs = [
+      '--prefix',
+      cwd,
+      action,
+      action === 'add'
+        ? `${target.name}@${target.version}`
+        : target.name,
+    ]
 
     this.logger.log(`CMD: npm ${npmArgs.join(' ')}`)
 

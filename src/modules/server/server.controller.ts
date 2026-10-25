@@ -16,10 +16,10 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
 import { PortRangeDto } from '../config-editor/config-editor.dto.js'
@@ -28,7 +28,7 @@ import { ServerService } from './server.service.js'
 
 @ApiTags('Homebridge')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 @Controller('server')
 export class ServerController {
   constructor(
@@ -428,8 +428,15 @@ export class ServerController {
     schema: {
       type: 'object',
       properties: {
-        hostnames: { type: 'array', items: { type: 'string' } },
-        mode: { type: 'string', enum: ['selfsigned', 'keycert'], default: 'keycert' },
+        hostnames: {
+          type: 'array',
+          items: { type: 'string' },
+        },
+        mode: {
+          type: 'string',
+          enum: ['selfsigned', 'keycert'],
+          default: 'keycert',
+        },
       },
     },
   })
