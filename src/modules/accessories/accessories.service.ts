@@ -282,6 +282,7 @@ export class AccessoriesService {
             try {
               await service.setCharacteristic(msg.set.iid, msg.set.value)
               const hapServices = await this.loadAccessories()
+              client.emit('accessories-data', hapServices)
 
               // Do a refresh to check if any accessories changed after this action
               setTimeout(() => {
