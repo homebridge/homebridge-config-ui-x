@@ -1,0 +1,9 @@
+{
+  "enabled": false,
+  "externalUrl": "",
+  "connectionMethod": "cloudflare",
+  "cloudflareVariant": "named-tunnel-oauth",
+  "hostname": "",
+  "tunnelId": "",
+  "isLoggedIn": true
+}

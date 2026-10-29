@@ -101,6 +101,7 @@
     "bonjour-service": "1.4.4",
     "class-transformer": "0.5.1",
     "class-validator": "0.15.1",
+    "cloudflared": "^0.7.3",
     "commander": "15.0.0",
     "dayjs": "1.11.23",
     "fastify": "5.12.1",
