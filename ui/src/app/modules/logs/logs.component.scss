@@ -119,13 +119,16 @@
   padding: 0.25em 0.5em;
 }
 
+.adjust-for-mobile {
+  width: 100%;
+}
+
 .adjust-for-mobile-with-search {
   height: calc(100% - 97px);
-  width: calc(100% + 17px);
+  width: 100%;
   overflow: hidden;
 
   @media (max-width: 767px) {
     height: calc(100% - 125px);
-    width: calc(100% + 16px);
   }
 }
