@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fix(config-editor): stop flagging valid ui options as errors, and match the server's default theme
 - feat(custom-plugins): expose the accessory room layout to custom plugin uis (#3109)
+- fix(logs): stop the log and terminal text being cut off at the right edge in safari (#3089)
 
 ### Other Changes
 
