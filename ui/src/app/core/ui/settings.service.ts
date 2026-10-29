@@ -376,6 +376,10 @@ export class SettingsService implements OnDestroy {
 
   // Terminal configuration constants
   private readonly TERMINAL_DEFAULTS = {
+    // An explicit stack: with xterm's bare `monospace` default, Safari measures
+    // the cell width from a different face than it paints with, so the last
+    // glyph on a full-width line is clipped (#3089)
+    FONT_FAMILY: 'Menlo, Monaco, Consolas, \'DejaVu Sans Mono\', \'Liberation Mono\', monospace',
     FONT_SIZE: 13,
     FONT_WEIGHT: '400' as const,
     LINE_HEIGHT: 1.2,
@@ -449,6 +453,7 @@ export class SettingsService implements OnDestroy {
   public getTerminalOptions(overrides?: Partial<ITerminalOptions>, isWidget = false): ITerminalOptions {
     const themeOptions = this.getTerminalThemeOptions(isWidget)
     return {
+      fontFamily: this.TERMINAL_DEFAULTS.FONT_FAMILY,
       fontSize: this.env.terminal?.fontSize || this.TERMINAL_DEFAULTS.FONT_SIZE,
       fontWeight: this.env.terminal?.fontWeight || this.TERMINAL_DEFAULTS.FONT_WEIGHT,
       lineHeight: this.TERMINAL_DEFAULTS.LINE_HEIGHT,
