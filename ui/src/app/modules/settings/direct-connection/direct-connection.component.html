@@ -1,0 +1,129 @@
+<li class="setting-row list-group-item">
+  <div class="setting-row-inner d-flex justify-content-between align-items-center">
+    <span class="pe-2">
+      Direct Connection<br />
+      <small class="grey-text pe-2">Expose this server with a public address for external access.</small>
+    </span>
+    <button type="button" class="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50" aria-label="Direct Connection"
+      (click)="openDirectConnectionModal()">
+      <i aria-hidden="true" class="fas fa-arrow-right"></i>
+    </button>
+  </div>
+</li>
+
+<ng-template #directConnectionModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title primary-text">Direct Connection</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <!-- Connection Method -->
+    <div class="mb-3">
+      <label for="dcConnectionMethod" class="form-label text-muted text-uppercase fs-7 fw-bold">Connection
+        Method</label>
+      <select id="dcConnectionMethod" class="form-select" [(ngModel)]="config.connectionMethod">
+        <option value="cloudflare">Cloudflare</option>
+      </select>
+      <div class="form-text">Provides a public hostname through Cloudflare's network.</div>
+    </div>
+
+    <div class="p-3 bg-light rounded border mb-3">
+      <!-- Variant Selection -->
+      <div class="mb-3">
+        <label for="dcCloudflareVariant" class="form-label text-muted text-uppercase fs-7 fw-bold">Cloudflare
+          Variant</label>
+        <select id="dcCloudflareVariant" class="form-select" [(ngModel)]="config.cloudflareVariant"
+          (change)="saveConfig()">
+          <option value="named-tunnel-oauth">Named Tunnel (OAuth)</option>
+          <option value="quick-tunnel">Quick Tunnel (Temporary)</option>
+        </select>
+        <div class="form-text">Your own domain via OAuth login. Tunnel and DNS are set up automatically.</div>
+      </div>
+
+      <!-- Hostname & Smart Action Button -->
+      <div class="mb-3">
+        <label for="dcHostname" class="form-label text-muted text-uppercase fs-7 fw-bold">Hostname</label>
+        <div class="input-group">
+          <!-- Hostname is editable when disconnected; saves on blur automatically -->
+          <input id="dcHostname" type="text" class="form-control" placeholder="homebridge.example.com"
+            [(ngModel)]="config.hostname" (blur)="saveConfig()" [disabled]="config.tunnelId" />
+
+          <!-- State 1: If NOT logged in -->
+          @if (!config.isLoggedIn) {
+          <button type="button" class="btn btn-primary" (click)="loginWithCloudflare()">
+            <i class="fas fa-external-link-alt me-1"></i> Authenticate
+          </button>
+          }
+
+          <!-- State 2: Logged in, but NOT connected -->
+          @if (config.isLoggedIn && !config.tunnelId) {
+          <button type="button" class="btn btn-success" [disabled]="!config.hostname" (click)="connectTunnel()">
+            <i class="fas fa-play me-1"></i> Connect Tunnel
+          </button>
+          }
+        </div>
+
+        <!-- Dynamic Help / Status Text -->
+        @if (!config.isLoggedIn) {
+        <div class="form-text text-warning mt-1">
+          <i class="fas fa-exclamation-triangle me-1"></i> You must authenticate with Cloudflare first.
+        </div>
+        } @else if (!config.tunnelId) {
+        <div class="form-text text-success mt-1">
+          <i class="fas fa-check-circle me-1"></i> Authenticated with Cloudflare. Ready to connect.
+        </div>
+        } @else {
+        <div class="form-text text-success mt-1">
+          <i class="fas fa-check-circle me-1"></i> Tunnel is active and running.
+        </div>
+        }
+
+        <!-- Show Login URL Link if generated -->
+        @if (loginUrl && !config.isLoggedIn) {
+        <div class="mt-2">
+          <a target="_blank" class="btn btn-success btn-sm" [href]="loginUrl">
+            <i class="fas fa-link me-1"></i> Open Cloudflare Login Page
+          </a>
+        </div>
+        }
+      </div>
+
+      <!-- Active Tunnel ID (Hidden until connected) -->
+      @if (config.tunnelId) {
+      <div class="mb-3">
+        <label for="dcTunnelId" class="form-label text-muted text-uppercase fs-7 fw-bold">Active Tunnel ID</label>
+        <input id="dcTunnelId" type="text" class="form-control font-monospace" readonly [value]="config.tunnelId" />
+        <div class="form-text">Identifier of the currently active tunnel assigned by Cloudflare.</div>
+      </div>
+      }
+    </div>
+
+    <!-- External URL (Hidden until connected, with Try It button) -->
+    @if (config.tunnelId) {
+    <div class="mb-3">
+      <label for="dcExternalUrl" class="form-label text-muted text-uppercase fs-7 fw-bold">External URL</label>
+      <div class="input-group">
+        <input id="dcExternalUrl" type="text" class="form-control font-monospace" readonly
+          [value]="`https://${config.hostname}`" />
+        <a target="_blank" class="btn btn-primary" [href]="`https://${config.hostname}`">
+          <i class="fas fa-external-link-alt me-1"></i> Try It
+        </a>
+      </div>
+      <div class="form-text">The public address this server is currently reachable at.</div>
+    </div>
+    }
+  </div>
+
+  <div class="modal-footer justify-content-between">
+    <button type="button" class="btn btn-secondary" (click)="testConnection()">Test connection</button>
+    <div class="d-flex align-items-center">
+      @if (config.tunnelId) {
+      <button type="button" class="btn btn-outline-danger me-2" (click)="disconnect()">Disconnect</button>
+      }
+      @if (config.isLoggedIn) {
+      <button type="button" class="btn btn-outline-secondary me-2" (click)="logout()">Logout</button>
+      }
+      <button type="button" class="btn btn-primary" (click)="modal.close()">Close</button>
+    </div>
+  </div>
+</ng-template>

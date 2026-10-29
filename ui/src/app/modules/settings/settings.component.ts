@@ -34,6 +34,8 @@ import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-
 import { SslSettingsModalComponent } from '@/app/modules/settings/ssl-settings-modal/ssl-settings-modal.component'
 import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.component'
 
+import { DirectConnectionComponent } from './direct-connection/direct-connection.component'
+
 @Component({
   selector: 'app-settings',
   imports: [
@@ -43,6 +45,7 @@ import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.c
     TitleCasePipe,
     TranslatePipe,
     SpinnerComponent,
+    DirectConnectionComponent,
   ],
   standalone: true,
   templateUrl: './settings.component.html',
