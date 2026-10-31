@@ -82,7 +82,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm i
       - run: npm run build:server
-      - run: npm run test
+      - run: npm run test:server
 
       # Pack the built package so the service is tested using the same package
       # boundary as an npm registry installation, rather than a source link.
