@@ -75,11 +75,22 @@ You should now be able to navigate to `http://localhost:4200` in your browser wh
 
 ## Running Tests
 
-If you have made changes to the server side code, you should run the e2e test suite before creating a pull request:
+Run the tests before creating a pull request:
 
 ```sh
-npm run test
+npm run test          # everything: server tests, then UI tests
+npm run test:server   # only the server e2e tests, after changes in src/
+npm run test:ui       # only the UI unit tests, after changes in ui/
 ```
+
+To run one file while you work on it:
+
+```sh
+npm run test:server -- test/e2e/auth.e2e-spec.ts
+npm run test:ui -- --include src/app/core/pipes/convert-temp.pipe.spec.ts
+```
+
+The UI path is relative to the `ui/` folder. Use `npm run test-coverage` to run both suites with a coverage report.
 
 ## Contributing To Translations
 
