@@ -3,6 +3,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Header,
   Inject,
@@ -24,6 +25,7 @@ import { AuthDto, LogoutDto, RefreshTokenDto } from './auth.dto.js'
 import { AuthService } from './auth.service.js'
 import { CustomGuard } from './guards/custom.guard.js'
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js'
+import { getClientAddress, getTunnelRequestInfo, isSecureRequest } from './tunnel-request.js'
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -40,8 +42,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Exchange a username and password for an authentication token.' })
   @Post('login')
   async signIn(@Body() body: AuthDto, @Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
-    const result = await this.authService.signIn(body.username, body.password, body.otp, req.ip)
-    this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
+    const result = await this.authService.signIn(body.username, body.password, body.otp, getClientAddress(req))
+    this.setRefreshCookie(res, result.access_token, isSecureRequest(req))
     return result
   }
 
@@ -87,8 +89,14 @@ export class AuthController {
   @ApiOperation({ summary: 'This method can be used to obtain an access token ONLY when authentication has been disabled.' })
   @Post('/noauth')
   async getToken(@Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
+    // Never hand out a token to the internet. The Direct Connection gateway
+    // already refuses every tunneled request while auth is off; this is the
+    // second line of defence for the one endpoint that would grant admin.
+    if (getTunnelRequestInfo(req.headers)) {
+      throw new ForbiddenException()
+    }
     const result = await this.authService.generateNoAuthToken()
-    this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
+    this.setRefreshCookie(res, result.access_token, isSecureRequest(req))
     return result
   }
 
@@ -110,7 +118,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: FastifyReply,
   ) {
     const result = await this.authService.refreshToken(req.user, body.reason)
-    this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
+    this.setRefreshCookie(res, result.access_token, isSecureRequest(req))
     return result
   }
 
@@ -126,14 +134,14 @@ export class AuthController {
         throw new UnauthorizedException()
       }
       const result = await this.authService.refreshToken(payload, 'session-restore')
-      this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
+      this.setRefreshCookie(res, result.access_token, isSecureRequest(req))
       return result
     } catch (e) {
       // A rejected cookie never restores anything again, but the browser keeps
       // re-presenting it on every page load until its Max-Age runs out. Clear
       // it alongside the 401 so the retries stop.
       if (req.headers?.cookie?.includes('hb-refresh=')) {
-        res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https'))
+        res.header('Set-Cookie', this.buildClearedCookies(isSecureRequest(req)))
       }
       throw e
     }
@@ -180,7 +188,7 @@ export class AuthController {
           ? this.pluginUiTicketService.userPluginNames(username)
           : this.pluginUiTicketService.revokeUser(username))
       : []
-    res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https', pluginNames))
+    res.header('Set-Cookie', this.buildClearedCookies(isSecureRequest(req), pluginNames))
 
     if (account && !localOnly) {
       try {

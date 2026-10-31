@@ -24,6 +24,7 @@ import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { TerminalService } from '@/app/core/utilities/terminal.service'
 import { AccessoryControlListsComponent } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.component'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
+import { DirectConnectionModalComponent } from '@/app/modules/settings/direct-connection-modal/direct-connection-modal.component'
 import { PortOverviewModalComponent } from '@/app/modules/settings/port-overview-modal/port-overview-modal.component'
 import { RemoveAllAccessoriesComponent } from '@/app/modules/settings/remove-all-accessories/remove-all-accessories.component'
 import { RemoveBridgeAccessoriesComponent } from '@/app/modules/settings/remove-bridge-accessories/remove-bridge-accessories.component'
@@ -130,6 +131,7 @@ export class SettingsComponent implements OnInit {
       'setting-port-range',
       'setting-network-host',
       'setting-network-proxy',
+      'setting-direct-connection',
       'setting-ui-port-network',
       'setting-port-overview',
     ],
@@ -599,6 +601,7 @@ export class SettingsComponent implements OnInit {
       'setting-port-range': this.$translate.instant('settings.network.port_range'),
       'setting-network-host': this.$translate.instant('settings.network.host'),
       'setting-network-proxy': this.$translate.instant('settings.network.proxy'),
+      'setting-direct-connection': `${this.$translate.instant('settings.direct_connection.title')} ${this.$translate.instant('settings.direct_connection.row_desc')}`,
       'setting-ui-port-network': this.$translate.instant('settings.network.port_ui'),
       'setting-port-overview': this.$translate.instant('settings.ports.title'),
 
@@ -903,6 +906,13 @@ export class SettingsComponent implements OnInit {
     } catch (error: any) {
       // Modal was dismissed without saving, do nothing
     }
+  }
+
+  public openDirectConnectionModal(): void {
+    this.$modal.open(DirectConnectionModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
   }
 
   public resetHomebridgeState(): void {
