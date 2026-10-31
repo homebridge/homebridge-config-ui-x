@@ -2,6 +2,25 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.29.1 (Pending Release)
+
+### Highlights
+
+
+### UI Changes
+
+- fix: add crossorigin attribute to manifest link for when using cf tunnels (#3005) (@Macleykun)
+
+### Other Changes
+
+- ci: fail pull requests that target latest instead of the beta branch (@NorthernMan54)
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v5.3.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1`
+- `@homebridge/plugin-ui-utils` @ `v2.2.6`
+
 ## v5.29.0 (2026-08-31)
 
 ### Highlights
