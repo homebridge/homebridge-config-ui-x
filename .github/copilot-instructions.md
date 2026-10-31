@@ -24,9 +24,12 @@ This ensures all changes go through the beta testing process before being merged
     - UI build: `npm run build:ui` - Angular production build, compiles `ui/src/` to `public/` (note: `public/` is gitignored, so a successful UI build produces no `git status` diff)
   - Lint check: `npm run lint` - covers both packages, zero warnings allowed. NEVER CANCEL. Set timeout to 30+ minutes.
   - Fix linting issues: `npm run lint:fix`
-  - Run tests: `npm run test` - full e2e suite (~590 tests), takes about a minute. Tests run serially by design (`fileParallelism: false`) because they share filesystem state. NEVER CANCEL. Set timeout to 30+ minutes.
-  - Run a single test file: `npm run test -- test/e2e/auth.e2e-spec.ts`
-  - Run tests with coverage: `npm run test-coverage`. NEVER CANCEL. Set timeout to 60+ minutes.
+  - Run all tests: `npm run test` - runs `test:server` then `test:ui`, about a minute and a half in total. NEVER CANCEL. Set timeout to 30+ minutes.
+    - Server tests: `npm run test:server` - backend e2e suite (~860 tests), takes about a minute. Tests run serially by design (`fileParallelism: false`) because they share filesystem state.
+    - UI tests: `npm run test:ui` - Angular unit tests (~4,100 tests), takes about 30 seconds
+  - Run a single server test file: `npm run test:server -- test/e2e/auth.e2e-spec.ts`
+  - Run a single UI test file: `npm run test:ui -- --include src/app/core/pipes/convert-temp.pipe.spec.ts` (path relative to `ui/`)
+  - Run tests with coverage: `npm run test-coverage` - both suites. NEVER CANCEL. Set timeout to 60+ minutes.
 
 - Development workflow:
   - Start development servers: `npm run watch` - starts the Angular dev server on port 4200 and the backend (via `hb-service`) on port 8581. The dev UI at :4200 is hard-coded to talk to the backend at :8581 (see `ui/src/environments/environment.ts`).
@@ -36,7 +39,7 @@ This ensures all changes go through the beta testing process before being merged
 
 ## Node.js Requirements
 
-- **CRITICAL**: Node.js version requirements: `^22.12.0 || ^24.0.0` (see `engines` in `package.json`)
+- **CRITICAL**: Node.js version requirements: `^22.12.0 || ^24.0.0 || ^26.0.0` (see `engines` in `package.json`)
 
 ## Environment Setup
 
@@ -86,8 +89,8 @@ Both packages are ESM (`"type": "module"`): local imports must use the `.js` ext
 
 ### Tests - `/test/`
 
-- **E2E tests**: `test/e2e/` - each spec boots a real Nest testing module against a temp storage dir (`test/.homebridge`) seeded from `test/mocks/`
-- **Test runner**: Vitest with SWC; there are no isolated unit tests
+- **Server e2e tests**: `test/e2e/` - each spec boots a real Nest testing module against a storage dir (`test/.homebridge`) seeded from `test/mocks/`; Vitest with SWC
+- **UI unit tests**: `ui/src/**/*.spec.ts`, next to the code - run by Angular's unit-test builder with Vitest in jsdom; shared fakes and fixtures in `ui/src/testing/` (imported as `@/testing`)
 
 ## CRITICAL Build Timing Warnings
 
