@@ -176,6 +176,7 @@ export class DirectConnectionService implements OnApplicationBootstrap, OnModule
     return {
       supported: isCloudflaredSupported(),
       blockedReason: this.blockedReason(),
+      insecureMode: this.configService.homebridgeInsecureMode,
       enabled: settings.enabled,
       variant: settings.variant,
       hostname: settings.hostname,
@@ -357,7 +358,9 @@ export class DirectConnectionService implements OnApplicationBootstrap, OnModule
    * anyone who finds the address would get full control of Homebridge.
    */
   private blockedReason(): DirectConnectionStatusDto['blockedReason'] {
-    if (this.configService.ui.auth === 'none' || this.configService.homebridgeInsecureMode) {
+    // UIX_INSECURE_MODE=1 (set by `npm run watch`) is allowed - it is a
+    // deliberate developer choice - but the UI warns, see insecureMode
+    if (this.configService.ui.auth === 'none') {
       return 'auth-disabled'
     }
     return null
@@ -486,6 +489,10 @@ export class DirectConnectionService implements OnApplicationBootstrap, OnModule
       settings.hostname,
     ])
     if (route.code !== 0) {
+      // Cloudflare error 1003: a record with this name already exists
+      if (/code: 1003\b|record with that host already exists/i.test(`${route.stderr}\n${route.stdout}`)) {
+        throw new Error(`A DNS record for ${settings.hostname} already exists in Cloudflare. If it points to an old tunnel or a service you no longer use, delete it under DNS → Records in the Cloudflare dashboard and connect again. Otherwise, choose a different hostname.`)
+      }
       throw new Error(this.describeFailure(`route ${settings.hostname} to the tunnel`, route))
     }
 
@@ -555,6 +562,10 @@ export class DirectConnectionService implements OnApplicationBootstrap, OnModule
           'run',
         ]
       : this.quickTunnelArgs()
+
+    if (this.configService.homebridgeInsecureMode) {
+      this.logger.warn('Direct Connection: the UI is running in insecure mode (UIX_INSECURE_MODE=1). Anyone with the tunnel address has full access without logging in.')
+    }
 
     this.connections.clear()
     this.lastCloudflaredError = null
@@ -755,7 +766,19 @@ export class DirectConnectionService implements OnApplicationBootstrap, OnModule
       .filter(Boolean)
       .reverse()
       .find(line => /\b(?:ERR|error|failed)\b/i.test(line)) ?? `exit code ${result.code}`
-    return `Could not ${action}: ${detail.replace(/^\S+\s+ERR\s+/, '')}`
+    return `Could not ${action}: ${this.tidyCloudflaredMessage(detail)}`
+  }
+
+  /**
+   * Strip the log prefix, API error wrapper and trailing docs link that
+   * cloudflared adds, leaving the part a person can act on.
+   */
+  private tidyCloudflaredMessage(line: string): string {
+    return line
+      .replace(/^\S+\s+(?:ERR|INF|WRN)\s+/, '')
+      .replace(/^.*?code:\s*\d+,\s*reason:\s*/i, '')
+      .replace(/\s*For more details, refer to <[^>]*>\.?/i, '')
+      .trim()
   }
 
   private async prepareBaseDir() {

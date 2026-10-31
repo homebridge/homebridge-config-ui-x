@@ -14,6 +14,7 @@ function makeStatus(overrides: Partial<DirectConnectionStatus> = {}): DirectConn
   return {
     supported: true,
     blockedReason: null,
+    insecureMode: false,
     enabled: false,
     variant: 'named',
     hostname: '',
@@ -99,6 +100,9 @@ describe('directConnectionModalComponent', () => {
     expect(blocked.modal.canConnect()).toBe(false)
     expect(blocked.modal.variantControl.disabled).toBe(true)
 
+    const insecure = await open(makeStatus({ variant: 'quick', insecureMode: true }))
+    expect(insecure.modal.canConnect()).toBe(true)
+
     const unsupported = await open(makeStatus({ variant: 'quick', supported: false }))
     expect(unsupported.modal.canConnect()).toBe(false)
   })
@@ -145,6 +149,27 @@ describe('directConnectionModalComponent', () => {
 
     expect(api.callsTo('post', `${ENDPOINT}/connect`)).toHaveLength(0)
     expect(toastr.at('error')[0].message).toBe('Disconnect before changing the Direct Connection settings.')
+  })
+
+  it('does not repeat a tunnel error as a toast when the status panel shows it', async () => {
+    const message = 'A DNS record for homebridge.example.com already exists in Cloudflare.'
+    const { modal } = await open(makeStatus({ loggedIn: true, hostname: 'homebridge.example.com' }))
+    api
+      .respond('put', ENDPOINT, makeStatus({ loggedIn: true, hostname: 'homebridge.example.com' }))
+      .fail('post', `${ENDPOINT}/connect`, {
+        error: { message },
+      })
+      .respond('get', ENDPOINT, makeStatus({
+        loggedIn: true,
+        hostname: 'homebridge.example.com',
+        state: 'error',
+        lastError: message,
+      }))
+
+    await modal.connect()
+
+    expect(modal.status()?.lastError).toBe(message)
+    expect(toastr.at('error')).toHaveLength(0)
   })
 
   it('opens the Cloudflare sign-in link in a new tab', async () => {

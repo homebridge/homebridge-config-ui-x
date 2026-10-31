@@ -640,6 +640,7 @@
   "settings.direct_connection.error_load": "Could not load the Direct Connection settings.",
   "settings.direct_connection.hostname": "Hostname",
   "settings.direct_connection.hostname_desc": "The address to publish the UI at, for example homebridge.example.com. A DNS record is created for it; an existing record with this name is never replaced.",
+  "settings.direct_connection.insecure_mode": "The UI is running in insecure mode (<code>UIX_INSECURE_MODE=1</code>, which <code>npm run watch</code> sets), so it does not ask anyone to log in. While connected, anyone with the address has full control of Homebridge. Only use this for development.",
   "settings.direct_connection.intro": "Reach this Homebridge UI from anywhere through a Cloudflare Tunnel, without opening ports on your router. The tunnel keeps running across restarts until you disconnect it.",
   "settings.direct_connection.open_sign_in": "Open Cloudflare",
   "settings.direct_connection.public_url": "Public Address",

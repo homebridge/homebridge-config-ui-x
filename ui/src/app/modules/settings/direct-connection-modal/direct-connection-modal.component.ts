@@ -12,6 +12,7 @@ export type DirectConnectionVariant = 'named' | 'quick'
 export interface DirectConnectionStatus {
   supported: boolean
   blockedReason: 'auth-disabled' | null
+  insecureMode: boolean
   enabled: boolean
   variant: DirectConnectionVariant
   hostname: string
@@ -145,11 +146,12 @@ export class DirectConnectionModalComponent implements OnInit {
       return status
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(
-        error?.error?.message || this.$translate.instant('settings.direct_connection.error_generic'),
-        this.$translate.instant('toast.title_error'),
-      )
+      const message = error?.error?.message || this.$translate.instant('settings.direct_connection.error_generic')
       await this.refresh()
+      // Tunnel failures are already shown in the status panel; don't repeat them
+      if (this.status()?.lastError !== message) {
+        this.$toastr.error(message, this.$translate.instant('toast.title_error'))
+      }
       return null
     } finally {
       this.busy.set(false)

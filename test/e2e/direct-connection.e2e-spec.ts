@@ -389,18 +389,30 @@ describe('DirectConnectionController (e2e)', () => {
 
   it('POST /settings/direct-connection/connect reports cloudflared errors', async () => {
     await signIn()
+    freshAccount()
+    const account = commandResponder
     commandResponder = (args) => {
-      if (args[1] === 'list') {
-        return { code: 0, stdout: '[]', stderr: '' }
+      if (args[1] === 'route') {
+        return { code: 1, stdout: '', stderr: '2026-10-31T12:00:00Z ERR Failed to add route: code: 1003, reason: Failed to create record homebridge.example.com with err An A, AAAA, or CNAME record with that host already exists. For more details, refer to <https://developers.cloudflare.com/dns/manage-dns-records/troubleshooting/records-with-same-name/>.\n' }
       }
-      return { code: 1, stdout: '', stderr: '2026-10-31T12:00:00Z ERR An A, AAAA, or CNAME record with that host already exists.\n' }
+      return account(args)
     }
     await saveSettings({ variant: 'named', hostname: 'homebridge.example.com' })
 
     const res = await post('connect')
 
     expect(res.statusCode).toBe(400)
-    expect(res.json().message).toContain('record with that host already exists')
+    expect(res.json().message).toBe('A DNS record for homebridge.example.com already exists in Cloudflare. If it points to an old tunnel or a service you no longer use, delete it under DNS → Records in the Cloudflare dashboard and connect again. Otherwise, choose a different hostname.')
+  })
+
+  it('tidies other cloudflared errors', async () => {
+    await signIn()
+    commandResponder = () => ({ code: 1, stdout: '', stderr: '2026-10-31T12:00:00Z ERR Failed to list tunnels: code: 10000, reason: Authentication error. For more details, refer to <https://developers.cloudflare.com/x/>.\n' })
+    await saveSettings({ variant: 'named', hostname: 'homebridge.example.com' })
+
+    const res = await post('connect')
+
+    expect(res.json().message).toBe('Could not list tunnels: Authentication error.')
   })
 
   it('POST /settings/direct-connection/connect runs a quick tunnel without an account', async () => {
@@ -438,6 +450,23 @@ describe('DirectConnectionController (e2e)', () => {
 
     expect((await post('login')).statusCode).toBe(400)
     expect(spawned).toHaveLength(0)
+  })
+
+  it('allows insecure mode but reports it so the UI can warn', async () => {
+    expect((await getStatus()).insecureMode).toBe(false)
+
+    configService.homebridgeInsecureMode = true
+    try {
+      await saveSettings({ variant: 'quick' })
+
+      expect(await getStatus()).toMatchObject({ blockedReason: null, insecureMode: true })
+
+      const connect = await post('connect')
+      expect(connect.statusCode).toBe(200)
+      expect(spawned).toHaveLength(1)
+    } finally {
+      configService.homebridgeInsecureMode = false
+    }
   })
 
   it('PUT /settings/direct-connection is refused while connected', async () => {

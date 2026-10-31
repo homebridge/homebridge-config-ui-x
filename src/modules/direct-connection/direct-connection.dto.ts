@@ -50,6 +50,9 @@ export class DirectConnectionStatusDto {
   })
   blockedReason: 'auth-disabled' | null
 
+  @ApiProperty({ type: Boolean, description: 'The UI runs with UIX_INSECURE_MODE=1, so the API skips login.' })
+  insecureMode: boolean
+
   @ApiProperty({ type: Boolean })
   enabled: boolean
 
