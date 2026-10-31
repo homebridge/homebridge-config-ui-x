@@ -1,0 +1,207 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'settings.direct_connection.title' | translate }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    @if (loadFailed()) {
+      <div class="alert alert-danger mb-0" role="alert">
+        {{ 'settings.direct_connection.error_load' | translate }}
+      </div>
+    } @else if (status(); as s) {
+      <p class="grey-text">{{ 'settings.direct_connection.intro' | translate }}</p>
+
+      @if (!s.supported) {
+        <div class="alert alert-warning" role="alert">
+          {{ 'settings.direct_connection.unsupported' | translate }}
+        </div>
+      } @else if (s.blockedReason === 'auth-disabled') {
+        <div class="alert alert-danger" role="alert">
+          <i class="fas fa-exclamation-triangle me-1" aria-hidden="true"></i>
+          {{ 'settings.direct_connection.auth_disabled' | translate }}
+        </div>
+      } @else {
+        <div class="alert alert-warning small py-2 px-3" role="note">
+          <i class="fas fa-shield-halved me-1" aria-hidden="true"></i>
+          {{ 'settings.direct_connection.security_warning' | translate }}
+        </div>
+      }
+
+      <!-- Tunnel type -->
+      <ul
+        class="list-group list-group-box mb-3"
+        role="radiogroup"
+        [attr.aria-label]="'settings.direct_connection.variant' | translate"
+      >
+        <li class="list-group-item text-start">
+          <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
+            <input type="radio" name="dcVariant" value="named" class="visually-hidden" [formControl]="variantControl" />
+            <div class="me-3">
+              <i
+                class="fas fa-globe fa-2x"
+                aria-hidden="true"
+                [class.primary-text]="variantControl.value === 'named'"
+                [class.grey-text]="variantControl.value !== 'named'"
+              ></i>
+            </div>
+            <div class="flex-grow-1">
+              <div>{{ 'settings.direct_connection.variant_named' | translate }}</div>
+              <small class="grey-text">{{ 'settings.direct_connection.variant_named_desc' | translate }}</small>
+            </div>
+            @if (variantControl.value === 'named') {
+              <i class="fas fa-check-circle primary-text fa-xl" aria-hidden="true"></i>
+            }
+          </label>
+        </li>
+        <li class="list-group-item text-start">
+          <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
+            <input type="radio" name="dcVariant" value="quick" class="visually-hidden" [formControl]="variantControl" />
+            <div class="me-3">
+              <i
+                class="fas fa-bolt fa-2x"
+                aria-hidden="true"
+                [class.primary-text]="variantControl.value === 'quick'"
+                [class.grey-text]="variantControl.value !== 'quick'"
+              ></i>
+            </div>
+            <div class="flex-grow-1">
+              <div>{{ 'settings.direct_connection.variant_quick' | translate }}</div>
+              <small class="grey-text">{{ 'settings.direct_connection.variant_quick_desc' | translate }}</small>
+            </div>
+            @if (variantControl.value === 'quick') {
+              <i class="fas fa-check-circle primary-text fa-xl" aria-hidden="true"></i>
+            }
+          </label>
+        </li>
+      </ul>
+
+      @if (variantControl.value === 'named') {
+        <!-- Cloudflare account -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span>
+            {{ 'settings.direct_connection.account' | translate }}<br />
+            <small class="grey-text">
+              @if (s.loggedIn) {
+                <i class="fas fa-check-circle green-text me-1" aria-hidden="true"></i>
+                {{ 'settings.direct_connection.account_signed_in' | translate }}
+              } @else if (s.loginInProgress) {
+                <i class="fas fa-spinner fa-spin me-1" aria-hidden="true"></i>
+                {{ 'settings.direct_connection.account_waiting' | translate }}
+              } @else {
+                {{ 'settings.direct_connection.account_signed_out' | translate }}
+              }
+            </small>
+          </span>
+          @if (s.loggedIn) {
+            <button type="button" class="btn btn-elegant m-0" [disabled]="busy()" (click)="signOut()">
+              {{ 'settings.direct_connection.sign_out' | translate }}
+            </button>
+          } @else if (s.loginInProgress && s.loginUrl) {
+            <a class="btn btn-primary m-0" target="_blank" rel="noopener noreferrer" [href]="s.loginUrl">
+              <i class="fas fa-external-link-alt me-1" aria-hidden="true"></i>
+              {{ 'settings.direct_connection.open_sign_in' | translate }}
+            </a>
+          } @else {
+            <button type="button" class="btn btn-primary m-0" [disabled]="busy() || isBlocked()" (click)="signIn()">
+              <i class="fas fa-external-link-alt me-1" aria-hidden="true"></i>
+              {{ 'settings.direct_connection.sign_in' | translate }}
+            </button>
+          }
+        </div>
+
+        <!-- Hostname -->
+        <div class="mb-3">
+          <label for="dcHostname" class="form-label">{{ 'settings.direct_connection.hostname' | translate }}</label>
+          <input
+            id="dcHostname"
+            type="text"
+            class="form-control font-monospace"
+            placeholder="homebridge.example.com"
+            autocomplete="off"
+            spellcheck="false"
+            [formControl]="hostnameControl"
+            [class.is-invalid]="hostnameControl.invalid && hostnameControl.dirty"
+          />
+          <small class="form-text grey-text">{{ 'settings.direct_connection.hostname_desc' | translate }}</small>
+        </div>
+      }
+
+      <!-- Status -->
+      @if (s.enabled || s.lastError) {
+        <ul class="list-group list-group-box mb-0">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ 'settings.direct_connection.status' | translate }}</span>
+            <span
+              class="badge"
+              [class.bg-success]="s.state === 'connected'"
+              [class.bg-warning]="s.state === 'starting' || s.state === 'reconnecting'"
+              [class.bg-danger]="s.state === 'error'"
+              [class.bg-secondary]="s.state === 'stopped'"
+            >
+              @switch (s.state) {
+                @case ('connected') {
+                  {{ 'settings.direct_connection.state_connected' | translate }}
+                }
+                @case ('starting') {
+                  {{ 'settings.direct_connection.state_starting' | translate }}
+                }
+                @case ('reconnecting') {
+                  {{ 'settings.direct_connection.state_reconnecting' | translate }}
+                }
+                @case ('error') {
+                  {{ 'settings.direct_connection.state_error' | translate }}
+                }
+                @default {
+                  {{ 'settings.direct_connection.state_stopped' | translate }}
+                }
+              }
+            </span>
+          </li>
+          @if (s.publicUrl) {
+            <li class="list-group-item">
+              <small class="grey-text d-block">{{ 'settings.direct_connection.public_url' | translate }}</small>
+              <a class="font-monospace text-break" target="_blank" rel="noopener noreferrer" [href]="s.publicUrl">{{
+                s.publicUrl
+              }}</a>
+            </li>
+          }
+          @if (s.lastError) {
+            <li class="list-group-item">
+              <small class="red-text text-break">{{ s.lastError }}</small>
+            </li>
+          }
+        </ul>
+      }
+    } @else {
+      <div class="text-center py-4">
+        <i class="fas fa-spinner fa-spin fa-2x primary-text" aria-hidden="true"></i>
+      </div>
+    }
+  </div>
+  <div class="modal-footer justify-content-between">
+    <button type="button" class="btn btn-elegant" (click)="$activeModal.dismiss()">
+      {{ 'form.button_close' | translate }}
+    </button>
+    @if (status()?.enabled) {
+      <button type="button" class="btn btn-danger" [disabled]="busy()" (click)="disconnect()">
+        @if (busy()) {
+          <i class="fas fa-spinner fa-spin me-2" aria-hidden="true"></i>
+        }
+        {{ 'settings.direct_connection.disconnect' | translate }}
+      </button>
+    } @else {
+      <button type="button" class="btn btn-primary" [disabled]="!canConnect()" (click)="connect()">
+        @if (busy()) {
+          <i class="fas fa-spinner fa-spin me-2" aria-hidden="true"></i>
+        }
+        {{ 'settings.direct_connection.connect' | translate }}
+      </button>
+    }
+  </div>
+</div>
