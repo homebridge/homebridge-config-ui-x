@@ -1070,6 +1070,26 @@
             </li>
             <li
               class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-direct-connection')"
+              [attr.inert]="isItemHidden('setting-direct-connection') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
+                <span class="pe-2">
+                  {{ 'settings.direct_connection.title' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.direct_connection.row_desc' | translate }}</small>
+                </span>
+                <button
+                  type="button"
+                  class="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
+                  [attr.aria-label]="'settings.direct_connection.title' | translate"
+                  (click)="openDirectConnectionModal()"
+                >
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
+                </button>
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
               [class.setting-hidden]="isItemHidden('setting-ui-port-network')"
               [attr.inert]="isItemHidden('setting-ui-port-network') || null"
             >
