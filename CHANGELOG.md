@@ -12,6 +12,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### Other Changes
 
+- docs: bring the readme's install list in line with the wiki
+
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v5.4.0`
