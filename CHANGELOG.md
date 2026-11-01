@@ -2,10 +2,35 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.30.1 (Pending Release)
+
+### Highlights
+
+### UI Changes
+
+- fix(config-editor): stop flagging valid ui options as errors, and match the server's default theme
+
+### Other Changes
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v5.4.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
+- `@homebridge/plugin-ui-utils` @ `v2.2.7`
+
 ## v5.30.0 (2026-10-31)
 
 ### Highlights
 
+- 🖥️ Updating the UI or Node.js is now less likely to fail ([node-pty 0.15.0](https://github.com/homebridge/node-pty-prebuilt-multiarch/releases/tag/v0.15.0))
+- 🔐 Secrets stay hidden: the config preview masks common secrets by default, and generated plugin settings forms mask secret fields
+- 🧩 Better support for plugins published from a monorepo
+- 📜 Downloading the colored log no longer stalls on Node 24.22+ and 26.9+
+- 🔌 Child bridge and Matter ports are now picked so they don't clash with the external accessory range or with HAP ports
+- 🛠️ Installing on macOS and registering the Windows service now work when paths contain spaces
+- 💡 Accessory fixes: light controls no longer undo a dragged brightness, and saved names no longer collide between outlets on the same accessory
+- 🔒 Uploading an SSL certificate (key/cert or PFX) no longer hangs
+- ⬆️ Updated Homebridge libraries: hap-client 5.4.0 and plugin-ui-utils 2.2.7
 
 ### UI Changes
 

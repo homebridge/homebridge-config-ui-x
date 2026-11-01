@@ -939,7 +939,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           title: this.$translate.instant('settings.display.theme'),
                           description: 'The theme used for the UI.',
                           type: 'string',
-                          default: 'orange',
+                          default: 'deep-purple',
                           oneOf: [
                             {
                               title: this.$translate.instant('settings.display.orange'),
@@ -1327,6 +1327,31 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           title: this.$translate.instant('settings.network.mdns_advertise'),
                           type: 'boolean',
                           description: this.$translate.instant('settings.network.mdns_advertise_help'),
+                        },
+                        debug: {
+                          title: 'UI Debug Mode',
+                          type: 'boolean',
+                          description: 'Log extra debug messages from the Homebridge UI.',
+                        },
+                        restrictLogsToAdmins: {
+                          title: 'Restrict Logs To Admins',
+                          type: 'boolean',
+                          description: 'Only let administrator users see the Homebridge log.',
+                        },
+                        allowFrameAncestors: {
+                          title: 'Allow Frame Ancestors',
+                          description: 'Extra website addresses that are allowed to show the UI inside a frame.',
+                          oneOf: [
+                            {
+                              type: 'string',
+                            },
+                            {
+                              type: 'array',
+                              items: {
+                                type: 'string',
+                              },
+                            },
+                          ],
                         },
                         plugins: {
                           title: this.$translate.instant('menu.label_plugins'),
