@@ -1680,4 +1680,54 @@ describe('ConfigEditorComponent', () => {
       expect(console.error).toHaveBeenCalled()
     })
   })
+
+  /**
+   * The editor's schema for the UI's own `config` block refuses any key it does
+   * not list, so an option the server reads but the schema leaves out shows as
+   * an error in a config that is perfectly valid.
+   */
+  describe('the schema for the ui config block', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    function configBlockSchema(): Record<string, any> {
+      const setDiagnosticsOptions = vi.fn()
+      vi.stubGlobal('monaco', {
+        Uri: {
+          parse: (value: string) => ({
+            toString: () => value,
+          }),
+        },
+        languages: {
+          json: {
+            jsonDefaults: {
+              diagnosticsOptions: {
+                schemas: [],
+              },
+              setDiagnosticsOptions,
+            },
+          },
+        },
+      })
+      ;(component as any).setMonacoEditorModel()
+      const schema = setDiagnosticsOptions.mock.calls[0][0].schemas[0].schema
+      return schema.properties.platforms.items.anyOf.find((option: any) => option.properties?.platform?.const === 'config')
+    }
+
+    it.each([
+      'debug',
+      'restrictLogsToAdmins',
+      'allowFrameAncestors',
+    ])('accepts the %s option the server reads', (key) => {
+      const block = configBlockSchema()
+
+      expect(block.additionalProperties).toBe(false)
+      expect(block.properties).toHaveProperty(key)
+    })
+
+    it('gives the same default theme as the server', () => {
+      expect(configBlockSchema().properties.theme.default).toBe('deep-purple')
+    })
+  })
 })

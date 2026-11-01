@@ -9,9 +9,9 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### UI Changes
 
+- fix(config-editor): stop flagging valid ui options as errors, and match the server's default theme
 
 ### Other Changes
-
 
 
 ### Homebridge Dependencies
