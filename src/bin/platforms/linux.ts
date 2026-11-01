@@ -258,6 +258,12 @@ export class LinuxInstaller extends BasePlatform {
    * Update Node.js
    */
   public async updateNodejs(job: { target: string, rebuild: boolean }) {
+    if (process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') {
+      // The Synology package runs on Synology's own Node.js v22 package
+      this.hbService.logger.error('Cannot update Node.js here. On Synology DSM, Node.js comes from Synology\'s Node.js v22 package. Update it from Package Center.')
+      process.exit(1)
+    }
+
     if (this.isPackage()) {
       // Must not run as root in package mode
       this.checkIsNotRoot()
@@ -398,16 +404,7 @@ export class LinuxInstaller extends BasePlatform {
    */
   private async updateNodeFromTarball(job: { target: string, rebuild: boolean }, targetPath: string) {
     try {
-      if (process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') {
-        // Skip glibc version check on Synology DSM
-        // We know node > 18 requires glibc > 2.28, while DSM 7 only has 2.27 at the moment
-        if (gte(job.target, '18.0.0')) {
-          this.hbService.logger.error('Cannot update Node.js on your system. Synology DSM 7 does not currently support Node.js 18 or later.')
-          process.exit(1)
-        }
-      } else {
-        await this.glibcVersionCheck(job.target)
-      }
+      await this.glibcVersionCheck(job.target)
     } catch (e) {
       const os = await osInfo()
       if (os.distro === 'Alpine Linux') {
