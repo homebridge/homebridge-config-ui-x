@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - docs: bring the readme's install list in line with the wiki
+- fix(hb-service): keep update-node on node.js v22 on 32-bit systems
 
 ### Homebridge Dependencies
 
