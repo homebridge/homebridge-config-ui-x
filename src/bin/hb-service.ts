@@ -27,12 +27,13 @@ import axios from 'axios'
 import { program } from 'commander'
 import { mkdirp, pathExists, pathExistsSync, readJson, readJsonSync, remove, writeJson } from 'fs-extra/esm'
 import ora from 'ora'
-import { gt, gte, parse } from 'semver'
+import { gte } from 'semver'
 import { networkInterfaceDefault, networkInterfaces } from 'systeminformation'
 import { Tail } from 'tail'
 import { extract } from 'tar'
 import { check as tcpCheck } from 'tcp-port-used'
 
+import { pickNodeUpdate } from '../core/node-version.constants.js'
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
 import { Logger } from './logger.js'
 import { DarwinInstaller } from './platforms/darwin.js'
@@ -1248,9 +1249,6 @@ export class HomebridgeServiceHelper {
       return { update: false }
     }
 
-    // Filter out non-LTS versions and find the latest LTS version
-    const currentLts = versionList.filter(x => x.lts)[0]
-
     if (requestedVersion) {
       const wantedVersion = versionList.find(x => x.version.startsWith(`v${requestedVersion}`))
       if (wantedVersion) {
@@ -1270,22 +1268,13 @@ export class HomebridgeServiceHelper {
       }
     }
 
-    if (gt(currentLts.version, process.version)) {
-      this.logger.log(`Updating Node.js from ${process.version} to ${currentLts.version}...`)
+    // On a 32-bit system this stays on v22, as Node.js v24 and later are 64-bit only
+    const target = pickNodeUpdate(versionList, process.version)
+    if (target) {
+      this.logger.log(`Updating Node.js from ${process.version} to ${target.version}...`)
       return this.installer.updateNodejs({
-        target: currentLts.version,
-        rebuild: currentLts.modules !== process.versions.modules,
-      })
-    }
-
-    const currentMajor = parse(process.version).major
-    const latestVersion = versionList.filter(x => parse(x.version).major === currentMajor)[0]
-
-    if (gt(latestVersion.version, process.version)) {
-      this.logger.log(`Updating Node.js from ${process.version} to ${latestVersion.version}...`)
-      return this.installer.updateNodejs({
-        target: latestVersion.version,
-        rebuild: latestVersion.modules !== process.versions.modules,
+        target: target.version,
+        rebuild: target.modules !== process.versions.modules,
       })
     }
 
