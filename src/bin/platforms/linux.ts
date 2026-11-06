@@ -305,14 +305,9 @@ export class LinuxInstaller extends BasePlatform {
         ? this.getOwningDpkgPackage(process.execPath)
         : null
       if (owningPackage) {
-        if (this.is32BitArm()) {
-          // NodeSource has no 32-bit ARM packages, so the tarball is the only way to update here
-          this.hbService.logger.warn(`${process.execPath} belongs to the apt package "${owningPackage}". Updating from a tarball anyway, as there is no apt source for this architecture.`)
-        } else {
-          this.hbService.logger.error(`Cannot update Node.js here: ${process.execPath} belongs to the apt package "${owningPackage}".`)
-          this.hbService.logger.error('Update Node.js through apt instead, for example with "sudo apt-get update && sudo apt-get install --only-upgrade nodejs".')
-          process.exit(1)
-        }
+        this.hbService.logger.error(`Cannot update Node.js here: ${process.execPath} belongs to the apt package "${owningPackage}".`)
+        this.hbService.logger.error('Update Node.js through apt instead, for example with "sudo apt-get update && sudo apt-get install --only-upgrade nodejs".')
+        process.exit(1)
       }
 
       // Update from tarball
