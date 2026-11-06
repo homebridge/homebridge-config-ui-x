@@ -800,6 +800,72 @@ describe('the custom plugin ui', () => {
       })
     })
 
+    describe('the accessory room layout', () => {
+      it('gives the plugin only room names, the default flag and service ids', async () => {
+        await open({
+          arrange: () => api.respond('get', '/accessories/layout', [
+            {
+              name: 'Default Room',
+              isDefault: true,
+              services: [
+                {
+                  uniqueId: 'a1',
+                  aid: 1,
+                  iid: 8,
+                  name: 'Lamp',
+                  customName: 'My Lamp',
+                  hidden: true,
+                },
+              ],
+            },
+            {
+              name: 'Kitchen',
+              services: [
+                { uniqueId: 'b2', customName: 'Kettle', onDashboard: true },
+              ],
+            },
+          ]),
+        })
+        await ready()
+
+        await post({ action: 'accessoryLayout.get', requestId: 'r1' })
+
+        expect(lastReply()).toMatchObject({ requestId: 'r1', success: true })
+        expect(lastReply()?.data).toEqual([
+          {
+            name: 'Default Room',
+            isDefault: true,
+            services: [
+              { uniqueId: 'a1' },
+            ],
+          },
+          {
+            name: 'Kitchen',
+            services: [
+              { uniqueId: 'b2' },
+            ],
+          },
+        ])
+      })
+
+      it('answers with an error rather than leaving the request hanging', async () => {
+        await open({
+          arrange: () => api.fail('get', '/accessories/layout', {
+            error: { message: 'layout down' },
+          }),
+        })
+        await ready()
+
+        await post({ action: 'accessoryLayout.get', requestId: 'r1' })
+
+        expect(lastReply()).toMatchObject({
+          requestId: 'r1',
+          success: false,
+          data: { message: 'layout down' },
+        })
+      })
+    })
+
     describe('what the plugin can drive in the surrounding ui', () => {
       it.each([
         ['toast.success', 'success'],

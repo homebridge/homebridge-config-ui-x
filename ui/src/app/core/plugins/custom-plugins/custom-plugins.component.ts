@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 import { debounceTime, skip } from 'rxjs/operators'
 
+import { AccessoryLayout } from '@/app/core/accessories/accessories.interfaces'
 import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
@@ -332,6 +333,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         }
         case 'cachedAccessories.get': {
           void this.handleGetCachedAccessories(e)
+          break
+        }
+        case 'accessoryLayout.get': {
+          void this.handleGetAccessoryLayout(e)
           break
         }
         case 'cachedMatterAccessories.get': {
@@ -692,6 +697,26 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Failed to get cached Matter accessories:', error)
       this.$toastr.error(this.$translate.instant('toast.title_error'))
+    }
+  }
+
+  /**
+   * Handle the event to get the accessory room layout.
+   * Only room names, the default flag and service unique ids are passed on.
+   */
+  private async handleGetAccessoryLayout(event: MessageEvent): Promise<void> {
+    try {
+      const layout = await this.$api.get<AccessoryLayout>('/accessories/layout')
+      return this.requestResponse(event, (layout || []).map(room => ({
+        name: room.name,
+        ...(room.isDefault
+          ? { isDefault: true }
+          : {}),
+        services: (room.services || []).map(service => ({ uniqueId: service.uniqueId })),
+      })))
+    } catch (error) {
+      console.error('Failed to get accessory layout:', error)
+      return this.requestResponse(event, { message: (error as any)?.error?.message || (error as Error)?.message || 'Failed to get accessory layout' }, false)
     }
   }
 }
