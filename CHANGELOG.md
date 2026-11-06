@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - fix(config-editor): stop flagging valid ui options as errors, and match the server's default theme
+- feat(custom-plugins): expose the accessory room layout to custom plugin uis (#3109)
 
 ### Other Changes
 
