@@ -538,7 +538,8 @@ describe('SidebarComponent', () => {
       sidebar().toggleSidebar()
 
       const content = element.querySelector('.content') as HTMLElement
-      expect(content.style.opacity).toBe('20%')
+      // Set as '20%', which browsers (and jsdom since v31) read back as a number
+      expect(content.style.opacity).toBe('0.2')
       expect(content.style.pointerEvents).toBe('none')
     })
 
