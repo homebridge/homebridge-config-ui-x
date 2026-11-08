@@ -18,8 +18,7 @@
       @for (adapter of adaptersAvailable; track adapter) {
         <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
           <div>
-            <span class="font-monospace">{{ adapter.ip4 || adapter.ip6 }}</span
-            ><br />
+            <span class="font-monospace">{{ adapter.ip4 || adapter.ip6 }}</span><br />
             <span class="font-monospace grey-text">{{ adapter.iface }}</span>
           </div>
           <span>
