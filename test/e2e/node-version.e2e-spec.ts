@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { isNodeV24SupportedSystem, pickNodeUpdate } from '../../src/core/node-version.constants.js'
+import { isNodeMajorSupported, pickNodeUpdate } from '../../src/core/node-version.constants.js'
 
 /**
  * A plain `hb-service update-node` picks the newest LTS release. Node.js v24
@@ -43,9 +43,17 @@ describe('picking a node.js update', () => {
   })
 
   it('only applies the macos limit on macos', () => {
-    expect(isNodeV24SupportedSystem('x64', 'linux', '5.15.0')).toBe(true)
-    expect(isNodeV24SupportedSystem('x64', 'darwin', '22.5.0')).toBe(false)
-    expect(isNodeV24SupportedSystem('arm', 'linux', '6.1.0')).toBe(false)
+    expect(isNodeMajorSupported(24, 'x64', 'linux', '5.15.0')).toBe(true)
+    expect(isNodeMajorSupported(24, 'x64', 'darwin', '22.5.0')).toBe(false)
+    expect(isNodeMajorSupported(24, 'arm', 'linux', '6.1.0')).toBe(false)
+  })
+
+  it('applies the requirements from their major version onwards', () => {
+    expect(isNodeMajorSupported(22, 'x64', 'darwin', '21.6.0')).toBe(true)
+    expect(isNodeMajorSupported(22, 'arm', 'linux', '6.1.0')).toBe(true)
+    expect(isNodeMajorSupported(26, 'x64', 'darwin', '21.6.0')).toBe(false)
+    expect(isNodeMajorSupported(26, 'arm', 'linux', '6.1.0')).toBe(false)
+    expect(isNodeMajorSupported(26, 'arm64', 'darwin', '22.6.0')).toBe(true)
   })
 
   it('updates within the current major when it is newer than the lts', () => {

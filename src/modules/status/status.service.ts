@@ -31,7 +31,7 @@ import {
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
-import { isNodeV24SupportedSystem } from '../../core/node-version.constants.js'
+import { isNodeMajorSupported } from '../../core/node-version.constants.js'
 import { RE_BETA_DATE, RE_STABLE_DATE, RE_TEST_DATE, RE_TRAILING_DATE } from '../../core/regex.constants.js'
 import { DockerRelease, DockerReleaseInfo } from '../platform-tools/docker/docker.interfaces.js'
 import { PluginsService } from '../plugins/plugins.service.js'
@@ -622,7 +622,7 @@ export class StatusService {
       return cachedResult
     }
 
-    const isNodeJs24Supported = isNodeV24SupportedSystem()
+    const isNodeJs24Supported = isNodeMajorSupported(24)
 
     try {
       const versionList = (await firstValueFrom(this.httpService.get('https://nodejs.org/dist/index.json'))).data
@@ -698,7 +698,7 @@ export class StatusService {
         case 'v26': {
           // Currently using v26 (only possible on 64-bit architectures)
           // Check if there is a new minor/patch version available, unless the OS is too old for v26
-          if (isNodeJs24Supported && gt(latest26.version, process.version)) {
+          if (isNodeMajorSupported(26) && gt(latest26.version, process.version)) {
             updateAvailable = true
             latestVersion = latest26.version
           }

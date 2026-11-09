@@ -21,6 +21,16 @@ export function isNodeV24SupportedArchitecture(arch: string = process.arch): boo
 }
 
 /**
+ * What a system needs to run Node.js, from a major version onwards. Platforms with
+ * no entry in minOsRelease are not limited by their OS version.
+ */
+export interface NodeRequirement {
+  fromMajor: number
+  architectures: readonly string[]
+  minOsRelease: Partial<Record<string, string>>
+}
+
+/**
  * NodeJS Version - Minimum macOS Version (Darwin release, which is what os.release() returns)
  *
  *      22            11.0    (20.1.0)
@@ -36,31 +46,29 @@ export function isNodeV24SupportedArchitecture(arch: string = process.arch): boo
  * which also stops hb-service, so it cannot undo the update. v24.22.0 does start
  * there, but it is blocked too, because any later v24 could fail in the same way.
  */
-export const NODE_V24_MIN_OS_RELEASE: Partial<Record<string, string>> = {
-  darwin: '22.6.0',
-}
+export const NODE_REQUIREMENTS: NodeRequirement[] = [
+  {
+    fromMajor: 24,
+    architectures: NODE_V24_SUPPORTED_ARCHITECTURES,
+    minOsRelease: { darwin: '22.6.0' },
+  },
+]
 
 /**
- * Check if this operating system version supports Node.js v24. Platforms with no
- * minimum listed in NODE_V24_MIN_OS_RELEASE are not limited by their OS version.
+ * Check if this system can run a major version of Node.js, by architecture and OS version
  */
-export function isNodeV24SupportedOsRelease(
-  platform: string = process.platform,
-  osRelease: string = release(),
-): boolean {
-  const minimum = NODE_V24_MIN_OS_RELEASE[platform]
-  return !minimum || gte(osRelease, minimum)
-}
-
-/**
- * Check if this system can run Node.js v24, by architecture and OS version
- */
-export function isNodeV24SupportedSystem(
+export function isNodeMajorSupported(
+  major: number,
   arch: string = process.arch,
   platform: string = process.platform,
   osRelease: string = release(),
 ): boolean {
-  return isNodeV24SupportedArchitecture(arch) && isNodeV24SupportedOsRelease(platform, osRelease)
+  return NODE_REQUIREMENTS
+    .filter(requirement => major >= requirement.fromMajor)
+    .every((requirement) => {
+      const minOsRelease = requirement.minOsRelease[platform]
+      return requirement.architectures.includes(arch) && (!minOsRelease || gte(osRelease, minOsRelease))
+    })
 }
 
 /**
@@ -88,9 +96,7 @@ export function pickNodeUpdate<T extends NodeReleaseEntry>(
   platform: string = process.platform,
   osRelease: string = release(),
 ): T | undefined {
-  const installable = isNodeV24SupportedSystem(arch, platform, osRelease)
-    ? versionList
-    : versionList.filter(x => parse(x.version)?.major < 24)
+  const installable = versionList.filter(x => isNodeMajorSupported(parse(x.version)?.major, arch, platform, osRelease))
 
   const latestLts = installable.find(x => x.lts)
   if (latestLts && gt(latestLts.version, currentVersion)) {
