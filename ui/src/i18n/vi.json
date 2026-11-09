@@ -881,7 +881,7 @@
   "status.widget.info.no": "Không",
   "status.widget.info.node_major": "Các phiên bản Node.js chính",
   "status.widget.info.node_next_no": "Kiến trúc hiện tại của bạn ({{ architecture }}) là 32-bit, không được hỗ trợ. Bạn cần chuyển sang hệ thống 64-bit. Vui lòng sử dụng Node.js v22, phiên bản sẽ được hỗ trợ đến tháng 4 năm 2027.",
-  "status.widget.info.node_next_no_macos": "Phiên bản macOS của bạn quá cũ cho Node.js v24, cần macOS 13.5 trở lên. Vui lòng sử dụng Node.js v22, phiên bản sẽ được hỗ trợ đến tháng 4 năm 2027.",
+  "status.widget.info.node_next_no_os": "Phiên bản hệ điều hành của bạn quá cũ cho Node.js v24. Vui lòng sử dụng Node.js v22, phiên bản sẽ được hỗ trợ đến tháng 4 năm 2027.",
   "status.widget.info.node_next_yes": "Kiến trúc hiện tại của bạn ({{ architecture }}) hỗ trợ Node.js v24, bạn có thể nâng cấp khi sẵn sàng.",
   "status.widget.info.node_unsupp": "Không được hỗ trợ",
   "status.widget.info.node_unsupp_message": "Bạn đang sử dụng phiên bản Node.js không được Homebridge hỗ trợ chính thức. Nên cân nhắc chuyển sang phiên bản được hỗ trợ.",

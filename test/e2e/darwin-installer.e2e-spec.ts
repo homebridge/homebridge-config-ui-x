@@ -89,12 +89,12 @@ describe('DarwinInstaller npm paths', () => {
 
     it.each(['v24.22.2', 'v26.13.0'])('refuses %s', async (target) => {
       await expect(installer.updateNodejs({ target, rebuild: false })).rejects.toThrow('exit')
-      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('macOS 13.5 or later is required'))
+      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('too old for Node.js v24'))
     })
 
     it('does not refuse v22', async () => {
       await expect(installer.updateNodejs({ target: 'v22.23.4', rebuild: false })).rejects.toThrow()
-      expect(logger.error).not.toHaveBeenCalledWith(expect.stringContaining('macOS 13.5 or later is required'))
+      expect(logger.error).not.toHaveBeenCalledWith(expect.stringContaining('too old for Node.js v24'))
     })
   })
 

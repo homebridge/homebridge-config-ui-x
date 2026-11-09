@@ -688,7 +688,7 @@ export class StatusService {
         }
         case 'v24': {
           // Currently using v24 (only possible on 64-bit architectures)
-          // Check if there is a new minor/patch version available, unless macOS is too old for v24
+          // Check if there is a new minor/patch version available, unless the OS is too old for v24
           if (isNodeJs24Supported && gt(latest24.version, process.version)) {
             updateAvailable = true
             latestVersion = latest24.version
@@ -697,7 +697,7 @@ export class StatusService {
         }
         case 'v26': {
           // Currently using v26 (only possible on 64-bit architectures)
-          // Check if there is a new minor/patch version available, unless macOS is too old for v26
+          // Check if there is a new minor/patch version available, unless the OS is too old for v26
           if (isNodeJs24Supported && gt(latest26.version, process.version)) {
             updateAvailable = true
             latestVersion = latest26.version

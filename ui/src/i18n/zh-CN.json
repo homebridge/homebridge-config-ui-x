@@ -881,7 +881,7 @@
   "status.widget.info.no": "否",
   "status.widget.info.node_major": "Node.js 主版本",
   "status.widget.info.node_next_no": "您当前的架构（{{ architecture }})为 32 位，不受支持。您需要迁移到 64 位系统。请改用我们将支持至 2027 年 4 月的 Node.js v22。",
-  "status.widget.info.node_next_no_macos": "您的 macOS 版本对于 Node.js v24 来说太旧了，需要 macOS 13.5 或更高版本。请改用我们将支持至 2027 年 4 月的 Node.js v22。",
+  "status.widget.info.node_next_no_os": "您的操作系统版本对于 Node.js v24 来说太旧了。请改用我们将支持至 2027 年 4 月的 Node.js v22。",
   "status.widget.info.node_next_yes": "您当前的架构（{{ architecture }})支持 Node.js v24，您可以在准备好时升级。",
   "status.widget.info.node_unsupp": "不受支持",
   "status.widget.info.node_unsupp_message": "您正在运行的 Node.js 版本未被 Homebridge 官方支持。建议更换为受支持的版本。",

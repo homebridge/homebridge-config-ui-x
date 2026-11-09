@@ -1268,7 +1268,7 @@ export class HomebridgeServiceHelper {
       }
     }
 
-    // On a 32-bit system or older macOS this stays below v24, which those cannot run
+    // A system that cannot run v24 or later stays below v24
     const target = pickNodeUpdate(versionList, process.version)
     if (target) {
       this.logger.log(`Updating Node.js from ${process.version} to ${target.version}...`)

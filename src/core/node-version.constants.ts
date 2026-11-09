@@ -36,24 +36,31 @@ export function isNodeV24SupportedArchitecture(arch: string = process.arch): boo
  * which also stops hb-service, so it cannot undo the update. v24.22.0 does start
  * there, but it is blocked too, because any later v24 could fail in the same way.
  */
-export const NODE_V24_MIN_DARWIN_RELEASE = '22.6.0'
-
-/**
- * Check if this version of macOS supports Node.js v24, given its Darwin release
- */
-export function isNodeV24SupportedMacOS(osRelease: string = release()): boolean {
-  return gte(osRelease, NODE_V24_MIN_DARWIN_RELEASE)
+export const NODE_V24_MIN_OS_RELEASE: Partial<Record<string, string>> = {
+  darwin: '22.6.0',
 }
 
 /**
- * Check if this system can run Node.js v24, by architecture and, on macOS, by OS version
+ * Check if this operating system version supports Node.js v24. Platforms with no
+ * minimum listed in NODE_V24_MIN_OS_RELEASE are not limited by their OS version.
+ */
+export function isNodeV24SupportedOsRelease(
+  platform: string = process.platform,
+  osRelease: string = release(),
+): boolean {
+  const minimum = NODE_V24_MIN_OS_RELEASE[platform]
+  return !minimum || gte(osRelease, minimum)
+}
+
+/**
+ * Check if this system can run Node.js v24, by architecture and OS version
  */
 export function isNodeV24SupportedSystem(
   arch: string = process.arch,
   platform: string = process.platform,
   osRelease: string = release(),
 ): boolean {
-  return isNodeV24SupportedArchitecture(arch) && (platform !== 'darwin' || isNodeV24SupportedMacOS(osRelease))
+  return isNodeV24SupportedArchitecture(arch) && isNodeV24SupportedOsRelease(platform, osRelease)
 }
 
 /**
@@ -70,10 +77,9 @@ export interface NodeReleaseEntry {
  * the newest release of the major version already installed.
  *
  * Only releases this system can run are considered. Node.js v24 and later only
- * ship 64-bit builds and need macOS 13.5, so on a 32-bit system or older macOS
- * the newest LTS is one it cannot run. On 32-bit, picking it made the update fail
- * instead of moving to the newest v22. On older macOS, it installed and left
- * node unable to start.
+ * ship 64-bit builds and need a minimum OS version, so on other systems the newest
+ * LTS is one they cannot run. Picking it could fail the update, or install a
+ * release that leaves node unable to start, instead of moving to the newest v22.
  */
 export function pickNodeUpdate<T extends NodeReleaseEntry>(
   versionList: T[],

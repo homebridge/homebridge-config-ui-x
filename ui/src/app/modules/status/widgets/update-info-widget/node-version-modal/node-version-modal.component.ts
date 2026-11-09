@@ -44,9 +44,9 @@ export class NodeVersionModalComponent implements OnInit {
   public homebridgePkg = this.modalData.homebridgePkg
   public architecture = this.modalData.architecture
   public supportsNodeJs24 = this.modalData.supportsNodeJs24
-  // A 64-bit system that cannot run Node.js v24 is on a macOS that is too old for it
-  public node24UnsupportedKey = ['x64', 'arm64'].includes(this.modalData.architecture)
-    ? 'status.widget.info.node_next_no_macos'
+  // A 64-bit system that cannot run Node.js v24 has an operating system that is too old for it
+  public node24UnsupportedKey = ['x64', 'arm64', 'ppc64', 's390x'].includes(this.modalData.architecture)
+    ? 'status.widget.info.node_next_no_os'
     : 'status.widget.info.node_next_no'
 
   public onUpdate = this.modalData.onUpdate
