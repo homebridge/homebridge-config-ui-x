@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(deps): dependency updates
 - ci: retry the release bundle install for longer, and fail clearly if npm never has it
 - fix(hb-service): detect nodesource's deb822 repo file in update-node, and don't unpack a tarball over an apt-owned node.js (#3105)
+- fix(hb-service): refresh the deb822 keyring, and restore the repo files if update-node fails (#3110)
 
 ### Homebridge Dependencies
 
