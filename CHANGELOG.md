@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - docs: bring the readme's install list in line with the wiki
 - fix(hb-service): keep update-node on node.js v22 on 32-bit systems
 - fix(hb-service): on synology, point update-node to package center
+- ci: retry the release bundle install for longer, and fail clearly if npm never has it
 
 ### Homebridge Dependencies
 
