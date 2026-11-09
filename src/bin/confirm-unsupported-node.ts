@@ -9,7 +9,7 @@ import { createInterface } from 'node:readline/promises'
  * update stays on the working version.
  */
 export async function confirmUnsupportedNode(version: string, logger: Pick<Logger, 'warn' | 'error'>): Promise<boolean> {
-  logger.warn(`Node.js ${version} is not supported on this system. Installing it can leave Node.js and hb-service unable to start.`)
+  logger.warn(`Node.js ${version} is not supported on this system. Installing it can leave Node.js and Homebridge unable to start.`)
 
   let confirmed = false
   if (process.stdin.isTTY) {
