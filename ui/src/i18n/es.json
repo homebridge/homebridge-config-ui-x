@@ -881,6 +881,7 @@
   "status.widget.info.no": "No",
   "status.widget.info.node_major": "Versiones mayores de Node.js",
   "status.widget.info.node_next_no": "Tu arquitectura actual ({{ architecture }}) es de 32 bits, lo cual no es compatible. Deberás migrar a un sistema de 64 bits. Usa Node.js v22 en su lugar, que seguiremos soportando hasta abril de 2027.",
+  "status.widget.info.node_next_no_macos": "Tu versión de macOS es demasiado antigua para Node.js v24, que necesita macOS 13.5 o posterior. Usa Node.js v22 en su lugar, que seguiremos soportando hasta abril de 2027.",
   "status.widget.info.node_next_yes": "Tu arquitectura actual ({{ architecture }}) es compatible con Node.js v24, por lo que puedes actualizar cuando estés listo.",
   "status.widget.info.node_unsupp": "No Soportado",
   "status.widget.info.node_unsupp_message": "¡Atención! Estás utilizando una versión de Node.js que no es oficialmente compatible con Homebridge. Te recomendamos cambiar a una versión compatible para garantizar un funcionamiento óptimo.",

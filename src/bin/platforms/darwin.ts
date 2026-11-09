@@ -8,6 +8,7 @@ import process from 'node:process'
 import { pathExists, remove } from 'fs-extra/esm'
 import { gte, lt } from 'semver'
 
+import { isNodeV24SupportedMacOS } from '../../core/node-version.constants.js'
 import { RE_OS_USERNAME } from '../../core/regex.constants.js'
 import { BasePlatform } from '../base-platform.js'
 
@@ -259,6 +260,14 @@ export class DarwinInstaller extends BasePlatform {
     // Node.js 18+ requires macOS 10.15 or later, which starts with Darwin 19.0.0
     if (lt(release(), '19.0.0') && gte(job.target, '18.0.0')) {
       this.hbService.logger.error('macOS Catalina 10.15 or later is required to install Node.js v18 or later')
+      process.exit(1)
+    }
+
+    // Node.js 24+ requires macOS 13.5 or later, which starts with Darwin 22.6.0
+    // See the table of minimum macOS versions by NODE_V24_MIN_DARWIN_RELEASE, in node-version.constants.ts
+    // Installing it anyway can leave node unable to start, so hb-service could not undo it
+    if (!isNodeV24SupportedMacOS() && gte(job.target, '24.0.0')) {
+      this.hbService.logger.error('macOS 13.5 or later is required to install Node.js v24 or later. Use `hb-service update-node 22` instead.')
       process.exit(1)
     }
 

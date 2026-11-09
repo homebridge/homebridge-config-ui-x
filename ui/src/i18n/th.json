@@ -881,6 +881,7 @@
   "status.widget.info.no": "ไม่",
   "status.widget.info.node_major": "เวอร์ชันหลักของ Node.js",
   "status.widget.info.node_next_no": "สถาปัตยกรรมปัจจุบันของคุณ ({{ architecture }}) เป็นแบบ 32 บิต ซึ่งไม่รองรับ คุณจะต้องย้ายระบบไปใช้ 64 บิต โปรดใช้ Node.js v22 แทน ซึ่งเราจะรองรับจนถึงเดือนเมษายน 2027",
+  "status.widget.info.node_next_no_macos": "เวอร์ชัน macOS ของคุณเก่าเกินไปสำหรับ Node.js v24 ซึ่งต้องการ macOS 13.5 หรือใหม่กว่า โปรดใช้ Node.js v22 แทน ซึ่งเราจะรองรับจนถึงเดือนเมษายน 2027",
   "status.widget.info.node_next_yes": "สถาปัตยกรรมปัจจุบันของคุณ ({{ architecture }}) รองรับ Node.js v24 ดังนั้นคุณสามารถอัปเกรดได้เมื่อคุณพร้อม",
   "status.widget.info.node_unsupp": "ไม่ได้รับการสนับสนุน",
   "status.widget.info.node_unsupp_message": "คุณกำลังใช้งาน Node.js เวอร์ชันที่ Homebridge ไม่รองรับอย่างเป็นทางการ คุณควรพิจารณาเปลี่ยนเป็นเวอร์ชันที่รองรับ",

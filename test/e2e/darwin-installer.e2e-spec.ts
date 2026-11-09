@@ -3,7 +3,7 @@ import type { HomebridgeServiceHelper } from '../../src/bin/hb-service.js'
 
 import { Buffer } from 'node:buffer'
 import { execFileSync } from 'node:child_process'
-import { userInfo } from 'node:os'
+import { release, userInfo } from 'node:os'
 import process from 'node:process'
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -32,6 +32,7 @@ vi.mock('node:os', async (importOriginal) => {
   const actual = await importOriginal<typeof import('node:os')>()
   return {
     ...actual,
+    release: vi.fn(actual.release),
     userInfo: vi.fn(() => ({ uid: 502, gid: 21 })),
   }
 })
@@ -75,6 +76,26 @@ describe('DarwinInstaller npm paths', () => {
   afterEach(() => {
     vi.restoreAllMocks()
     vi.unstubAllEnvs()
+  })
+
+  describe('updating node.js on macos older than 13.5', () => {
+    beforeEach(() => {
+      // Darwin 21.6.0 is macOS 12.7
+      vi.mocked(release).mockReturnValue('21.6.0')
+      vi.spyOn(process, 'exit').mockImplementation(() => {
+        throw new Error('exit')
+      })
+    })
+
+    it.each(['v24.22.2', 'v26.13.0'])('refuses %s', async (target) => {
+      await expect(installer.updateNodejs({ target, rebuild: false })).rejects.toThrow('exit')
+      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('macOS 13.5 or later is required'))
+    })
+
+    it('does not refuse v22', async () => {
+      await expect(installer.updateNodejs({ target: 'v22.23.4', rebuild: false })).rejects.toThrow()
+      expect(logger.error).not.toHaveBeenCalledWith(expect.stringContaining('macOS 13.5 or later is required'))
+    })
   })
 
   it('checks both space-containing paths using the selected uid and gid', async () => {

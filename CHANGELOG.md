@@ -11,11 +11,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config-editor): stop flagging valid ui options as errors, and match the server's default theme
 - feat(custom-plugins): expose the accessory room layout to custom plugin uis (#3109)
 - fix(logs): stop the log and terminal text being cut off at the right edge in safari (#3089)
+- fix(status): stop offering node.js v24 or later on macOS older than 13.5, and explain why (#3112)
 
 ### Other Changes
 
 - docs: bring the readme's install list in line with the wiki
 - fix(hb-service): keep update-node on node.js v22 on 32-bit systems
+- fix(hb-service): keep update-node below node.js v24 on macOS older than 13.5 (#3112)
 - fix(hb-service): on synology, point update-node to package center
 - chore(deps): dependency updates
 - ci: retry the release bundle install for longer, and fail clearly if npm never has it
@@ -25,7 +27,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - `@homebridge/hap-client` @ `v5.4.0`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
-- `@homebridge/plugin-ui-utils` @ `v2.2.8-beta`
+- `@homebridge/plugin-ui-utils` @ `v2.2.8-beta.1`
 
 ## v5.30.0 (2026-10-31)
 
