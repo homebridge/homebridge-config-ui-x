@@ -1,17 +1,25 @@
-import { execSync } from 'node:child_process'
+import { execFileSync, execSync } from 'node:child_process'
 import { constants, existsSync, readFileSync, statSync, unlinkSync } from 'node:fs'
-import { chmod, readdir, rm, writeFile } from 'node:fs/promises'
+import { chmod, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { userInfo } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 
-import { mkdirp, pathExists, readJson, remove } from 'fs-extra/esm'
+import { copy, mkdirp, pathExists, readJson, remove } from 'fs-extra/esm'
 import { gte, parse } from 'semver'
 import { osInfo } from 'systeminformation'
 
 import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants.js'
 import { RE_OS_USERNAME } from '../../core/regex.constants.js'
 import { BasePlatform } from '../base-platform.js'
+import { getSignedByKeyring, parseDpkgOwner, setNodesourceMajorVersion } from './nodesource.js'
+
+// NodeSource's apt repo, in either the old one-line format or the deb822 format
+// that its current setup script writes (it deletes the old .list file).
+const NODESOURCE_LIST = '/etc/apt/sources.list.d/nodesource.list'
+const NODESOURCE_SOURCES = '/etc/apt/sources.list.d/nodesource.sources'
+const NODESOURCE_OLD_KEYRING = '/usr/share/keyrings/nodesource.gpg'
+const NODESOURCE_CURRENT_KEYRING = '/etc/apt/keyrings/nodes'
 
 export class LinuxInstaller extends BasePlatform {
   private get systemdServiceName() {
@@ -288,10 +296,23 @@ export class LinuxInstaller extends BasePlatform {
       process.exit(1)
     }
 
-    if (targetPath === '/usr' && await pathExists('/etc/apt/sources.list.d/nodesource.list') && !this.is32BitArm()) {
+    const hasNodesource = targetPath === '/usr' && (await pathExists(NODESOURCE_LIST) || await pathExists(NODESOURCE_SOURCES))
+    if (hasNodesource && !this.is32BitArm()) {
       // Update from nodesource (not supported on 32-bit ARM architectures)
       await this.updateNodeFromNodesource(job)
     } else {
+      // Unpacking a tarball over files an apt package owns leaves dpkg out of step,
+      // and the next apt upgrade silently puts the packaged version back
+      const owningPackage = targetPath === '/usr'
+        ? this.getOwningDpkgPackage(process.execPath)
+        : null
+      if (owningPackage) {
+        this.hbService.logger.error(`Cannot update Node.js here: ${process.execPath} belongs to the apt package "${owningPackage}".`)
+        this.hbService.logger.error(`To update within what your apt repositories offer, run "sudo apt-get update && sudo apt-get install --only-upgrade ${owningPackage}".`)
+        this.hbService.logger.error(`If they do not offer Node.js ${job.target}, this system cannot be moved to it with hb-service.`)
+        process.exit(1)
+      }
+
       // Update from tarball
       await this.updateNodeFromTarball(job, targetPath)
     }
@@ -380,8 +401,8 @@ export class LinuxInstaller extends BasePlatform {
 
   /**
    * Returns true when running on a 32-bit ARM system.
-   * NodeSource does not carry packages for 32-bit ARM architectures, so the tarball
-   * method must be used instead.
+   * NodeSource does not carry packages for 32-bit ARM architectures, so its repo
+   * cannot be used to update Node.js there.
    */
   private is32BitArm(): boolean {
     try {
@@ -397,6 +418,20 @@ export class LinuxInstaller extends BasePlatform {
       // If we can't determine, assume it's not 32-bit ARM
     }
     return false
+  }
+
+  /**
+   * Returns the name of the dpkg package that owns the given file, or null if none
+   * does (or dpkg is not available).
+   */
+  private getOwningDpkgPackage(filePath: string): string | null {
+    try {
+      return parseDpkgOwner(execFileSync('dpkg-query', ['-S', filePath], {
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).toString())
+    } catch (e) {
+      return null
+    }
   }
 
   /**
@@ -476,6 +511,9 @@ export class LinuxInstaller extends BasePlatform {
   private async updateNodeFromNodesource(job: { target: string, rebuild: boolean }) {
     this.hbService.logger.log('Updating from NodeSource...')
 
+    // Original contents of the repo files we change, restored if the update fails
+    const repoFileBackups = new Map<string, string>()
+
     try {
       await this.glibcVersionCheck(job.target)
       const majorVersion = parse(job.target).major
@@ -485,23 +523,47 @@ export class LinuxInstaller extends BasePlatform {
       })
 
       // Update certificates
-      execSync('mkdir -p /etc/apt/keyrings', {
+      execSync(`mkdir -p ${dirname(NODESOURCE_CURRENT_KEYRING)}`, {
         stdio: 'inherit',
       })
 
-      execSync('curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor --yes -o /etc/apt/keyrings/nodes', {
+      execSync(`curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor --yes -o ${NODESOURCE_CURRENT_KEYRING}`, {
         stdio: 'inherit',
       })
 
-      // Clean up old nodesource keyring
-      if (await pathExists('/usr/share/keyrings/nodesource.gpg')) {
-        execSync('rm -f /usr/share/keyrings/nodesource.gpg', {
-          stdio: 'inherit',
-        })
+      let sourcesFile = ''
+      if (await pathExists(NODESOURCE_SOURCES)) {
+        // deb822 format: change only the version in the URI
+        const originalSources = await readFile(NODESOURCE_SOURCES, 'utf8')
+        const updatedSources = setNodesourceMajorVersion(originalSources, majorVersion)
+        if (updatedSources === null) {
+          throw new Error(`Could not find the Node.js version in ${NODESOURCE_SOURCES}.`)
+        }
+
+        // Its Signed-By keyring is kept, so that is the one that needs the current key
+        const keyring = getSignedByKeyring(originalSources)
+        if (keyring && keyring !== NODESOURCE_CURRENT_KEYRING) {
+          await copy(NODESOURCE_CURRENT_KEYRING, keyring)
+          await chmod(keyring, 0o644)
+        }
+
+        repoFileBackups.set(NODESOURCE_SOURCES, originalSources)
+        await writeFile(NODESOURCE_SOURCES, updatedSources)
+        sourcesFile = updatedSources
       }
 
-      // Update repo
-      execSync(`echo "deb [signed-by=/etc/apt/keyrings/nodes] https://deb.nodesource.com/node_${majorVersion}.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list`, {
+      if (await pathExists(NODESOURCE_LIST)) {
+        repoFileBackups.set(NODESOURCE_LIST, await readFile(NODESOURCE_LIST, 'utf8'))
+        if (sourcesFile) {
+          // apt refuses two entries for one repo that name different keyrings
+          await remove(NODESOURCE_LIST)
+        } else {
+          await writeFile(NODESOURCE_LIST, `deb [signed-by=${NODESOURCE_CURRENT_KEYRING}] https://deb.nodesource.com/node_${majorVersion}.x nodistro main\n`)
+        }
+      }
+
+      // Confirm the repo works for this version before touching the installed package
+      execSync('apt-get update', {
         stdio: 'inherit',
       })
 
@@ -513,12 +575,32 @@ export class LinuxInstaller extends BasePlatform {
       }
 
       // Update node.js
-      execSync('apt-get update && apt-get install -y nodejs', {
+      execSync('apt-get install -y nodejs', {
         stdio: 'inherit',
       })
+
+      // Clean up old nodesource keyring, unless the deb822 repo file still uses it
+      if (await pathExists(NODESOURCE_OLD_KEYRING) && !sourcesFile.includes(NODESOURCE_OLD_KEYRING)) {
+        await remove(NODESOURCE_OLD_KEYRING)
+      }
     } catch (e) {
       this.hbService.logger.error(`Failed to update Node.js: ${e.message}`)
+      await this.restoreRepoFiles(repoFileBackups)
       process.exit(1)
+    }
+  }
+
+  /**
+   * Puts repo files back after a failed update, so apt isn't left pointing at a
+   * version it cannot fetch
+   */
+  private async restoreRepoFiles(backups: Map<string, string>) {
+    for (const [path, contents] of backups) {
+      try {
+        await writeFile(path, contents)
+      } catch (e) {
+        this.hbService.logger.error(`Failed to restore ${path}: ${e.message}`)
+      }
     }
   }
 
