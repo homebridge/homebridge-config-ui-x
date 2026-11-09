@@ -27,14 +27,15 @@ import axios from 'axios'
 import { program } from 'commander'
 import { mkdirp, pathExists, pathExistsSync, readJson, readJsonSync, remove, writeJson } from 'fs-extra/esm'
 import ora from 'ora'
-import { gte } from 'semver'
+import { gte, parse } from 'semver'
 import { networkInterfaceDefault, networkInterfaces } from 'systeminformation'
 import { Tail } from 'tail'
 import { extract } from 'tar'
 import { check as tcpCheck } from 'tcp-port-used'
 
-import { pickNodeUpdate } from '../core/node-version.constants.js'
+import { isNodeMajorSupported, pickNodeUpdate } from '../core/node-version.constants.js'
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
+import { confirmUnsupportedNode } from './confirm-unsupported-node.js'
 import { Logger } from './logger.js'
 import { DarwinInstaller } from './platforms/darwin.js'
 import { FreeBSDInstaller } from './platforms/freebsd.js'
@@ -1255,6 +1256,9 @@ export class HomebridgeServiceHelper {
         // Check the requested version is greater than v22.12.0
         if (!gte(wantedVersion.version, '22.12.0')) {
           this.logger.error('Refusing to install Node.js version lower than v22.12.0.')
+          return { update: false }
+        }
+        if (!isNodeMajorSupported(parse(wantedVersion.version)?.major) && !await confirmUnsupportedNode(wantedVersion.version, this.logger)) {
           return { update: false }
         }
         this.logger.log(`Installing Node.js ${wantedVersion.version} over ${process.version}...`)

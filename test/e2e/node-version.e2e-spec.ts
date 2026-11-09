@@ -48,6 +48,11 @@ describe('picking a node.js update', () => {
     expect(isNodeMajorSupported(24, 'arm', 'linux', '6.1.0')).toBe(false)
   })
 
+  it('counts anything it cannot work out as unsupported', () => {
+    expect(isNodeMajorSupported(undefined, 'x64', 'linux', '5.15.0')).toBe(false)
+    expect(isNodeMajorSupported(24, 'x64', 'darwin', 'unknown')).toBe(false)
+  })
+
   it('applies the requirements from their major version onwards', () => {
     expect(isNodeMajorSupported(22, 'x64', 'darwin', '21.6.0')).toBe(true)
     expect(isNodeMajorSupported(22, 'arm', 'linux', '6.1.0')).toBe(true)

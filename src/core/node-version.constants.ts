@@ -1,7 +1,7 @@
 import { release } from 'node:os'
 import process from 'node:process'
 
-import { gt, gte, parse } from 'semver'
+import { gt, gte, parse, valid } from 'semver'
 
 /**
  * Node.js version and architecture compatibility constants
@@ -55,7 +55,8 @@ export const NODE_REQUIREMENTS: NodeRequirement[] = [
 ]
 
 /**
- * Check if this system can run a major version of Node.js, by architecture and OS version
+ * Check if this system can run a major version of Node.js, by architecture and OS version.
+ * Anything that cannot be worked out counts as unsupported, so the system stays on a working version.
  */
 export function isNodeMajorSupported(
   major: number,
@@ -63,11 +64,15 @@ export function isNodeMajorSupported(
   platform: string = process.platform,
   osRelease: string = release(),
 ): boolean {
+  if (!Number.isInteger(major)) {
+    return false
+  }
+
   return NODE_REQUIREMENTS
     .filter(requirement => major >= requirement.fromMajor)
     .every((requirement) => {
       const minOsRelease = requirement.minOsRelease[platform]
-      return requirement.architectures.includes(arch) && (!minOsRelease || gte(osRelease, minOsRelease))
+      return requirement.architectures.includes(arch) && (!minOsRelease || (valid(osRelease) && gte(osRelease, minOsRelease)))
     })
 }
 
