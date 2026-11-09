@@ -254,19 +254,27 @@ jobs:
           node-version: 24.x
 
       - name: Install package v${{ needs.publish.outputs.npm_version }}
+        env:
+          PACKAGE: homebridge-config-ui-x@${{ needs.publish.outputs.npm_version }}
         run: |
+          set -o pipefail
           export npm_config_prefix=$(pwd)/package
-          for i in {1..10}; do
-            npm install -g --omit=dev homebridge-config-ui-x@${{ needs.publish.outputs.npm_version }} && break || {
-              if [ $? -eq 1 ] && grep -q 'ETARGET' <<< "$(npm install -g --omit=dev homebridge-config-ui-x@${{ needs.publish.outputs.npm_version }} 2>&1)"; then
-                echo "Attempt $i failed with ETARGET error. Retrying in 1 minute..."
-                sleep 60
-              else
-                echo "Attempt $i failed with a different error. Exiting..."
-                exit 1
-              fi
-            }
+          # npm can take several minutes to make a just-published version installable,
+          # and answers ETARGET until then - so keep trying, but stop on any other error
+          for i in {1..20}; do
+            if npm install -g --omit=dev "$PACKAGE" 2>&1 | tee npm-install.log; then
+              exit 0
+            fi
+            if ! grep -q 'ETARGET' npm-install.log; then
+              echo "::error::Installing $PACKAGE failed with an error other than ETARGET (attempt $i)"
+              exit 1
+            fi
+            echo "Attempt $i: npm does not show $PACKAGE yet (ETARGET), trying again in 1 minute..."
+            sleep 60
           done
+          # Without this the next steps bundle an empty folder and fail as "under 10MB"
+          echo "::error::npm still did not show $PACKAGE after 20 attempts, so there is nothing to bundle"
+          exit 1
 
       - name: Remove invalid node-pty node-gyp run v${{ needs.publish.outputs.npm_version }}
         run: |

@@ -18,13 +18,14 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): keep update-node on node.js v22 on 32-bit systems
 - fix(hb-service): on synology, point update-node to package center
 - chore(deps): dependency updates
+- ci: retry the release bundle install for longer, and fail clearly if npm never has it
 - fix(hb-service): detect nodesource's deb822 repo file in update-node, and don't unpack a tarball over an apt-owned node.js (#3105)
 
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v5.4.0`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
-- `@homebridge/plugin-ui-utils` @ `v2.2.7`
+- `@homebridge/plugin-ui-utils` @ `v2.2.8-beta`
 
 ## v5.30.0 (2026-10-31)
 
