@@ -27,14 +27,15 @@ import axios from 'axios'
 import { program } from 'commander'
 import { mkdirp, pathExists, pathExistsSync, readJson, readJsonSync, remove, writeJson } from 'fs-extra/esm'
 import ora from 'ora'
-import { gte } from 'semver'
+import { gte, parse } from 'semver'
 import { networkInterfaceDefault, networkInterfaces } from 'systeminformation'
 import { Tail } from 'tail'
 import { extract } from 'tar'
 import { check as tcpCheck } from 'tcp-port-used'
 
-import { pickNodeUpdate } from '../core/node-version.constants.js'
+import { isNodeMajorKnown, isNodeMajorSupported, pickNodeUpdate } from '../core/node-version.constants.js'
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
+import { confirmUnknownNode } from './confirm-unknown-node.js'
 import { Logger } from './logger.js'
 import { DarwinInstaller } from './platforms/darwin.js'
 import { FreeBSDInstaller } from './platforms/freebsd.js'
@@ -1257,6 +1258,14 @@ export class HomebridgeServiceHelper {
           this.logger.error('Refusing to install Node.js version lower than v22.12.0.')
           return { update: false }
         }
+        const wantedMajor = parse(wantedVersion.version)?.major
+        if (!isNodeMajorSupported(wantedMajor)) {
+          this.logger.error(`Node.js ${wantedVersion.version} is not supported on this system's architecture or operating system version. Use \`hb-service update-node 22\` instead.`)
+          process.exit(1)
+        }
+        if (!isNodeMajorKnown(wantedMajor) && !await confirmUnknownNode(wantedVersion.version, this.logger)) {
+          return { update: false }
+        }
         this.logger.log(`Installing Node.js ${wantedVersion.version} over ${process.version}...`)
         return this.installer.updateNodejs({
           target: wantedVersion.version,
@@ -1268,7 +1277,7 @@ export class HomebridgeServiceHelper {
       }
     }
 
-    // On a 32-bit system this stays on v22, as Node.js v24 and later are 64-bit only
+    // Only moves to a release this system can run and Homebridge knows about
     const target = pickNodeUpdate(versionList, process.version)
     if (target) {
       this.logger.log(`Updating Node.js from ${process.version} to ${target.version}...`)

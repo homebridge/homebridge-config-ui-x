@@ -1,5 +1,6 @@
 import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 
+import { release } from 'node:os'
 import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
@@ -13,6 +14,14 @@ import { isNodeV24SupportedArchitecture } from '../../src/core/node-version.cons
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { ServerService } from '../../src/modules/server/server.service.js'
 import { StatusService } from '../../src/modules/status/status.service.js'
+
+vi.mock('node:os', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:os')>()
+  return {
+    ...actual,
+    release: vi.fn(actual.release),
+  }
+})
 
 interface NodeJsVersionInfo {
   currentVersion: string
@@ -83,6 +92,43 @@ describe('StatusService - getNodeVersionInfo', () => {
     config: { url: 'https://nodejs.org/dist/index.json' } as InternalAxiosRequestConfig,
     status: 200,
     statusText: 'OK',
+  })
+
+  describe('macOS older than 13.5', () => {
+    const originalPlatform = process.platform
+
+    const versionInfoOn = async (version: string) => {
+      Object.defineProperty(process, 'version', { value: version, writable: true, configurable: true })
+      Object.defineProperty(process, 'platform', { value: 'darwin', configurable: true })
+      // Darwin 21.6.0 is macOS 12.7
+      vi.mocked(release).mockReturnValue('21.6.0')
+      vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)
+      try {
+        return await statusService.getNodeVersionInfo() as NodeJsVersionInfo
+      } finally {
+        Object.defineProperty(process, 'version', { value: originalProcessVersion, writable: true, configurable: true })
+        Object.defineProperty(process, 'platform', { value: originalPlatform, configurable: true })
+        vi.mocked(release).mockReset()
+      }
+    }
+
+    it('should recommend v22 rather than v24 when on v20', async () => {
+      const result = await versionInfoOn('v20.19.0')
+      expect(result.latestVersion).toBe('v22.13.0')
+      expect(result.updateAvailable).toBe(true)
+      expect(result.supportsNodeJs24).toBe(false)
+    })
+
+    it('should not recommend v24 when on the newest v22', async () => {
+      const result = await versionInfoOn('v22.13.0')
+      expect(result.updateAvailable).toBe(false)
+      expect(result.supportsNodeJs24).toBe(false)
+    })
+
+    it('should not recommend a newer v24 when already on v24', async () => {
+      const result = await versionInfoOn('v24.1.0')
+      expect(result.updateAvailable).toBe(false)
+    })
   })
 
   describe('Node.js v20 users', () => {

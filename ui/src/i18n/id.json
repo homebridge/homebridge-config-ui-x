@@ -881,6 +881,7 @@
   "status.widget.info.no": "No",
   "status.widget.info.node_major": "Node.js Major Versions",
   "status.widget.info.node_next_no": "Your current architecture ({{ architecture }}) is 32-bit, which is not supported. You will need to migrate to a 64-bit system. Please use Node.js v22 instead, which we will be supporting until April 2027.",
+  "status.widget.info.node_next_no_os": "Your operating system version is too old for Node.js v24. Please use Node.js v22 instead, which we will be supporting until April 2027.",
   "status.widget.info.node_next_yes": "Your current architecture ({{ architecture }}) supports Node.js v24, so you can upgrade when you are ready.",
   "status.widget.info.node_unsupp": "Tidak didukung",
   "status.widget.info.node_unsupp_message": "Anda menjalankan versi Node.js yang tidak secara resmi didukung oleh Homebridge. Anda harus mempertimbangkan untuk mengubah ke versi yang didukung.",
