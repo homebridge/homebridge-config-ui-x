@@ -18,6 +18,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - docs: bring the readme's install list in line with the wiki
 - fix(hb-service): keep update-node on node.js v22 on 32-bit systems
 - fix(hb-service): keep update-node below node.js v24 on macOS older than 13.5 (#3112)
+- feat(hb-service): ask before installing a node.js major version newer than homebridge knows about
 - fix(hb-service): on synology, point update-node to package center
 - chore(deps): dependency updates
 - ci: retry the release bundle install for longer, and fail clearly if npm never has it

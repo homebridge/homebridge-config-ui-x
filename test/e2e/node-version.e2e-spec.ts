@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { isNodeMajorSupported, pickNodeUpdate } from '../../src/core/node-version.constants.js'
+import { isNodeMajorKnown, isNodeMajorSupported, pickNodeUpdate } from '../../src/core/node-version.constants.js'
 
 /**
  * A plain `hb-service update-node` picks the newest LTS release. Node.js v24
@@ -46,6 +46,29 @@ describe('picking a node.js update', () => {
     expect(isNodeMajorSupported(24, 'x64', 'linux', '5.15.0')).toBe(true)
     expect(isNodeMajorSupported(24, 'x64', 'darwin', '22.5.0')).toBe(false)
     expect(isNodeMajorSupported(24, 'arm', 'linux', '6.1.0')).toBe(false)
+  })
+
+  it('knows the majors up to the newest in its list', () => {
+    expect(isNodeMajorKnown(22)).toBe(true)
+    expect(isNodeMajorKnown(26)).toBe(true)
+    expect(isNodeMajorKnown(27)).toBe(false)
+    expect(isNodeMajorKnown(28)).toBe(false)
+    expect(isNodeMajorKnown(undefined)).toBe(false)
+  })
+
+  it('does not move to an lts newer than homebridge knows about', () => {
+    expect(pickNodeUpdate([
+      { version: 'v28.0.0', lts: 'Next' },
+      ...releases,
+    ], 'v24.22.2', 'x64', 'linux', '5.15.0')?.version).toBe('v26.13.0')
+  })
+
+  it('still updates within a major newer than homebridge knows about', () => {
+    expect(pickNodeUpdate([
+      { version: 'v28.1.0', lts: 'Next' },
+      { version: 'v28.0.0', lts: 'Next' },
+      ...releases,
+    ], 'v28.0.0', 'x64', 'linux', '5.15.0')?.version).toBe('v28.1.0')
   })
 
   it('counts anything it cannot work out as unsupported', () => {

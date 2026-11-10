@@ -77,6 +77,20 @@ export function isNodeMajorSupported(
 }
 
 /**
+ * The Node.js major versions Homebridge has been checked against. Add a new major
+ * here once it has been tested. Until then, asking for it needs confirming, and a
+ * plain `hb-service update-node` will not move to it.
+ */
+export const NODE_KNOWN_MAJORS = [22, 24, 26]
+
+/**
+ * Check if a major version of Node.js is within those Homebridge knows about
+ */
+export function isNodeMajorKnown(major: number): boolean {
+  return major <= Math.max(...NODE_KNOWN_MAJORS)
+}
+
+/**
  * The fields of a nodejs.org/dist/index.json entry that picking an update needs
  */
 export interface NodeReleaseEntry {
@@ -93,6 +107,9 @@ export interface NodeReleaseEntry {
  * ship 64-bit builds and need a minimum OS version, so on other systems the newest
  * LTS is one they cannot run. Picking it could fail the update, or install a
  * release that leaves node unable to start, instead of moving to the newest v22.
+ *
+ * A major version newer than those in NODE_KNOWN_MAJORS is not moved to either,
+ * but a system already running one still gets updates within it.
  */
 export function pickNodeUpdate<T extends NodeReleaseEntry>(
   versionList: T[],
@@ -101,14 +118,17 @@ export function pickNodeUpdate<T extends NodeReleaseEntry>(
   platform: string = process.platform,
   osRelease: string = release(),
 ): T | undefined {
-  const installable = versionList.filter(x => isNodeMajorSupported(parse(x.version)?.major, arch, platform, osRelease))
+  const currentMajor = parse(currentVersion)?.major
+  const installable = versionList.filter((x) => {
+    const major = parse(x.version)?.major
+    return isNodeMajorSupported(major, arch, platform, osRelease) && (isNodeMajorKnown(major) || major === currentMajor)
+  })
 
   const latestLts = installable.find(x => x.lts)
   if (latestLts && gt(latestLts.version, currentVersion)) {
     return latestLts
   }
 
-  const currentMajor = parse(currentVersion)?.major
   const latestOfMajor = installable.find(x => parse(x.version)?.major === currentMajor)
   if (latestOfMajor && gt(latestOfMajor.version, currentVersion)) {
     return latestOfMajor
