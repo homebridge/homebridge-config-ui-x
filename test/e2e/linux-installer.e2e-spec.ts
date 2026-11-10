@@ -92,11 +92,17 @@ describe('LinuxInstaller update-node', () => {
 
   describe('the apt ownership guard', () => {
     const originalExecPath = process.execPath
+    const originalGetuid = Object.getOwnPropertyDescriptor(process, 'getuid')
 
     beforeEach(() => {
       files.clear()
       Object.defineProperty(process, 'execPath', { value: '/usr/bin/node', configurable: true })
-      vi.spyOn(process, 'getuid').mockReturnValue(0)
+      // Not vi.spyOn: in CI process.getuid is not an own, spy-able property
+      Object.defineProperty(process, 'getuid', {
+        value: () => 0,
+        configurable: true,
+        writable: true,
+      })
       execSync.mockReset()
       execSync.mockReturnValue(Buffer.from('armv7l'))
       execFileSync.mockReset()
@@ -104,6 +110,11 @@ describe('LinuxInstaller update-node', () => {
 
     afterEach(() => {
       Object.defineProperty(process, 'execPath', { value: originalExecPath, configurable: true })
+      if (originalGetuid) {
+        Object.defineProperty(process, 'getuid', originalGetuid)
+      } else {
+        delete (process as any).getuid
+      }
     })
 
     it('refuses to unpack a tarball over a node.js that a package owns', async () => {
