@@ -881,6 +881,7 @@
   "status.widget.info.no": "否",
   "status.widget.info.node_major": "Node.js 主要版本",
   "status.widget.info.node_next_no": "您目前的架構（{{ architecture }}）為不受支援的 32 位元架構，需要移轉至 64 位元系統。請改用 Node.js v22，我們將支援此版本至 2027 年 4 月。",
+  "status.widget.info.node_next_no_os": "您的作業系統版本對於 Node.js v24 來說太舊了。請改用 Node.js v22，我們將支援此版本至 2027 年 4 月。",
   "status.widget.info.node_next_yes": "您目前的架構（{{ architecture }}）支援 Node.js v24，準備好後即可升級。",
   "status.widget.info.node_unsupp": "不支援",
   "status.widget.info.node_unsupp_message": "您執行的 Node.js 版本未受 Homebridge 官方支援，建議改用受支援的版本。",

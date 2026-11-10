@@ -1,6 +1,7 @@
+import { release } from 'node:os'
 import process from 'node:process'
 
-import { gt, parse } from 'semver'
+import { gt, gte, parse, valid } from 'semver'
 
 /**
  * Node.js version and architecture compatibility constants
@@ -20,6 +21,76 @@ export function isNodeV24SupportedArchitecture(arch: string = process.arch): boo
 }
 
 /**
+ * What a system needs to run Node.js, from a major version onwards. Platforms with
+ * no entry in minOsRelease are not limited by their OS version.
+ */
+export interface NodeRequirement {
+  fromMajor: number
+  architectures: readonly string[]
+  minOsRelease: Partial<Record<string, string>>
+}
+
+/**
+ * NodeJS Version - Minimum macOS Version (Darwin release, which is what os.release() returns)
+ *
+ *      22            11.0    (20.1.0)
+ *                            // https://github.com/nodejs/node/blob/v22.x/BUILDING.md#platform-list
+ *      24            13.5    (22.6.0)
+ *                            // https://nodejs.org/en/blog/migrations/v22-to-v24
+ *                            // https://github.com/nodejs/node/blob/v24.x/BUILDING.md#platform-list
+ *      26            13.5    (22.6.0)
+ *                            // https://github.com/nodejs/node/blob/v26.x/BUILDING.md#platform-list
+ *
+ * Summary: below these versions a release is unsupported and may not start at all.
+ * On macOS 12, v26 fails with a dyld "Symbol not found" error as soon as it runs,
+ * which also stops hb-service, so it cannot undo the update. v24.22.0 does start
+ * there, but it is blocked too, because any later v24 could fail in the same way.
+ */
+export const NODE_REQUIREMENTS: NodeRequirement[] = [
+  {
+    fromMajor: 24,
+    architectures: NODE_V24_SUPPORTED_ARCHITECTURES,
+    minOsRelease: { darwin: '22.6.0' },
+  },
+]
+
+/**
+ * Check if this system can run a major version of Node.js, by architecture and OS version.
+ * Anything that cannot be worked out counts as unsupported, so the system stays on a working version.
+ */
+export function isNodeMajorSupported(
+  major: number,
+  arch: string = process.arch,
+  platform: string = process.platform,
+  osRelease: string = release(),
+): boolean {
+  if (!Number.isInteger(major)) {
+    return false
+  }
+
+  return NODE_REQUIREMENTS
+    .filter(requirement => major >= requirement.fromMajor)
+    .every((requirement) => {
+      const minOsRelease = requirement.minOsRelease[platform]
+      return requirement.architectures.includes(arch) && (!minOsRelease || (valid(osRelease) && gte(osRelease, minOsRelease)))
+    })
+}
+
+/**
+ * The Node.js major versions Homebridge has been checked against. Add a new major
+ * here once it has been tested. Until then, asking for it needs confirming, and a
+ * plain `hb-service update-node` will not move to it.
+ */
+export const NODE_KNOWN_MAJORS = [22, 24, 26]
+
+/**
+ * Check if a major version of Node.js is within those Homebridge knows about
+ */
+export function isNodeMajorKnown(major: number): boolean {
+  return major <= Math.max(...NODE_KNOWN_MAJORS)
+}
+
+/**
  * The fields of a nodejs.org/dist/index.json entry that picking an update needs
  */
 export interface NodeReleaseEntry {
@@ -32,21 +103,32 @@ export interface NodeReleaseEntry {
  * nothing when already up to date. Prefers the newest LTS release, and otherwise
  * the newest release of the major version already installed.
  *
- * Only releases this architecture can run are considered. Node.js v24 and later
- * only ship 64-bit builds, so on a 32-bit system the newest LTS is one it cannot
- * install - picking it made the update fail instead of moving to the newest v22.
+ * Only releases this system can run are considered. Node.js v24 and later only
+ * ship 64-bit builds and need a minimum OS version, so on other systems the newest
+ * LTS is one they cannot run. Picking it could fail the update, or install a
+ * release that leaves node unable to start, instead of moving to the newest v22.
+ *
+ * A major version newer than those in NODE_KNOWN_MAJORS is not moved to either,
+ * but a system already running one still gets updates within it.
  */
-export function pickNodeUpdate<T extends NodeReleaseEntry>(versionList: T[], currentVersion: string, arch: string = process.arch): T | undefined {
-  const installable = isNodeV24SupportedArchitecture(arch)
-    ? versionList
-    : versionList.filter(x => parse(x.version)?.major < 24)
+export function pickNodeUpdate<T extends NodeReleaseEntry>(
+  versionList: T[],
+  currentVersion: string,
+  arch: string = process.arch,
+  platform: string = process.platform,
+  osRelease: string = release(),
+): T | undefined {
+  const currentMajor = parse(currentVersion)?.major
+  const installable = versionList.filter((x) => {
+    const major = parse(x.version)?.major
+    return isNodeMajorSupported(major, arch, platform, osRelease) && (isNodeMajorKnown(major) || major === currentMajor)
+  })
 
   const latestLts = installable.find(x => x.lts)
   if (latestLts && gt(latestLts.version, currentVersion)) {
     return latestLts
   }
 
-  const currentMajor = parse(currentVersion)?.major
   const latestOfMajor = installable.find(x => parse(x.version)?.major === currentMajor)
   if (latestOfMajor && gt(latestOfMajor.version, currentVersion)) {
     return latestOfMajor
