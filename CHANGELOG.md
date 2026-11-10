@@ -2,9 +2,16 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.30.1 (Pending Release)
+## v5.30.1 (2026-11-13)
 
 ### Highlights
+
+- 🛟 Ready for Node.js 26: once Node.js 26 is recommended, systems that can't run it won't be offered it or upgraded to it. macOS older than 13.5 is kept below Node.js 24, 32-bit systems stay on Node.js 22, Synology points to Package Center, and a Node.js installed by apt is no longer overwritten
+- 🛑 Future-proofed Node.js updates: hb-service asks before installing a Node.js major version newer than this Homebridge release supports, so an old install can't jump straight to a version that breaks it
+- 🧩 Custom plugin UIs can read the accessory room layout ([plugin-ui-utils 2.3.0](https://github.com/homebridge/plugin-ui-utils/releases/tag/v2.3.0))
+- 🧾 The config editor no longer flags valid UI options as errors
+- 📜 Log and terminal text is no longer cut off in Safari
+- ⬆️ Updated Homebridge libraries: plugin-ui-utils 2.3.0
 
 ### UI Changes
 
@@ -23,6 +30,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(deps): dependency updates
 - ci: retry the release bundle install for longer, and fail clearly if npm never has it
 - fix(hb-service): detect nodesource's deb822 repo file in update-node, and don't unpack a tarball over an apt-owned node.js (#3105)
+- test(hb-service): stub process.getuid with defineProperty in the apt guard specs (#3120)
 
 ### Homebridge Dependencies
 
