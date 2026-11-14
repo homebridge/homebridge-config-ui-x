@@ -132,6 +132,12 @@
               } @else {
                 <span class="text-nowrap">{{ characteristic.description }}</span>
               }
+              @if (characteristic.status !== undefined && notRespondingStatuses.has(characteristic.status)) {
+                <span class="text-danger font-monospace ms-1" [title]="'accessories.not_responding' | translate">
+                  <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+                  {{ characteristic.status }}
+                </span>
+              }
               @if (isDetailsVisible[characteristic.uuid]) {
                 <div class="grey-text m-0 p-0 font-monospace">
                   @if ('minStep' in characteristic) {
@@ -245,6 +251,12 @@
               } @else {
                 {{ characteristic.description }}
               }
+              @if (characteristic.status !== undefined && notRespondingStatuses.has(characteristic.status)) {
+                <span class="text-danger font-monospace ms-1" [title]="'accessories.not_responding' | translate">
+                  <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+                  {{ characteristic.status }}
+                </span>
+              }
               @if (isDetailsVisible[characteristic.uuid]) {
                 <div class="grey-text m-0 p-0 font-monospace">
                   @if ('minStep' in characteristic) {
@@ -339,6 +351,21 @@
           {{ isMatterAccessory ? 'Matter' : 'HAP' }}
         </span>
       </li>
+      @if (!isMatterAccessory) {
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start">{{ 'menu.label_status' | translate }}</span>
+          @if (isNotResponding(localService)) {
+            <span class="text-start text-md-end text-danger font-monospace">
+              <i class="fas fa-triangle-exclamation me-1" aria-hidden="true"></i
+              >{{ 'accessories.not_responding' | translate }} ({{ notRespondingCodes(localService).join(', ') }})
+            </span>
+          } @else {
+            <span class="text-start text-md-end grey-text font-monospace">{{
+              'accessories.responding' | translate
+            }}</span>
+          }
+        </li>
+      }
       @if (matchedCachedAccessory) {
         <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
           <span class="text-start">{{ 'accessories.plugin' | translate }}</span>

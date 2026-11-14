@@ -143,6 +143,33 @@
     }
   }
 
+  .accessory-not-responding {
+    position: absolute;
+    top: 25px;
+    left: 15px;
+    padding: 10px;
+    z-index: 1;
+    color: var(--bs-danger);
+
+    @media (max-width: 575px) {
+      top: 5px;
+      left: 5px;
+      padding: 7px;
+    }
+  }
+
+  // Dim the tile of a device that is not responding, like the Home app
+  .accessory-not-responding ~ :not(.manage-accessory-button, .refreshing-accessory-button) {
+    opacity: 0.5;
+  }
+
+  // Opacity gives the tile its own stacking layer, which would paint over the
+  // buttons that come before it, so lift them back on top
+  .accessory-not-responding ~ .manage-accessory-button,
+  .accessory-not-responding ~ .refreshing-accessory-button {
+    z-index: 2;
+  }
+
   .manage-accessory-button {
     opacity: 0;
 

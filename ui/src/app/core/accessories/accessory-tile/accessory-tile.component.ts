@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { isNotResponding } from '@/app/core/accessories/not-responding'
 import { AccessCodeComponent } from '@/app/core/accessories/types/hap/access-code/access-code.component'
 import { AirPurifierComponent } from '@/app/core/accessories/types/hap/air-purifier/air-purifier.component'
 import { AirQualitySensorComponent } from '@/app/core/accessories/types/hap/air-quality-sensor/air-quality-sensor.component'
@@ -139,4 +140,5 @@ export class AccessoryTileComponent {
   $accessories = inject(AccessoriesService)
 
   public readonly service = input.required<ServiceTypeX>()
+  protected readonly notResponding = computed(() => this.service().protocol !== 'matter' && isNotResponding(this.service()))
 }

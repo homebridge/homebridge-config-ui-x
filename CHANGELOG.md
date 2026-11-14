@@ -8,6 +8,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### UI Changes
 
+- feat(accessories): show a not responding indicator on accessory tiles (#3124)
+
 ### Other Changes
 
 - ci: stop running the validate jobs on node.js v20
