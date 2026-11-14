@@ -2,6 +2,22 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.30.2 (Pending Release)
+
+### Highlights
+
+### UI Changes
+
+### Other Changes
+
+- ci: stop running the validate jobs on node.js v20
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v5.4.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
+- `@homebridge/plugin-ui-utils` @ `v2.3.0`
+
 ## v5.30.1 (2026-11-13)
 
 ### Highlights
