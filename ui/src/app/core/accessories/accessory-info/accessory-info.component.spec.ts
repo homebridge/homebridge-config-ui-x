@@ -153,6 +153,29 @@ describe('accessoryInfoComponent', () => {
       ])
     })
 
+    it('shows the status and marks the characteristic that did not respond', () => {
+      const element = open(hapService({
+        characteristics: [
+          characteristic('On', true, { status: -70402 }),
+        ],
+      })).nativeElement as HTMLElement
+
+      // The status row plus the characteristic row, each with the HAP code
+      const marks = element.querySelectorAll('.text-danger')
+      expect(marks).toHaveLength(2)
+      marks.forEach(mark => expect(mark.textContent).toContain('-70402'))
+    })
+
+    it('shows no not responding marks when everything answered', () => {
+      const element = open(hapService({
+        characteristics: [
+          characteristic('On', true, { status: 0 }),
+        ],
+      })).nativeElement as HTMLElement
+
+      expect(element.querySelector('.fa-triangle-exclamation')).toBeNull()
+    })
+
     it('knows it is not a matter accessory', () => {
       expect(open(hapService()).componentInstance.isMatterAccessory).toBe(false)
     })

@@ -24,6 +24,7 @@ import {
   PairingInfo,
   ServiceTypeX,
 } from '@/app/core/accessories/accessories.interfaces'
+import { isNotResponding, NOT_RESPONDING_STATUSES, notRespondingCodes } from '@/app/core/accessories/not-responding'
 import { ACCESSORY_INFO_MODAL_DATA, REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
@@ -124,6 +125,9 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   public accessoryCache = this.modalData.accessoryCache
   public pairingCache = this.modalData.pairingCache
   public service = this.modalData.service
+  protected readonly isNotResponding = isNotResponding
+  protected readonly notRespondingCodes = notRespondingCodes
+  protected readonly notRespondingStatuses = NOT_RESPONDING_STATUSES
 
   // Other public properties
   public localAccessoryCache: CachedAccessoryWithServices[] = []

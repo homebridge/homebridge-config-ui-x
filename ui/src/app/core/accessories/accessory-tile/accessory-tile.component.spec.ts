@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
-import { hapService, matterService } from '@/testing'
+import { characteristic, hapService, matterService } from '@/testing'
 import { provideTestTranslate } from '@/testing/providers'
 
 /**
@@ -267,6 +267,31 @@ describe('AccessoryTileComponent', () => {
 
       expect(element.querySelector('.accessory-hidden-indicator')).not.toBeNull()
       expect(element.querySelector('.accessory-hidden-icon')).not.toBeNull()
+    })
+  })
+
+  describe('not responding', () => {
+    it('shows the badge when a characteristic did not respond', () => {
+      const element = render(hapService({
+        characteristics: [
+          characteristic('On', true, { status: -70402 }),
+        ],
+      }))
+      expect(element.querySelector('.accessory-not-responding')).not.toBeNull()
+    })
+
+    it('hides the badge when every characteristic answered', () => {
+      const element = render(hapService({
+        characteristics: [
+          characteristic('On', true, { status: 0 }),
+        ],
+      }))
+      expect(element.querySelector('.accessory-not-responding')).toBeNull()
+    })
+
+    it('never shows the badge on a matter accessory', () => {
+      const element = render(matterService())
+      expect(element.querySelector('.accessory-not-responding')).toBeNull()
     })
   })
 })
