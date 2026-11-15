@@ -160,6 +160,7 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   }
 
   // Original values to restore on dismiss
+  private saved = false
   private originalCustomName: string | undefined
   private originalCustomType: ServiceTypeX['type'] | undefined
   private originalHidden: boolean | undefined
@@ -262,6 +263,22 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
     // Clear all pending timeouts to prevent memory leaks
     this.copyTimeouts.forEach(timeout => clearTimeout(timeout))
     this.copyTimeouts.clear()
+
+    // The fields are edited on the tile's own service object. Closing in any way other than Save (Escape, or
+    // the cached accessories button) must undo them too, or the next layout save stores the "cancelled" edit
+    if (!this.saved) {
+      this.restoreOriginalValues()
+    }
+  }
+
+  private restoreOriginalValues(): void {
+    if (!this.localService) {
+      return
+    }
+    this.localService.customName = this.originalCustomName
+    this.localService.customType = this.originalCustomType
+    this.localService.hidden = this.originalHidden
+    this.localService.onDashboard = this.originalOnDashboard
   }
 
   public removeSingleCachedAccessories() {
@@ -300,15 +317,12 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   }
 
   public dismissModal() {
-    // Restore original values when dismissing without saving
-    this.localService.customName = this.originalCustomName
-    this.localService.customType = this.originalCustomType
-    this.localService.hidden = this.originalHidden
-    this.localService.onDashboard = this.originalOnDashboard
+    this.restoreOriginalValues()
     this.$activeModal.dismiss('Dismiss')
   }
 
   public saveModal() {
+    this.saved = true
     this.$activeModal.close({
       customName: this.localService.customName,
       customType: this.localService.customType,

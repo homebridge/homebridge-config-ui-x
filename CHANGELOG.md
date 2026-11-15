@@ -87,6 +87,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): keep the dashboard's status updates when the bridges widget is removed or re-made
 - fix(update-all): keep the page's child bridge status updates when the update all window closes
 - fix(status): keep a widget's resize and settings events working after the dashboard is unlocked
+- fix(accessories): undo the accessory info edits when its window is closed with escape
 
 ### Other Changes
 
