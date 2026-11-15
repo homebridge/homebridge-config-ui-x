@@ -125,6 +125,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - docs(plugins): put the package queue's comment back on the queue, not on the npm time limit
 - fix(hb-service): keep a config.json that starts with a byte order mark, instead of replacing it
 - test(server): make the wallpaper delete test fail without its fix, using a file not config.json
+- fix(hb-service): write homebridge output that never ends a line, instead of holding it for ever
 
 ### Homebridge Dependencies
 
