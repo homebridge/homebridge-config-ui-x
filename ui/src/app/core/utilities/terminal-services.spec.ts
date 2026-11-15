@@ -878,6 +878,25 @@ describe('the terminal-owning services', () => {
         expect(io.socket.payloadsFor('start-session')).toHaveLength(before + 1)
       })
 
+      it('starts the session again when the socket comes back after a reconnect', async () => {
+        // Regression: the rejoin path sent `start-session` once and never watched the socket again, so after a
+        // network drop or a ui restart the re-attached terminal took no input and printed nothing, with no
+        // "disconnected" line either
+        await start()
+        await connect()
+        service.detachTerminal()
+        service.reconnectTerminal(target, {})
+        await vi.advanceTimersByTimeAsync(200)
+        const before = io.socket.payloadsFor('start-session').length
+
+        io.socket.fire('disconnect')
+        expect(term().written.join('')).toContain('Terminal disconnected')
+
+        io.markConnected()
+        await vi.advanceTimersByTimeAsync(200)
+        expect(io.socket.payloadsFor('start-session')).toHaveLength(before + 1)
+      })
+
       it('still forwards resizes after reconnecting', async () => {
         await start()
         await connect()
