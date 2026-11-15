@@ -858,14 +858,14 @@ export class ServerService {
    * Remove multiple cached accessories
    */
   public async deleteCachedAccessories(accessories: { uuid: string, cacheFile: string }[]) {
-    this.logger.warn(`Shutting down Homebridge before removing cached accessories ${accessories.map(x => x.uuid).join(', ')}.`)
-
-    // Wait for homebridge to stop.
-    await this.homebridgeIpcService.restartAndWaitForClose()
+    if (!Array.isArray(accessories)) {
+      throw new BadRequestException('A list of accessories is required.')
+    }
 
     const accessoriesByCacheFile = new Map<string, { uuid: string }[]>()
 
-    // Group accessories by cacheFile
+    // Group accessories by cacheFile, and check every name before Homebridge is stopped: a bad name must not cost
+    // a restart for nothing
     for (const { cacheFile, uuid } of accessories) {
       const accessoryCacheFile = basename(cacheFile || 'cachedAccessories')
       if (accessoryCacheFile !== 'cachedAccessories' && !RE_CACHED_ACCESSORIES_EXACT.test(accessoryCacheFile)) {
@@ -877,6 +877,11 @@ export class ServerService {
       accessoriesByCacheFile.get(accessoryCacheFile).push({ uuid })
     }
 
+    this.logger.warn(`Shutting down Homebridge before removing cached accessories ${accessories.map(x => x.uuid).join(', ')}.`)
+
+    // Wait for homebridge to stop.
+    await this.homebridgeIpcService.restartAndWaitForClose()
+
     // Process each group of accessories
     for (const [cacheFile, accessories] of accessoriesByCacheFile.entries()) {
       const cachedAccessoriesPath = resolve(this.configService.storagePath, 'accessories', cacheFile)
@@ -885,9 +890,9 @@ export class ServerService {
           // Don't auto-create a fresh cache file just because a caller
           // pointed at a path that doesn't exist (e.g. an attempted
           // path-traversal that basename() flattened to an unrelated
-          // name). Skip this cacheFile and let other groups proceed.
+          // name). Skip this cacheFile (returning null writes nothing) and let the other groups proceed.
           this.logger.error(`Cached accessories file not found: ${cacheFile}.`)
-          throw new NotFoundException(`Cache file ${cacheFile} not found.`)
+          return null
         }
         for (const { uuid } of accessories) {
           try {
