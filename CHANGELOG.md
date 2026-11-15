@@ -42,6 +42,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): load the plugin list before a ui update reads its install path from it
 - fix(plugins): cache npm's short version list apart from the full lookup, which needs the keywords
 - fix(scheduler): restart a shared child bridge once, cancel every old job, and warn on a bad cron
+- fix(config): read a session timeout typed as text as seconds, not milliseconds
 
 ### Other Changes
 
