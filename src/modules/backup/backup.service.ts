@@ -33,7 +33,7 @@ import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
-import { RE_BACKUP_FILENAME, RE_BACKUP_ID, RE_COLON } from '../../core/regex.constants.js'
+import { RE_BACKUP_FILENAME, RE_BACKUP_ID, RE_COLON, RE_NPM_VERSION, RE_PLUGIN_NAME } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 
@@ -43,6 +43,14 @@ const pump = promisify(pipeline)
 // reserves the slot and the moment the temp dir is actually created. Lets
 // concurrent requests detect a pending upload before `mkdtemp` resolves.
 const RESTORE_PENDING = '__pending__'
+
+/**
+ * A plugin name and version from a backup that may be handed to npm (the same checks as PluginActionDto)
+ */
+function isInstallablePlugin(name: unknown, version: unknown): boolean {
+  return typeof name === 'string' && RE_PLUGIN_NAME.test(name)
+    && typeof version === 'string' && RE_NPM_VERSION.test(version)
+}
 
 /**
  * Files and folders (by name, at any depth) a backup leaves out, and a restore does not write either, so a backup
@@ -746,6 +754,11 @@ export class BackupService {
       ].includes(x.name) && x.publicPackage) // list of plugins not to restore
 
     for (const plugin of plugins) {
+      // The names and versions come from the archive: check them as the install routes do before npm sees them
+      if (!isInstallablePlugin(plugin.name, plugin.installedVersion)) {
+        client.emit('stdout', red(`\r\nSkipping ${JSON.stringify(plugin.name)}: not a valid plugin name and version.\r\n`))
+        continue
+      }
       try {
         client.emit('stdout', yellow(`\r\nInstalling ${plugin.name}...\r\n`))
         await this.pluginsService.managePlugin('install', { name: plugin.name, version: plugin.installedVersion }, client)
@@ -928,6 +941,10 @@ export class BackupService {
       for (let plugin of sourceConfig.plugins) {
         if (plugin in pluginMap) {
           plugin = pluginMap[plugin]
+        }
+        if (!isInstallablePlugin(plugin, 'latest')) {
+          client.emit('stdout', red(`\r\nSkipping ${JSON.stringify(plugin)}: not a valid plugin name.\r\n`))
+          continue
         }
         try {
           client.emit('stdout', yellow(`\r\nInstalling ${plugin}...\r\n`))
