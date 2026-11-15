@@ -854,6 +854,28 @@ describe('PluginsSettingsUiController (e2e)', () => {
       expect(metadata.plugin.name).toBe('homebridge-mock-plugin')
     })
 
+    it('getPluginUiMetadata refuses a custom ui path in a sibling folder whose name starts the same', async () => {
+      // Regression: the "inside the plugin" check compared the start of the path with no separator, so
+      // homebridge-mock-plugin could serve files from homebridge-mock-plugin-two
+      const schemaPath = resolve(pluginsPath, 'homebridge-mock-plugin', 'config.schema.json')
+      const sibling = resolve(pluginsPath, 'homebridge-mock-plugin-two', 'homebridge-ui-other')
+      const schemaBefore = await readFile(schemaPath, 'utf8')
+      await ensureDir(resolve(sibling, 'public'))
+      await writeFile(resolve(sibling, 'public', 'index.html'), '<p>not mine</p>')
+      await writeFile(schemaPath, JSON.stringify({
+        ...JSON.parse(schemaBefore),
+        customUiPath: '../homebridge-mock-plugin-two/homebridge-ui-other',
+      }))
+      try {
+        await expect((pluginsSettingsUiService as any).getPluginUiMetadata('homebridge-mock-plugin'))
+          .rejects
+          .toThrow()
+      } finally {
+        await writeFile(schemaPath, schemaBefore)
+        await remove(sibling)
+      }
+    })
+
     it('getPluginUiMetadata should throw for nonexistent plugin', async () => {
       await expect((pluginsSettingsUiService as any).getPluginUiMetadata('homebridge-nonexistent'))
         .rejects

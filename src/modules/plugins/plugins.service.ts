@@ -2206,8 +2206,13 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
       throw new Error(`Plugin does not provide a custom UI at expected location: ${customUiPath}`)
     }
 
-    if (!devServer && !(await realpath(customUiPath)).startsWith(await realpath(fullPath))) {
-      throw new Error(`Custom UI path is outside the plugin root: ${await realpath(customUiPath)}`)
+    if (!devServer) {
+      // With the separator: `homebridge-x` must not reach into a folder such as `homebridge-x-two` beside it
+      const realUiPath = await realpath(customUiPath)
+      const realRoot = await realpath(fullPath)
+      if (realUiPath !== realRoot && !realUiPath.startsWith(realRoot + sep)) {
+        throw new Error(`Custom UI path is outside the plugin root: ${realUiPath}`)
+      }
     }
 
     if (await pathExists(resolve(publicPath, 'index.html')) || devServer) {
