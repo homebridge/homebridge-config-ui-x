@@ -161,12 +161,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): match the start of words in the plugin search (#3138) (@emreocell)
 - fix(plugins): show a plugin's first maintainer in the search, not github actions (#3146)
 - test(ui): stop loading the app polyfills in the ui tests, which left them unchecked
+- chore(deps): dependency updates
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.4.0`
+- `@homebridge/hap-client` @ `v5.4.1-beta`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
-- `@homebridge/plugin-ui-utils` @ `v2.3.0`
+- `@homebridge/plugin-ui-utils` @ `v2.3.1-beta`
 
 ## v5.30.1 (2026-11-13)
 
