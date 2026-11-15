@@ -33,7 +33,7 @@ import {
 import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
-import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException, OnModuleDestroy } from '@nestjs/common'
+import { BadRequestException, BeforeApplicationShutdown, Inject, Injectable, InternalServerErrorException, NotFoundException, OnModuleDestroy } from '@nestjs/common'
 import axios from 'axios'
 import { cyan, green, red, yellow } from 'bash-color'
 import { createFile, ensureDir, pathExists, pathExistsSync, readJson, remove } from 'fs-extra/esm'
@@ -86,7 +86,7 @@ export function latestStableInSameMajor(available: string[], installed: string):
 }
 
 @Injectable()
-export class PluginsService implements OnModuleDestroy {
+export class PluginsService implements BeforeApplicationShutdown, OnModuleDestroy {
   private _npm: Array<string> | undefined
   private npmMajorVersion: number | null = null
   private _paths: Array<string> | undefined
@@ -177,6 +177,18 @@ export class PluginsService implements OnModuleDestroy {
       return
     }
     process.exit(0)
+  }
+
+  /**
+   * Nest calls this when the app closes: on SIGTERM / SIGINT, on a full restart from the UI (which sends this
+   * process SIGTERM) and when hb-service stops. Closing must wait for npm too, or the exit kills an install
+   * part-way and leaves the package half-unpacked on disk (see exitOnceUpdatesFinish).
+   */
+  public async beforeApplicationShutdown(): Promise<void> {
+    while (this.packageOperationsPending > 0) {
+      this.logger.warn('Waiting for a package update to finish before closing...')
+      await this.packageOperationQueue
+    }
   }
 
   public onModuleDestroy(): void {
