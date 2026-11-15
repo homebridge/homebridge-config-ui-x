@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer'
-import { pbkdf2, randomBytes, timingSafeEqual } from 'node:crypto'
+import { pbkdf2, randomBytes, randomInt, timingSafeEqual } from 'node:crypto'
 
 import {
   BadRequestException,
@@ -727,7 +727,9 @@ export class AuthService {
         hashedPassword,
         salt,
         passwordIterations: PBKDF2_ITERATIONS,
-        sessionVersion: 0,
+        // A random start, not 0: a token is matched to its user by username and session version, so a user made
+        // with the name of a deleted (or renamed) one would otherwise accept the old user's unexpired tokens
+        sessionVersion: randomInt(1, 2 ** 31),
         admin: user.admin,
       }
       authfile.push(newUser)

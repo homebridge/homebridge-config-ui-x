@@ -36,6 +36,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(server): accept only a 12 hex digit id when reading one pairing, not a path
 - fix(feature-flags): keep the hap bridge disable switch on for homebridge 3 and later
 - fix(users): answer 400, not 500, when a password or 2fa field is missing, and require a password
+- fix(auth): start a new user's session version at random, so a deleted user's token can't come back
 
 ### Other Changes
 

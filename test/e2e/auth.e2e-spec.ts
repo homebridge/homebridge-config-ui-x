@@ -1243,13 +1243,14 @@ describe('AuthController (e2e)', () => {
     } as any)
 
     const jwt = await import('jsonwebtoken')
+    const { sessionVersion } = (await readJson(authFilePath)).find((u: any) => u.username === 'someone')
     const nonAdminToken = jwt.sign(
       {
         username: 'someone',
         name: 'Someone',
         admin: false,
         instanceId: configService.instanceId,
-        sessionVersion: 0,
+        sessionVersion,
       },
       configService.secrets.secretKey,
     )
@@ -1540,6 +1541,28 @@ describe('AuthController (e2e)', () => {
       expect(fresh.secrets.secretKey).toMatch(/^[0-9a-f]{64}$/)
       await remove(resolve(process.env.UIX_STORAGE_PATH, added[0]))
     })
+  })
+
+  it('a token of a deleted user does not work for a new user given the same name', async () => {
+    await authService.addUser({
+      name: 'Bob',
+      username: 'bob',
+      password: 'bob-pw-1',
+      admin: false,
+    } as any)
+    const oldToken = (await authService.signIn('bob', 'bob-pw-1')).access_token
+    const oldPayload: any = jwt.decode(oldToken)
+    const bob = (await readJson(authFilePath)).find((u: any) => u.username === 'bob')
+    await authService.deleteUser(bob.id)
+
+    await authService.addUser({
+      name: 'Bob',
+      username: 'bob',
+      password: 'bob-pw-2',
+      admin: false,
+    } as any)
+
+    expect(await authService.validateUser(oldPayload)).toBeFalsy()
   })
 
   afterAll(async () => {
