@@ -1171,6 +1171,10 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
    * @returns Object containing operation status, package name, and version
    */
   public async triggerUpdate(name: string, version?: string): Promise<{ ok: boolean, name: string, version: string }> {
+    // `?version=` with nothing after it has always meant "latest"
+    if (version === '') {
+      version = undefined
+    }
     if (version !== undefined && (typeof version !== 'string' || !RE_NPM_VERSION.test(version))) {
       throw new BadRequestException('Invalid version parameter.')
     }
