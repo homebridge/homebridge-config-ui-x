@@ -83,6 +83,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): say matter failed to start on the dashboard for the status homebridge really sends
 - fix(custom-plugins): ignore a null or junk message from a plugin's ui server instead of crashing
 - fix(auth): log out only for a 401 from the ui's own server, not from the weather widget's site
+- fix(child-bridges): watch a socket once however often it asks, so each status update arrives once
 
 ### Other Changes
 
