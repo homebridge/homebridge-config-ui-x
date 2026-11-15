@@ -1414,6 +1414,66 @@ describe('AuthController (e2e)', () => {
     expect([r1, r2].filter(Boolean)).toHaveLength(1)
   })
 
+  describe('the wallpaper route (no login needed)', () => {
+    const wallpaperFile = () => resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper.png')
+
+    afterEach(async () => {
+      delete configService.ui.wallpaper
+      configService.customWallpaperHash = undefined
+      await remove(wallpaperFile())
+    })
+
+    it.each([
+      'auth.json',
+      '.uix-secrets',
+      'config.json',
+      '../config.json',
+      '/etc/hosts',
+      'persist/x.png',
+      '..\\x.png',
+    ])(
+      'never serves a wallpaper set to %s',
+      async (name) => {
+        configService.ui.wallpaper = name
+        configService.customWallpaperHash = 'abc.jpg'
+
+        const res = await app.inject({ method: 'GET', path: '/auth/wallpaper/abc.jpg' })
+
+        expect(res.statusCode).toBe(404)
+        expect(res.body).not.toContain('password')
+        expect(res.body).not.toContain('secretKey')
+        expect(res.body).not.toContain('localhost')
+      },
+    )
+
+    it('answers 404, not 500, when no wallpaper is set', async () => {
+      const res = await app.inject({ method: 'GET', path: '/auth/wallpaper/abc.jpg' })
+      expect(res.statusCode).toBe(404)
+    })
+
+    it('serves the uploaded wallpaper for the current hash only', async () => {
+      await copy(resolve(__dirname, '../mocks/persist/wallpaper.png'), wallpaperFile())
+      configService.ui.wallpaper = 'ui-wallpaper.png'
+      configService.customWallpaperHash = 'abc.jpg'
+
+      const ok = await app.inject({ method: 'GET', path: '/auth/wallpaper/abc.jpg' })
+      expect(ok.statusCode).toBe(200)
+      expect(ok.rawPayload.length).toBeGreaterThan(0)
+
+      const old = await app.inject({ method: 'GET', path: '/auth/wallpaper/old.jpg' })
+      expect(old.statusCode).toBe(404)
+    })
+
+    it('accepts only a plain image file name in the storage folder', () => {
+      expect(configService.getWallpaperPath('ui-wallpaper.jpg')).toBe(resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper.jpg'))
+      expect(configService.getWallpaperPath('my-photo.JPEG')).toBe(resolve(process.env.UIX_STORAGE_PATH, 'my-photo.JPEG'))
+      expect(configService.getWallpaperPath('auth.json')).toBeUndefined()
+      expect(configService.getWallpaperPath('/tmp/x.png')).toBeUndefined()
+      expect(configService.getWallpaperPath(42)).toBeUndefined()
+      expect(configService.getWallpaperPath(undefined)).toBeUndefined()
+    })
+  })
+
   afterAll(async () => {
     await app.close()
   })

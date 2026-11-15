@@ -1641,8 +1641,9 @@ export class ServerService {
 
     if (uiConfigBlock) {
       // Delete the old wallpaper if it exists
-      if (uiConfigBlock.wallpaper) {
-        const oldPath = join(this.configService.storagePath, uiConfigBlock.wallpaper)
+      // Only a plain file name in the storage folder is ever deleted (see `getWallpaperPath`)
+      const oldPath = this.configService.getWallpaperPath(uiConfigBlock.wallpaper)
+      if (oldPath) {
         if (await pathExists(oldPath)) {
           try {
             await unlink(oldPath)
@@ -1654,7 +1655,7 @@ export class ServerService {
       }
 
       // Save the uploaded image file to the storage path
-      const fileExtension = extname(data.filename)
+      const fileExtension = extname(data.filename).toLowerCase().replace(/[^.a-z0-9]/g, '')
       const newPath = join(this.configService.storagePath, `ui-wallpaper${fileExtension}`)
       await pump(data.file, createWriteStream(newPath))
 
@@ -1672,11 +1673,11 @@ export class ServerService {
     // Get the config file and find the UI config block
     const configFile = await this.configEditorService.getConfigFile()
     const uiConfigBlock = configFile.platforms.find(x => x.platform === 'config')
-    const fullPath = join(this.configService.storagePath, uiConfigBlock.wallpaper)
 
-    // Delete the wallpaper file if it exists
+    // Delete the wallpaper file if it exists. Only a plain file name in the storage folder is ever deleted.
     if (uiConfigBlock && uiConfigBlock.wallpaper) {
-      if (await pathExists(fullPath)) {
+      const fullPath = this.configService.getWallpaperPath(uiConfigBlock.wallpaper)
+      if (fullPath && await pathExists(fullPath)) {
         try {
           await unlink(fullPath)
           this.logger.log(`Wallpaper file ${uiConfigBlock.wallpaper} deleted successfully.`)
