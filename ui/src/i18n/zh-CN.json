@@ -917,6 +917,7 @@
   "status.widget.info.synology_package": "群晖套件",
   "status.widget.info.timezone": "时区",
   "status.widget.info.yes": "是",
+  "status.widget.matter_start_failed": "Matter failed to start. See the Homebridge log.",
   "status.widget.network.history_items": "历史项",
   "status.widget.network.items": "项",
   "status.widget.network.network_interface": "网络接口",

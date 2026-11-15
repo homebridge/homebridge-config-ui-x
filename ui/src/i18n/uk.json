@@ -917,6 +917,7 @@
   "status.widget.info.synology_package": "Пакет Synology",
   "status.widget.info.timezone": "Часовий пояс",
   "status.widget.info.yes": "Так",
+  "status.widget.matter_start_failed": "Matter failed to start. See the Homebridge log.",
   "status.widget.network.history_items": "Історія предметів",
   "status.widget.network.items": "предмети",
   "status.widget.network.network_interface": "Мережевий інтерфейс",

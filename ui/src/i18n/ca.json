@@ -917,6 +917,7 @@
   "status.widget.info.synology_package": "Synology Package",
   "status.widget.info.timezone": "Zona horària",
   "status.widget.info.yes": "Sí",
+  "status.widget.matter_start_failed": "Matter failed to start. See the Homebridge log.",
   "status.widget.network.history_items": "History Items",
   "status.widget.network.items": "items",
   "status.widget.network.network_interface": "Interfície de Xarxa",

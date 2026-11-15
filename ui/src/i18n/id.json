@@ -917,6 +917,7 @@
   "status.widget.info.synology_package": "Paket Synology",
   "status.widget.info.timezone": "Zona Waktu",
   "status.widget.info.yes": "Ya",
+  "status.widget.matter_start_failed": "Matter failed to start. See the Homebridge log.",
   "status.widget.network.history_items": "Item Sejarah",
   "status.widget.network.items": "item",
   "status.widget.network.network_interface": "Antarmuka jaringan",

@@ -917,6 +917,7 @@
   "status.widget.info.synology_package": "Synology Package",
   "status.widget.info.timezone": "Tijdzone",
   "status.widget.info.yes": "Ja",
+  "status.widget.matter_start_failed": "Matter failed to start. See the Homebridge log.",
   "status.widget.network.history_items": "Historische Items",
   "status.widget.network.items": "items",
   "status.widget.network.network_interface": "Netwerk Interface",

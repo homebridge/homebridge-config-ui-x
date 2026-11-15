@@ -917,6 +917,7 @@
   "status.widget.info.synology_package": "Synology ohjelmisto",
   "status.widget.info.timezone": "Aikavyöhyke",
   "status.widget.info.yes": "Kyllä",
+  "status.widget.matter_start_failed": "Matter failed to start. See the Homebridge log.",
   "status.widget.network.history_items": "edelliset kohteet",
   "status.widget.network.items": "kohteet",
   "status.widget.network.network_interface": "Verkkosovitin",

@@ -917,6 +917,7 @@
   "status.widget.info.synology_package": "Synology 패키지",
   "status.widget.info.timezone": "시간대",
   "status.widget.info.yes": "네",
+  "status.widget.matter_start_failed": "Matter failed to start. See the Homebridge log.",
   "status.widget.network.history_items": "기록 항목",
   "status.widget.network.items": "항목",
   "status.widget.network.network_interface": "네트워크 인터페이스",
