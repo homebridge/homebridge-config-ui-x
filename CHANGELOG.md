@@ -95,6 +95,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: drop the stale maintainers field from package.json
 - refactor(auth): import createGuardrails from otplib instead of the undeclared @otplib/core
 - build: declare socket.io, whose Socket type the accessories service imports
+- build: compile the server for es2024, which node 22 runs in full, instead of the moving esnext
 
 ### Homebridge Dependencies
 
