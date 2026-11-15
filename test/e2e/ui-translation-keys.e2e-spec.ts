@@ -41,4 +41,42 @@ describe('the ui translations', () => {
     // A missing key shows the raw key to the user, and a screen reader reads it out
     expect([...missing].sort()).toEqual([])
   })
+
+  it('has an english text for every key-shaped text in the ui, also in a ternary, a helper call or a template', async () => {
+    // The test above only sees `'key' | translate` and `$translate.instant('key')`. A key inside a ternary
+    // (`(x ? 'a.b' : 'c.d') | translate`), passed to a helper, or in a list piped later, is checked here: any quoted
+    // text that looks like a key and starts with one of en.json's first parts
+    const en: Record<string, string> = JSON.parse(await readFile(enPath, 'utf8'))
+    const keys = Object.keys(en)
+    const prefixes = new Set(keys.map(key => key.split('.')[0]))
+    // Not translation keys: the messages a custom plugin ui sends, and a file name
+    const notKeys = new Set([
+      'config.get',
+      'config.json',
+      'config.save',
+      'config.schema',
+      'config.update',
+      'form.create',
+      'form.end',
+      'toast.error',
+      'toast.info',
+      'toast.success',
+      'toast.warning',
+    ])
+    const missing = new Set<string>()
+    for (const file of await sourceFiles(uiApp)) {
+      const text = await readFile(file, 'utf8')
+      for (const [, key] of text.matchAll(/['"`]([a-z0-9_]+(?:\.[a-z0-9_-]+)+)['"`]/g)) {
+        if (!prefixes.has(key.split('.')[0]) || key in en || notKeys.has(key)) {
+          continue
+        }
+        // The start of a key the code finishes itself (`'update_all.reason_' + reason`)
+        if (keys.some(known => known.startsWith(`${key}.`) || known.startsWith(`${key}_`))) {
+          continue
+        }
+        missing.add(`${key} (${file.slice(uiApp.length + 1)})`)
+      }
+    }
+    expect([...missing].sort()).toEqual([])
+  })
 })

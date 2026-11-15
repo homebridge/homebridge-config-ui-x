@@ -144,6 +144,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - test(scheduler): check the old restart jobs on a copy, as the refresh empties the list in place
 - fix(hb-service): keep config.json's owner when saving it as root, as sudo hb-service install does
 - ci: name the release tag the upload-release-assets pin points at, v4.0.0, not the v4.0 branch
+- test(i18n): find a missing key in a ternary, a helper call or a template, not only before translate
 
 ### Homebridge Dependencies
 
