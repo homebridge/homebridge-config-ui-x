@@ -18,6 +18,9 @@ scripts/lang-sync.ts
 scripts/fontawesome-subset.mjs
 scripts/emoji-shortnames.mjs
 scripts/watch-supervisor.mjs
+scripts/apply-patches.mjs
+scripts/generate-prerelease-notes.mjs
+scripts/verify-monaco-assets.mjs
 test
 
 # Logs
