@@ -35,6 +35,7 @@ import { check as tcpCheck } from 'tcp-port-used'
 
 import { isNodeMajorKnown, isNodeMajorSupported, pickNodeUpdate } from '../core/node-version.constants.js'
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
+import { readConfigForCheck, writeConfigAtomically } from './config-file.js'
 import { confirmUnknownNode } from './confirm-unknown-node.js'
 import { Logger } from './logger.js'
 import { DarwinInstaller } from './platforms/darwin.js'
@@ -813,94 +814,109 @@ export class HomebridgeServiceHelper {
       restartRequired = true
     }
 
+    let currentConfig: Record<string, any> | undefined
     try {
-      const currentConfig = await this.readConfig()
-
-      // Extract ui config
-      if (!Array.isArray(currentConfig.platforms)) {
-        currentConfig.platforms = []
-      }
-      let uiConfigBlock = currentConfig.platforms.find((x: any) => x.platform === 'config')
-
-      // If the config block does not exist, then create it
-      if (!uiConfigBlock) {
-        this.logger.log(`Adding missing UI platform block to ${process.env.UIX_CONFIG_PATH}.`)
-        uiConfigBlock = await this.createDefaultUiConfig()
-        currentConfig.platforms.push(uiConfigBlock)
-        saveRequired = true
-        restartRequired = true
-      }
-
-      // Ensure the port is set
-      if (this.action !== 'install' && typeof uiConfigBlock.port !== 'number') {
-        uiConfigBlock.port = await this.getLastKnownUiPort()
-        this.logger.log(`Added missing port number to UI config: ${uiConfigBlock.port}.`)
-        saveRequired = true
-        restartRequired = true
-      }
-
-      // If doing an installation, make sure the port number matches the value passed in by the user
-      if (this.action === 'install') {
-        // Correct the port
-        if (uiConfigBlock.port !== this.uiPort) {
-          uiConfigBlock.port = this.uiPort
-          this.logger.warn(`Homebridge UI port in ${process.env.UIX_CONFIG_PATH} changed to: ${this.uiPort}.`)
-        }
-        // Delete unnecessary config
-        delete uiConfigBlock.restart
-        delete uiConfigBlock.sudo
-        delete uiConfigBlock.log
-        saveRequired = true
-      }
-
-      // Ensure the ui port is defined and is a number
-      if (typeof uiConfigBlock.port !== 'number') {
-        uiConfigBlock.port = await this.getLastKnownUiPort()
-        this.logger.log(`Added missing port number to UI config: ${uiConfigBlock.port}.`)
-        saveRequired = true
-        restartRequired = true
-      }
-
-      // Check the bridge section exists
-      if (!currentConfig.bridge) {
-        currentConfig.bridge = await this.generateBridgeConfig()
-        this.logger.log('Added missing Homebridge bridge section to the config.json.')
-        saveRequired = true
-      }
-
-      // Ensure port is set in bridge config
-      if (!currentConfig.bridge.port) {
-        currentConfig.bridge.port = await this.generatePort()
-        this.logger.log(`Added port to the Homebridge bridge section of the config.json: ${currentConfig.bridge.port}.`)
-        saveRequired = true
-      }
-
-      // Ensure bridge port is not the same as the UI port
-      if ((uiConfigBlock && currentConfig.bridge.port === uiConfigBlock.port) || currentConfig.bridge.port === 8080) {
-        currentConfig.bridge.port = await this.generatePort()
-        this.logger.log(`Bridge port must not be the same as the UI port. Changing bridge port to: ${currentConfig.bridge.port}.`)
-        saveRequired = true
-      }
-
-      // Ensure homebridge-config-ui-x is enabled if the plugins array is set
-      if (currentConfig.plugins && Array.isArray(currentConfig.plugins)) {
-        if (!currentConfig.plugins.includes('homebridge-config-ui-x')) {
-          currentConfig.plugins.push('homebridge-config-ui-x')
-          this.logger.log('Added Homebridge UI to the plugins array in the config.json.')
-          saveRequired = true
-        }
-      }
-
-      if (saveRequired) {
-        await writeJson(process.env.UIX_CONFIG_PATH, currentConfig, { spaces: 4 })
-      }
+      currentConfig = await readConfigForCheck(process.env.UIX_CONFIG_PATH)
     } catch (e) {
+      // Not a broken file but one that can't be read (wrong owner after a `sudo` run, a disk error): leave it as it
+      // is. A new config.json would get a new bridge username and pin, which unpairs the bridge from HomeKit.
+      this.logger.error(`Could not read ${process.env.UIX_CONFIG_PATH}: ${e.message}. It was left as it is.`)
+      process.exit(1)
+    }
+
+    if (!currentConfig) {
       const backupFile = resolve(this.storagePath, `config.json.invalid.${Date.now().toString()}`)
       this.logger.warn(`${process.env.UIX_CONFIG_PATH} does not contain valid JSON.`)
       this.logger.warn(`Invalid config.json file has been backed up to ${backupFile}.`)
       await rename(process.env.UIX_CONFIG_PATH, backupFile)
       await this.createDefaultConfig()
       restartRequired = true
+    }
+
+    if (currentConfig) {
+      try {
+        // Extract ui config
+        if (!Array.isArray(currentConfig.platforms)) {
+          currentConfig.platforms = []
+        }
+        let uiConfigBlock = currentConfig.platforms.find((x: any) => x.platform === 'config')
+
+        // If the config block does not exist, then create it
+        if (!uiConfigBlock) {
+          this.logger.log(`Adding missing UI platform block to ${process.env.UIX_CONFIG_PATH}.`)
+          uiConfigBlock = await this.createDefaultUiConfig()
+          currentConfig.platforms.push(uiConfigBlock)
+          saveRequired = true
+          restartRequired = true
+        }
+
+        // Ensure the port is set
+        if (this.action !== 'install' && typeof uiConfigBlock.port !== 'number') {
+          uiConfigBlock.port = await this.getLastKnownUiPort()
+          this.logger.log(`Added missing port number to UI config: ${uiConfigBlock.port}.`)
+          saveRequired = true
+          restartRequired = true
+        }
+
+        // If doing an installation, make sure the port number matches the value passed in by the user
+        if (this.action === 'install') {
+          // Correct the port
+          if (uiConfigBlock.port !== this.uiPort) {
+            uiConfigBlock.port = this.uiPort
+            this.logger.warn(`Homebridge UI port in ${process.env.UIX_CONFIG_PATH} changed to: ${this.uiPort}.`)
+          }
+          // Delete unnecessary config
+          delete uiConfigBlock.restart
+          delete uiConfigBlock.sudo
+          delete uiConfigBlock.log
+          saveRequired = true
+        }
+
+        // Ensure the ui port is defined and is a number
+        if (typeof uiConfigBlock.port !== 'number') {
+          uiConfigBlock.port = await this.getLastKnownUiPort()
+          this.logger.log(`Added missing port number to UI config: ${uiConfigBlock.port}.`)
+          saveRequired = true
+          restartRequired = true
+        }
+
+        // Check the bridge section exists
+        if (!currentConfig.bridge) {
+          currentConfig.bridge = await this.generateBridgeConfig()
+          this.logger.log('Added missing Homebridge bridge section to the config.json.')
+          saveRequired = true
+        }
+
+        // Ensure port is set in bridge config
+        if (!currentConfig.bridge.port) {
+          currentConfig.bridge.port = await this.generatePort()
+          this.logger.log(`Added port to the Homebridge bridge section of the config.json: ${currentConfig.bridge.port}.`)
+          saveRequired = true
+        }
+
+        // Ensure bridge port is not the same as the UI port
+        if ((uiConfigBlock && currentConfig.bridge.port === uiConfigBlock.port) || currentConfig.bridge.port === 8080) {
+          currentConfig.bridge.port = await this.generatePort()
+          this.logger.log(`Bridge port must not be the same as the UI port. Changing bridge port to: ${currentConfig.bridge.port}.`)
+          saveRequired = true
+        }
+
+        // Ensure homebridge-config-ui-x is enabled if the plugins array is set
+        if (currentConfig.plugins && Array.isArray(currentConfig.plugins)) {
+          if (!currentConfig.plugins.includes('homebridge-config-ui-x')) {
+            currentConfig.plugins.push('homebridge-config-ui-x')
+            this.logger.log('Added Homebridge UI to the plugins array in the config.json.')
+            saveRequired = true
+          }
+        }
+
+        if (saveRequired) {
+          await writeConfigAtomically(process.env.UIX_CONFIG_PATH, currentConfig)
+        }
+      } catch (e) {
+        // A failed update (no write access, a full disk) leaves the file as it was: it was read fine, so it is kept
+        this.logger.error(`Could not update ${process.env.UIX_CONFIG_PATH}: ${e.message}. It was left as it is.`)
+      }
     }
 
     // If the port number potentially changed, we need to restart here when running the
