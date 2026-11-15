@@ -107,6 +107,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(platform-tools): fail a log download without colours when the read fails, not hang
 - fix(server): keep the old wallpaper when an upload fails, writing the new one to a temp file first
 - fix(backup): remove old scheduled backups of an older bridge username from the default folder
+- fix(status): let only an admin drag the dashboard accessories, as only an admin's order is saved
 
 ### Other Changes
 
