@@ -165,12 +165,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(accessories): show a camera as one tile, with its sound, motion sensor and doorbell
 - fix(accessories): accept an id saved before hap-client 5.4.1 in the accessory api (#3125)
 - feat(server): add a web root setting, to serve the ui under a path behind a reverse proxy (#746)
+- chore(deps): dependency updates
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.4.0`
+- `@homebridge/hap-client` @ `v5.4.1-beta`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
-- `@homebridge/plugin-ui-utils` @ `v2.3.0`
+- `@homebridge/plugin-ui-utils` @ `v2.3.1-beta`
 
 ## v5.30.1 (2026-11-13)
 
