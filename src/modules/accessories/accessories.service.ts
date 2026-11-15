@@ -316,7 +316,7 @@ export class AccessoriesService {
 
     const monitor = await this.ensureHapMonitor()
 
-    const updateHandler = (data: ServiceType | MatterService) => {
+    const updateHandler = (data: ServiceType[]) => {
       client.emit('accessories-data', data)
     }
     monitor.on('service-update', updateHandler)
