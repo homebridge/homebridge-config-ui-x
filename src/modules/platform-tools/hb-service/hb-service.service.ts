@@ -36,8 +36,8 @@ export class HbServiceService {
           HOMEBRIDGE_INSECURE: typeof settings.insecureMode === 'boolean'
             ? settings.insecureMode
             : this.configService.homebridgeInsecureMode,
-          ENV_DEBUG: settings.env.DEBUG,
-          ENV_NODE_OPTIONS: settings.env.NODE_OPTIONS,
+          ENV_DEBUG: settings.env?.DEBUG,
+          ENV_NODE_OPTIONS: settings.env?.NODE_OPTIONS,
         }
       } else {
         return {

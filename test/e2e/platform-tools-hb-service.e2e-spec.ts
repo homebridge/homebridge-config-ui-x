@@ -9,7 +9,7 @@ import process from 'node:process'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { copy, readFile, readJson, remove, writeFile } from 'fs-extra'
+import { copy, readFile, readJson, remove, writeFile, writeJson } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -107,6 +107,40 @@ describe('PlatformToolsHbService (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
+  })
+
+  it('reads an env file with no env block, so a save from the settings page keeps its values', async () => {
+    // Regression: `settings.env.DEBUG` threw on a file with no `env` block, the read answered {}, the settings
+    // page showed every switch off, and its next save wrote insecure mode as unset
+    await writeJson(envFilePath, { debugMode: false, keepOrphans: true, insecureMode: true })
+
+    const read = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/homebridge-startup-settings',
+      headers: {
+        authorization,
+      },
+    })
+    expect(read.json()).toMatchObject({
+      HOMEBRIDGE_DEBUG: false,
+      HOMEBRIDGE_KEEP_ORPHANS: true,
+      HOMEBRIDGE_INSECURE: true,
+    })
+
+    // What the settings page sends when the debug switch is turned on (JSON leaves out undefined values)
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/platform-tools/hb-service/homebridge-startup-settings',
+      headers: {
+        authorization,
+      },
+      payload: JSON.parse(JSON.stringify({
+        ...read.json(),
+        HOMEBRIDGE_DEBUG: true,
+      })),
+    })
+    expect(res.statusCode).toBe(200)
+    expect(await readJson(envFilePath)).toMatchObject({ debugMode: true, keepOrphans: true, insecureMode: true })
   })
 
   it('PUT /platform-tools/hb-service/homebridge-startup-settings', async () => {
