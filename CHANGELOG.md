@@ -94,6 +94,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: add the homepage url to package.json
 - chore: drop the stale maintainers field from package.json
 - refactor(auth): import createGuardrails from otplib instead of the undeclared @otplib/core
+- build: declare socket.io, whose Socket type the accessories service imports
 
 ### Homebridge Dependencies
 
