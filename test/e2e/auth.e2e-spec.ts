@@ -1291,6 +1291,24 @@ describe('AuthController (e2e)', () => {
     expect(disconnect).not.toHaveBeenCalled()
   })
 
+  it('WsGuard records the user it verified on the socket, for handlers that act for that user', async () => {
+    const token = (await authService.signIn('admin', 'admin')).access_token
+    const client: any = {
+      handshake: {
+        auth: { token },
+      },
+      disconnect: vi.fn(),
+    }
+    const context: any = {
+      switchToWs: () => ({
+        getClient: () => client,
+      }),
+    }
+
+    expect(await app.get(WsGuard).canActivate(context)).toBe(true)
+    expect(client.data.user).toEqual({ username: 'admin', admin: true })
+  })
+
   it('WsLogGuard follows the restrictLogsToAdmins setting', async () => {
     await authService.addUser({
       name: 'Log Reader',

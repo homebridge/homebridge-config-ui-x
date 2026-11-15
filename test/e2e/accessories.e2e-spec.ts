@@ -8,12 +8,14 @@ import process from 'node:process'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+import { WsException } from '@nestjs/websockets'
 import { copy, remove } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
+import { AccessoriesGateway } from '../../src/modules/accessories/accessories.gateway.js'
 import { AccessoriesModule } from '../../src/modules/accessories/accessories.module.js'
 import { AccessoriesService } from '../../src/modules/accessories/accessories.service.js'
 
@@ -537,6 +539,39 @@ describe('AccessoriesController (e2e)', () => {
     // Now getAccessoryLayout should return the saved layout
     const loaded = await accessoriesService.getAccessoryLayout('admin')
     expect(loaded).toEqual(layout)
+  })
+
+  it('the layout socket handlers act for the verified user, not the user named in the message', async () => {
+    const gateway = app.get(AccessoriesGateway)
+    const adminLayout = [
+      { name: 'Admin Room', services: [] },
+    ]
+    await accessoriesService.saveAccessoryLayout('admin', adminLayout as any)
+
+    // A non-admin's socket, as WsGuard leaves it after checking the token
+    const guestClient = {
+      data: {
+        user: { username: 'guest', admin: false },
+      },
+    }
+
+    await gateway.saveAccessoryLayout(guestClient, {
+      user: 'admin',
+      layout: [
+        { name: 'Hijacked', services: [] },
+      ],
+    })
+    expect(await accessoriesService.getAccessoryLayout('admin')).toEqual(adminLayout)
+    expect(await accessoriesService.getAccessoryLayout('guest')).toEqual([
+      { name: 'Hijacked', services: [] },
+    ])
+
+    expect(await gateway.getAccessoryLayout(guestClient)).toEqual([
+      { name: 'Hijacked', services: [] },
+    ])
+
+    // No verified user: nothing is read or written
+    expect(await gateway.getAccessoryLayout({})).toBeInstanceOf(WsException)
   })
 
   it('service.connect survives a malformed accessory-control payload', async () => {
