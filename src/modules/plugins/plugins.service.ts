@@ -185,9 +185,13 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
    * part-way and leaves the package half-unpacked on disk (see exitOnceUpdatesFinish).
    */
   public async beforeApplicationShutdown(): Promise<void> {
-    while (this.packageOperationsPending > 0) {
+    // Only the run in progress is waited for (decided by BP). Under hb-service Homebridge is already stopped here,
+    // so waiting for every queued run (each up to 30 minutes) kept all accessories offline. The queued runs are
+    // dropped (each says so in the log) and new ones are refused.
+    this.closing = true
+    if (this.runningPackageOperation) {
       this.logger.warn('Waiting for a package update to finish before closing...')
-      await this.packageOperationQueue
+      await this.runningPackageOperation.catch(() => {})
     }
   }
 
@@ -210,12 +214,34 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
    */
   private packageOperationQueue: Promise<unknown> = Promise.resolve()
   private packageOperationsPending = 0
+  private runningPackageOperation?: Promise<unknown>
+  // Set when the app starts closing: no package operation starts after that
+  private closing = false
 
   private queuePackageOperation<T>(operation: () => Promise<T>): Promise<T> {
+    if (this.closing) {
+      return Promise.reject(new Error('The UI is closing: try again once it has restarted.'))
+    }
+    // With nothing ahead of it, a run counts as running from now: it starts a moment later, and closing must wait
+    // for it, not drop it
+    const startsNow = this.packageOperationsPending === 0
     this.packageOperationsPending++
-    const run = this.packageOperationQueue.then(operation).finally(() => {
+    const run: Promise<T> = this.packageOperationQueue.then(() => {
+      if (this.closing && !startsNow) {
+        this.logger.warn('A queued package update was dropped, as the UI is closing.')
+        throw new Error('The UI closed before this package update started: try again once it has restarted.')
+      }
+      this.runningPackageOperation = run
+      return operation()
+    }).finally(() => {
+      if (this.runningPackageOperation === run) {
+        this.runningPackageOperation = undefined
+      }
       this.packageOperationsPending--
     })
+    if (startsNow) {
+      this.runningPackageOperation = run
+    }
     // The queue lives on after a failed operation - only the caller sees the error
     this.packageOperationQueue = run.catch(() => {})
     return run
