@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
+import { numberValue, stringValue } from '@/app/core/accessories/types/hap/hap-values'
 
 @Component({
   selector: 'app-television-manage',
@@ -25,10 +26,11 @@ export class TelevisionManageComponent extends BaseManageComponent {
 
     if (this.service.linkedServices) {
       for (const [, inputService] of Object.entries(this.service.linkedServices)) {
-        if (inputService.type === 'InputSource') {
+        const identifier = numberValue(inputService.values, 'Identifier')
+        if (inputService.type === 'InputSource' && identifier !== undefined) {
           this.sourceList.push({
-            identifier: inputService.values.Identifier,
-            name: inputService.values.ConfiguredName || `Input ${inputService.values.Identifier}`,
+            identifier,
+            name: stringValue(inputService.values, 'ConfiguredName') || `Input ${identifier}`,
           })
         }
       }
@@ -42,13 +44,13 @@ export class TelevisionManageComponent extends BaseManageComponent {
   }
 
   public setActive(value: number, event: MouseEvent) {
-    void this.service.getCharacteristic!('Active')!.setValue!(value)
+    void this.service.getCharacteristic?.('Active')?.setValue?.(value)
 
     this.blurTarget(event)
   }
 
   public setInput(value: number | string, event: MouseEvent) {
-    void this.service.getCharacteristic!('ActiveIdentifier')!.setValue!(value)
+    void this.service.getCharacteristic?.('ActiveIdentifier')?.setValue?.(value)
 
     this.blurTarget(event)
   }

@@ -28,24 +28,24 @@ export class ValveManageComponent extends BaseManageComponent {
 
   protected setupComponent() {
     this.createDebouncedSubscription(this.targetSetDurationChanged, () => {
-      void this.service.getCharacteristic!('SetDuration').setValue!(this.targetSetDuration.value)
+      void this.service.getCharacteristic?.('SetDuration')?.setValue?.(this.targetSetDuration.value)
     })
 
-    this.targetMode = this.service.values.Active
+    this.targetMode = !!this.service.values.Active
 
     this.loadTargetSetDuration()
   }
 
   protected handleAccessoryUpdate() {
-    this.targetMode = this.service.values.Active
+    this.targetMode = !!this.service.values.Active
     if (this.targetSetDuration && 'SetDuration' in this.service.values) {
-      this.targetSetDuration.value = this.service.getCharacteristic!('SetDuration').value as number
+      this.targetSetDuration.value = this.service.getCharacteristic?.('SetDuration')?.value as number
     }
   }
 
   public setTargetMode(value: boolean, event: MouseEvent) {
     this.targetMode = value
-    void this.service.getCharacteristic!('Active').setValue!(this.targetMode)
+    void this.service.getCharacteristic?.('Active')?.setValue?.(this.targetMode)
 
     this.blurTarget(event)
   }
@@ -55,7 +55,7 @@ export class ValveManageComponent extends BaseManageComponent {
   }
 
   private loadTargetSetDuration() {
-    const TargetSetDuration = this.service.getCharacteristic!('SetDuration')
+    const TargetSetDuration = this.service.getCharacteristic?.('SetDuration')
 
     if (TargetSetDuration) {
       this.targetSetDuration = {

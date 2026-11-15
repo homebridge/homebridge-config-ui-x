@@ -42,8 +42,8 @@
           <div class="float-start primary-text">
             <i
               class="fas fa-xl"
-              [class.fa-check-circle]="service.values?.RotationDirection === 0"
-              [class.fa-blank]="service.values?.RotationDirection !== 0"
+              [class.fa-check-circle]="service.values.RotationDirection === 0"
+              [class.fa-blank]="service.values.RotationDirection !== 0"
             ></i>
           </div>
           {{ 'accessories.control.rotation_clockwise' | translate }}
@@ -53,8 +53,8 @@
           <div class="float-start primary-text">
             <i
               class="fas fa-xl"
-              [class.fa-check-circle]="service.values?.RotationDirection === 1"
-              [class.fa-blank]="service.values?.RotationDirection !== 1"
+              [class.fa-check-circle]="service.values.RotationDirection === 1"
+              [class.fa-blank]="service.values.RotationDirection !== 1"
             ></i>
           </div>
           {{ 'accessories.control.rotation_c_clockwise' | translate }}

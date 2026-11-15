@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
+import { numberValue } from '@/app/core/accessories/types/hap/hap-values'
 
 @Component({
   selector: 'app-garage-door-opener-manage',
@@ -13,22 +14,22 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GarageDoorOpenerManageComponent extends BaseManageComponent {
-  public targetState!: number
+  public targetState: number | undefined
   private lastMovingDirection: number | undefined
 
   protected setupComponent() {
-    this.targetState = this.resolveTargetState(this.service.values.CurrentDoorState)
+    this.targetState = this.resolveTargetState(numberValue(this.service.values, 'CurrentDoorState'))
   }
 
   protected handleAccessoryUpdate() {
-    this.targetState = this.resolveTargetState(this.service.values.CurrentDoorState)
+    this.targetState = this.resolveTargetState(numberValue(this.service.values, 'CurrentDoorState'))
   }
 
   /**
    * When stopped, resolve to the reverse direction target:
    * Was Closing (3) -> target Open (0), Was Opening (2) -> target Close (1)
    */
-  private resolveTargetState(currentState: number): number {
+  private resolveTargetState(currentState: number | undefined): number | undefined {
     if (currentState === 2 || currentState === 3) {
       this.lastMovingDirection = currentState
     }
@@ -41,7 +42,7 @@ export class GarageDoorOpenerManageComponent extends BaseManageComponent {
   }
 
   public setTargetState(value: number, event: MouseEvent) {
-    void this.service.getCharacteristic!('TargetDoorState')!.setValue!(value)
+    void this.service.getCharacteristic?.('TargetDoorState')?.setValue?.(value)
 
     this.blurTarget(event)
   }

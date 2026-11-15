@@ -7,6 +7,7 @@ import { NouisliderComponent } from 'ng2-nouislider'
 import { Subject } from 'rxjs'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
+import { numberList, numberValue } from '@/app/core/accessories/types/hap/hap-values'
 
 @Component({
   selector: 'app-humidifier-dehumidifier-manage',
@@ -22,12 +23,12 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
 export class HumidifierDehumidifierManageComponent extends BaseManageComponent {
   public type: 'humidifier' | 'dehumidifier' | undefined
 
-  public targetState!: number
-  public targetMode!: number
+  public targetState: number | undefined
+  public targetMode: number | undefined
   public targetHumidityChanged: Subject<any> = new Subject<any>()
   public targetStateValidValues: number[] = []
-  public RelativeHumidityDehumidifierThreshold!: CharacteristicType
-  public RelativeHumidityHumidifierThreshold!: CharacteristicType
+  public RelativeHumidityDehumidifierThreshold: CharacteristicType | undefined
+  public RelativeHumidityHumidifierThreshold: CharacteristicType | undefined
   public targetDehumidifierHumidity!: number
   public targetHumidifierHumidity!: number
   public autoHumidity!: [number, number]
@@ -38,10 +39,10 @@ export class HumidifierDehumidifierManageComponent extends BaseManageComponent {
   protected setupComponent() {
     this.createDebouncedSubscription(this.targetHumidityChanged, () => {
       if (this.RelativeHumidityHumidifierThreshold) {
-        void this.service.getCharacteristic!('RelativeHumidityHumidifierThreshold').setValue!(this.targetHumidifierHumidity)
+        void this.service.getCharacteristic?.('RelativeHumidityHumidifierThreshold')?.setValue?.(this.targetHumidifierHumidity)
       }
       if (this.RelativeHumidityDehumidifierThreshold) {
-        void this.service.getCharacteristic!('RelativeHumidityDehumidifierThreshold').setValue!(this.targetDehumidifierHumidity)
+        void this.service.getCharacteristic?.('RelativeHumidityDehumidifierThreshold')?.setValue?.(this.targetDehumidifierHumidity)
       }
     })
 
@@ -51,11 +52,11 @@ export class HumidifierDehumidifierManageComponent extends BaseManageComponent {
       }
     })
 
-    this.targetState = this.service.values.Active
-    this.targetMode = this.service.values.TargetHumidifierDehumidifierState
-    this.RelativeHumidityDehumidifierThreshold = this.service.getCharacteristic!('RelativeHumidityDehumidifierThreshold')
-    this.RelativeHumidityHumidifierThreshold = this.service.getCharacteristic!('RelativeHumidityHumidifierThreshold')
-    this.targetStateValidValues = this.service.getCharacteristic!('TargetHumidifierDehumidifierState').validValues as number[]
+    this.targetState = numberValue(this.service.values, 'Active')
+    this.targetMode = numberValue(this.service.values, 'TargetHumidifierDehumidifierState')
+    this.RelativeHumidityDehumidifierThreshold = this.service.getCharacteristic?.('RelativeHumidityDehumidifierThreshold')
+    this.RelativeHumidityHumidifierThreshold = this.service.getCharacteristic?.('RelativeHumidityHumidifierThreshold')
+    this.targetStateValidValues = numberList(this.service.getCharacteristic?.('TargetHumidifierDehumidifierState')?.validValues)
 
     // Derive type from valid target states: humidify-only, dehumidify-only, or dual
     if (this.targetStateValidValues.includes(1) && !this.targetStateValidValues.includes(2)) {
@@ -79,10 +80,10 @@ export class HumidifierDehumidifierManageComponent extends BaseManageComponent {
   }
 
   protected handleAccessoryUpdate() {
-    this.targetState = this.service.values.Active
-    this.targetMode = this.service.values.TargetHumidifierDehumidifierState
-    this.targetDehumidifierHumidity = this.service.getCharacteristic!('RelativeHumidityDehumidifierThreshold')?.value as number
-    this.targetHumidifierHumidity = this.service.getCharacteristic!('RelativeHumidityHumidifierThreshold')?.value as number
+    this.targetState = numberValue(this.service.values, 'Active')
+    this.targetMode = numberValue(this.service.values, 'TargetHumidifierDehumidifierState')
+    this.targetDehumidifierHumidity = this.service.getCharacteristic?.('RelativeHumidityDehumidifierThreshold')?.value as number
+    this.targetHumidifierHumidity = this.service.getCharacteristic?.('RelativeHumidityHumidifierThreshold')?.value as number
     this.autoHumidity = [this.targetHumidifierHumidity, this.targetDehumidifierHumidity]
 
     if (this.targetRotationSpeed && this.serviceFan) {
@@ -113,14 +114,14 @@ export class HumidifierDehumidifierManageComponent extends BaseManageComponent {
   }
 
   private loadTargetHumidity() {
-    this.targetDehumidifierHumidity = this.service.getCharacteristic!('RelativeHumidityDehumidifierThreshold')?.value as number
-    this.targetHumidifierHumidity = this.service.getCharacteristic!('RelativeHumidityHumidifierThreshold')?.value as number
+    this.targetDehumidifierHumidity = this.service.getCharacteristic?.('RelativeHumidityDehumidifierThreshold')?.value as number
+    this.targetHumidifierHumidity = this.service.getCharacteristic?.('RelativeHumidityHumidifierThreshold')?.value as number
     this.autoHumidity = [this.targetHumidifierHumidity, this.targetDehumidifierHumidity]
   }
 
   public setTargetState(value: number, event: MouseEvent) {
     this.targetState = value
-    void this.service.getCharacteristic!('Active').setValue!(this.targetState)
+    void this.service.getCharacteristic?.('Active')?.setValue?.(this.targetState)
     this.loadTargetHumidity()
     this.applyAllGradients()
 
@@ -129,7 +130,7 @@ export class HumidifierDehumidifierManageComponent extends BaseManageComponent {
 
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
-    void this.service.getCharacteristic!('TargetHumidifierDehumidifierState').setValue!(this.targetMode)
+    void this.service.getCharacteristic?.('TargetHumidifierDehumidifierState')?.setValue?.(this.targetMode)
     this.loadTargetHumidity()
 
     this.blurTarget(event)
