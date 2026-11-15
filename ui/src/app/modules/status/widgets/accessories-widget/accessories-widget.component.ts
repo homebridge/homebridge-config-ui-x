@@ -6,6 +6,7 @@ import { DragulaModule, DragulaService } from 'ng2-dragula'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
+import { AuthService } from '@/app/core/auth/auth.service'
 import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
@@ -26,6 +27,7 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
   private $accessories = inject(AccessoriesService)
   private $dragula = inject(DragulaService)
   private $md = inject(MobileDetectService)
+  private $auth = inject(AuthService)
 
   // Signals
   readonly widget = input.required<Widget>()
@@ -38,9 +40,11 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
 
     this.isMobile.set(!!this.$md.detect.mobile())
 
-    // Disable drag and drop for the .no-drag class
+    // Disable drag and drop for the .no-drag class, and for a non-admin: only an admin may save the dashboard
+    // layout (shared by every user), so a non-admin's new order would be lost on the next load
+    const isAdmin = Boolean(this.$auth.user?.admin)
     $dragula.createGroup('widget-accessories-bag', {
-      moves: el => !this.isMobile() && !el!.classList.contains('no-drag'),
+      moves: el => isAdmin && !this.isMobile() && !el!.classList.contains('no-drag'),
     })
 
     // Save the room and service layout
