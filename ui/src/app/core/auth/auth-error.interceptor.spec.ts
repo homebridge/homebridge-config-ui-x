@@ -76,6 +76,14 @@ describe('authErrorInterceptor', () => {
     expect(auth.logout).not.toHaveBeenCalled()
   })
 
+  it('leaves a 401 from another site alone, such as the weather widget\'s openweathermap', async () => {
+    // Regression: any 401 called the account-wide logout, so a bad weather api key signed the user out of
+    // every device each time the dashboard opened
+    await expectFailure('https://api.openweathermap.org/data/2.5/weather?q=London', 401)
+
+    expect(auth.logout).not.toHaveBeenCalled()
+  })
+
   it('does nothing when there is no session to end', async () => {
     auth.token = null
 
