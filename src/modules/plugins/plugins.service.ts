@@ -2909,14 +2909,22 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
         })
 
         // Send an error message to the client if the command does not exit with code 0
-        term.onExit(({ exitCode }) => {
-          if (exitCode === 0) {
+        // node-pty reports a process ended by a signal (as the time limit below does) as exit code 0 with a
+        // `signal`: that run did not finish, so it is a failure
+        let timedOut = false
+        term.onExit(({ exitCode, signal }) => {
+          if (timedOut) {
+            clearTimeout(timeoutTimer)
+            rej(new Error('npm did not finish in time and was stopped.'))
+          } else if (exitCode === 0 && !signal) {
             clearTimeout(timeoutTimer)
             client.emit('stdout', green('\n\rOperation succeeded!.\n\r'))
             res(null)
           } else {
             clearTimeout(timeoutTimer)
-            rej(new Error(`Operation failed with code ${exitCode}.\n\rYou can download this log file for future reference.\n\rSee https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting for help.`))
+            rej(new Error(`Operation failed with code ${exitCode}${signal
+              ? ` (signal ${signal})`
+              : ''}.\n\rYou can download this log file for future reference.\n\rSee https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting for help.`))
           }
         })
 
@@ -2924,6 +2932,7 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
         // and on a Raspberry Pi 1 / Zero a UI update can take 15 minutes. If npm ignores SIGTERM it is killed
         // outright, and the run fails either way, so the package queue (and a waiting restart) moves on.
         timeoutTimer = setTimeout(() => {
+          timedOut = true
           client.emit('stdout', red(`\n\rnpm did not finish within ${PluginsService.NPM_RUN_TIMEOUT_MS / 60000} minutes and was stopped.\n\r`))
           try {
             term.kill('SIGTERM')

@@ -79,6 +79,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): show a control on one part of a matter device on that part, not the main tile
 - fix(platform-tools): read hb-service startup settings that have no env block, not as empty
 - fix(backup): restore none of the files a backup leaves out from an hbfx backup either
+- fix(plugins): fail an npm run stopped at the time limit, which node-pty reports as exit code 0
 
 ### Other Changes
 
