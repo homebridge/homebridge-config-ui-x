@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { TtlCacheService } from '@/app/core/caching/ttl-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
+import { listenUntilDestroyed } from '@/app/core/communication/socket-listener'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ChildBridgeIconSource, ChildBridgeStatusIconsComponent } from '@/app/core/components/child-bridge-status-icons/child-bridge-status-icons.component'
 import { ChildBridgeStatusResponse, HomebridgeStatus, HomebridgeStatusResponse } from '@/app/core/server.interfaces'
@@ -145,7 +146,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   private async initialize(): Promise<void> {
     this.ioMain = this.$ws.connectToNamespace('status')
 
-    this.ioMain.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
+    listenUntilDestroyed(this.destroyRef, this.ioMain.socket).on('homebridge-status', (data: HomebridgeStatusResponse) => {
       const prevStatus = this.lastHomebridgeStatus
       this.homebridgeStatus.set(data)
       this.lastHomebridgeStatus = data.status
@@ -162,7 +163,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
       this.maybeAnnounceHomebridgeRestart(prevStatus)
     })
 
-    this.ioMain.socket.on('disconnect', () => {
+    listenUntilDestroyed(this.destroyRef, this.ioMain.socket).on('disconnect', () => {
       const prevStatus = this.lastHomebridgeStatus
       this.homebridgeStatus.update(status => ({ ...status, status: HomebridgeStatus.DOWN }))
       this.lastHomebridgeStatus = HomebridgeStatus.DOWN
@@ -176,7 +177,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
       this.ioChild.socket.emit('monitor-child-bridge-status')
     })
 
-    this.ioChild.socket.on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
+    listenUntilDestroyed(this.destroyRef, this.ioChild.socket).on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
       const key = data.username || data.name
       const prevStatus = this.lastChildStatuses[key]
       this.lastChildStatuses[key] = data.status
