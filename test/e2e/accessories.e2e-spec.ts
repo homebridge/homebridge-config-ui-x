@@ -541,6 +541,53 @@ describe('AccessoriesController (e2e)', () => {
     expect(loaded).toEqual(layout)
   })
 
+  describe('a single matter accessory', () => {
+    const lamp = {
+      uuid: 'abc',
+      displayName: 'Lamp',
+      deviceType: 'OnOffLight',
+      clusters: {},
+      bridge: { name: 'Main', username: '0E:00:00:00:00:01' },
+    }
+
+    function answerWith(withCorrelationId: boolean) {
+      const ipc = app.get(HomebridgeIpcService)
+      return vi.spyOn(ipc, 'sendMessage').mockImplementation((type: string, data: any) => {
+        if (type === 'getMatterAccessoryInfo') {
+          // What homebridge sends back (v2.5.1 adds the correlation id)
+          setImmediate(() => ipc.emit('matterEvent', {
+            type: 'accessoryInfoData',
+            ...(withCorrelationId
+              ? { correlationId: data.correlationId }
+              : {}),
+            data: { ...lamp, uuid: data.uuid },
+          }))
+        }
+      })
+    }
+
+    it('is found from the accessoryInfoData reply', async () => {
+      const spy = answerWith(true)
+      try {
+        const result = await accessoriesService.getAccessory('matter:abc')
+        expect(result.serviceName).toBe('Lamp')
+        expect(spy.mock.calls.filter(([type]) => type === 'getMatterAccessoryInfo')).toHaveLength(1)
+      } finally {
+        spy.mockRestore()
+      }
+    }, 5000)
+
+    it('is found from the reply of an older homebridge that sends no correlation id', async () => {
+      const spy = answerWith(false)
+      try {
+        const result = await accessoriesService.getAccessory('matter:abc')
+        expect(result.serviceName).toBe('Lamp')
+      } finally {
+        spy.mockRestore()
+      }
+    }, 5000)
+  })
+
   it('the layout socket handlers act for the verified user, not the user named in the message', async () => {
     const gateway = app.get(AccessoriesGateway)
     const adminLayout = [

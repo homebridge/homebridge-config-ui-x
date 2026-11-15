@@ -66,7 +66,14 @@ export class AccessoriesService {
   // request stores `{ eventType, resolve, reject, timer }` keyed by its
   // correlation id; the dispatcher routes incoming events to the right
   // waiter instead of every request registering its own listener.
-  private matterRequests = new Map<string, { eventType: string, resolve: (v: any) => void, reject: (e: Error) => void, timer: ReturnType<typeof setTimeout> }>()
+  private matterRequests = new Map<string, {
+    eventType: string
+    resolve: (v: any) => void
+    reject: (e: Error) => void
+    timer: ReturnType<typeof setTimeout>
+    matchUncorrelated?: (data: any) => boolean
+  }>()
+
   private matterDispatcherInstalled = false
 
   constructor(
@@ -488,9 +495,11 @@ export class AccessoriesService {
       const { uuid, partId } = this.parseMatterUniqueId(uniqueId)
 
       // Request detailed info via IPC using unified Matter event channel
-      const response = await this.waitForMatterEvent<MatterAccessoryInfo>('accessoryInfo', (correlationId) => {
+      // Homebridge answers with `accessoryInfoData`. Up to v2.5.0 that reply carries no correlation id, so a reply
+      // without one is matched to this request by the accessory uuid instead.
+      const response = await this.waitForMatterEvent<MatterAccessoryInfo>('accessoryInfoData', (correlationId) => {
         this.homebridgeIpcService.sendMessage('getMatterAccessoryInfo', { uuid, correlationId })
-      })
+      }, (data: { uuid?: string }) => !data?.uuid || data.uuid === uuid)
 
       if (response.error) {
         throw new BadRequestException(response.error)
@@ -679,13 +688,17 @@ export class AccessoriesService {
    * Uses a correlationId to avoid cross-talk between concurrent requests.
    * Retries once on timeout (10s per attempt).
    */
-  private async waitForMatterEvent<T = unknown>(eventType: string, sendRequest: (correlationId: string) => void): Promise<T> {
+  private async waitForMatterEvent<T = unknown>(
+    eventType: string,
+    sendRequest: (correlationId: string) => void,
+    matchUncorrelated?: (data: any) => boolean,
+  ): Promise<T> {
     try {
-      return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000)
+      return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000, matchUncorrelated)
     } catch {
       this.logger.warn(`Matter IPC request '${eventType}' timed out, retrying...`)
       try {
-        return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000)
+        return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000, matchUncorrelated)
       } catch (retryError) {
         this.logger.error(`Matter IPC request '${eventType}' failed after retry`)
         throw retryError
@@ -701,7 +714,12 @@ export class AccessoriesService {
    * registered a fresh listener per request, so N concurrent requests
    * meant N listeners and each emit did O(N) work.
    */
-  private async attemptMatterEvent<T = unknown>(eventType: string, sendRequest: (correlationId: string) => void, timeoutMs: number): Promise<T> {
+  private async attemptMatterEvent<T = unknown>(
+    eventType: string,
+    sendRequest: (correlationId: string) => void,
+    timeoutMs: number,
+    matchUncorrelated?: (data: any) => boolean,
+  ): Promise<T> {
     this.ensureMatterDispatcher()
     const correlationId = `${eventType}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 
@@ -717,6 +735,7 @@ export class AccessoriesService {
         resolve,
         reject,
         timer,
+        matchUncorrelated,
       })
 
       try {
@@ -744,6 +763,15 @@ export class AccessoriesService {
     this.matterDispatcherInstalled = true
     this.homebridgeIpcService.on('matterEvent', (event: MatterEvent) => {
       if (!event?.correlationId) {
+        // An older Homebridge sends some replies without the id: give it to the oldest request that accepts it
+        for (const [id, waiter] of this.matterRequests) {
+          if (waiter.eventType === event?.type && waiter.matchUncorrelated?.(event.data)) {
+            this.matterRequests.delete(id)
+            clearTimeout(waiter.timer)
+            waiter.resolve(event.data)
+            return
+          }
+        }
         return
       }
       const waiter = this.matterRequests.get(event.correlationId)
