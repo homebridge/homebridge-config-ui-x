@@ -427,7 +427,9 @@ export class ConfigEditorService implements OnApplicationBootstrap {
 
       const removeExisting = (block: Record<string, any>, index: number) => {
         if (block[plugin.pluginType] === plugin.pluginAlias || block[plugin.pluginType] === `${pluginName}.${plugin.pluginAlias}`) {
-          positionIndices = index
+          // Where the plugin's first block was: nothing before it is removed, so the same index holds in the
+          // filtered list. A later block's index would not (it counts the removed blocks before it).
+          positionIndices ??= index
           return false
         } else {
           return true

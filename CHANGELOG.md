@@ -62,6 +62,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(server): check cached accessory names before stopping homebridge, and skip a missing cache file
 - fix(server): stop homebridge once, not twice, when resetting a bridge pairing
 - fix(backup): save the ui block as config.json has it on an hbfx restore, not its start-up values
+- fix(config-editor): put a plugin's blocks back where its first block was, not past other plugins
 
 ### Other Changes
 
