@@ -40,7 +40,7 @@ import { createFile, ensureDir, pathExists, pathExistsSync, readJson, remove } f
 import NodeCache from 'node-cache'
 import pLimit from 'p-limit'
 import { firstValueFrom } from 'rxjs'
-import { gt, lt, parse, rcompare, satisfies } from 'semver'
+import { gt, lt, major, parse, prerelease, rcompare, satisfies, valid } from 'semver'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
@@ -64,6 +64,17 @@ import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
 // Create a require function for ESM compatibility
 const require = createRequire(import.meta.url)
 const module = require('node:module')
+
+/**
+ * The newest stable version with the same major version as the installed one, if it is newer than the installed one.
+ * Pre-releases are left out: the "major" update policy means stable updates only (a beta is the "beta" policy).
+ */
+export function latestStableInSameMajor(available: string[], installed: string): string | undefined {
+  const installedMajor = major(installed)
+  return available
+    .filter(version => valid(version) && !prerelease(version) && major(version) === installedMajor && gt(version, installed))
+    .sort(rcompare)[0]
+}
 
 @Injectable()
 export class PluginsService implements OnModuleDestroy {
@@ -1001,23 +1012,14 @@ export class PluginsService implements OnModuleDestroy {
       homebridge.updateAvailable = false
       homebridge.latestVersion = null
     } else if (updatePolicy === 'major') {
-      // Find the latest version within the same major version
-      const currentMajor = Number.parseInt(homebridge.installedVersion.split('.')[0], 10)
+      // The latest stable version within the same major version (versions lists the ones not deprecated)
       const versions = await this.getAvailablePluginVersions('homebridge')
+      const latestInMajor = latestStableInSameMajor(Object.keys(versions.versions), homebridge.installedVersion)
 
-      // Filter to versions in the same major and not deprecated
-      const sameMajorVersions = Object.keys(versions.versions)
-        .filter((version) => {
-          const versionMajor = Number.parseInt(version.split('.')[0], 10)
-          return versionMajor === currentMajor
-        })
-        .sort(rcompare) // Sort descending (highest first)
-
-      if (sameMajorVersions.length > 0 && gt(sameMajorVersions[0], homebridge.installedVersion)) {
-        // There's a newer version in the same major
-        homebridge.latestVersion = sameMajorVersions[0]
+      if (latestInMajor) {
+        homebridge.latestVersion = latestInMajor
         homebridge.updateAvailable = true
-        homebridge.updateEngines = versions.versions[sameMajorVersions[0]]?.engines || null
+        homebridge.updateEngines = versions.versions[latestInMajor]?.engines || null
       } else {
         // No newer version in same major
         homebridge.updateAvailable = false
@@ -1377,23 +1379,14 @@ export class PluginsService implements OnModuleDestroy {
       uiPackage.updateAvailable = false
       uiPackage.latestVersion = null
     } else if (updatePolicy === 'major') {
-      // Find the latest version within the same major version
-      const currentMajor = Number.parseInt(uiPackage.installedVersion.split('.')[0], 10)
+      // The latest stable version within the same major version (versions lists the ones not deprecated)
       const versions = await this.getAvailablePluginVersions(this.configService.name)
+      const latestInMajor = latestStableInSameMajor(Object.keys(versions.versions), uiPackage.installedVersion)
 
-      // Filter to versions in the same major and not deprecated
-      const sameMajorVersions = Object.keys(versions.versions)
-        .filter((version) => {
-          const versionMajor = Number.parseInt(version.split('.')[0], 10)
-          return versionMajor === currentMajor
-        })
-        .sort(rcompare) // Sort descending (highest first)
-
-      if (sameMajorVersions.length > 0 && gt(sameMajorVersions[0], uiPackage.installedVersion)) {
-        // There's a newer version in the same major
-        uiPackage.latestVersion = sameMajorVersions[0]
+      if (latestInMajor) {
+        uiPackage.latestVersion = latestInMajor
         uiPackage.updateAvailable = true
-        uiPackage.updateEngines = versions.versions[sameMajorVersions[0]]?.engines || null
+        uiPackage.updateEngines = versions.versions[latestInMajor]?.engines || null
       } else {
         // No newer version in same major
         uiPackage.updateAvailable = false
