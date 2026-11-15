@@ -49,6 +49,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(plugins): say matter failed to start for a child bridge, not to restart to see the code
 - fix(ui): use browser timer types instead of node.js ones, so a ui spec also builds on its own
 - fix(login): say the account is locked for a while, or the ui can't be reached, not a wrong password
+- fix(platform-tools): reboot or shut down the host only from a click, not again on back or reload
 
 ### Other Changes
 

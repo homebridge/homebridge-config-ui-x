@@ -7,6 +7,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { of } from 'rxjs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { CONFIRMED_ACTION_STATE } from '@/app/core/utilities/confirmed-action'
 import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 import { ContainerRestartComponent } from '@/app/modules/platform-tools/docker/container-restart/container-restart.component'
 import { StartupScriptComponent } from '@/app/modules/platform-tools/docker/startup-script/startup-script.component'
@@ -51,12 +52,17 @@ describe('the platform tools pages', () => {
    * @param options - how to set it up
    * @param options.script - the startup script the route resolver supplies
    * @param options.arrange - registers responses on the freshly built fakes
+   * @param options.clicked - opened from the power menu button just now (default), not by Back or a reload
    */
   async function open<T>(type: new (...args: any[]) => T, options: {
     script?: string
     arrange?: () => void
+    clicked?: boolean
   } = {}) {
     TestBed.resetTestingModule()
+    history.replaceState(options.clicked === false
+      ? {}
+      : { ...CONFIRMED_ACTION_STATE }, '')
     api = fakeApi()
     md = {
       detect: {
@@ -307,6 +313,25 @@ describe('the platform tools pages', () => {
       // page has its own translated key
       expect(page.error()).toBe('platform.linux.server_shutdown_error')
       expect(toastr.at('error')[0].message).toBe('platform.linux.server_shutdown_error')
+    })
+  })
+
+  describe('opened again by back, a reload or a restored tab', () => {
+    it.each([
+      ['restart the host', RestartLinuxComponent, '/platform-tools/linux/restart-host'],
+      ['shut the host down', ShutdownLinuxComponent, '/platform-tools/linux/shutdown-host'],
+      ['restart the container', ContainerRestartComponent, '/platform-tools/docker/restart-container'],
+    ])('does not %s again, and goes home', async (_label, type: any, path) => {
+      await open(type, { clicked: false })
+
+      expect(api.lastCall('put', path)).toBeUndefined()
+      expect(navigate).toHaveBeenCalledWith(['/'], { replaceUrl: true })
+    })
+
+    it('acts once only: going back to the same page finds the click used up', async () => {
+      await open(ShutdownLinuxComponent)
+      expect(api.lastCall('put', '/platform-tools/linux/shutdown-host')).toBeDefined()
+      expect(history.state?.uixConfirmedAction).toBe(false)
     })
   })
 

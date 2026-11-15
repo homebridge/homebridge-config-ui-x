@@ -9,6 +9,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { takeConfirmedAction } from '@/app/core/utilities/confirmed-action'
 
 @Component({
   selector: 'app-container-restart',
@@ -66,6 +67,11 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
   }
 
   private async initialize(): Promise<void> {
+    // Only when the user clicked the button just now, not on Back, a reload or a restored tab (see confirmed-action)
+    if (!takeConfirmedAction()) {
+      void this.$router.navigate(['/'], { replaceUrl: true })
+      return
+    }
     this.io = this.$ws.connectToNamespace('status')
 
     // Subscribe for reconnections. Bound to the component lifecycle — the
@@ -93,9 +99,12 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
-    this.io.socket.off('homebridge-status', this.statusHandler)
     this.statusCheckActive.set(false)
-    this.io.end?.()
+    // No socket when the page went home at once (opened again without a click)
+    if (this.io) {
+      this.io.socket.off('homebridge-status', this.statusHandler)
+      this.io.end?.()
+    }
   }
 
   private checkIfServerUp() {
