@@ -1591,6 +1591,26 @@ describe('AuthController (e2e)', () => {
     }
   })
 
+  it.each([
+    ['28800', 28800],
+    [' 3600 ', 3600],
+    ['abc', 28800],
+    [-5, 28800],
+  ])(
+    'reads a session timeout of %j as %i seconds',
+    async (value, seconds) => {
+      const config = await readJson(process.env.UIX_CONFIG_PATH)
+      config.platforms.find((p: any) => p.platform === 'config').sessionTimeout = value
+      const before = configService.ui.sessionTimeout
+      try {
+        configService.parseConfig(config)
+        expect(configService.ui.sessionTimeout).toBe(seconds)
+      } finally {
+        configService.ui.sessionTimeout = before
+      }
+    },
+  )
+
   afterAll(async () => {
     await app.close()
   })

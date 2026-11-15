@@ -161,6 +161,12 @@ export class ConfigService {
       this.ui.port = 8080
     }
 
+    // A number of seconds. Typed as text in the JSON editor ("28800"), jsonwebtoken reads it as milliseconds, which
+    // gives a token that lasts 28 seconds and logs the user out in a loop
+    const sessionTimeout = Number(this.ui.sessionTimeout)
+    this.ui.sessionTimeout = Number.isFinite(sessionTimeout) && sessionTimeout > 0
+      ? sessionTimeout
+      : undefined
     if (!this.ui.sessionTimeout) {
       this.ui.sessionTimeout = this.ui.auth === 'none'
         ? 1296000
