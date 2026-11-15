@@ -84,10 +84,11 @@ export function isNodeMajorSupported(
 export const NODE_KNOWN_MAJORS = [22, 24, 26]
 
 /**
- * Check if a major version of Node.js is within those Homebridge knows about
+ * Check if a major version of Node.js is one Homebridge knows about (see NODE_KNOWN_MAJORS)
  */
 export function isNodeMajorKnown(major: number): boolean {
-  return major <= Math.max(...NODE_KNOWN_MAJORS)
+  // In the list, not "up to the newest": odd majors (23, 25) are short-lived releases Homebridge does not support
+  return NODE_KNOWN_MAJORS.includes(major)
 }
 
 /**
