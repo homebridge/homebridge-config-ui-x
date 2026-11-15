@@ -9,8 +9,8 @@ import { configEditorResolver } from '@/app/modules/config-editor/config-editor.
 import { usersResolver } from '@/app/modules/users/users.resolver'
 
 /*
- * The status and restart modules should not be lazy loaded
- * to ensure restarts after an update go smoothly
+ * Every page is lazy loaded. After a UI update the old page asks for chunks that are gone: AppComponent sees the
+ * failed navigation and reloads, so the browser gets the new index.html (see isChunkLoadError).
  */
 
 export const routes: Routes = [
