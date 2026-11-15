@@ -1615,6 +1615,31 @@ describe('AuthController (e2e)', () => {
     }
   })
 
+  it('checks at most two passwords at once, so made-up usernames can not fill the thread pool', async () => {
+    // Regression: each unknown username does a full hash, and a new name each time is never locked out, so a
+    // burst could keep every thread of Node's pool busy, which also holds up the ui's file reads and writes
+    let running = 0
+    let most = 0
+    const hash = vi.spyOn(authService as any, 'hashPassword').mockImplementation(async () => {
+      running++
+      most = Math.max(most, running)
+      await new Promise(resolve => setTimeout(resolve, 20))
+      running--
+      return 'ff'.repeat(64)
+    })
+    try {
+      const logins = Array.from({ length: 8 }, (_, i) => authService.authenticate(`made-up-${i}`, 'x', undefined, '10.9.9.9'))
+      const results = await Promise.allSettled(logins)
+
+      expect(results.every(result => result.status === 'rejected')).toBe(true)
+      expect(hash).toHaveBeenCalledTimes(8)
+      expect(most).toBe(2)
+    } finally {
+      hash.mockRestore()
+      ;(authService as any).loginFailureCache.flushAll()
+    }
+  })
+
   it.each([
     ['28800', 28800],
     [' 3600 ', 3600],

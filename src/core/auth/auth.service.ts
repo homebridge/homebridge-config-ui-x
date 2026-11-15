@@ -30,6 +30,11 @@ const PBKDF2_ITERATIONS = 210000
 // PBKDF2_ITERATIONS on the owner's next successful login.
 const LEGACY_PBKDF2_ITERATIONS = 1000
 
+// Password checks that may run at once. Each one takes a thread of Node's pool (4 by default), which the UI's
+// file reads and writes need too. Without a limit, logins with made-up usernames (each does a full hash, so the
+// answer time does not tell which names exist, and a new name each time is never locked out) could fill it.
+const MAX_CONCURRENT_PASSWORD_CHECKS = 2
+
 // Login throttling: after this many failed attempts for a given key the account
 // is locked out for LOGIN_LOCKOUT_SECONDS. Guards against online password and
 // 2FA guessing, which was otherwise unlimited.
@@ -73,6 +78,9 @@ export class AuthService {
   private loginFailureCache = new NodeCache({ stdTTL: LOGIN_LOCKOUT_SECONDS })
   // Logins being checked right now, by the same key as the failure count
   private loginsInFlight = new Map<string, number>()
+  // Password checks running now, and the ones waiting for a slot (see MAX_CONCURRENT_PASSWORD_CHECKS)
+  private passwordChecksRunning = 0
+  private passwordCheckQueue: Array<() => void> = []
 
   // Short-lived cache of the auth file, so validating a token on every request
   // is not a file read each time. Cleared by invalidateUserCache() on writes.
@@ -125,9 +133,9 @@ export class AuthService {
 
       if (!user) {
         // Do the same work as for a real user, so the time the answer takes does not tell which usernames exist
-        await this.hashPassword(typeof password === 'string'
+        await this.limitPasswordCheck(() => this.hashPassword(typeof password === 'string'
           ? password
-          : '', 'no-such-user', PBKDF2_ITERATIONS)
+          : '', 'no-such-user', PBKDF2_ITERATIONS))
         throw new ForbiddenException()
       }
 
@@ -220,7 +228,7 @@ export class AuthService {
     // Verify against the strength this record was hashed at. Legacy records
     // carry no count and were hashed at 1,000 iterations.
     const iterations = user.passwordIterations ?? LEGACY_PBKDF2_ITERATIONS
-    const passwordAttemptHash = await this.hashPassword(password, user.salt, iterations)
+    const passwordAttemptHash = await this.limitPasswordCheck(() => this.hashPassword(password, user.salt, iterations))
     const passwordAttemptHashBuff = Buffer.from(passwordAttemptHash, 'hex')
     const knownPasswordHashBuff = Buffer.from(user.hashedPassword, 'hex')
 
@@ -519,6 +527,28 @@ export class AuthService {
    * @param password
    * @param salt
    */
+  /**
+   * Run a password check once fewer than MAX_CONCURRENT_PASSWORD_CHECKS are running, in the order they came
+   */
+  private async limitPasswordCheck<T>(check: () => Promise<T>): Promise<T> {
+    if (this.passwordChecksRunning >= MAX_CONCURRENT_PASSWORD_CHECKS) {
+      await new Promise<void>(resolve => this.passwordCheckQueue.push(resolve))
+    } else {
+      this.passwordChecksRunning++
+    }
+    try {
+      return await check()
+    } finally {
+      // Hand the slot straight to the next one waiting, or free it
+      const next = this.passwordCheckQueue.shift()
+      if (next) {
+        next()
+      } else {
+        this.passwordChecksRunning--
+      }
+    }
+  }
+
   private async hashPassword(password: string, salt: string, iterations: number = PBKDF2_ITERATIONS): Promise<string> {
     return new Promise((resolve, reject) => {
       pbkdf2(password, salt, iterations, 64, 'sha512', (err, derivedKey) => {
