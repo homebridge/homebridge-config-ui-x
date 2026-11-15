@@ -71,6 +71,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - refactor(accessories): type the service-update handler as the list of services it gets
 - fix(accessories): send a slider change made just before closing a control window
 - fix(settings): save a setting typed just before leaving the page, instead of losing it
+- fix(accessories): show a matter fan as on by its mode, and write the mode and speed together
 
 ### Other Changes
 
