@@ -133,6 +133,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): write homebridge output that never ends a line, instead of holding it for ever
 - fix(hb-service): keep the newest part of the log for a maximum size of 0, not empty it
 - fix(hb-service): append the kept log when trimming, so a line written meanwhile is not cut
+- test(scheduler): check the old restart jobs on a copy, as the refresh empties the list in place
 
 ### Homebridge Dependencies
 
