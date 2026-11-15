@@ -81,6 +81,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(backup): restore none of the files a backup leaves out from an hbfx backup either
 - fix(plugins): fail an npm run stopped at the time limit, which node-pty reports as exit code 0
 - fix(status): say matter failed to start on the dashboard for the status homebridge really sends
+- fix(custom-plugins): ignore a null or junk message from a plugin's ui server instead of crashing
 
 ### Other Changes
 
