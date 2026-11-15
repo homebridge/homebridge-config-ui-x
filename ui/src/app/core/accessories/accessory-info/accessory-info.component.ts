@@ -155,7 +155,7 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   public readonly uniqueIdCopied = signal(false)
   public readonly uuidCopied = signal(false)
 
-  public getEnumLabel(type: string, value: string | number | boolean): string | undefined {
+  public getEnumLabel(type: string, value: string | number | boolean | null | undefined): string | undefined {
     return this.enums[type]?.[String(value)]
   }
 
