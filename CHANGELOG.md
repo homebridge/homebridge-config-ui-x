@@ -75,6 +75,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): remove a synology @eaDir folder before npm runs, which the check never did since 2020
 - fix(accessories): clean up a socket that leaves during the first load, which stayed attached
 - fix(log): clean up a socket that leaves while the log file is checked, which kept its tail listener
+- fix(accessories): send a matter control once, not a second time when its reply is slow
 
 ### Other Changes
 

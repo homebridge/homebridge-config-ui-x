@@ -588,6 +588,34 @@ describe('AccessoriesController (e2e)', () => {
     }, 5000)
   })
 
+  describe('a matter control', () => {
+    it('is sent once, not again when the reply is slow', async () => {
+      // Regression: the control went through the retrying wait, so a reply later than 10 seconds sent the
+      // same command a second time
+      const ipc = app.get(HomebridgeIpcService)
+      const spy = vi.spyOn(ipc, 'sendMessage').mockImplementation(() => undefined)
+      const client = {
+        emit: vi.fn(),
+      } as any
+      vi.useFakeTimers()
+      try {
+        const done = (accessoriesService as any).handleMatterControl(client, {
+          uniqueId: 'matter:abc',
+          cluster: 'onOff',
+          attributes: { onOff: true },
+        })
+        await vi.advanceTimersByTimeAsync(25000)
+        await done
+
+        expect(spy.mock.calls.filter(([type]) => type === 'matterAccessoryControl')).toHaveLength(1)
+        expect(client.emit).toHaveBeenCalledWith('accessory-control-failure', 'The Homebridge service did not respond')
+      } finally {
+        vi.useRealTimers()
+        spy.mockRestore()
+      }
+    })
+  })
+
   it('the layout socket handlers act for the verified user, not the user named in the message', async () => {
     const gateway = app.get(AccessoriesGateway)
     const adminLayout = [
