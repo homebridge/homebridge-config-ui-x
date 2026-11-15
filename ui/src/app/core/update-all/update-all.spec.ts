@@ -994,6 +994,32 @@ describe('update all', () => {
       expect(watchCalls()).toBe(1)
     })
 
+    it('leaves the shared child-bridges socket open when it closes', async () => {
+      // Regression: an `end` on it stopped the server sending child bridge status to the page behind the window
+      const finished = makeJournal({
+        finishedAt: '2026-08-19T10:05:00.000Z',
+        restart: { homebridge: 'not-needed', ui: 'not-needed', childBridges: 'done' },
+        items: [
+          {
+            type: 'plugin',
+            name: 'homebridge-example',
+            from: '1.0.0',
+            to: '1.1.0',
+            status: 'ok',
+            childBridgeUsernames: ['0E:AA:BB:CC:DD:EE'],
+          },
+        ],
+      })
+      const { fixture } = await open({ active: false, journal: finished })
+      const child = ws.namespace('child-bridges')
+      expect(child.socket.handlers('child-bridge-status-update')).toHaveLength(1)
+
+      fixture.destroy()
+
+      expect(child.socket.handlers('child-bridge-status-update')).toHaveLength(0)
+      expect(child.end).not.toHaveBeenCalled()
+    })
+
     it('stays put when nothing the run did needs a restart', async () => {
       const finished = makeJournal({
         finishedAt: '2026-08-19T10:05:00.000Z',
