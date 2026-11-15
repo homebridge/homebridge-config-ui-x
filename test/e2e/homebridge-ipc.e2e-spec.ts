@@ -128,6 +128,28 @@ describe('HomebridgeIpcService (e2e)', () => {
       ipcService.removeListener('childBridgeStatusUpdate', listener)
     })
 
+    it('survives a null message, a message with no id, and a listener that throws', () => {
+      const mockProcess = new EventEmitter() as any
+      mockProcess.connected = true
+      mockProcess.send = vi.fn()
+      mockProcess.kill = vi.fn()
+      mockProcess.pid = 12345
+
+      ipcService.setHomebridgeProcess(mockProcess)
+
+      const throwing = () => {
+        throw new TypeError('Cannot read properties of undefined')
+      }
+      ipcService.on('childBridgeStatusUpdate', throwing)
+
+      expect(() => mockProcess.emit('message', null)).not.toThrow()
+      expect(() => mockProcess.emit('message', { data: {} })).not.toThrow()
+      expect(() => mockProcess.emit('message', { id: 42 })).not.toThrow()
+      expect(() => mockProcess.emit('message', { id: 'childBridgeStatusUpdate' })).not.toThrow()
+
+      ipcService.removeListener('childBridgeStatusUpdate', throwing)
+    })
+
     it('should emit serverStatusUpdate down on process close', () => {
       const mockProcess = new EventEmitter() as any
       mockProcess.connected = true
