@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "ES2024",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "rootDir": "./src",
