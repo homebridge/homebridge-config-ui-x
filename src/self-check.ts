@@ -90,16 +90,19 @@ function main() {
 main()
 
 /**
- * Catch startup errors
+ * Catch startup errors. This stays on for the whole run, so it must cope with anything: a promise can be rejected
+ * with `undefined` or `null` (then `err.toString()` threw, which ended the process), and only a failed `listen`
+ * is a port problem (an EACCES from a file read is not, and must not end the UI).
  */
-process.on('unhandledRejection', (err: any) => {
-  logger.error(err.toString())
-  if (err.code === 'EADDRINUSE') {
+export function handleUnhandledRejection(err: any): void {
+  logger.error(String(err))
+  const isListenError = err?.syscall === 'listen'
+  if (isListenError && err.code === 'EADDRINUSE') {
     logger.error(`Another process or service on this host is using port ${err.port}.`)
     logger.error('Please stop the other service or change the port you have assigned to Homebridge UI.')
     logger.error('Ending process now.')
     setTimeout(() => process.exit(0))
-  } else if (err.code === 'EACCES') {
+  } else if (isListenError && err.code === 'EACCES') {
     logger.error(`The process owner does not have permission to run services on port ${err.port}.`)
     logger.error('Please change the Homebridge UI port to something above 1024.')
     logger.error('Ending process now.')
@@ -108,4 +111,6 @@ process.on('unhandledRejection', (err: any) => {
     logger.error('Caught unhandled rejection error - details below:')
     console.error(err)
   }
-})
+}
+
+process.on('unhandledRejection', handleUnhandledRejection)
