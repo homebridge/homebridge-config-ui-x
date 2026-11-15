@@ -1525,6 +1525,22 @@ describe('AuthController (e2e)', () => {
       expect((await stat(secretsFilePath)).mode & 0o777).toBe(0o600)
     })
 
+    it.skipIf(process.platform === 'win32')('is created private even when a temp file of the same process is left over', async () => {
+      // Regression: the temp name was `.uix-secrets.tmp.<pid>`, and `mode` only applies to a new file, so a
+      // leftover 0644 temp file (a crash, then the same pid again in Docker) gave the new key mode 0644
+      const stale = `${secretsFilePath}.tmp.${process.pid}`
+      await writeFile(stale, 'old')
+      await chmod(stale, 0o644)
+      await remove(secretsFilePath)
+      try {
+        const fresh = new ConfigService()
+        expect(fresh.secrets.secretKey).toMatch(/^[0-9a-f]{64}$/)
+        expect((await stat(secretsFilePath)).mode & 0o777).toBe(0o600)
+      } finally {
+        await remove(stale)
+      }
+    })
+
     it('is read once, so a config save never swaps the key the running ui signs with', async () => {
       const key = configService.secrets.secretKey
       const instanceId = configService.instanceId
