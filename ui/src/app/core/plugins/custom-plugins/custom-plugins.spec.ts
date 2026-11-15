@@ -797,6 +797,12 @@ describe('the custom plugin ui', () => {
         await post({ action, requestId: 'r1' })
 
         expect(toastr.error).toHaveBeenCalled()
+        // and answers the plugin's page, or its request would wait for ever
+        expect(lastReply()).toMatchObject({
+          requestId: 'r1',
+          success: false,
+          data: { message: 'cache down' },
+        })
       })
     })
 
