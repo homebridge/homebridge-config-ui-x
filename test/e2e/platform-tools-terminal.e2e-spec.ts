@@ -154,6 +154,27 @@ describe('PlatformToolsTerminal (e2e)', () => {
     expect(mockTerm.write).toHaveBeenCalledWith('help')
   })
 
+  it('ON /platform-tools/terminal/start-session (stdin that is not text is ignored)', async () => {
+    // node-pty's write throws for a non-string, and inside a socket listener that ends the whole process
+    terminalGateway.startTerminalSession(client, size)
+    await new Promise(res => setTimeout(res, 100))
+    vi.mocked(mockTerm.write).mockClear()
+
+    for (const data of [
+      {},
+      5,
+      null,
+      ['x'],
+    ]) {
+      client.emit('stdin', data)
+    }
+    client.emit('stdin', 'ls')
+
+    expect(vi.mocked(mockTerm.write).mock.calls).toEqual([
+      ['ls'],
+    ])
+  })
+
   it('ON /platform-tools/terminal/start-session (resize)', async () => {
     terminalGateway.startTerminalSession(client, size)
 

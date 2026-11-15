@@ -132,8 +132,11 @@ export class TerminalService {
     })
 
     // Write input to the terminal
+    // Only text: node-pty throws for anything else, and a throw in a socket listener ends the whole UI process
     client.on('stdin', (data) => {
-      term.write(data)
+      if (typeof data === 'string') {
+        term.write(data)
+      }
     })
 
     // capture resize events
@@ -279,6 +282,10 @@ export class TerminalService {
     this.logger.debug(`[${this.instanceId}] Adding stdin and resize listeners`)
 
     client.on('stdin', (data) => {
+      // Only text: node-pty throws for anything else, and a throw in a socket listener ends the whole UI process
+      if (typeof data !== 'string') {
+        return
+      }
       if (TerminalService.persistentTerminal) {
         TerminalService.persistentTerminal.write(data)
       } else {
