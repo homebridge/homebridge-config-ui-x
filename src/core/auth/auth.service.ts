@@ -72,6 +72,8 @@ export class AuthService {
   // A failed attempt refreshes the TTL, so sustained guessing keeps the account
   // locked; the count clears after LOGIN_LOCKOUT_SECONDS of no attempts.
   private loginFailureCache = new NodeCache({ stdTTL: LOGIN_LOCKOUT_SECONDS })
+  // Logins being checked right now, by the same key as the failure count
+  private loginsInFlight = new Map<string, number>()
 
   // Short-lived cache of the auth file, so validating a token on every request
   // is not a file read each time. Cleared by invalidateUserCache() on writes.
@@ -109,11 +111,15 @@ export class AuthService {
     const throttleKey = `${(username || '').toLowerCase()}|${clientId || ''}`
 
     // Reject before doing any work once the failure threshold is reached, so
-    // password and 2FA guessing cannot run unbounded.
-    if ((this.loginFailureCache.get<number>(throttleKey) || 0) >= MAX_LOGIN_FAILURES) {
+    // password and 2FA guessing cannot run unbounded. Attempts still being
+    // checked count too: the check takes a while (the password hash), and
+    // without them many attempts sent at once would all pass this test.
+    const inFlight = this.loginsInFlight.get(throttleKey) || 0
+    if ((this.loginFailureCache.get<number>(throttleKey) || 0) + inFlight >= MAX_LOGIN_FAILURES) {
       this.logger.warn(`Too many failed login attempts for '${username}' - temporarily locked out.`)
       throw new HttpException('Too many failed attempts. Please wait a few minutes and try again.', 429)
     }
+    this.loginsInFlight.set(throttleKey, inFlight + 1)
 
     try {
       const user = await this.findByUsername(username)
@@ -170,6 +176,13 @@ export class AuthService {
       }
 
       throw new ForbiddenException()
+    } finally {
+      const left = (this.loginsInFlight.get(throttleKey) || 1) - 1
+      if (left > 0) {
+        this.loginsInFlight.set(throttleKey, left)
+      } else {
+        this.loginsInFlight.delete(throttleKey)
+      }
     }
   }
 

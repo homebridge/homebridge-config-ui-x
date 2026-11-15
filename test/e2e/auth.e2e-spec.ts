@@ -1565,6 +1565,20 @@ describe('AuthController (e2e)', () => {
     expect(await authService.validateUser(oldPayload)).toBeFalsy()
   })
 
+  it('the login lockout also holds for many wrong passwords sent at once', async () => {
+    const results = await Promise.allSettled(
+      Array.from({ length: 30 }, () => authService.authenticate('admin', 'wrong-password', undefined, '10.9.9.9')),
+    )
+    const statuses = results.map(r => (r.status === 'rejected'
+      ? r.reason.getStatus?.()
+      : 200))
+
+    // At most 10 are checked; the rest are refused before the password is looked at
+    expect(statuses.filter(status => status === 403).length).toBeLessThanOrEqual(10)
+    expect(statuses.filter(status => status === 429).length).toBeGreaterThanOrEqual(20)
+    ;(authService as any).loginFailureCache.flushAll()
+  })
+
   afterAll(async () => {
     await app.close()
   })
