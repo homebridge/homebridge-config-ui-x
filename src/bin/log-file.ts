@@ -37,22 +37,30 @@ export async function truncateLogFile(path: string, maxSize: number, truncateSiz
   const keep = Math.max(0, Math.min(Math.floor(truncateSize) || 0, size, maxSize > 0
     ? maxSize
     : Infinity, MAX_KEPT_LOG_BYTES))
+  let kept: Buffer
   const handle = await open(path, 'r+')
   try {
     const buffer = Buffer.alloc(keep)
     const { bytesRead } = keep > 0
       ? await handle.read(buffer, 0, keep, size - keep)
       : { bytesRead: 0 }
-    let kept = buffer.subarray(0, bytesRead)
+    kept = buffer.subarray(0, bytesRead)
     // Start at a whole line, unless the part kept starts one already
     const firstBreak = kept.indexOf(0x0A)
     if (firstBreak !== -1 && size - keep > 0) {
       kept = kept.subarray(firstBreak + 1)
     }
     await handle.truncate(0)
-    await handle.write(kept, 0, kept.length, 0)
   } finally {
     await handle.close()
+  }
+  // Appended, not written at the start: a log line already on its way to the file (cork only holds back writes
+  // that have not started) can land just after the truncate, and a write at the start would cut it in half
+  const append = await open(path, 'a')
+  try {
+    await append.write(kept)
+  } finally {
+    await append.close()
   }
   return true
 }
