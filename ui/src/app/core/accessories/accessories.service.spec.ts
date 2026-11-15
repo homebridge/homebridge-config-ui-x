@@ -1537,19 +1537,30 @@ describe('AccessoriesService', () => {
       expect(seen).toHaveBeenCalled()
     })
 
-    it('re-binds its socket handlers on every restart', async () => {
-      // `io.end()` only emits `end` - the namespace is cached and shared, so
-      // its listeners are never removed. This is exactly why an
-      // `accessories-reload-required` event refreshes over the open socket
-      // rather than calling stop() and start() again: doing that doubled the
-      // live listeners on every late-discovered bridge
+    it('takes its socket handlers off on stop, so a restart never adds a second set', async () => {
+      // `io.end()` only emits `end` - the namespace is cached and shared, so its
+      // listeners stay unless stop() removes them. The page and the dashboard
+      // widget both start and stop the session, so each visit used to add one
+      // more set: N error toasts for one failure, N reloads for one new bridge
       await start()
       expect(io.socket.handlers('accessories-data')).toHaveLength(1)
 
       service.stop()
       await service.start()
 
-      expect(io.socket.handlers('accessories-data')).toHaveLength(2)
+      for (const event of [
+        'accessories-data',
+        'accessories-reload-required',
+        'matter-accessories-reload-required',
+        'accessory-control-failure',
+        'hap-accessories-ready-for-control',
+        'matter-accessories-ready-for-control',
+      ]) {
+        expect(io.socket.handlers(event)).toHaveLength(1)
+      }
+
+      io.socket.fire('accessory-control-failure', 'Accessory not found')
+      expect(toastr.error).toHaveBeenCalledTimes(1)
     })
 
     it('keeps the layoutSaved subscribers alive across a stop and start', async () => {
