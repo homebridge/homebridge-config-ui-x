@@ -1,4 +1,6 @@
-import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common'
+import type { CanActivate, ExecutionContext } from '@nestjs/common'
+
+import { Inject, Injectable } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 import { WsException } from '@nestjs/websockets'
 import jwt from 'jsonwebtoken'

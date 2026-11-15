@@ -3,6 +3,9 @@ import type { Subscription } from 'rxjs'
 import type { Systeminformation } from 'systeminformation'
 
 import type { HomebridgeStatusMatterUpdate } from '../../core/matter/matter.interfaces.js'
+import type { } from '../../core/regex.constants.js'
+import type { DockerRelease, DockerReleaseInfo } from '../platform-tools/docker/docker.interfaces.js'
+import type { HomebridgeStatsResponse, HomebridgeStatusUpdate } from './status.interfaces.js'
 
 import { exec, execSync } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
@@ -33,14 +36,9 @@ import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.s
 import { Logger } from '../../core/logger/logger.service.js'
 import { isNodeMajorSupported } from '../../core/node-version.constants.js'
 import { RE_BETA_DATE, RE_STABLE_DATE, RE_TEST_DATE, RE_TRAILING_DATE } from '../../core/regex.constants.js'
-import { DockerRelease, DockerReleaseInfo } from '../platform-tools/docker/docker.interfaces.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import { ServerService } from '../server/server.service.js'
-import {
-  HomebridgeStatsResponse,
-  HomebridgeStatus,
-  HomebridgeStatusUpdate,
-} from './status.interfaces.js'
+import { HomebridgeStatus } from './status.interfaces.js'
 
 const execAsync = promisify(exec)
 

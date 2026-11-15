@@ -1,6 +1,8 @@
 import type { MultipartFile } from '@fastify/multipart'
 import type { FastifyReply } from 'fastify'
+import type { } from 'unzipper'
 
+import type { HomebridgeConfig } from '../../core/config/config.interfaces.js'
 import type { HomebridgePlugin } from '../plugins/plugins.interfaces.js'
 
 import { EventEmitter } from 'node:events'
@@ -28,7 +30,6 @@ import { networkInterfaces } from 'systeminformation'
 import { create, extract, ReadEntry } from 'tar'
 import { Parse } from 'unzipper'
 
-import { HomebridgeConfig } from '../../core/config/config.interfaces.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
