@@ -743,9 +743,11 @@ export class PluginBridgeComponent implements OnInit {
         }))
       } else {
         // Bridge found but Matter not yet started, or QR code not available yet
-        // Set partial info so template knows to wait for restart
+        // Set partial info so template knows to wait for restart - or, when Homebridge (>= 2.5.1) says Matter
+        // failed to start, that a restart alone will not bring the code
         this.matterDeviceInfo.update(current => new Map(current).set(username, {
           port: bridge?.matterConfig?.port,
+          startFailed: bridge?.matterStartFailed === true,
         } as any))
       }
     } catch (error) {

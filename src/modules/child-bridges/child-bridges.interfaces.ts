@@ -70,6 +70,9 @@ export interface ChildBridgeMetadata {
   /** Matter manual pairing code */
   matterPin?: string
 
+  /** Matter is on for this bridge but its server failed to start (Homebridge >= 2.5.1) */
+  matterStartFailed?: boolean
+
   /** Matter serial number */
   matterSerialNumber?: string
 
