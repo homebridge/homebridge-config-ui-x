@@ -59,7 +59,9 @@ describe('scheduled restarts', () => {
     expect(schedule).toHaveBeenCalledTimes(1)
 
     // node-schedule only keeps the newest job under one name, so a job made twice could not be cancelled by name
-    const jobs = (service as any).restartJobs
+    // A copy: the refresh empties the service's own list in place, and `every` on an empty list is always true
+    const jobs = [...(service as any).restartJobs]
+    expect(jobs.length).toBeGreaterThan(0)
     await service.refreshRestartSchedules({ platforms: [], accessories: [] } as any)
     expect(jobs.every((job: any) => job.nextInvocation() === null)).toBe(true)
     expect(restartJobNames(service)).toEqual([])
