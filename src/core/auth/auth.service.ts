@@ -12,10 +12,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { createGuardrails } from '@otplib/core'
 import { readJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
-import { generateSecret, generateURI, verify } from 'otplib'
+import { createGuardrails, generateSecret, generateURI, verify } from 'otplib'
 
 import { PluginsSettingsUiTicketService } from '../../modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
 import { UserDto } from '../../modules/users/users.dto.js'
