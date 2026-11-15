@@ -589,6 +589,57 @@ describe('AccessoriesController (e2e)', () => {
   })
 
   describe('a matter control', () => {
+    it('on one part of a composed device changes that part, not the main accessory', async () => {
+      // Regression: the accessory was found by uuid, which the parts share, so the main tile was changed
+      const ipc = app.get(HomebridgeIpcService)
+      const spy = vi.spyOn(ipc, 'sendMessage').mockImplementation((type: string, data: any) => {
+        if (type === 'matterAccessoryControl') {
+          setImmediate(() => ipc.emit('matterEvent', {
+            type: 'accessoryControlResponse',
+            correlationId: data.correlationId,
+            data: { success: true },
+          }))
+        }
+      })
+      const bridge = { name: 'Main', username: '0E:00:00:00:00:01' }
+      const main = {
+        uniqueId: 'matter:strip',
+        uuid: 'strip',
+        clusters: {
+          onOff: { onOff: false },
+        },
+        bridge,
+      }
+      const part = {
+        uniqueId: 'matter:strip:outlet-2',
+        uuid: 'strip',
+        partId: 'outlet-2',
+        clusters: {
+          onOff: { onOff: false },
+        },
+        bridge,
+      }
+      const saved = (accessoriesService as any).matterAccessories
+      ;(accessoriesService as any).matterAccessories = [main, part]
+      const client = {
+        emit: vi.fn(),
+      } as any
+      try {
+        await (accessoriesService as any).handleMatterControl(client, {
+          uniqueId: 'matter:strip:outlet-2',
+          cluster: 'onOff',
+          attributes: { onOff: true },
+        })
+
+        expect(part.clusters.onOff.onOff).toBe(true)
+        expect(main.clusters.onOff.onOff).toBe(false)
+        expect(spy).toHaveBeenCalledWith('matterAccessoryControl', expect.objectContaining({ uuid: 'strip', partId: 'outlet-2' }))
+      } finally {
+        ;(accessoriesService as any).matterAccessories = saved
+        spy.mockRestore()
+      }
+    })
+
     it('is sent once, not again when the reply is slow', async () => {
       // Regression: the control went through the retrying wait, so a reply later than 10 seconds sent the
       // same command a second time
