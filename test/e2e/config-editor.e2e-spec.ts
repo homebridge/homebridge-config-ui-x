@@ -25,6 +25,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
 import { BackupModule } from '../../src/modules/backup/backup.module.js'
 import { BackupService } from '../../src/modules/backup/backup.service.js'
@@ -2207,6 +2208,40 @@ describe('ConfigEditorController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: false })
+  })
+
+  it('PUT /config-editor/hap keeps a save made while Homebridge restarts', async () => {
+    // The HAP and Matter switches restart Homebridge first. They used to read config.json before that wait and
+    // write the whole old copy after it, undoing any other save in between.
+    let release: () => void
+    const restart = vi.spyOn(app.get(HomebridgeIpcService), 'restartAndWaitForClose')
+      .mockImplementation(() => new Promise<void>((r) => {
+        release = r
+      }) as any)
+    try {
+      const hap = app.inject({
+        method: 'PUT',
+        path: '/config-editor/hap',
+        headers: { authorization },
+        payload: { enabled: false },
+      })
+      await new Promise(r => setTimeout(r, 50))
+      const theme = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { theme: 'purple' },
+      })
+      expect(theme.statusCode).toBe(200)
+      release()
+      expect((await hap).statusCode).toBe(200)
+    } finally {
+      restart.mockRestore()
+    }
+
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.bridge.hap).toBe(false)
+    expect((config.platforms.find((p: any) => p.platform === 'config') as any).theme).toBe('purple')
   })
 
   it('PUT /config-editor/hap (should allow disabling HAP even when Matter is not configured)', async () => {

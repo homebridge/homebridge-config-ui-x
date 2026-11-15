@@ -1111,7 +1111,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   public async setMatterPortRange(value: { start?: number, end?: number }): Promise<void> {
     this.validateMatterPortRange(value)
 
-    let config = await this.getConfigFile()
+    const config = await this.getConfigFile()
 
     // Clean null values
     if (value.start === null || value.start === undefined) {
@@ -1134,17 +1134,24 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       }
     }
 
-    // Bring matterPorts after ports in config ordering
-    const { bridge, ports, matterPorts, ...rest } = config
-    config = matterPorts
-      ? (ports
-          ? { bridge, ports, matterPorts, ...rest }
-          : { bridge, matterPorts, ...rest })
-      : (ports
-          ? { bridge, ports, ...rest }
-          : { bridge, ...rest })
-
-    await this.updateConfigFile(config)
+    // Written under the config lock, so a save that lands at the same time is not lost
+    const matterPorts = config.matterPorts
+    await this.mutateConfigFile((fresh) => {
+      delete fresh.matterPorts
+      // Bring matterPorts after ports in config ordering
+      const { bridge, ports, ...rest } = fresh
+      const ordered = matterPorts
+        ? (ports
+            ? { bridge, ports, matterPorts, ...rest }
+            : { bridge, matterPorts, ...rest })
+        : (ports
+            ? { bridge, ports, ...rest }
+            : { bridge, ...rest })
+      for (const key of Object.keys(fresh)) {
+        delete fresh[key]
+      }
+      Object.assign(fresh, ordered)
+    })
   }
 
   /**
@@ -1184,9 +1191,9 @@ export class ConfigEditorService implements OnApplicationBootstrap {
     // Validate the configuration
     this.validateMatterConfig(matterConfig)
 
-    const config = await this.getConfigFile()
-    config.bridge.matter = matterConfig
-    await this.updateConfigFile(config)
+    await this.mutateConfigFile((config) => {
+      config.bridge.matter = matterConfig
+    })
     return matterConfig
   }
 
@@ -1235,7 +1242,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
         delete config.bridge.matter.externalsOnly
       }
     }
-    await this.updateConfigFile(config)
+    await this.saveBridgeKey(config, 'matter')
     return { enabled, externalsOnly: targetExternalsOnly }
   }
 
@@ -1251,7 +1258,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
 
     // 2. Update config
     delete config.bridge.matter
-    await this.updateConfigFile(config)
+    await this.saveBridgeKey(config, 'matter')
 
     // 3. Delete storage
     const matterPath = join(this.configService.storagePath, 'matter', deviceId)
@@ -1346,17 +1353,17 @@ export class ConfigEditorService implements OnApplicationBootstrap {
         // Legacy runtime: externalsOnly is ignored (the runtime would reject the nested form).
         config.bridge.hap = false
       }
-      await this.updateConfigFile(config)
+      await this.saveBridgeKey(config, 'hap')
     } else {
       // Re-enable: clear enabled/externalsOnly while retaining the identifying
       // material preference. If it is off, drop the property entirely so the
       // default HAP behavior takes effect.
       if (targetDisableIdentifyingMaterial) {
         config.bridge.hap = { disableIdentifyingMaterial: true }
-        await this.updateConfigFile(config)
+        await this.saveBridgeKey(config, 'hap')
       } else if (currentHap === false || (typeof currentHap === 'object' && currentHap !== null)) {
         delete config.bridge.hap
-        await this.updateConfigFile(config)
+        await this.saveBridgeKey(config, 'hap')
       }
     }
     return {
@@ -1364,6 +1371,22 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       externalsOnly: targetExternalsOnly,
       disableIdentifyingMaterial: targetDisableIdentifyingMaterial,
     }
+  }
+
+  /**
+   * Save one key of the bridge block from `config` (a copy read before a restart) into config.json as it is now,
+   * under the config lock. Writing the whole old copy back would undo any save made while Homebridge restarted.
+   */
+  private async saveBridgeKey(config: HomebridgeConfig, key: 'hap' | 'matter'): Promise<void> {
+    await this.mutateConfigFile((fresh) => {
+      if (config.bridge[key] === undefined) {
+        delete fresh.bridge[key]
+      } else if (key === 'hap') {
+        fresh.bridge.hap = config.bridge.hap
+      } else {
+        fresh.bridge.matter = config.bridge.matter
+      }
+    })
   }
 
   /**
