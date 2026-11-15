@@ -150,6 +150,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - ci: name the release tag the upload-release-assets pin points at, v4.0.0, not the v4.0 branch
 - test(i18n): find a missing key in a ternary, a helper call or a template, not only before translate
 - fix: import types with import type, so each server file builds on its own as the swc dev server needs
+- chore(dev): run the dev server through swc, so nest checks api data in dev as a release does
 
 ### Homebridge Dependencies
 
