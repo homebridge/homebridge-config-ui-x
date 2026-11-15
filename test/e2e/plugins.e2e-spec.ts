@@ -920,7 +920,7 @@ describe('PluginController (e2e)', () => {
 
   it('POST /plugins/update/:pluginName (homebridge)', async () => {
     const updateHomebridgeSpy = vi.spyOn(pluginsService as any, 'updateHomebridgePackage').mockResolvedValue(true)
-    const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+    const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => true)
 
     const res = await app.inject({
       method: 'POST',
@@ -1229,7 +1229,7 @@ describe('PluginController (e2e)', () => {
         pluginType: 'platform',
       })
       const restartChildBridgeSpy = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
-      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => true)
 
       const res = await app.inject({
         method: 'POST',
@@ -1296,7 +1296,7 @@ describe('PluginController (e2e)', () => {
         pluginType: 'platform',
       })
       const restartChildBridgeSpy = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
-      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => true)
 
       const res = await app.inject({
         method: 'POST',
@@ -1345,7 +1345,7 @@ describe('PluginController (e2e)', () => {
 
       const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
       const restartChildBridgeSpy = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
-      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => true)
 
       const res = await app.inject({
         method: 'POST',
@@ -1370,7 +1370,7 @@ describe('PluginController (e2e)', () => {
     it('should restart homebridge when updating homebridge itself', async () => {
       const updateHomebridgeSpy = vi.spyOn(pluginsService as any, 'updateHomebridgePackage').mockResolvedValue(true)
       const restartChildBridgeSpy = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
-      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => true)
 
       const res = await app.inject({
         method: 'POST',

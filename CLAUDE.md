@@ -33,6 +33,9 @@ npm start                   # backend only, no Homebridge: tsx src/main.ts (port
 npm run lint
 npm run lint:fix
 
+# Typecheck (server code + server tests, then the UI tests; the builds only check shipped code)
+npm run typecheck
+
 # Tests
 npm run test                # test:server then test:ui
 npm run test:server         # backend e2e suite (Vitest), ~60s

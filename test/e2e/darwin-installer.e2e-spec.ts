@@ -19,7 +19,7 @@ vi.mock('node:child_process', () => ({
 
 // DarwinInstaller is also tested by the Linux and Windows CI jobs.
 vi.mock('node:process', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('node:process')>()
+  const actual = await importOriginal<{ default: Record<string, unknown> }>()
   return {
     default: {
       ...actual.default,
