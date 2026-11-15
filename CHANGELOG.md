@@ -22,6 +22,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): wait for homebridge's accessoryInfoData reply when getting one matter accessory
 - fix(plugins): stop the major update policy offering a beta of homebridge or the ui
 - fix(plugins): check every version given to npm, and refuse cmd.exe characters on windows
+- fix(accessories): never save an empty room layout from a modal left open after leaving the page
 
 ### Other Changes
 
