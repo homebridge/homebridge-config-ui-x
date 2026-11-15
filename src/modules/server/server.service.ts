@@ -8,7 +8,7 @@ import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
 import { createPublicKey, randomInt, X509Certificate } from 'node:crypto'
 import { createWriteStream } from 'node:fs'
-import { readdir, readFile, unlink, writeFile } from 'node:fs/promises'
+import { readdir, readFile, rename, unlink, writeFile } from 'node:fs/promises'
 import { basename, extname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { pipeline, Readable } from 'node:stream'
@@ -1654,24 +1654,30 @@ export class ServerService {
     const uiConfigBlock = configFile.platforms.find(x => x.platform === 'config')
 
     if (uiConfigBlock) {
-      // Delete the old wallpaper if it exists
-      // Only a plain file name in the storage folder is ever deleted (see `getWallpaperPath`)
-      const oldPath = this.configService.getWallpaperPath(uiConfigBlock.wallpaper)
-      if (oldPath) {
-        if (await pathExists(oldPath)) {
-          try {
-            await unlink(oldPath)
-            this.logger.log(`Old wallpaper file ${oldPath} deleted successfully.`)
-          } catch (e) {
-            this.logger.error(`Failed to delete old wallpaper ${oldPath} as ${e.message}.`)
-          }
-        }
-      }
-
-      // Save the uploaded image file to the storage path
+      // Write the upload to a temp file first, and only then put it in place and remove the old wallpaper: a
+      // failed upload must leave the old wallpaper (and the config that names it) as they were
       const fileExtension = extname(data.filename).toLowerCase().replace(/[^.a-z0-9]/g, '')
       const newPath = join(this.configService.storagePath, `ui-wallpaper${fileExtension}`)
-      await pump(data.file, createWriteStream(newPath))
+      const tmpPath = `${newPath}.upload-${randomInt(1e9)}`
+      try {
+        await pump(data.file, createWriteStream(tmpPath))
+        await rename(tmpPath, newPath)
+      } catch (e) {
+        await unlink(tmpPath).catch(() => undefined)
+        throw e
+      }
+
+      // Delete the old wallpaper if it was another file
+      // Only a plain file name in the storage folder is ever deleted (see `getWallpaperPath`)
+      const oldPath = this.configService.getWallpaperPath(uiConfigBlock.wallpaper)
+      if (oldPath && oldPath !== newPath && await pathExists(oldPath)) {
+        try {
+          await unlink(oldPath)
+          this.logger.log(`Old wallpaper file ${oldPath} deleted successfully.`)
+        } catch (e) {
+          this.logger.error(`Failed to delete old wallpaper ${oldPath} as ${e.message}.`)
+        }
+      }
 
       // Update the config file with the new wallpaper path
       uiConfigBlock.wallpaper = `ui-wallpaper${fileExtension}`

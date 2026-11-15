@@ -12,7 +12,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import FormData from 'form-data'
-import { copy, ensureDir, pathExists, readFile, readJson, remove, stat, writeJson } from 'fs-extra'
+import { copy, ensureDir, pathExists, readdir, readFile, readJson, remove, stat, writeFile, writeJson } from 'fs-extra'
 import forge from 'node-forge'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -833,6 +833,35 @@ describe('ServerController (e2e)', () => {
     // 2. The wallpaper was set in the config
     const config = await readJson(configService.configPath)
     expect(config.platforms[0].wallpaper).toBe('ui-wallpaper.png')
+  })
+
+  it('keeps the old wallpaper when an upload fails part-way', async () => {
+    // Regression: the old file was deleted before the new one was written, so a failed upload left a part-file
+    // and a config naming a wallpaper that was gone
+    const old = resolve(configService.storagePath, 'ui-wallpaper.jpg')
+    await remove(resolve(configService.storagePath, 'ui-wallpaper.png'))
+    await writeFile(old, 'old image')
+    const config = await readJson(configService.configPath)
+    config.platforms[0].wallpaper = 'ui-wallpaper.jpg'
+    await writeJson(configService.configPath, config)
+    const { Readable } = await import('node:stream')
+    const file = new Readable({
+      read() {
+        this.push('half an ima')
+        this.destroy(new Error('connection lost'))
+      },
+    })
+
+    try {
+      await expect(serverService.uploadWallpaper({ filename: 'new.png', file } as any)).rejects.toThrow('connection lost')
+
+      expect(await readFile(old, 'utf8')).toBe('old image')
+      expect(await pathExists(resolve(configService.storagePath, 'ui-wallpaper.png'))).toBe(false)
+      expect((await readJson(configService.configPath)).platforms[0].wallpaper).toBe('ui-wallpaper.jpg')
+      expect((await readdir(configService.storagePath)).filter(name => name.includes('.upload-'))).toEqual([])
+    } finally {
+      await remove(old)
+    }
   })
 
   it('DELETE /server/wallpaper never deletes a file the wallpaper setting names outside the wallpaper files', async () => {
