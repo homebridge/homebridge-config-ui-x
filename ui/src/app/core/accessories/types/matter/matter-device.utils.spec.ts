@@ -864,6 +864,15 @@ describe('matter-device.utils', () => {
         { percentSetting: 40 },
         true,
       ],
+      // A plugin that sends only the speed leaves the mode at Off: running now means on (decided by BP)
+      [
+        { fanMode: 0, percentSetting: 40, percentCurrent: 40 },
+        true,
+      ],
+      [
+        { fanMode: 0, percentSetting: 40, percentCurrent: 0 },
+        false,
+      ],
     ])('treats %o as running: %s', (fanControl, expected) => {
       expect(isFanOn(device({ fanControl }))).toBe(expected)
     })

@@ -430,6 +430,8 @@ describe('the remaining matter manage modals', () => {
       // Regression: the switch went back by the old speed rule, so a fan turned off by its mode (speed left at
       // 50) showed On in the window and Off on the tile
       const service = fan(50, 0)
+      // Stopped: Off, with the speed it had left in place
+      service.clusters!.fanControl!.percentCurrent = 0
       service.failWrites('fanControl', new Error('device offline'))
       const component = create(MatterFanManageComponent, service)
 
