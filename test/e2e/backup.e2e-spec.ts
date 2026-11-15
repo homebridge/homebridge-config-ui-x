@@ -32,7 +32,7 @@ import {
   writeJson,
   writeSync,
 } from 'fs-extra'
-import { create as tarCreate } from 'tar'
+import { create as tarCreate, list as tarList } from 'tar'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -326,6 +326,63 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
 
     // Ensure the temp restore directory was removed
     expect(await pathExists(restoreDirectory)).toBe(false)
+  })
+
+  it('GET /backup/download leaves out the token signing key', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/backup/download',
+      headers: { authorization },
+    })
+    expect(res.statusCode).toBe(200)
+    await writeFile(tempBackupPath, res.rawPayload)
+
+    const entries: string[] = []
+    await tarList({
+      file: tempBackupPath,
+      onReadEntry: entry => entries.push(entry.path),
+    })
+
+    expect(entries).toContain('storage/config.json')
+    expect(entries.filter(e => e.endsWith('.uix-secrets'))).toEqual([])
+  })
+
+  it('a restore writes none of the files a backup leaves out', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/backup/download',
+      headers: { authorization },
+    })
+    await writeFile(tempBackupPath, res.rawPayload)
+    const payload = new FormData()
+    payload.append('backup.tar.gz', await readFile(tempBackupPath))
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+    expect((await app.inject({
+      method: 'POST',
+      path: '/backup/restore',
+      headers,
+      payload,
+    })).statusCode).toBe(201)
+    await new Promise(r => setTimeout(r, 100))
+
+    // What a hand-made or edited archive could carry: a docker start script, a plugin folder, another signing key
+    const restoreDirectory = (backupService as any).restoreDirectory
+    await writeFile(join(restoreDirectory, 'storage', 'startup.sh'), '#!/bin/sh\necho owned\n')
+    await ensureDir(join(restoreDirectory, 'storage', 'node_modules', 'homebridge-evil'))
+    await writeFile(join(restoreDirectory, 'storage', 'node_modules', 'homebridge-evil', 'index.js'), 'x')
+    await writeFile(join(restoreDirectory, 'storage', '.uix-secrets'), JSON.stringify({
+      secretKey: 'f'.repeat(64),
+    }))
+    const secretsBefore = await readFile(secretsFilePath, 'utf8')
+    await remove(resolve(process.env.UIX_STORAGE_PATH, 'startup.sh'))
+    vi.spyOn(pluginsService, 'managePlugin').mockResolvedValue(true)
+
+    await backupGateway.doRestore(new EventEmitter())
+
+    expect(await pathExists(resolve(process.env.UIX_STORAGE_PATH, 'startup.sh'))).toBe(false)
+    expect(await pathExists(resolve(process.env.UIX_STORAGE_PATH, 'node_modules', 'homebridge-evil'))).toBe(false)
+    expect(await readFile(secretsFilePath, 'utf8')).toBe(secretsBefore)
   })
 
   // https://github.com/homebridge/homebridge-config-ui-x/issues/1856

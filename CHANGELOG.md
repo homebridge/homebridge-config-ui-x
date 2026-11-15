@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): check every version given to npm, and refuse cmd.exe characters on windows
 - fix(accessories): never save an empty room layout from a modal left open after leaving the page
 - fix(accessories): take the socket handlers off on stop, so each visit no longer adds another set
+- fix(backup): leave the token signing key out, and restore none of the files a backup leaves out
 
 ### Other Changes
 

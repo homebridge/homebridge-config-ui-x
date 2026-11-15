@@ -44,6 +44,40 @@ const pump = promisify(pipeline)
 // concurrent requests detect a pending upload before `mkdtemp` resolves.
 const RESTORE_PENDING = '__pending__'
 
+/**
+ * Files and folders (by name, at any depth) a backup leaves out, and a restore does not write either, so a backup
+ * made elsewhere (or edited) can not drop a Docker `startup.sh` (run as the container starts) or a `node_modules`
+ * folder into the storage folder.
+ *
+ * `.uix-secrets` holds the key that signs every login token: anyone with a copy of a backup (often shared to get
+ * help) could make an admin token for this instance. A restored instance keeps its own key, or makes a new one.
+ */
+export const BACKUP_EXCLUDED_NAMES = new Set([
+  'instance-backups', // scheduled backups
+  'nssm.exe', // windows hb-service
+  'homebridge.log', // hb-service
+  'logs', // docker
+  'node_modules', // docker
+  'startup.sh', // docker
+  '.docker.env', // docker
+  'docker-compose.yml', // docker
+  'pnpm-lock.yaml', // pnpm
+  'package.json', // npm
+  'package-lock.json', // npm
+  '.npmrc', // npm
+  '.npm', // npm
+  'FFmpeg', // ffmpeg
+  'fdk-aac', // ffmpeg
+  '.git', // git
+  'recordings', // homebridge-camera-ui recordings path
+  '.homebridge.sock', // homebridge ipc socket
+  '#recycle', // synology dsm recycle bin
+  '@eaDir', // synology dsm metadata
+  '.venv', // python venv
+  '.cache', // cache
+  '.uix-secrets', // token signing key
+])
+
 @Injectable()
 export class BackupService {
   private restoreDirectory: string
@@ -232,32 +266,7 @@ export class BackupService {
       await copy(storagePath, resolve(backupDir, 'storage'), {
         filter: async (filePath) => {
           // List of files not to include in the archive
-          if (
-            [
-              'instance-backups', // scheduled backups
-              'nssm.exe', // windows hb-service
-              'homebridge.log', // hb-service
-              'logs', // docker
-              'node_modules', // docker
-              'startup.sh', // docker
-              '.docker.env', // docker
-              'docker-compose.yml', // docker
-              'pnpm-lock.yaml', // pnpm
-              'package.json', // npm
-              'package-lock.json', // npm
-              '.npmrc', // npm
-              '.npm', // npm
-              'FFmpeg', // ffmpeg
-              'fdk-aac', // ffmpeg
-              '.git', // git
-              'recordings', // homebridge-camera-ui recordings path
-              '.homebridge.sock', // homebridge ipc socket
-              '#recycle', // synology dsm recycle bin
-              '@eaDir', // synology dsm metadata
-              '.venv', // python venv
-              '.cache', // cache
-            ].includes(basename(filePath))
-          ) {
+          if (BACKUP_EXCLUDED_NAMES.has(basename(filePath))) {
             return false
           }
 
@@ -705,7 +714,7 @@ export class BackupService {
     await new Promise(res => setTimeout(res, 100))
     await copy(resolve(this.restoreDirectory, 'storage'), storagePath, {
       filter: async (filePath) => {
-        if (restoreFilter.includes(filePath)) {
+        if (restoreFilter.includes(filePath) || BACKUP_EXCLUDED_NAMES.has(basename(filePath))) {
           client.emit('stdout', `Skipping ${basename(filePath)}\r\n`)
           return false
         }
