@@ -15,7 +15,7 @@ import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { plainToInstance } from 'class-transformer'
 import { validate } from 'class-validator'
-import { copy, readJson, remove } from 'fs-extra'
+import { copy, pathExists, readJson, remove } from 'fs-extra'
 import { of, throwError } from 'rxjs'
 import { gt as semverGt } from 'semver'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -2185,6 +2185,17 @@ describe('PluginController (e2e)', () => {
     finish()
     await closing
     expect(order).toEqual(['npm finished', 'closed'])
+  })
+
+  it('removes a synology @eaDir folder from the plugin folder before npm runs', async () => {
+    const configService = app.get(ConfigService)
+    const eaDir = resolve(configService.customPluginPath, '@eaDir')
+    await mkdir(eaDir, { recursive: true })
+    await writeFile(join(eaDir, 'SYNO@.fileindexdb'), 'x')
+
+    await (pluginsService as any).removeSynologyMetadata()
+
+    expect(await pathExists(eaDir)).toBe(false)
   })
 
   describe('the "major" update policy', () => {

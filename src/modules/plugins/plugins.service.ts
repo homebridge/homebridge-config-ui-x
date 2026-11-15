@@ -3013,8 +3013,10 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
 
     const offendingPath = resolve(this.configService.customPluginPath, '@eaDir')
 
+    // Synology DSM writes `@eaDir` metadata folders, and npm stops on one in node_modules. This check was the wrong
+    // way round from 2020 to 2026 (it only "removed" the folder when there was none); fixed as decided by BP.
     try {
-      if (!await pathExists(offendingPath)) {
+      if (await pathExists(offendingPath)) {
         await remove(offendingPath)
       }
     } catch (e) {
