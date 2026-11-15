@@ -2825,7 +2825,9 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
     command = command.map(x => String(x)).filter(x => x.length)
 
     if (platform() === 'win32') {
-      const unsafe = findCmdUnsafeArgument(command)
+      // Only the arguments: the program path is the install's npm (a user folder such as C:\Users\Bob!\...),
+      // not something a request sent, and cmd.exe takes a lone ! or % in it literally
+      const unsafe = findCmdUnsafeArgument(command.slice(1))
       if (unsafe !== undefined) {
         throw new Error(`Refused to run npm with the argument "${unsafe}": on Windows it would be read as a command.`)
       }
