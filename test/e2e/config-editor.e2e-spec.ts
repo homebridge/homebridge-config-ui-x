@@ -2363,6 +2363,17 @@ describe('ConfigEditorController (e2e)', () => {
     expect(after.bridge.hap).toBeUndefined()
   })
 
+  it('keeps every feature flag on for a later major version of Homebridge', () => {
+    const before = homebridgeConfigService.homebridgeVersion
+    homebridgeConfigService.homebridgeVersion = '3.0.0'
+    try {
+      const flags = homebridgeConfigService.getFeatureFlags()
+      expect(Object.entries(flags).filter(([, on]) => on !== true).map(([key]) => key)).toEqual([])
+    } finally {
+      homebridgeConfigService.homebridgeVersion = before
+    }
+  })
+
   it('should enable the hapDisableIdentifyingMaterial feature flag from Homebridge 2.2.2-beta.0', () => {
     homebridgeConfigService.homebridgeVersion = '2.2.1'
     expect(homebridgeConfigService.getFeatureFlags().hapDisableIdentifyingMaterial).toBe(false)
