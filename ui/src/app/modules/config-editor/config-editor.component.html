@@ -154,14 +154,24 @@
   @if (!secretsRevealed()) {
     <p class="grey-text mt-3 mb-2">{{ 'config.privacy.notice' | translate }}</p>
     @if (redactedConfig() !== null) {
-      <textarea
-        readonly
-        wrap="off"
-        class="hb-plain-text-editor h-100 w-100 my-3"
-        spellcheck="false"
-        [attr.aria-label]="'config.privacy.preview' | translate"
-        [value]="redactedConfig()"
-      ></textarea>
+      @if (previewInMonaco()) {
+        <ngx-monaco-editor
+          class="flex-grow-1 h-100 w-100 mt-3 mb-0"
+          [attr.aria-label]="'config.privacy.preview' | translate"
+          [options]="previewEditorOptions"
+          [model]="previewEditorModel"
+          (onInit)="onPreviewEditorInit($event)"
+        />
+      } @else {
+        <textarea
+          readonly
+          wrap="off"
+          class="hb-plain-text-editor h-100 w-100 my-3"
+          spellcheck="false"
+          [attr.aria-label]="'config.privacy.preview' | translate"
+          [value]="redactedConfig()"
+        ></textarea>
+      }
     } @else {
       <p class="grey-text" role="status">{{ 'config.privacy.invalid' | translate }}</p>
     }

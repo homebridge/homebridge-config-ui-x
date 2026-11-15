@@ -112,6 +112,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): read a beta changelog from the newest beta branch, not the last one by name
 - fix(accessories): show a matter fan as on while its current speed is above 0, whatever its mode
 - fix(plugins): on close, wait only for the npm run in progress and drop the queued ones
+- feat(config): show the masked config in a read-only monaco editor on a big screen
 
 ### Other Changes
 
