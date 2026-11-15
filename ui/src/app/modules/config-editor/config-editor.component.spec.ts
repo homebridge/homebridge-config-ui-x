@@ -283,10 +283,13 @@ describe('ConfigEditorComponent', () => {
         expect(component.previewEditorOptions.domReadOnly).toBe(true)
         // Same layout as the editable view, so the text does not jump when revealed
         expect(component.previewEditorOptions).toEqual({
-          ...component.editorOptions,
+          ...component.singleEditorOptions,
           readOnly: true,
           domReadOnly: true,
         })
+        // Neither has the empty strip left of the line numbers; the compare view keeps it
+        expect(component.singleEditorOptions.glyphMargin).toBe(false)
+        expect(component.editorOptions.glyphMargin).toBe(true)
         expect(component.previewEditorModel.uri).toBeUndefined()
 
         component.preferPlainTextEditor.set(true)

@@ -117,6 +117,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   public monacoEditor: any
   public editorOptions: any
+  public singleEditorOptions: any
   public monacoEditorModel!: NgxEditorModel
   public diffOriginalModel!: DiffEditorModel
   public previewEditorOptions: any
@@ -161,11 +162,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       glyphMargin: true,
     }
 
+    // Nothing is ever drawn in the strip left of the line numbers of the
+    // editor on its own, so it is left out there. The compare view keeps it
+    this.singleEditorOptions = {
+      ...this.editorOptions,
+      glyphMargin: false,
+    }
+
     // The masked preview is read only. It has no model URI of its own, so the
     // config schema and its warnings are not attached to it. Everything else
     // matches the editable view, so the text does not move when revealed
     this.previewEditorOptions = {
-      ...this.editorOptions,
+      ...this.singleEditorOptions,
       readOnly: true,
       domReadOnly: true,
     }

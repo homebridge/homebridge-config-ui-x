@@ -179,7 +179,7 @@
     @if (!preferPlainTextEditor() && !isMobile() && !originalConfig()) {
       <ngx-monaco-editor
         class="flex-grow-1 h-100 w-100 mt-3 mb-0"
-        [options]="editorOptions"
+        [options]="singleEditorOptions"
         [model]="monacoEditorModel"
         (onInit)="onEditorInit($event)"
         (keydown.control.s)="$event.preventDefault(); onSave()"
