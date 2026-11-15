@@ -1121,8 +1121,9 @@ export class AccessoriesService {
       const accessory = this.matterAccessories.find(acc => acc.uuid === uuid)
       const bridgeUsername = accessory?.bridge?.username
 
-      // Send control command via IPC using unified Matter event channel
-      const response = await this.waitForMatterEvent<MatterControlResponse>('accessoryControlResponse', (correlationId) => {
+      // Send control command via IPC using unified Matter event channel. Sent once, with no retry: a reply that
+      // comes late does not mean the command was lost, and a second send would carry it out twice
+      const response = await this.attemptMatterEvent<MatterControlResponse>('accessoryControlResponse', (correlationId) => {
         this.homebridgeIpcService.sendMessage('matterAccessoryControl', {
           uuid,
           cluster: control.cluster,
@@ -1131,7 +1132,7 @@ export class AccessoriesService {
           partId,
           correlationId,
         })
-      })
+      }, 10000)
 
       if (!response.success) {
         client.emit('accessory-control-failure', response.error || 'Matter control failed')
