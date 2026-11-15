@@ -12,11 +12,10 @@ import type { TarOptionsWithAliases } from 'tar'
 import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service.js'
 import type { BasePlatform } from './base-platform.js'
 
-import { Buffer } from 'node:buffer'
 import { execFileSync, execSync, fork } from 'node:child_process'
 import { randomInt } from 'node:crypto'
 import { chownSync, createReadStream, createWriteStream, existsSync } from 'node:fs'
-import { mkdtemp, open, readFile, rename, stat } from 'node:fs/promises'
+import { mkdtemp, readFile, rename, stat } from 'node:fs/promises'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
@@ -37,7 +36,7 @@ import { isNodeMajorKnown, isNodeMajorSupported, pickNodeUpdate } from '../core/
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
 import { readConfigForCheck, writeConfigAtomically } from './config-file.js'
 import { confirmUnknownNode } from './confirm-unknown-node.js'
-import { openLogFile } from './log-file.js'
+import { openLogFile, truncateLogFile } from './log-file.js'
 import { Logger } from './logger.js'
 import { DarwinInstaller } from './platforms/darwin.js'
 import { FreeBSDInstaller } from './platforms/freebsd.js'
@@ -355,38 +354,16 @@ export class HomebridgeServiceHelper {
       const maxSize = uiConfigBlock?.log?.maxSize ?? 1000000 // ~1 MB
       const truncateSize = uiConfigBlock?.log?.truncateSize ?? 200000 // ~0.2 MB
 
-      if (maxSize < 0) {
-        return
-      }
-
-      const logStats = await stat(this.logPath)
-
-      if (logStats.size < maxSize) {
-        return // log file does not need truncating
-      }
-
-      // Read out the last `truncatedSize` bytes to a buffer
-      const logStartPosition = logStats.size - truncateSize
-      const logBuffer = Buffer.alloc(truncateSize)
-      const logFileHandle = await open(this.logPath, 'a+')
-
       // Cork the WriteStream `this.log` (the FD that process.stdout /
-      // process.stderr are routed through) so concurrent log lines
-      // don't interleave with the truncate-then-rewrite sequence.
-      // Without the cork, lines emitted between truncate() and the
-      // final write() land out of order — and on some filesystems
-      // leave sparse \0 bytes between the truncated tail and the new
-      // content.
+      // process.stderr are routed through) so log lines written while the
+      // file is trimmed are held and land after it, not inside it.
       const corked = this.logFile && typeof (this.logFile as any).cork === 'function'
       if (corked) {
         (this.logFile as any).cork()
       }
       try {
-        await logFileHandle.read(logBuffer, 0, truncateSize, logStartPosition)
-        await logFileHandle.truncate()
-        await logFileHandle.write(logBuffer)
+        await truncateLogFile(this.logPath, maxSize, truncateSize)
       } finally {
-        await logFileHandle.close()
         if (corked) {
           (this.logFile as any).uncork()
         }

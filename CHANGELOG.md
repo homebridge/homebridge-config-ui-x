@@ -56,6 +56,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): on stop, wait for homebridge to end before closing the ui, and never restart it
 - fix(hb-service): only replace a config.json that is not valid json, never one that failed to save
 - fix(hb-service): log to the console when the log file can't be written, instead of crashing
+- fix(hb-service): trim the log safely when the size to keep is over the maximum, from a whole line
 
 ### Homebridge Dependencies
 
