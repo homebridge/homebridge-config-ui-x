@@ -61,6 +61,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(api): keep the reason a route gives for a 404, as json, not a bare not found
 - fix(server): check cached accessory names before stopping homebridge, and skip a missing cache file
 - fix(server): stop homebridge once, not twice, when resetting a bridge pairing
+- fix(backup): save the ui block as config.json has it on an hbfx restore, not its start-up values
 
 ### Other Changes
 
