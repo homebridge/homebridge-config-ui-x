@@ -37,6 +37,7 @@ import { isNodeMajorKnown, isNodeMajorSupported, pickNodeUpdate } from '../core/
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
 import { readConfigForCheck, writeConfigAtomically } from './config-file.js'
 import { confirmUnknownNode } from './confirm-unknown-node.js'
+import { openLogFile } from './log-file.js'
 import { Logger } from './logger.js'
 import { DarwinInstaller } from './platforms/darwin.js'
 import { FreeBSDInstaller } from './platforms/freebsd.js'
@@ -321,8 +322,16 @@ export class HomebridgeServiceHelper {
     // Work out the log path
     this.logger.debug(`Logging to ${this.logPath}.`)
 
-    // Redirect all stdout to the log file
-    this.logFile = createWriteStream(this.logPath, { flags: 'a' })
+    // Redirect all stdout to the log file. If the file can't be written, go back to the console with a warning
+    // (before, the stream's unhandled `error` event ended hb-service, and systemd restarted it in a loop).
+    const stdoutWrite = process.stdout.write.bind(process.stdout)
+    const stderrWrite = process.stderr.write.bind(process.stderr)
+    this.logFile = openLogFile(this.logPath, (e) => {
+      process.stdout.write = stdoutWrite
+      process.stderr.write = stderrWrite
+      this.logFile = process.stdout
+      this.logger.warn(`Could not write the log file ${this.logPath} (${e.message}). Logging to the console instead.`)
+    })
     process.stdout.write = process.stderr.write = this.logFile.write.bind(this.logFile)
   }
 
