@@ -101,6 +101,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): put a matter fan window's switch back by its mode after a failed write
 - fix(spa): read index.html on each request again, so a reload after a ui update gets the new one
 - fix(terminal): end a socket's first shell even when two starts arrive at once
+- fix(ui): add no socket listener for a page that has already closed, instead of throwing
 
 ### Other Changes
 
