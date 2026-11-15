@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { createGuardrails } from '@otplib/core'
-import { pathExists, readJson } from 'fs-extra/esm'
+import { readJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { generateSecret, generateURI, verify } from 'otplib'
 
@@ -549,9 +549,15 @@ export class AuthService {
       // First user must be admin
       user.admin = true
 
-      // Start with an empty auth file; addUser() below acquires the same
-      // lock to push the first user, so both writes serialise correctly.
-      await this.jsonStore.write<UserDto[]>(this.configService.authPath, [], { spaces: 4 })
+      // Start the auth file if there is none. The wizard also opens for a file with users but no admin: those
+      // users are kept. addUser() below takes the same lock, so both writes serialise correctly.
+      await this.jsonStore.mutate<UserDto[]>(
+        this.configService.authPath,
+        current => (Array.isArray(current)
+          ? current
+          : []),
+        { spaces: 4 },
+      )
 
       const createdUser = await this.addUser(user)
 
@@ -591,17 +597,27 @@ export class AuthService {
    * Executed on startup to see if the auth file is set up yet
    */
   async checkAuthFile() {
-    if (!await pathExists(this.configService.authPath)) {
-      this.configService.setupWizardComplete = false
+    let authfile: unknown
+    try {
+      authfile = await readJson(this.configService.authPath)
+    } catch (e) {
+      if (e?.code === 'ENOENT') {
+        this.configService.setupWizardComplete = false
+        return
+      }
+      // Fail closed. The setup wizard hands an admin token to anyone who asks, so a file that is there but can not
+      // be read (wrong owner after a `sudo` run, a half-written file) must not open it.
+      this.logger.error(`Could not read the user accounts file ${this.configService.authPath} (${e.message}). `
+        + 'Nobody can log in until it is fixed. To start again with the setup wizard, delete the file and restart Homebridge.')
       return
     }
-    try {
-      const authfile: UserDto[] = await readJson(this.configService.authPath)
-      // There must be at least one admin user
-      if (!authfile.some(x => x.admin === true)) {
-        this.configService.setupWizardComplete = false
-      }
-    } catch (e) {
+    if (!Array.isArray(authfile)) {
+      this.logger.error(`The user accounts file ${this.configService.authPath} does not hold a list of users. `
+        + 'Nobody can log in until it is fixed. To start again with the setup wizard, delete the file and restart Homebridge.')
+      return
+    }
+    // There must be at least one admin user
+    if (!authfile.some(x => x?.admin === true)) {
       this.configService.setupWizardComplete = false
     }
   }

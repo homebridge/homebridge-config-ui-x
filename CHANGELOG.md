@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): allow dev server origins only in development, so a site on port 8080 can't read a token
 - fix(fs): keep a json file's mode and symlink when saving it, and remove the temp file on failure
 - fix(auth): keep the token signing key private (0600), read it once, and never overwrite it
+- fix(auth): keep the setup wizard closed when auth.json can't be read, and keep its users
 
 ### Other Changes
 
