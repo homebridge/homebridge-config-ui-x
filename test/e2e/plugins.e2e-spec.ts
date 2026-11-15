@@ -2239,6 +2239,38 @@ describe('PluginController (e2e)', () => {
     finish()
     await closing
     expect(order).toEqual(['npm finished', 'closed'])
+    ;(pluginsService as any).closing = false
+  })
+
+  it('closing the app waits only for the run in progress, and drops the queued ones', async () => {
+    // Regression: it waited for every queued run (each up to 30 minutes), while hb-service had already stopped
+    // Homebridge, so all accessories stayed offline for the whole queue (decided by BP: the run in progress only)
+    let finish: () => void
+    const order: string[] = []
+    const first = (pluginsService as any).queuePackageOperation(() => new Promise<void>((resolve) => {
+      finish = () => {
+        order.push('first finished')
+        resolve()
+      }
+    }))
+    const queued = vi.fn(async () => order.push('queued ran'))
+    const second = (pluginsService as any).queuePackageOperation(queued).catch((e: Error) => e.message)
+    await new Promise(resolve => setTimeout(resolve, 10))
+
+    try {
+      const closing = pluginsService.beforeApplicationShutdown().then(() => order.push('closed'))
+      await expect((pluginsService as any).queuePackageOperation(async () => undefined)).rejects.toThrow('closing')
+
+      finish()
+      await first
+      await closing
+
+      expect(queued).not.toHaveBeenCalled()
+      expect(await second).toContain('closed before this package update started')
+      expect(order).toEqual(['first finished', 'closed'])
+    } finally {
+      ;(pluginsService as any).closing = false
+    }
   })
 
   it('removes a synology @eaDir folder from the plugin folder before npm runs', async () => {
