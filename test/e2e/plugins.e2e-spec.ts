@@ -2168,6 +2168,25 @@ describe('PluginController (e2e)', () => {
     }
   })
 
+  it('closing the app waits for an npm run in progress, so it is never killed part-way', async () => {
+    let finish: () => void
+    const order: string[] = []
+    void (pluginsService as any).queuePackageOperation(() => new Promise<void>((resolve) => {
+      finish = () => {
+        order.push('npm finished')
+        resolve()
+      }
+    }))
+
+    const closing = pluginsService.beforeApplicationShutdown().then(() => order.push('closed'))
+    await new Promise(resolve => setTimeout(resolve, 50))
+    expect(order).toEqual([])
+
+    finish()
+    await closing
+    expect(order).toEqual(['npm finished', 'closed'])
+  })
+
   describe('the "major" update policy', () => {
     it('offers the newest stable version of the same major, never a beta', () => {
       const available = [
