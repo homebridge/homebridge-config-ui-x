@@ -703,6 +703,46 @@ describe('AccessoriesController (e2e)', () => {
     ;(accessoriesService as any).hapMonitorPromise = null
   })
 
+  it('service.connect cleans up a socket that disconnects during the first load', async () => {
+    // Regression: the clean-up handler was only added after the first load, so a page reload while it was
+    // still running missed the one-time 'disconnect'. The socket stayed in activeClients (getting every
+    // Matter broadcast) and its listeners stayed on the shared monitor and hap client for good.
+    const { EventEmitter } = await import('node:events')
+    ;(accessoriesService as any).hapMonitorPromise = null
+
+    const monitor = new EventEmitter() as any
+    monitor.finish = vi.fn()
+    vi.spyOn(accessoriesService.hapClient, 'monitorCharacteristics').mockResolvedValue(monitor)
+    vi.spyOn(accessoriesService.hapClient, 'refreshInstances').mockImplementation(() => undefined)
+    let finishLoad: (value: any) => void
+    hapClientMock.mockReturnValueOnce(new Promise((resolve) => {
+      finishLoad = resolve
+    }) as any)
+    hapClientMock.mockResolvedValue((mockedServices as any[]).map(s => ({
+      ...s,
+      refreshCharacteristics: vi.fn().mockResolvedValue(undefined),
+    })) as any)
+
+    const discoveredBefore = accessoriesService.hapClient.listenerCount('instance-discovered')
+    const client = new EventEmitter() as any
+    const connecting = accessoriesService.connect(client)
+    await vi.waitFor(() => expect(hapClientMock).toHaveBeenCalled())
+
+    client.emit('disconnect')
+    finishLoad((mockedServices as any[]).map(s => ({
+      ...s,
+      refreshCharacteristics: vi.fn().mockResolvedValue(undefined),
+    })))
+    await connecting
+
+    expect((accessoriesService as any).activeClients.has(client)).toBe(false)
+    expect((accessoriesService as any).clientSessions.has(client)).toBe(false)
+    expect(monitor.listenerCount('service-update')).toBe(0)
+    expect(accessoriesService.hapClient.listenerCount('instance-discovered')).toBe(discoveredBefore)
+    expect(client.listenerCount('accessory-control')).toBe(0)
+    ;(accessoriesService as any).hapMonitorPromise = null
+  })
+
   it('service.resetInstancePool should not throw when insecure mode disabled', () => {
     configService.homebridgeInsecureMode = false
     // Should be a no-op when insecure mode is disabled

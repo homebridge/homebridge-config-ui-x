@@ -203,6 +203,14 @@ export class AccessoriesService {
     let disconnected = false
     const notResponding = new Set<string>()
 
+    // The first load below takes a while (Matter start, every bridge). A page reload in that time sends the
+    // socket's one-time 'disconnect' before the clean-up handler further down exists, so note it here
+    const markDisconnected = () => {
+      disconnected = true
+    }
+    client.once('disconnect', markDisconnected)
+    client.once('end', markDisconnected)
+
     const loadAllAccessories = async (refresh: boolean) => {
       if (disconnected) {
         return
@@ -315,6 +323,16 @@ export class AccessoriesService {
     })
 
     const monitor = await this.ensureHapMonitor()
+
+    // Gone during the first load: undo what was set up, rather than add listeners nobody would ever remove
+    if (disconnected) {
+      this.clientSessions.delete(client)
+      client.removeAllListeners('accessory-control')
+      this.activeClients.delete(client)
+      return
+    }
+    client.removeListener('disconnect', markDisconnected)
+    client.removeListener('end', markDisconnected)
 
     const updateHandler = (data: ServiceType[]) => {
       client.emit('accessories-data', data)
