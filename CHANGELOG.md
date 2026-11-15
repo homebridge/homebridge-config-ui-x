@@ -41,6 +41,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): take as long to refuse an unknown username as a wrong password
 - fix(plugins): load the plugin list before a ui update reads its install path from it
 - fix(plugins): cache npm's short version list apart from the full lookup, which needs the keywords
+- fix(scheduler): restart a shared child bridge once, cancel every old job, and warn on a bad cron
 
 ### Other Changes
 
