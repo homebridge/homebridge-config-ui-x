@@ -390,7 +390,12 @@ export class PluginsSettingsUiService {
     // Bind the socket's listeners synchronously, before the lookups below suspend: they belong to
     // the socket for its whole session, and a request that arrives while a helper is being
     // resolved still has to be answered rather than dropped.
-    client.on('request', (request: { requestId?: string }) => {
+    client.on('request', (request: { action?: unknown, requestId?: string }) => {
+      // Only a request message goes to the plugin's server, the only kind @homebridge/plugin-ui-utils reads. Its
+      // server crashed on a `null` or junk message before v2.3.1, and a plugin keeps the version it shipped with.
+      if (!request || typeof request !== 'object' || Array.isArray(request) || request.action !== 'request') {
+        return
+      }
       if (child?.connected) {
         if (request?.requestId) {
           outstanding.add(request.requestId)

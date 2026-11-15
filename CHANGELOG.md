@@ -63,6 +63,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(server): stop homebridge once, not twice, when resetting a bridge pairing
 - fix(backup): save the ui block as config.json has it on an hbfx restore, not its start-up values
 - fix(config-editor): put a plugin's blocks back where its first block was, not past other plugins
+- fix(custom-plugins): pass on only request messages to a plugin's ui server, never junk or null
 
 ### Other Changes
 
