@@ -37,7 +37,7 @@ export const FEATURE_FLAGS: FeatureFlagDefinition[] = [
   {
     key: 'hapBridgeDisable',
     description: 'Enables disabling HAP per bridge (main and child) and reflects HAP status in widgets',
-    range: '^2.0.1-beta.0',
+    range: '>=2.0.1-beta.0',
   },
   {
     key: 'externalAccessoriesAttribution',
