@@ -32,6 +32,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config-editor): keep saving when config.json has an older custom restart command
 - fix(config-editor): save the hap and matter settings under the config lock, keeping other saves
 - fix(config): start the ui without ssl, instead of not at all, when an ssl file is missing
+- fix(terminal): ignore terminal input that is not text, which crashed the ui process
 
 ### Other Changes
 
