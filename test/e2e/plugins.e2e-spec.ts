@@ -2137,6 +2137,37 @@ describe('PluginController (e2e)', () => {
     }
   })
 
+  it('a plugin lookup right after a version list still finds the plugin', async () => {
+    // npm answers the version list with a short document that has no keywords. Both used one cache key, so for a
+    // minute after opening "manage version" an exact-name search came back empty.
+    const short = {
+      'name': 'homebridge-cachetest',
+      'dist-tags': { latest: '1.0.0' },
+      'versions': {
+        '1.0.0': { version: '1.0.0' },
+      },
+    }
+    const full = {
+      ...short,
+      keywords: ['homebridge-plugin'],
+      description: 'x',
+      time: { modified: '2026-11-15T00:00:00.000Z' },
+      maintainers: [],
+    }
+    const get = vi.spyOn(httpService, 'get').mockImplementation(((_url: string, options?: any) => of({
+      data: options?.headers?.accept?.includes('install-v1')
+        ? short
+        : full,
+    })) as any)
+    try {
+      await pluginsService.getAvailablePluginVersions('homebridge-cachetest')
+      const found = await pluginsService.searchNpmRegistrySingle('homebridge-cachetest')
+      expect(found.map(p => p.name)).toEqual(['homebridge-cachetest'])
+    } finally {
+      get.mockRestore()
+    }
+  })
+
   describe('the "major" update policy', () => {
     it('offers the newest stable version of the same major, never a beta', () => {
       const available = [
