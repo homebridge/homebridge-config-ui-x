@@ -1,6 +1,7 @@
 import { Inject, UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 
+import { getWsUser } from '../../core/auth/guards/ws-token.js'
 import { WsGuard } from '../../core/auth/guards/ws.guard.js'
 import { devServerCorsConfig } from '../../core/cors.config.js'
 import { AccessoriesService } from './accessories.service.js'
@@ -26,15 +27,25 @@ export class AccessoriesGateway {
     })
   }
 
+  // The layout is per user: the user is the one the guard verified the token for. The `user` the client sends in
+  // the message is ignored, or any signed-in user could read or replace another user's (or an admin's) layout.
   @SubscribeMessage('get-layout')
-  async getAccessoryLayout(client: any, payload: any) {
-    return await this.accessoriesService.getAccessoryLayout(payload.user)
+  async getAccessoryLayout(client: any) {
+    const user = getWsUser(client)
+    if (!user) {
+      return new WsException('Unauthorized')
+    }
+    return await this.accessoriesService.getAccessoryLayout(user.username)
   }
 
   @SubscribeMessage('save-layout')
   async saveAccessoryLayout(client: any, payload: any) {
+    const user = getWsUser(client)
+    if (!user) {
+      return new WsException('Unauthorized')
+    }
     try {
-      return await this.accessoriesService.saveAccessoryLayout(payload.user, payload.layout)
+      return await this.accessoriesService.saveAccessoryLayout(user.username, payload?.layout)
     } catch (e) {
       return new WsException(e)
     }

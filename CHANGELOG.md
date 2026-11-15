@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): keep the setup wizard closed when auth.json can't be read, and keep its users
 - fix(auth): create auth.json readable by its owner only, as it holds password hashes
 - fix(server): write tls private keys and pfx files readable by their owner only
+- fix(accessories): save and load the room layout of the signed-in user, not the user a socket names
 
 ### Other Changes
 

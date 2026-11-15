@@ -11,3 +11,25 @@
 export function extractWsToken(handshake: any): string | undefined {
   return handshake?.auth?.token || handshake?.query?.token
 }
+
+/**
+ * The user a guard verified the handshake token for. A handler that acts for "the current user" must read
+ * the username from here, never from the message: anything in the message is chosen by the client.
+ */
+export interface WsUser {
+  username: string
+  admin: boolean
+}
+
+export function setWsUser(client: any, payload: { username?: string, admin?: boolean }): void {
+  if (client && typeof payload?.username === 'string') {
+    client.data = {
+      ...(client.data ?? {}),
+      user: { username: payload.username, admin: payload.admin === true } satisfies WsUser,
+    }
+  }
+}
+
+export function getWsUser(client: any): WsUser | undefined {
+  return client?.data?.user
+}
