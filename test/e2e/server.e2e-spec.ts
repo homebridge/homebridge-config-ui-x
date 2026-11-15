@@ -12,7 +12,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import FormData from 'form-data'
-import { copy, ensureDir, pathExists, readFile, readJson, remove, writeJson } from 'fs-extra'
+import { copy, ensureDir, pathExists, readFile, readJson, remove, stat, writeJson } from 'fs-extra'
 import forge from 'node-forge'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -24,6 +24,14 @@ import { ServerModule } from '../../src/modules/server/server.module.js'
 import { ServerService } from '../../src/modules/server/server.service.js'
 
 import '../../src/global-defaults.js'
+
+/** A file that holds a secret is readable by its owner only (Windows has no such file modes) */
+async function expectOwnerOnly(path: string) {
+  if (process.platform === 'win32') {
+    return
+  }
+  expect((await stat(path)).mode & 0o777).toBe(0o600)
+}
 
 describe('ServerController (e2e)', () => {
   let app: NestFastifyApplication
@@ -1545,6 +1553,8 @@ describe('ServerController (e2e)', () => {
     expect(res.json().mode).toBe('keycert')
     expect(res.json().keyPath).toBeDefined()
     expect(res.json().certPath).toBeDefined()
+    // The private key is readable by its owner only
+    await expectOwnerOnly(res.json().keyPath)
   })
 
   it('POST /server/ssl/selfsigned/generate (selfsigned mode)', async () => {
@@ -1660,6 +1670,7 @@ describe('ServerController (e2e)', () => {
     expect(res.json().ok).toBe(true)
     expect(res.json().type).toBe('keycert')
     expect((await readFile(res.json().keyPath)).equals(keyPem)).toBe(true)
+    await expectOwnerOnly(res.json().keyPath)
     expect((await readFile(res.json().certPath)).equals(certPem)).toBe(true)
 
     const config = await readJson(configService.configPath)
@@ -1705,6 +1716,7 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(201)
     expect(res.json().ok).toBe(true)
     expect(res.json().type).toBe('pfx')
+    await expectOwnerOnly(res.json().pfxPath)
 
     const config = await readJson(configService.configPath)
     const uiBlock = config.platforms.find(x => x.platform === 'config')
