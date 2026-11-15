@@ -13,11 +13,13 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { FilterMaintenanceManageComponent } from '@/app/core/accessories/types/hap/filter-maintenance/filter-maintenance.manage.component'
+import { HapNumberPipe } from '@/app/core/accessories/types/hap/hap-number.pipe'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
   selector: 'app-filter-maintenance',
   imports: [
+    HapNumberPipe,
     TranslatePipe,
     LongClickDirective,
   ],

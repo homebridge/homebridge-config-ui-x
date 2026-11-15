@@ -1,5 +1,5 @@
 @let values = service().values;
-@let cds = values?.CurrentDoorState;
+@let cds = values?.CurrentDoorState | hapNumber;
 @let hasCDS = 'CurrentDoorState' in values;
 @let obstructed = !!values?.ObstructionDetected;
 
@@ -17,7 +17,9 @@
   class="accessory-box"
   role="button"
   tabindex="0"
-  [class.accessory-on]="values?.ObstructionDetected || [0, 2, 3, 4].includes(cds) || values?.On || values?.Active"
+  [class.accessory-on]="
+    values?.ObstructionDetected || (cds !== undefined && [0, 2, 3, 4].includes(cds)) || values?.On || values?.Active
+  "
   [class.opening]="cds === 2"
   [class.open]="cds === 0"
   [class.closing]="cds === 3"
