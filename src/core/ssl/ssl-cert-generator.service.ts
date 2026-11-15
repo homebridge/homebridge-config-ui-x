@@ -9,6 +9,7 @@ import { Injectable } from '@nestjs/common'
 import { ensureDir } from 'fs-extra/esm'
 import forge from 'node-forge'
 
+import { writePrivateFile } from '../fs/private-file.js'
 import { Logger } from '../logger/logger.service.js'
 import { RE_IPV4, RE_IPV6 } from '../regex.constants.js'
 
@@ -139,7 +140,7 @@ export class SslCertGeneratorService {
       const certificatePem = forge.pki.certificateToPem(cert)
 
       // Save to disk
-      await writeFile(this.privateKeyPath, privateKeyPem, 'utf8')
+      await writePrivateFile(this.privateKeyPath, privateKeyPem)
       await writeFile(this.certificatePath, certificatePem, 'utf8')
 
       this.logger.log(`Self-signed certificate generated successfully for: ${hostnames.join(', ')}`)

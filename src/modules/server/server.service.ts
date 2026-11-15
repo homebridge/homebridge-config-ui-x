@@ -31,6 +31,7 @@ import { check as tcpCheck } from 'tcp-port-used'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
+import { writePrivateFile } from '../../core/fs/private-file.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import {
@@ -1828,7 +1829,7 @@ export class ServerService {
     await ensureDir(sslDir)
 
     // If existing files exist at these paths, overwrite them
-    await writeFile(keyPath, keyPem)
+    await writePrivateFile(keyPath, keyPem)
     await writeFile(certPath, certPem)
 
     // Update config.json UI block
@@ -1925,7 +1926,7 @@ export class ServerService {
     const sslDir = join(this.configService.storagePath, 'ssl-certs')
     const pfxPath = join(sslDir, 'ui-ssl.pfx')
     await ensureDir(sslDir)
-    await writeFile(pfxPath, pfxBuffer)
+    await writePrivateFile(pfxPath, pfxBuffer)
 
     // Update config
     const configFile = await this.configEditorService.getConfigFile()
