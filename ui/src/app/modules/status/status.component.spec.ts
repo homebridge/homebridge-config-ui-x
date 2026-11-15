@@ -1,7 +1,7 @@
 import type { FakeIoNamespace, FakeModalService, FakeSettings, FakeWs } from '@/testing'
 
 import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { TestBed } from '@angular/core/testing'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import { TranslatePipe } from '@ngx-translate/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -28,6 +28,7 @@ import { provideFakes, provideTestTranslate } from '@/testing/providers'
  * drag-and-drop grid is unusable with a screen reader.
  */
 describe('statusComponent', () => {
+  let lastFixture: ComponentFixture<StatusComponent>
   let settings: FakeSettings
   let toastr: ReturnType<typeof toastrStub>
   let ws: FakeWs
@@ -122,6 +123,7 @@ describe('statusComponent', () => {
     notification = TestBed.inject(NotificationService)
 
     const fixture = TestBed.createComponent(StatusComponent)
+    lastFixture = fixture
     fixture.detectChanges()
     await fixture.whenStable()
 
@@ -1092,6 +1094,17 @@ describe('statusComponent', () => {
    * for ever. Widgets the user may not have — the terminal for a non-admin, the
    * matter code on a homebridge without matter — are dropped instead.
    */
+  it('takes its status listeners off the shared socket when the page closes', async () => {
+    // Each visit to the dashboard used to leave one more live copy of the handlers on the cached socket
+    await open({ layout: [] })
+    expect(io.socket.handlers('homebridge-status').length).toBeGreaterThan(0)
+
+    lastFixture.destroy()
+
+    expect(io.socket.handlers('homebridge-status')).toHaveLength(0)
+    expect(io.socket.handlers('disconnect')).toHaveLength(0)
+  })
+
   describe('applying a saved layout', () => {
     const item = (component: string) => ({
       component,

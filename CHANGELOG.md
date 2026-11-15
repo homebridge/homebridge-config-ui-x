@@ -54,6 +54,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ui): reload after an update on safari and firefox too, which showed a blank page
 - fix(i18n): add the ten texts the ui uses that en.json lacked, and test that none are missing
 - fix(plugins): take the install window's output listener off the socket and free its terminal
+- fix(ui): take seven pages' socket listeners off when they close, so each visit no longer adds one
 
 ### Other Changes
 

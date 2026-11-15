@@ -9,6 +9,7 @@ import { firstValueFrom, Subject } from 'rxjs'
 
 import { AuthService } from '@/app/core/auth/auth.service'
 import { NotificationService } from '@/app/core/communication/notification.service'
+import { listenUntilDestroyed } from '@/app/core/communication/socket-listener'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
 import { WIDGET_CONTROL_MODAL_DATA, WIDGET_VISIBILITY_MODAL_DATA } from '@/app/core/modal-data-tokens'
@@ -140,11 +141,11 @@ export class StatusComponent implements OnInit, OnDestroy {
       }
     })
 
-    this.io.socket.on('disconnect', () => {
+    listenUntilDestroyed(this.destroyRef, this.io.socket).on('disconnect', () => {
       this.consoleStatus.set('down')
     })
 
-    this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
+    listenUntilDestroyed(this.destroyRef, this.io.socket).on('homebridge-status', (data: HomebridgeStatusResponse) => {
       // Check if client is up-to-date
       if (data.packageVersion && data.packageVersion !== this.$settings.uiVersion) {
         window.location.reload()
