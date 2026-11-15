@@ -198,6 +198,9 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
     }
   }
 
+  /** How long one npm run may take before it is stopped */
+  public static NPM_RUN_TIMEOUT_MS = 30 * 60 * 1000
+
   /**
    * All npm package operations run through here, one at a time. npm has no
    * lock of its own: two npm processes rewriting the same node_modules tree
@@ -205,9 +208,6 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
    * run is SCHEDULED - so back-to-back calls (the homebridge-updater plugin
    * applying several updates, updater#278) otherwise run npm concurrently.
    */
-  /** How long one npm run may take before it is stopped */
-  public static NPM_RUN_TIMEOUT_MS = 30 * 60 * 1000
-
   private packageOperationQueue: Promise<unknown> = Promise.resolve()
   private packageOperationsPending = 0
 
