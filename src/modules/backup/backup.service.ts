@@ -385,13 +385,15 @@ export class BackupService {
       return
     }
 
-    // Remove this instance's backups older than 7 days. A custom backup folder can be shared by several
-    // instances: their backups are theirs to remove.
+    // Remove backups older than 7 days. A custom backup folder can be shared by several instances: there, only this
+    // instance's own are removed. The default folder is this instance's alone, so it also loses the backups made
+    // under an older bridge username (after a reset or a restore), which would otherwise stay for good.
+    const sharedFolder = Boolean(this.configService.ui.scheduledBackupPath)
     try {
       const backups = await this.listScheduledBackups()
 
       for (const backup of backups) {
-        if (backup.instanceId === instanceId && dayjs().diff(dayjs(backup.timestamp), 'day') >= 7) {
+        if ((!sharedFolder || backup.instanceId === instanceId) && dayjs().diff(dayjs(backup.timestamp), 'day') >= 7) {
           await remove(resolve(this.configService.instanceBackupPath, backup.fileName))
         }
       }
