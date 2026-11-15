@@ -140,6 +140,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): keep the newest part of the log for a maximum size of 0, not empty it
 - fix(hb-service): append the kept log when trimming, so a line written meanwhile is not cut
 - test(scheduler): check the old restart jobs on a copy, as the refresh empties the list in place
+- fix(hb-service): keep config.json's owner when saving it as root, as sudo hb-service install does
 
 ### Homebridge Dependencies
 
