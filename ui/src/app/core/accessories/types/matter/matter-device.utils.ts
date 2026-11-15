@@ -823,11 +823,12 @@ function fanModeForPercent(percent: number, sequence?: number): number {
  *
  * Homebridge 2.5.1 no longer ties the mode and the speed together, so a controller that turns the fan off sets the
  * mode to Off and leaves the speed. When the plugin reports a mode, the mode decides (decided by BP); only a fan
- * with no mode is judged by its speed.
+ * with no mode is judged by its speed. A fan whose current speed (`percentCurrent`) is above 0 is running, so it
+ * is on whatever its mode says: a plugin that sends only the speed leaves the mode at Off (decided by BP).
  */
 export function isFanOn(service: ServiceTypeX): boolean {
   if (hasFanMode(service)) {
-    return getFanMode(service) > 0
+    return getFanMode(service) > 0 || (service.clusters?.fanControl?.percentCurrent ?? 0) > 0
   }
   return getFanPercentSetting(service) > 0
 }
