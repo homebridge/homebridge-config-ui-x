@@ -96,6 +96,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): write a new signing key through a new temp file, so a leftover one can't make it 0644
 - fix(server): make an existing tls key file private before writing the new key into it
 - fix(auth): check at most two passwords at once, so made-up usernames can't fill the thread pool
+- fix(server): survive a promise rejected with nothing, and end the ui only for a port error
 
 ### Other Changes
 
