@@ -33,6 +33,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config-editor): save the hap and matter settings under the config lock, keeping other saves
 - fix(config): start the ui without ssl, instead of not at all, when an ssl file is missing
 - fix(terminal): ignore terminal input that is not text, which crashed the ui process
+- fix(server): accept only a 12 hex digit id when reading one pairing, not a path
 
 ### Other Changes
 
