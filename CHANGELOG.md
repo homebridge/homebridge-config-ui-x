@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - ci: stop running the validate jobs on node.js v20
 - ci: pin the wiki notification action to a commit and keep the npm publish token to the publish job
+- build: stop publishing 134 source maps whose sources are not shipped, and 134 unused type files
 
 ### Homebridge Dependencies
 
