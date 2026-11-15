@@ -98,6 +98,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): check at most two passwords at once, so made-up usernames can't fill the thread pool
 - fix(server): survive a promise rejected with nothing, and end the ui only for a port error
 - fix(accessories): write only a mode a matter fan has, from its mode list, with a new speed
+- fix(accessories): put a matter fan window's switch back by its mode after a failed write
 
 ### Other Changes
 
