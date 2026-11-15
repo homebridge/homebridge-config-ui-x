@@ -37,6 +37,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(feature-flags): keep the hap bridge disable switch on for homebridge 3 and later
 - fix(users): answer 400, not 500, when a password or 2fa field is missing, and require a password
 - fix(auth): start a new user's session version at random, so a deleted user's token can't come back
+- fix(auth): count logins still being checked toward the lockout, so a burst can't get past it
 
 ### Other Changes
 
