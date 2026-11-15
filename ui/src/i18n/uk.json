@@ -406,6 +406,7 @@
   "menu.label_settings": "Налаштування",
   "menu.label_status": "Статус",
   "menu.linux.label_logs": "Журнали",
+  "menu.linux.label_restart_modal": "Are you sure you want to restart the operating system? Homebridge and this UI will be offline until it is back up.",
   "menu.linux.label_restart_server": "Перезавантажити сервер",
   "menu.linux.label_shutdown_modal": "Ви впевнені, що хочете вимкнути операційну систему? Вам знадобиться фізичний доступ, щоб знову її ввімкнути.",
   "menu.linux.label_shutdown_server": "Завершення роботи сервера",

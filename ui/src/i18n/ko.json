@@ -406,6 +406,7 @@
   "menu.label_settings": "설정",
   "menu.label_status": "상태",
   "menu.linux.label_logs": "로그",
+  "menu.linux.label_restart_modal": "Are you sure you want to restart the operating system? Homebridge and this UI will be offline until it is back up.",
   "menu.linux.label_restart_server": "서버 재시작",
   "menu.linux.label_shutdown_modal": "Are you sure you want to shut down the operating system? You will need physical access to turn it back on.",
   "menu.linux.label_shutdown_server": "서버 종료",

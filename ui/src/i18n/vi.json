@@ -406,6 +406,7 @@
   "menu.label_settings": "Cài đặt",
   "menu.label_status": "Trạng thái",
   "menu.linux.label_logs": "Nhật ký",
+  "menu.linux.label_restart_modal": "Are you sure you want to restart the operating system? Homebridge and this UI will be offline until it is back up.",
   "menu.linux.label_restart_server": "Khởi động lại hệ điều hành",
   "menu.linux.label_shutdown_modal": "Bạn có chắc muốn tắt hệ điều hành không? Bạn sẽ cần truy cập vật lý để bật lại.",
   "menu.linux.label_shutdown_server": "Tắt hệ điều hành",

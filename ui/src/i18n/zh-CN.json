@@ -406,6 +406,7 @@
   "menu.label_settings": "设置",
   "menu.label_status": "状态",
   "menu.linux.label_logs": "日志",
+  "menu.linux.label_restart_modal": "Are you sure you want to restart the operating system? Homebridge and this UI will be offline until it is back up.",
   "menu.linux.label_restart_server": "重启操作系统",
   "menu.linux.label_shutdown_modal": "您确定要关闭操作系统吗？您需要物理接触设备才能重新开机。",
   "menu.linux.label_shutdown_server": "关闭操作系统",

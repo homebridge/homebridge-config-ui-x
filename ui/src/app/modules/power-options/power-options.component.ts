@@ -65,9 +65,34 @@ export class PowerOptionsComponent implements OnInit {
     }
   }
 
-  public restartServer() {
+  public async restartServer(): Promise<void> {
     this.closeRestartToast()
-    void this.$router.navigate(['/platform-tools/linux/restart-server'], { state: CONFIRMED_ACTION_STATE })
+    // Confirmation dialog, as for a shut down: the whole machine goes offline for a while, so one stray click
+    // must not do it
+    const injector = createEnvironmentInjector([
+      {
+        provide: CONFIRM_MODAL_DATA,
+        useValue: {
+          title: this.$translate.instant('menu.linux.label_restart_server'),
+          message: this.$translate.instant('menu.linux.label_restart_modal'),
+          confirmButtonLabel: this.$translate.instant('form.button_continue'),
+          faIconClass: 'fas fa-power-off primary-text',
+        },
+      },
+    ], this.injector)
+
+    const ref = this.$modal.open(ConfirmComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      injector,
+    })
+
+    try {
+      await ref.result
+      void this.$router.navigate(['/platform-tools/linux/restart-server'], { state: CONFIRMED_ACTION_STATE })
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
   public async shutdownServer(): Promise<void> {
