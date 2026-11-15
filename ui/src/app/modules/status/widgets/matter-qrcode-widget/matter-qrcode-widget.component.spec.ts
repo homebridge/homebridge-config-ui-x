@@ -11,7 +11,7 @@ import { fakeWs } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
 /**
- * The Matter pairing code on the dashboard. Homebridge 2.5.1 reports `startFailed` when Matter is on but its
+ * The Matter pairing code on the dashboard. Homebridge 2.5.1 reports `startFailed` (with `enabled: false`) when Matter is on but its
  * server could not start: there is then no code to show, and the widget says so instead of showing an empty box
  * (which looks as if it is still starting) with the pin of an earlier run.
  */
@@ -56,6 +56,21 @@ describe('matterQrcodeWidgetComponent', () => {
 
     expect(text).toContain('status.widget.matter_start_failed')
     expect(text).not.toContain('111-22-333')
+    expect(fixture.nativeElement.querySelector('app-qrcode')).toBeNull()
+  })
+
+  it('says matter failed to start for what homebridge 2.5.1 really sends: not enabled, with startFailed', async () => {
+    // Regression: the widget needed `enabled && startFailed`, but MatterBridgeManager reports a server that
+    // failed to start as `enabled: false`, so the widget showed the plain "Matter off" view instead
+    const fixture = await open({
+      enabled: false,
+      port: 5540,
+      externalsOnly: false,
+      startFailed: true,
+    })
+    const text = fixture.nativeElement.textContent as string
+
+    expect(text).toContain('status.widget.matter_start_failed')
     expect(fixture.nativeElement.querySelector('app-qrcode')).toBeNull()
   })
 
