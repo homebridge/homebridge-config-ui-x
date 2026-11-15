@@ -780,13 +780,14 @@ export class PluginsService implements OnModuleDestroy {
 
     const userPlatform = platform()
 
+    // Load the installed plugins first: the default install path below is read from them, and on the first update
+    // after a start (for example one the updater plugin asks for) they are not loaded yet
+    await this.getInstalledPlugins()
+
     // Set the default install path
     let installPath = this.configService.customPluginPath
       ? this.configService.customPluginPath
-      : this.installedPlugins.find(x => x.name === this.configService.name).installPath
-
-    // Check if the plugin is already installed
-    await this.getInstalledPlugins()
+      : this.installedPlugins.find(x => x.name === this.configService.name)?.installPath ?? dirname(resolve(process.env.UIX_BASE_PATH))
 
     // Update the installation we are actually running from. The UI carries the
     // 'homebridge-plugin' keyword, so it is deduplicated like a plugin - and that

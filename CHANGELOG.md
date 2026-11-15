@@ -39,6 +39,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): start a new user's session version at random, so a deleted user's token can't come back
 - fix(auth): count logins still being checked toward the lockout, so a burst can't get past it
 - fix(auth): take as long to refuse an unknown username as a wrong password
+- fix(plugins): load the plugin list before a ui update reads its install path from it
 
 ### Other Changes
 
