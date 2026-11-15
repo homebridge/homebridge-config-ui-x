@@ -1,10 +1,27 @@
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { chmod, lstat, mkdtemp, readdir, readFile, rm, stat, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import process from 'node:process'
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { JsonFileStoreService } from '../../src/core/fs/json-file-store.service.js'
+
+// Lets one test make the write into the temp file fail, as a full disk would
+const openHook = vi.hoisted(() => ({ failWrite: false }))
+vi.mock('node:fs/promises', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:fs/promises')>()
+  return {
+    ...actual,
+    open: async (...args: Parameters<typeof actual.open>) => {
+      const handle = await actual.open(...args)
+      if (openHook.failWrite) {
+        handle.writeFile = () => Promise.reject(new Error('ENOSPC'))
+      }
+      return handle
+    },
+  }
+})
 
 describe('JsonFileStoreService', () => {
   let store: JsonFileStoreService
@@ -98,15 +115,63 @@ describe('JsonFileStoreService', () => {
     expect(JSON.parse(await readFile(path, 'utf8'))).toEqual({ count: 1 })
   })
 
-  it('write uses atomic temp-rename — no partial file visible after a failed write', async () => {
+  it('write uses atomic temp-rename — no tmp leftovers after a successful write', async () => {
     const path = join(workDir, 'atomic.json')
     await store.write(path, { hello: 'world' })
 
-    // No tmp leftovers from the successful write.
-    const { readdir } = await import('node:fs/promises')
     const entries = await readdir(workDir)
     expect(entries.filter(e => e.startsWith('atomic.json.tmp'))).toHaveLength(0)
     expect(JSON.parse(await readFile(path, 'utf8'))).toEqual({ hello: 'world' })
+  })
+
+  it('a write that fails while writing the temp file removes it', async () => {
+    const path = join(workDir, 'atomic.json')
+    await writeFile(path, JSON.stringify({ generation: 1 }))
+    openHook.failWrite = true
+    try {
+      await expect(store.write(path, { generation: 2 })).rejects.toThrow('ENOSPC')
+    } finally {
+      openHook.failWrite = false
+    }
+
+    expect(JSON.parse(await readFile(path, 'utf8'))).toEqual({ generation: 1 })
+    expect((await readdir(workDir)).filter(e => e.includes('.tmp.'))).toHaveLength(0)
+  })
+
+  it.skipIf(process.platform === 'win32')('keeps the mode of an existing file', async () => {
+    const path = join(workDir, 'auth.json')
+    await writeFile(path, '[]')
+    await chmod(path, 0o600)
+
+    await store.write(path, [
+      { username: 'admin' },
+    ])
+
+    expect((await stat(path)).mode & 0o777).toBe(0o600)
+  })
+
+  it.skipIf(process.platform === 'win32')('creates a new file with the mode asked for', async () => {
+    const path = join(workDir, 'secret.json')
+
+    await store.write(path, { secretKey: 'x' }, { mode: 0o600 })
+
+    expect((await stat(path)).mode & 0o777).toBe(0o600)
+  })
+
+  it.skipIf(process.platform === 'win32')('writes through a symlink and keeps the link', async () => {
+    const real = join(workDir, 'real-config.json')
+    const link = join(workDir, 'config.json')
+    await writeFile(real, '{}')
+    await symlink(real, link)
+
+    await store.write(link, {
+      bridge: { name: 'x' },
+    })
+
+    expect((await lstat(link)).isSymbolicLink()).toBe(true)
+    expect(JSON.parse(await readFile(real, 'utf8'))).toEqual({
+      bridge: { name: 'x' },
+    })
   })
 
   it('write honours backupTo by copying the existing file before the rename', async () => {

@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(accessories): show accessories that are not responding, with their HomeKit status (#3124)
 - fix(auth): only serve and delete a wallpaper that is a plain image file name in the storage folder
 - fix(auth): allow dev server origins only in development, so a site on port 8080 can't read a token
+- fix(fs): keep a json file's mode and symlink when saving it, and remove the temp file on failure
 
 ### Other Changes
 
