@@ -16,6 +16,7 @@
       "url": "https://paypal.me/oznu"
     }
   ],
+  "homepage": "https://github.com/homebridge/homebridge-config-ui-x#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/homebridge/homebridge-config-ui-x.git"
