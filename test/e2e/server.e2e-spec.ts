@@ -836,20 +836,28 @@ describe('ServerController (e2e)', () => {
   })
 
   it('DELETE /server/wallpaper never deletes a file the wallpaper setting names outside the wallpaper files', async () => {
+    // A separate file: config.json itself would not show it, as the delete writes config.json again after
+    const keep = resolve(configService.storagePath, 'keep-me.json')
+    await writeJson(keep, { keep: true })
     const config = await readJson(configService.configPath)
-    config.platforms[0].wallpaper = 'config.json'
+    config.platforms[0].wallpaper = 'keep-me.json'
     await writeJson(configService.configPath, config)
 
-    const res = await app.inject({
-      method: 'DELETE',
-      path: '/server/wallpaper',
-      headers: { authorization },
-    })
+    try {
+      const res = await app.inject({
+        method: 'DELETE',
+        path: '/server/wallpaper',
+        headers: { authorization },
+      })
 
-    expect(res.statusCode).toBe(204)
-    // config.json is still there, and the bad reference is gone
-    const after = await readJson(configService.configPath)
-    expect(after.platforms[0].wallpaper).toBeUndefined()
+      expect(res.statusCode).toBe(204)
+      // The named file is still there, and the bad reference is gone
+      expect(await readJson(keep)).toEqual({ keep: true })
+      const after = await readJson(configService.configPath)
+      expect(after.platforms[0].wallpaper).toBeUndefined()
+    } finally {
+      await remove(keep)
+    }
   })
 
   it('DELETE /server/wallpaper', async () => {
