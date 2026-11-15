@@ -677,7 +677,16 @@ export class BackupService {
     if (!this.restoreDirectory || this.restoreDirectory === RESTORE_PENDING) {
       throw new BadRequestException()
     }
+    // A restore that fails part-way must free the slot, or every later upload is refused (409) until a restart
+    try {
+      return await this.runRestoreFromBackup(client, autoRestart)
+    } catch (e) {
+      await this.removeRestoreDirectory()
+      throw e
+    }
+  }
 
+  private async runRestoreFromBackup(client: EventEmitter, autoRestart: boolean) {
     // Check info.json exists
     if (!await pathExists(resolve(this.restoreDirectory, 'info.json'))) {
       await this.removeRestoreDirectory()
@@ -792,7 +801,7 @@ export class BackupService {
     }
 
     // Check the bridge.bind config contains valid interface names
-    if (restoredConfig.bridge.bind) {
+    if (restoredConfig.bridge?.bind) {
       await this.checkBridgeBindConfig(restoredConfig)
     }
 
@@ -871,7 +880,16 @@ export class BackupService {
     if (!this.restoreDirectory || this.restoreDirectory === RESTORE_PENDING) {
       throw new BadRequestException()
     }
+    // A restore that fails part-way must free the slot, or every later upload is refused (409) until a restart
+    try {
+      return await this.runRestoreHbfxBackup(client)
+    } catch (e) {
+      await this.removeRestoreDirectory()
+      throw e
+    }
+  }
 
+  private async runRestoreHbfxBackup(client: EventEmitter) {
     // Check package.json exists
     if (!await pathExists(resolve(this.restoreDirectory, 'package.json'))) {
       await this.removeRestoreDirectory()
@@ -997,7 +1015,7 @@ export class BackupService {
     targetConfig.bridge.name = `Homebridge ${targetConfig.bridge.username.substring(targetConfig.bridge.username.length - 5).replace(RE_COLON, '')}`
 
     // Check the bridge.bind config contains valid interface names
-    if (targetConfig.bridge.bind) {
+    if (targetConfig.bridge?.bind) {
       await this.checkBridgeBindConfig(targetConfig)
     }
 

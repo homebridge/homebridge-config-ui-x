@@ -471,6 +471,58 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     expect((backupService as any).restoreDirectory).toBeUndefined()
   })
 
+  describe('a restore that does not finish', () => {
+    const upload = async () => {
+      const res = await app.inject({
+        method: 'GET',
+        path: '/backup/download',
+        headers: { authorization },
+      })
+      await writeFile(tempBackupPath, res.rawPayload)
+      const payload = new FormData()
+      payload.append('backup.tar.gz', await readFile(tempBackupPath))
+      const headers = payload.getHeaders()
+      headers.authorization = authorization
+      return app.inject({
+        method: 'POST',
+        path: '/backup/restore',
+        headers,
+        payload,
+      })
+    }
+
+    it('frees the slot for the next upload when it fails part-way', async () => {
+      expect((await upload()).statusCode).toBe(201)
+      const restoreDirectory = (backupService as any).restoreDirectory
+      await writeJson(join(restoreDirectory, 'plugins.json'), [])
+      const write = vi.spyOn((backupService as any).jsonStore, 'write').mockRejectedValueOnce(new Error('ENOSPC'))
+
+      await expect(backupService.restoreFromBackup(new EventEmitter())).rejects.toThrow('ENOSPC')
+      write.mockRestore()
+
+      expect((backupService as any).restoreDirectory).toBeUndefined()
+      expect(await pathExists(restoreDirectory)).toBe(false)
+      expect((await upload()).statusCode).toBe(201)
+      await backupService.removeRestoreDirectory()
+    })
+
+    it('finishes a backup whose config.json has no bridge section', async () => {
+      expect((await upload()).statusCode).toBe(201)
+      const restoreDirectory = (backupService as any).restoreDirectory
+      await writeJson(join(restoreDirectory, 'plugins.json'), [])
+      const config = await readJson(join(restoreDirectory, 'storage', 'config.json'))
+      delete config.bridge
+      await writeJson(join(restoreDirectory, 'storage', 'config.json'), config)
+      const configBefore = await readFile(configService.configPath)
+
+      try {
+        await expect(backupService.restoreFromBackup(new EventEmitter())).resolves.toEqual({ status: 0 })
+      } finally {
+        await writeFile(configService.configPath, configBefore)
+      }
+    })
+  })
+
   // https://github.com/homebridge/homebridge-config-ui-x/issues/1856
 
   it('POST /backup/restore of a large .homebridge directory should backup, but restore will not work', { timeout: 60_000 }, async () => {
