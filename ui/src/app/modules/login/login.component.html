@@ -79,7 +79,14 @@
           </div>
           <div class="form-control custom-input">
             <div class="small grey-text fw-semibold">
-              {{ (loginError() === 'locked' ? 'login.too_many_attempts' : 'login.server_unreachable') | translate }}
+              {{
+                (loginError() === 'locked'
+                  ? 'login.too_many_attempts'
+                  : loginError() === 'error'
+                    ? 'toast.api_error_generic'
+                    : 'login.server_unreachable'
+                ) | translate
+              }}
             </div>
           </div>
         </div>
