@@ -897,6 +897,23 @@ describe('PluginController (e2e)', () => {
       }
     })
 
+    it('POST /plugins/update/:pluginName treats an empty version as no version (latest), as before', async () => {
+      // Regression: `?version=` used to mean latest; the new version check answered 400 for it
+      const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          path: '/plugins/update/homebridge-mock-plugin?version=',
+          headers: { authorization },
+        })
+        expect(res.statusCode).toBe(201)
+        expect(res.json().version).not.toBe('')
+        await new Promise(resolve => setTimeout(resolve, 200))
+      } finally {
+        managePluginSpy.mockRestore()
+      }
+    })
+
     it('a homebridge update over the socket checks the version like a plugin install does', async () => {
       expect(await validate(plainToInstance(HomebridgeUpdateActionDto, { version: '1.0; rm -rf /' }))).not.toHaveLength(0)
       expect(await validate(plainToInstance(HomebridgeUpdateActionDto, { version: '2.5.1-beta.2' }))).toHaveLength(0)
