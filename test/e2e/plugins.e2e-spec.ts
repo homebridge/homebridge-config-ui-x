@@ -13,6 +13,8 @@ import { HttpService } from '@nestjs/axios'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+import { plainToInstance } from 'class-transformer'
+import { validate } from 'class-validator'
 import { copy, readJson, remove } from 'fs-extra'
 import { of, throwError } from 'rxjs'
 import { gt as semverGt } from 'semver'
@@ -22,8 +24,9 @@ import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
+import { HomebridgeUpdateActionDto } from '../../src/modules/plugins/plugins.dto.js'
 import { PluginsModule } from '../../src/modules/plugins/plugins.module.js'
-import { latestStableInSameMajor, PluginsService } from '../../src/modules/plugins/plugins.service.js'
+import { findCmdUnsafeArgument, latestStableInSameMajor, PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
 vi.mock('node:child_process', async () => {
   const actual = await vi.importActual<typeof import('node:child_process')>('node:child_process')
@@ -870,6 +873,46 @@ describe('PluginController (e2e)', () => {
       for (const plugin of plugins) {
         expect(plugin).not.toHaveProperty('config')
       }
+    })
+  })
+
+  describe('the version to install', () => {
+    it.each([
+      '1.0.0 --registry=x',
+      '1.0; rm -rf /',
+      '$(id)',
+      '1.0.0\ncalc',
+    ])('POST /plugins/update/:pluginName refuses %s', async (version) => {
+      const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          path: `/plugins/update/homebridge-mock-plugin?version=${encodeURIComponent(version)}`,
+          headers: { authorization },
+        })
+        expect(res.statusCode).toBe(400)
+        expect(managePluginSpy).not.toHaveBeenCalled()
+      } finally {
+        managePluginSpy.mockRestore()
+      }
+    })
+
+    it('a homebridge update over the socket checks the version like a plugin install does', async () => {
+      expect(await validate(plainToInstance(HomebridgeUpdateActionDto, { version: '1.0; rm -rf /' }))).not.toHaveLength(0)
+      expect(await validate(plainToInstance(HomebridgeUpdateActionDto, { version: '2.5.1-beta.2' }))).toHaveLength(0)
+      expect(await validate(plainToInstance(HomebridgeUpdateActionDto, { version: '^2.5.0' }))).toHaveLength(0)
+    })
+
+    it('finds the npm arguments cmd.exe would run as commands on windows', () => {
+      expect(findCmdUnsafeArgument(['install', 'homebridge-x@1.0.0|calc'])).toBe('homebridge-x@1.0.0|calc')
+      expect(findCmdUnsafeArgument(['install', 'homebridge-x@1.0.0&calc'])).toBe('homebridge-x@1.0.0&calc')
+      expect(findCmdUnsafeArgument(['install', 'homebridge-x@>=1.0.0'])).toBe('homebridge-x@>=1.0.0')
+      expect(findCmdUnsafeArgument([
+        'install',
+        '--allow-scripts=a,b',
+        'homebridge-x@1.2.3',
+        '--omit=dev',
+      ])).toBeUndefined()
     })
   })
 

@@ -47,10 +47,12 @@ import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.s
 import { Logger } from '../../core/logger/logger.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
 import {
+  RE_CMD_METACHARACTERS,
   RE_ENCODED_AT,
   RE_GITHUB_REPO,
   RE_HYPHEN,
   RE_HYPHEN_GLOBAL,
+  RE_NPM_VERSION,
   RE_PLUGIN_NAME,
   RE_PRERELEASE_TYPE,
   RE_URL,
@@ -64,6 +66,13 @@ import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
 // Create a require function for ESM compatibility
 const require = createRequire(import.meta.url)
 const module = require('node:module')
+
+/**
+ * The first argument cmd.exe would act on (see RE_CMD_METACHARACTERS), if any
+ */
+export function findCmdUnsafeArgument(args: string[]): string | undefined {
+  return args.find(arg => RE_CMD_METACHARACTERS.test(arg))
+}
 
 /**
  * The newest stable version with the same major version as the installed one, if it is newer than the installed one.
@@ -1145,7 +1154,7 @@ export class PluginsService implements OnModuleDestroy {
    * @returns Object containing operation status, package name, and version
    */
   public async triggerUpdate(name: string, version?: string): Promise<{ ok: boolean, name: string, version: string }> {
-    if (version !== undefined && typeof version !== 'string') {
+    if (version !== undefined && (typeof version !== 'string' || !RE_NPM_VERSION.test(version))) {
       throw new BadRequestException('Invalid version parameter.')
     }
 
@@ -2797,6 +2806,13 @@ export class PluginsService implements OnModuleDestroy {
 
     let timeoutTimer: NodeJS.Timeout
     command = command.map(x => String(x)).filter(x => x.length)
+
+    if (platform() === 'win32') {
+      const unsafe = findCmdUnsafeArgument(command)
+      if (unsafe !== undefined) {
+        throw new Error(`Refused to run npm with the argument "${unsafe}": on Windows it would be read as a command.`)
+      }
+    }
 
     // Sudo mode is requested in plugin config
     if (this.configService.ui.sudo) {

@@ -21,6 +21,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ipc): ignore a null or malformed message from homebridge instead of crashing the ui process
 - fix(accessories): wait for homebridge's accessoryInfoData reply when getting one matter accessory
 - fix(plugins): stop the major update policy offering a beta of homebridge or the ui
+- fix(plugins): check every version given to npm, and refuse cmd.exe characters on windows
 
 ### Other Changes
 
