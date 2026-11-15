@@ -17,8 +17,13 @@ interface ListenableSocket {
 export function listenUntilDestroyed(destroyRef: DestroyRef, socket: ListenableSocket) {
   return {
     on(event: string, handler: (...args: any[]) => void): void {
-      socket.on(event, handler)
+      // Called after an await, the page may be gone already: then add nothing (onDestroy would throw NG0911,
+      // and a handler added first would stay for good)
+      if (destroyRef.destroyed) {
+        return
+      }
       destroyRef.onDestroy(() => socket.off(event, handler))
+      socket.on(event, handler)
     },
   }
 }
