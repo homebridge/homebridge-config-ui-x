@@ -177,6 +177,27 @@ describe('loginComponent', () => {
       expect(page.inProgress()).toBe(false)
     })
 
+    it.each([
+      [429, 'locked'],
+      [0, 'unreachable'],
+      [502, 'unreachable'],
+    ])(
+      'says why for a %i, not that the password was wrong',
+      async (status, reason) => {
+        const { page } = await open({
+          auth: makeAuth({
+            login: vi.fn(async () => Promise.reject(httpError(status))) as any,
+          }),
+        })
+        page.form.setValue({ username: 'admin', password: 'right', otp: '' })
+
+        await page.onSubmit()
+
+        expect(page.invalidCredentials()).toBe(false)
+        expect(page.loginError()).toBe(reason)
+      },
+    )
+
     it('clears a previous failure when trying again', async () => {
       const login = vi.fn(async (): Promise<void> => Promise.reject(httpError(401)))
       const { page } = await open({

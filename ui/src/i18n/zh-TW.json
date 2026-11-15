@@ -382,6 +382,8 @@
   "login.invalid_credentials_2": "若您無法存取，請刪除 Homebridge 儲存資料夾中的 <code>auth.json</code> 檔案，然後重新啟動 Homebridge。接著重新整理此頁面，以設定新的管理員帳號。除了 UI 使用者帳號外，Homebridge/UI 設定都會維持不變。唯一的使用者帳號會是您目前正在設定的管理員帳號。",
   "login.invalid_password": "密碼無效",
   "login.label_2fa_code": "雙重驗證碼",
+  "login.server_unreachable": "Could not reach the Homebridge UI. Please check it is running and try again.",
+  "login.too_many_attempts": "Too many failed attempts. Please wait a few minutes and try again.",
   "logs.download.error": "無法下載日誌檔案。",
   "logs.download_warning": "Homebridge 日誌檔案可能包含個人資料、密碼或存取權杖。與他人分享前，請先檢查日誌檔案並移除所有敏感資訊。",
   "logs.log_file_truncated": "日誌檔案已清除。",

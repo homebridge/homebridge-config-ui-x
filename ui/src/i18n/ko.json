@@ -382,6 +382,8 @@
   "login.invalid_credentials_2": "If you lose access, delete the <code>auth.json</code> file in your Homebridge storage directory and restart Homebridge. Then refresh this page to set up a new admin account. Your Homebridge/UI settings will remain unchanged, except for UI user accounts. The only user account will be the admin account that you are setting up now.",
   "login.invalid_password": "Invalid Password",
   "login.label_2fa_code": "2차 인증 코드",
+  "login.server_unreachable": "Could not reach the Homebridge UI. Please check it is running and try again.",
+  "login.too_many_attempts": "Too many failed attempts. Please wait a few minutes and try again.",
   "logs.download.error": "로그 파일 다운로드에 실패했습니다.",
   "logs.download_warning": "Homebridge 로그파일에는 개인정보, 비밀번호, 액세스토큰이 포함될 수 있습니다. 다른 사람과 공유하기 전에 로그 파일을 검토하고 민감한 정보를 제거하십시오.",
   "logs.log_file_truncated": "로그파일이 잘렸습니다.",

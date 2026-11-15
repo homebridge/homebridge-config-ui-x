@@ -48,6 +48,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(status): say matter failed to start on the dashboard code widget, in place of an empty box
 - feat(plugins): say matter failed to start for a child bridge, not to restart to see the code
 - fix(ui): use browser timer types instead of node.js ones, so a ui spec also builds on its own
+- fix(login): say the account is locked for a while, or the ui can't be reached, not a wrong password
 
 ### Other Changes
 

@@ -382,6 +382,8 @@
   "login.invalid_credentials_2": "If you lose access, delete the <code>auth.json</code> file in your Homebridge storage directory and restart Homebridge. Then refresh this page to set up a new admin account. Your Homebridge/UI settings will remain unchanged, except for UI user accounts. The only user account will be the admin account that you are setting up now.",
   "login.invalid_password": "Ongeldig Wachtwoord",
   "login.label_2fa_code": "Twee Factor Authenticatie Code",
+  "login.server_unreachable": "Could not reach the Homebridge UI. Please check it is running and try again.",
+  "login.too_many_attempts": "Too many failed attempts. Please wait a few minutes and try again.",
   "logs.download.error": "Download log bestand mislukt.",
   "logs.download_warning": "Homebridge log bestanden bevatten mogelijk persoonlijke gegevens, wachtwoorden of toegangs tokens. Bekijk de log bestanden en verwijder gevoelige data alvorens u dit bestand deelt met anderen.",
   "logs.log_file_truncated": "Log bestand afgekapt.",

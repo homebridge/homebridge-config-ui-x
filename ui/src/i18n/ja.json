@@ -382,6 +382,8 @@
   "login.invalid_credentials_2": "アクセスできなくなった場合はHomebridgeストレージディレクトリの<code>auth.json</code>を削除して再起動し、このページをリロードして新しい管理者アカウントを設定してください。Homebridge/UIの設定はユーザーアカウントを除いて変わりません。管理者アカウントのみが残ります。",
   "login.invalid_password": "無効なパスワードです",
   "login.label_2fa_code": "二段階認証コード",
+  "login.server_unreachable": "Could not reach the Homebridge UI. Please check it is running and try again.",
+  "login.too_many_attempts": "Too many failed attempts. Please wait a few minutes and try again.",
   "logs.download.error": "ログファイルのダウンロードに失敗しました。",
   "logs.download_warning": "Homebridgeのログファイルには個人情報やパスワード、アクセストークンが含まれる可能性があります。共有する前に機密情報を削除してください。",
   "logs.log_file_truncated": "ログファイルを削除しました",
