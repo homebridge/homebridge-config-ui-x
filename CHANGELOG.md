@@ -92,6 +92,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(terminal): start a re-attached terminal again when its socket reconnects, not leave it silent
 - fix(plugins): run npm on windows from a user folder with a ! or % in its name, as before
 - fix(plugins): treat an empty version in a plugin update as latest again, not refuse it
+- fix(auth): show a wallpaper uploaded with no file extension, saved as ui-wallpaper
 
 ### Other Changes
 

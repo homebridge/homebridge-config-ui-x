@@ -22,6 +22,8 @@ const WALLPAPER_EXTENSIONS = new Set([
   '.gif',
   '.heic',
   '.ico',
+  '.jfif',
+  '.jpe',
   '.jpeg',
   '.jpg',
   '.png',
@@ -473,7 +475,8 @@ export class ConfigService {
     if (typeof name !== 'string' || basename(name) !== name || name.includes('\\') || name.startsWith('.')) {
       return undefined
     }
-    if (!name.startsWith('ui-wallpaper.') && !WALLPAPER_EXTENSIONS.has(extname(name).toLowerCase())) {
+    // The upload route saves `ui-wallpaper` with the uploaded file's extension, so with none for a file that had none
+    if (name !== 'ui-wallpaper' && !name.startsWith('ui-wallpaper.') && !WALLPAPER_EXTENSIONS.has(extname(name).toLowerCase())) {
       return undefined
     }
     return resolve(this.storagePath, name)
