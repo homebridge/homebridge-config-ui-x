@@ -2104,6 +2104,39 @@ describe('PluginController (e2e)', () => {
     })
   })
 
+  it('updates the ui on the first request after a start, before the plugin list was ever loaded', async () => {
+    // homebridge-updater can ask for this before any browser has opened the plugins page
+    const configService = app.get(ConfigService)
+    const beforePath = configService.customPluginPath
+    configService.customPluginPath = undefined
+    ;(pluginsService as any).installedPlugins = undefined
+    const loaded = vi.spyOn(pluginsService, 'getInstalledPlugins').mockImplementation(async () => {
+      ;(pluginsService as any).installedPlugins = [
+        {
+          name: configService.name,
+          installPath: resolve(process.env.UIX_BASE_PATH, '..'),
+          globalInstall: true,
+        },
+      ]
+      return (pluginsService as any).installedPlugins
+    })
+    vi.spyOn(pluginsService as any, 'isUiUpdateBundleAvailable').mockResolvedValue(false)
+    // Without these two the test ran a real `npm cache clean --force` on the machine, which is
+    // slow enough to time out, and then left customPluginPath unset for the tests after it
+    vi.spyOn(pluginsService as any, 'applyAllowScripts').mockResolvedValue(undefined)
+    const cacheClean = vi.spyOn(pluginsService as any, 'cleanNpmCache').mockResolvedValue(undefined)
+    const npm = vi.spyOn(pluginsService as any, 'runNpmCommand').mockResolvedValue(undefined)
+    try {
+      await (pluginsService as any).manageUi('install', { name: configService.name, version: '5.30.2' }, new EventEmitter())
+      expect(npm).toHaveBeenCalledOnce()
+      expect(cacheClean).toHaveBeenCalledOnce()
+    } finally {
+      configService.customPluginPath = beforePath
+      loaded.mockRestore()
+      vi.restoreAllMocks()
+    }
+  })
+
   describe('the "major" update policy', () => {
     it('offers the newest stable version of the same major, never a beta', () => {
       const available = [
