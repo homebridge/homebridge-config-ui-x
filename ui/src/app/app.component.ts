@@ -80,9 +80,12 @@ export class AppComponent {
       return false
     }
     const err = error as { name?: string, message?: string }
+    // Each browser words a failed lazy `import()` its own way: Chrome / Edge, Safari, Firefox
     return err.name === 'ChunkLoadError'
       || /Loading chunk/i.test(err.message ?? '')
       || /Failed to fetch dynamically imported module/i.test(err.message ?? '')
+      || /Importing a module script failed/i.test(err.message ?? '')
+      || /error loading dynamically imported module/i.test(err.message ?? '')
   }
 
   private async loadTranslations(languages: string[], browserLang: string | undefined): Promise<void> {

@@ -51,6 +51,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(login): say the account is locked for a while, or the ui can't be reached, not a wrong password
 - fix(platform-tools): reboot or shut down the host only from a click, not again on back or reload
 - fix(power-options): ask before restarting the operating system, as a shut down already does
+- fix(ui): reload after an update on safari and firefox too, which showed a blank page
 
 ### Other Changes
 

@@ -113,6 +113,14 @@ describe('appComponent', () => {
         'the vite message',
         { name: 'TypeError', message: 'Failed to fetch dynamically imported module: /x.js' },
       ],
+      [
+        'the safari message',
+        { name: 'TypeError', message: 'Importing a module script failed.' },
+      ],
+      [
+        'the firefox message',
+        { name: 'TypeError', message: 'error loading dynamically imported module: http://x/chunk-ABCDEFGH.js' },
+      ],
     ])('reloads the page on %s', (_label, error) => {
       create()
 
