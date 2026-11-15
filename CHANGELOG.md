@@ -102,6 +102,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(spa): read index.html on each request again, so a reload after a ui update gets the new one
 - fix(terminal): end a socket's first shell even when two starts arrive at once
 - fix(ui): add no socket listener for a page that has already closed, instead of throwing
+- fix(login): say something went wrong for a server error, not that the ui can't be reached
 
 ### Other Changes
 

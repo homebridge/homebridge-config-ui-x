@@ -181,6 +181,9 @@ describe('loginComponent', () => {
       [429, 'locked'],
       [0, 'unreachable'],
       [502, 'unreachable'],
+      [503, 'unreachable'],
+      // Regression: a 500 said the UI could not be reached, but it had answered
+      [500, 'error'],
     ])(
       'says why for a %i, not that the password was wrong',
       async (status, reason) => {
