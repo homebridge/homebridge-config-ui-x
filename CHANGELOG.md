@@ -103,6 +103,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(terminal): end a socket's first shell even when two starts arrive at once
 - fix(ui): add no socket listener for a page that has already closed, instead of throwing
 - fix(login): say something went wrong for a server error, not that the ui can't be reached
+- fix(plugins): keep a custom ui path inside its own plugin, not a folder whose name starts the same
 
 ### Other Changes
 
