@@ -474,6 +474,12 @@ export class HomebridgeServiceHelper {
    * Starts homebridge as a child process, sending the log output to the homebridge.log
    */
   private runHomebridge() {
+    // A start scheduled before the stop began (the restart after a crash, the Pi Zero delay) must not run:
+    // hb-service exits once the UI has closed, and would leave this Homebridge running on its own
+    if (this.shuttingDown) {
+      return
+    }
+
     if (!this.homebridgeBinary || !pathExistsSync(this.homebridgeBinary)) {
       this.logger.error('Could not find Homebridge. Make sure you have installed Homebridge using the -g flag then restart.')
       this.logger.error('npm install -g homebridge')

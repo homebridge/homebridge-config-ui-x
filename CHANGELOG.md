@@ -98,6 +98,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - build: compile the server for es2024, which node 22 runs in full, instead of the moving esnext
 - ci: name the labeler job labeler, not stale
 - ci: fix the labeler comment that says alpha pull requests get the beta label
+- fix(hb-service): never start homebridge from a restart timer that fires while hb-service stops
 
 ### Homebridge Dependencies
 
