@@ -225,15 +225,46 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     expect(await readdir(configService.instanceBackupPath)).toEqual([old])
   })
 
-  it('removes only its own old backups from a backup folder other instances share', async () => {
+  it('removes only its own old backups from a custom backup folder other instances share', async () => {
+    const before = { ui: configService.ui.scheduledBackupPath, path: configService.instanceBackupPath }
+    await remove(customInstanceBackupPath)
+    await ensureDir(customInstanceBackupPath)
+    configService.ui.scheduledBackupPath = customInstanceBackupPath
+    configService.instanceBackupPath = customInstanceBackupPath
+    const instanceId = configService.homebridgeConfig.bridge.username.replace(RE_COLON, '')
+    const other = `homebridge-backup-aabbccddeeff.${dayjs().subtract(10, 'day').valueOf()}.tar.gz`
+    const own = `homebridge-backup-${instanceId}.${dayjs().subtract(10, 'day').valueOf()}.tar.gz`
+    await writeFile(resolve(customInstanceBackupPath, other), 'xyz')
+    await writeFile(resolve(customInstanceBackupPath, own), 'xyz')
+
+    try {
+      await backupService.runScheduledBackupJob()
+
+      const left = await readdir(customInstanceBackupPath)
+      expect(left).toContain(other)
+      expect(left).not.toContain(own)
+      // and today's backup was made
+      expect(left).toHaveLength(2)
+    } finally {
+      configService.ui.scheduledBackupPath = before.ui
+      configService.instanceBackupPath = before.path
+      await remove(customInstanceBackupPath)
+    }
+  })
+
+  it('removes old backups made under an older bridge username from the default backup folder', async () => {
+    // Regression: only backups of the current username were removed, so after a bridge reset or a restore from
+    // another machine, up to seven old ones stayed in the instance's own folder for good
     await remove(configService.instanceBackupPath)
     await ensureDir(configService.instanceBackupPath)
-    const other = `homebridge-backup-aabbccddeeff.${dayjs().subtract(10, 'day').valueOf()}.tar.gz`
-    await writeFile(resolve(configService.instanceBackupPath, other), 'xyz')
+    const oldUsername = `homebridge-backup-aabbccddeeff.${dayjs().subtract(10, 'day').valueOf()}.tar.gz`
+    await writeFile(resolve(configService.instanceBackupPath, oldUsername), 'xyz')
 
     await backupService.runScheduledBackupJob()
 
-    expect(await readdir(configService.instanceBackupPath)).toContain(other)
+    const left = await readdir(configService.instanceBackupPath)
+    expect(left).not.toContain(oldUsername)
+    expect(left).toHaveLength(1)
   })
 
   it('saves scheduled backups to the custom path if set and exists', async () => {
