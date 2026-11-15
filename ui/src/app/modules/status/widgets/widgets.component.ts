@@ -86,9 +86,10 @@ export class WidgetsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    // The resize and configure streams belong to the dashboard's layout item, not to this tile: a re-made tile
+    // (the dashboard re-makes them all on lock, unlock and configure) is handed the same ones, so they stay open.
+    // Every widget takes its own subscriptions off with takeUntilDestroyed.
     if (this.componentRef) {
-      this.widget().$resizeEvent.complete()
-      this.widget().$configureEvent.complete()
       this.componentRef.destroy()
     }
   }
