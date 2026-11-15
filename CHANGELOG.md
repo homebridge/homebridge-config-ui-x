@@ -105,6 +105,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - ci: fix the labeler comment that says alpha pull requests get the beta label
 - fix(hb-service): never start homebridge from a restart timer that fires while hb-service stops
 - docs(plugins): put the package queue's comment back on the queue, not on the npm time limit
+- fix(hb-service): keep a config.json that starts with a byte order mark, instead of replacing it
 
 ### Homebridge Dependencies
 

@@ -10,7 +10,8 @@ import process from 'node:process'
  * alone, as a new config.json has a new bridge username and pin, which unpairs the bridge from HomeKit.
  */
 export async function readConfigForCheck(path: string): Promise<Record<string, any> | undefined> {
-  const text = await readFile(path, 'utf8')
+  // A byte order mark (Windows Notepad adds one) is not part of the JSON: Homebridge strips it too
+  const text = (await readFile(path, 'utf8')).replace(/^\uFEFF/, '')
   try {
     const config = JSON.parse(text)
     return config && typeof config === 'object' && !Array.isArray(config)
