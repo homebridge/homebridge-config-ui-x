@@ -1,4 +1,3 @@
-/* global NodeJS */
 import { KeyValuePipe } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -56,7 +55,7 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   // Private properties
   private modalData = inject(ACCESSORY_INFO_MODAL_DATA)
   private injector = inject(EnvironmentInjector)
-  private copyTimeouts = new Map<WritableSignal<boolean>, NodeJS.Timeout>()
+  private copyTimeouts = new Map<WritableSignal<boolean>, ReturnType<typeof setTimeout>>()
 
   private hapCustomTypeList: Array<Array<ServiceTypeX['type']>> = [
     // Groups of service types that can be changed from one to another
