@@ -48,9 +48,12 @@ describe('picking a node.js update', () => {
     expect(isNodeMajorSupported(24, 'arm', 'linux', '6.1.0')).toBe(false)
   })
 
-  it('knows the majors up to the newest in its list', () => {
+  it('knows only the majors in its list', () => {
     expect(isNodeMajorKnown(22)).toBe(true)
     expect(isNodeMajorKnown(26)).toBe(true)
+    // Odd majors are short-lived and not supported: asking for one needs confirming
+    expect(isNodeMajorKnown(23)).toBe(false)
+    expect(isNodeMajorKnown(25)).toBe(false)
     expect(isNodeMajorKnown(27)).toBe(false)
     expect(isNodeMajorKnown(28)).toBe(false)
     expect(isNodeMajorKnown(undefined)).toBe(false)

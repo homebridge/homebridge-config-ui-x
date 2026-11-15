@@ -59,6 +59,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): trim the log safely when the size to keep is over the maximum, from a whole line
 - fix(hb-service): trim the log at start-up too, so a service that restarts often still trims it
 - fix(hb-service): on freebsd, install for the user who ran sudo when no --user is given
+- fix(hb-service): ask before installing an odd node.js major (23, 25), as for any major not tested
 
 ### Homebridge Dependencies
 
