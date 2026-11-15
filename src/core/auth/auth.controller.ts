@@ -6,6 +6,8 @@ import {
   Get,
   Header,
   Inject,
+  NotFoundException,
+  Param,
   Post,
   Request,
   Res,
@@ -80,8 +82,12 @@ export class AuthController {
   @Get('/wallpaper/:hash')
   @Header('Content-Type', 'image/jpeg')
   @Header('Cache-Control', 'public,max-age=31536000,immutable')
-  getCustomWallpaper() {
-    return this.configService.streamCustomWallpaper()
+  getCustomWallpaper(@Param('hash') hash: string) {
+    const stream = this.configService.streamCustomWallpaper(hash)
+    if (!stream) {
+      throw new NotFoundException()
+    }
+    return stream
   }
 
   @ApiOperation({ summary: 'This method can be used to obtain an access token ONLY when authentication has been disabled.' })

@@ -809,6 +809,23 @@ describe('ServerController (e2e)', () => {
     expect(config.platforms[0].wallpaper).toBe('ui-wallpaper.png')
   })
 
+  it('DELETE /server/wallpaper never deletes a file the wallpaper setting names outside the wallpaper files', async () => {
+    const config = await readJson(configService.configPath)
+    config.platforms[0].wallpaper = 'config.json'
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/server/wallpaper',
+      headers: { authorization },
+    })
+
+    expect(res.statusCode).toBe(204)
+    // config.json is still there, and the bad reference is gone
+    const after = await readJson(configService.configPath)
+    expect(after.platforms[0].wallpaper).toBeUndefined()
+  })
+
   it('DELETE /server/wallpaper', async () => {
     // Create wallpaper first (same as test above)
     const payload = new FormData()

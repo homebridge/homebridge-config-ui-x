@@ -6,7 +6,7 @@ import { createHash, randomBytes } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { stat } from 'node:fs/promises'
 import { homedir, platform, totalmem } from 'node:os'
-import { resolve } from 'node:path'
+import { basename, extname, resolve } from 'node:path'
 import process from 'node:process'
 import { isDeepStrictEqual } from 'node:util'
 
@@ -15,6 +15,21 @@ import { pathExists, pathExistsSync, readJson, readJSONSync, readJsonSync, write
 import { satisfies } from 'semver'
 
 import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry.js'
+
+const WALLPAPER_EXTENSIONS = new Set([
+  '.avif',
+  '.bmp',
+  '.gif',
+  '.heic',
+  '.ico',
+  '.jpeg',
+  '.jpg',
+  '.png',
+  '.svg',
+  '.tif',
+  '.tiff',
+  '.webp',
+])
 
 @Injectable()
 export class ConfigService {
@@ -391,8 +406,8 @@ export class ConfigService {
    */
   private async getCustomWallpaperHash(): Promise<void> {
     try {
-      if (this.ui.wallpaper) {
-        const filePath = resolve(this.storagePath, this.ui.wallpaper)
+      const filePath = this.getWallpaperPath(this.ui.wallpaper)
+      if (filePath) {
         const fileStat = await stat(filePath)
         const hash = createHash('sha256')
         hash.update(`${fileStat.birthtime}${fileStat.ctime}${fileStat.size}${fileStat.blocks}`)
@@ -408,10 +423,29 @@ export class ConfigService {
   }
 
   /**
-   * Stream the custom wallpaper
+   * The full path of a wallpaper named in the ui config, or undefined when the name is not a plain image file name
+   * (or the `ui-wallpaper.<ext>` the upload route saves) in the storage folder. The wallpaper is served without a login, so a name like `auth.json`, `.uix-secrets` or
+   * `/etc/passwd` must never reach the file system.
    */
-  public streamCustomWallpaper(): ReadStream {
-    return createReadStream(resolve(this.storagePath, this.ui.wallpaper))
+  public getWallpaperPath(name: unknown): string | undefined {
+    if (typeof name !== 'string' || basename(name) !== name || name.includes('\\') || name.startsWith('.')) {
+      return undefined
+    }
+    if (!name.startsWith('ui-wallpaper.') && !WALLPAPER_EXTENSIONS.has(extname(name).toLowerCase())) {
+      return undefined
+    }
+    return resolve(this.storagePath, name)
+  }
+
+  /**
+   * Stream the custom wallpaper, or undefined when none is set (or the hash in the url is not the current one)
+   */
+  public streamCustomWallpaper(hash?: string): ReadStream | undefined {
+    const filePath = this.getWallpaperPath(this.ui.wallpaper)
+    if (!filePath || !this.customWallpaperHash || (hash !== undefined && hash !== this.customWallpaperHash)) {
+      return undefined
+    }
+    return createReadStream(filePath)
   }
 
   /**

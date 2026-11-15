@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - feat(accessories): show accessories that are not responding, with their HomeKit status (#3124)
+- fix(auth): only serve and delete a wallpaper that is a plain image file name in the storage folder
 
 ### Other Changes
 
