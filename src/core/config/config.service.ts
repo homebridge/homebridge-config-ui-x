@@ -3,7 +3,7 @@ import type { ReadStream } from 'node:fs'
 import type { HomebridgeConfig, HomebridgeUiConfig } from './config.interfaces.js'
 
 import { createHash, randomBytes } from 'node:crypto'
-import { createReadStream } from 'node:fs'
+import { chmodSync, createReadStream, renameSync, statSync, writeFileSync } from 'node:fs'
 import { stat } from 'node:fs/promises'
 import { homedir, platform, totalmem } from 'node:os'
 import { basename, extname, resolve } from 'node:path'
@@ -11,7 +11,7 @@ import process from 'node:process'
 import { isDeepStrictEqual } from 'node:util'
 
 import { Injectable } from '@nestjs/common'
-import { pathExists, pathExistsSync, readJson, readJSONSync, readJsonSync, writeJsonSync } from 'fs-extra/esm'
+import { pathExists, pathExistsSync, readJson, readJSONSync, readJsonSync } from 'fs-extra/esm'
 import { satisfies } from 'semver'
 
 import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry.js'
@@ -170,8 +170,13 @@ export class ConfigService {
     // and turning that off for everyone on upgrade would be a surprise.
     this.restrictLogsToAdmins = Boolean(this.ui.restrictLogsToAdmins)
 
-    this.secrets = this.getSecrets()
-    this.instanceId = this.getInstanceId()
+    // The signing key is read once. Every config save runs parseConfig, and the REST auth captured the key at
+    // start-up: a key read again here (after a restore copied in another one) would make new tokens pass on REST
+    // and fail on every socket until the UI restarts.
+    if (!this.secrets) {
+      this.secrets = this.getSecrets()
+      this.instanceId = this.getInstanceId()
+    }
 
     this.freezeUiSettings()
     this.getCustomWallpaperHash()
@@ -362,34 +367,58 @@ export class ConfigService {
   }
 
   /**
-   * Gets the unique secrets for signing JWTs
+   * Gets the unique secrets for signing JWTs.
+   *
+   * The file holds the key that signs every token, so it is kept readable by its owner only (0600).
+   * A file that is there but can not be used is set aside as `.uix-secrets.corrupt-<time>`, never overwritten.
    */
-  private getSecrets() {
+  private getSecrets(): { secretKey: string } {
     if (pathExistsSync(this.secretPath)) {
       try {
         const secrets = readJsonSync(this.secretPath)
-        if (!secrets.secretKey) {
-          return this.generateSecretToken()
-        } else {
+        if (typeof secrets?.secretKey === 'string' && secrets.secretKey) {
+          this.restrictSecretsFileMode()
           return secrets
         }
       } catch (e) {
-        return this.generateSecretToken()
+        // Set aside below
       }
-    } else {
-      return this.generateSecretToken()
+      try {
+        renameSync(this.secretPath, `${this.secretPath}.corrupt-${Date.now()}`)
+      } catch (e) {
+        // Overwritten below
+      }
+    }
+    return this.generateSecretToken()
+  }
+
+  /**
+   * An older UI wrote the file with the default mode (often 0644, readable by every user on the host)
+   */
+  private restrictSecretsFileMode() {
+    if (platform() === 'win32') {
+      return
+    }
+    try {
+      if ((statSync(this.secretPath).mode & 0o077) !== 0) {
+        chmodSync(this.secretPath, 0o600)
+      }
+    } catch (e) {
+      // Not the owner of the file: leave it
     }
   }
 
   /**
-   * Generates the secret token for signing JWTs
+   * Generates the secret token for signing JWTs, written through a temp file so a crash can not leave half a key
    */
-  private generateSecretToken() {
+  private generateSecretToken(): { secretKey: string } {
     const secrets = {
       secretKey: randomBytes(32).toString('hex'),
     }
 
-    writeJsonSync(this.secretPath, secrets)
+    const tmpPath = `${this.secretPath}.tmp.${process.pid}`
+    writeFileSync(tmpPath, `${JSON.stringify(secrets)}\n`, { mode: 0o600 })
+    renameSync(tmpPath, this.secretPath)
 
     return secrets
   }
