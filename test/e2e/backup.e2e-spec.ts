@@ -385,6 +385,39 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     expect(await readFile(secretsFilePath, 'utf8')).toBe(secretsBefore)
   })
 
+  it('a restore installs only plugins with a valid name and version', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/backup/download',
+      headers: { authorization },
+    })
+    await writeFile(tempBackupPath, res.rawPayload)
+    const payload = new FormData()
+    payload.append('backup.tar.gz', await readFile(tempBackupPath))
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+    expect((await app.inject({
+      method: 'POST',
+      path: '/backup/restore',
+      headers,
+      payload,
+    })).statusCode).toBe(201)
+    await new Promise(r => setTimeout(r, 100))
+
+    const restoreDirectory = (backupService as any).restoreDirectory
+    await writeJson(join(restoreDirectory, 'plugins.json'), [
+      { name: 'homebridge-good', installedVersion: '1.2.3', publicPackage: true },
+      { name: '--registry=https://evil.example', installedVersion: '1.0.0', publicPackage: true },
+      { name: 'homebridge-bad-version', installedVersion: '1.0; rm -rf /', publicPackage: true },
+      { name: 'homebridge-not-text', installedVersion: 5, publicPackage: true },
+    ])
+    const managePlugin = vi.spyOn(pluginsService, 'managePlugin').mockResolvedValue(true)
+
+    await backupGateway.doRestore(new EventEmitter())
+
+    expect(managePlugin.mock.calls.map(([, action]) => action.name)).toEqual(['homebridge-good'])
+  })
+
   // https://github.com/homebridge/homebridge-config-ui-x/issues/1856
 
   it('POST /backup/restore of a large .homebridge directory should backup, but restore will not work', { timeout: 60_000 }, async () => {
