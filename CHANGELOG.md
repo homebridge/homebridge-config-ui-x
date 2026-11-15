@@ -88,6 +88,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(update-all): keep the page's child bridge status updates when the update all window closes
 - fix(status): keep a widget's resize and settings events working after the dashboard is unlocked
 - fix(accessories): undo the accessory info edits when its window is closed with escape
+- fix(plugins): take the json config window's monaco marker listener off when it closes
 
 ### Other Changes
 

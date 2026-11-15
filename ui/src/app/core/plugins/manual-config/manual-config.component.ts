@@ -127,6 +127,8 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
     }
   }
 
+  private markersListener?: { dispose: () => void }
+
   // 8. Public methods
   public async onEditorInit(editor: any): Promise<void> {
     window.editor = editor
@@ -141,7 +143,9 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
 
     // Also listen for marker changes to get more accurate validation timing
     const monaco = (window as any).monaco
-    monaco.editor.onDidChangeMarkers((uris: unknown[]) => {
+    // A global Monaco event: its listener must come off in ngOnDestroy, or it outlives this window
+    this.markersListener?.dispose()
+    this.markersListener = monaco.editor.onDidChangeMarkers((uris: unknown[]) => {
       const modelUri = this.monacoEditor.getModel()?.uri
       if (modelUri && uris.some(uri => (uri as { toString: () => string }).toString() === modelUri.toString())) {
         // Markers for our model have changed, update validation state
@@ -170,6 +174,8 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.markersListener?.dispose()
+    this.markersListener = undefined
     for (const timer of this.validationTimers) {
       clearTimeout(timer)
     }
