@@ -73,7 +73,7 @@ export type MatterEvent
     | { type: 'accessoryAdded', correlationId?: string, data: MatterAccessoryInfo }
     | { type: 'accessoryRemoved', correlationId?: string, data: MatterAccessoryInfo }
     | { type: 'accessoryControlResponse', correlationId?: string, data: MatterControlResponse }
-    | { type: 'accessoryInfo', correlationId?: string, data: MatterAccessoryInfo }
+    | { type: 'accessoryInfoData', correlationId?: string, data: MatterAccessoryInfo }
     | { type: 'monitoringStarted', correlationId?: string, data: MatterMonitoringAck }
     | { type: 'monitoringStopped', correlationId?: string, data: MatterMonitoringAck }
 
