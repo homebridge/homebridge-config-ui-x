@@ -111,7 +111,7 @@ export class NodeVersionModalComponent implements OnInit {
     } catch (error) {
       console.error(error)
       this.$toastr.error(
-        this.$translate.instant('config.toast_failed_to_save_config'),
+        this.$translate.instant('config.failed_to_save_config'),
         this.$translate.instant('toast.title_error'),
       )
       // Revert the form control on error
