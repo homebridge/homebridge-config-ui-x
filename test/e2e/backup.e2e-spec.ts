@@ -523,6 +523,36 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     })
   })
 
+  it('an hbfx restore saves the ui block as config.json has it, not the values the ui works out at start-up', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
+    await writeJson(join(dir, 'package.json'), { name: 'hbfx', version: '1.0.0' })
+    await ensureDir(join(dir, 'etc'))
+    await writeJson(join(dir, 'etc', 'config.json'), {
+      bridge: {
+        name: 'Old',
+        username: '0E:22:22:22:22:22',
+        port: 51826,
+        pin: '111-22-333',
+      },
+    })
+    ;(backupService as any).restoreDirectory = dir
+    const configBefore = await readFile(configService.configPath)
+    const uiOnDisk = (await readJson(configService.configPath)).platforms.find((x: any) => x.platform === 'config')
+
+    try {
+      await backupService.restoreHbfxBackup(new EventEmitter())
+      const restoredUi = (await readJson(configService.configPath)).platforms.find((x: any) => x.platform === 'config')
+
+      // `sudo`, the native log path and the default session timeout are worked out at start-up, not settings
+      expect(restoredUi.log).toEqual(uiOnDisk.log)
+      expect(restoredUi.sudo).toEqual(uiOnDisk.sudo)
+      expect(restoredUi.sessionTimeout).toEqual(uiOnDisk.sessionTimeout)
+    } finally {
+      await writeFile(configService.configPath, configBefore)
+      await backupService.removeRestoreDirectory()
+    }
+  })
+
   // https://github.com/homebridge/homebridge-config-ui-x/issues/1856
 
   it('POST /backup/restore of a large .homebridge directory should backup, but restore will not work', { timeout: 60_000 }, async () => {

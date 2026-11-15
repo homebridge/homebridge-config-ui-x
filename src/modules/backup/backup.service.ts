@@ -1019,9 +1019,14 @@ export class BackupService {
       await this.checkBridgeBindConfig(targetConfig)
     }
 
-    // Add config ui platform
+    // Add config ui platform: the block as config.json has it. The run-time `configService.ui` also holds values
+    // the UI works out at start-up (sudo, the log path, a default port and session timeout), which must not be saved.
+    const currentConfig = await readJson(this.configService.configPath).catch(() => undefined)
+    const savedUiBlock = Array.isArray(currentConfig?.platforms)
+      ? currentConfig.platforms.find((x: { platform?: string }) => x?.platform === 'config')
+      : undefined
     targetConfig.platforms.push({
-      ...this.configService.ui,
+      ...(savedUiBlock ?? { name: 'Config', port: this.configService.ui.port }),
       platform: 'config',
     })
 
