@@ -72,6 +72,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): send a slider change made just before closing a control window
 - fix(settings): save a setting typed just before leaving the page, instead of losing it
 - fix(accessories): show a matter fan as on by its mode, and write the mode and speed together
+- fix(plugins): remove a synology @eaDir folder before npm runs, which the check never did since 2020
 
 ### Other Changes
 
