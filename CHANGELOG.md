@@ -155,12 +155,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - test(i18n): find a missing key in a ternary, a helper call or a template, not only before translate
 - fix: import types with import type, so each server file builds on its own as the swc dev server needs
 - chore(dev): run the dev server through swc, so nest checks api data in dev as a release does
+- chore(deps): dependency updates
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.4.0`
+- `@homebridge/hap-client` @ `v5.4.1-beta`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
-- `@homebridge/plugin-ui-utils` @ `v2.3.0`
+- `@homebridge/plugin-ui-utils` @ `v2.3.1-beta`
 
 ## v5.30.1 (2026-11-13)
 
