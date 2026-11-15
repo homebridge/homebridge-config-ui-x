@@ -90,6 +90,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): undo the accessory info edits when its window is closed with escape
 - fix(plugins): take the json config window's monaco marker listener off when it closes
 - fix(terminal): start a re-attached terminal again when its socket reconnects, not leave it silent
+- fix(plugins): run npm on windows from a user folder with a ! or % in its name, as before
 
 ### Other Changes
 
