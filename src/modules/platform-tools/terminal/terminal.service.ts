@@ -89,9 +89,6 @@ export class TerminalService {
   private async createNewTerminal(client: WsEventEmitter, size: TermSize) {
     this.logger.debug('Starting new terminal session.')
 
-    // A socket asking again ends its first shell: two shells on one socket both got every keystroke
-    this.sessionEnders.get(client)?.()
-
     // Per-session closure flag. This service is a singleton serving every
     // client, so a shared instance-level `ending` let one client's disconnect
     // suppress the process-exit notification for every other client's shell.
@@ -100,6 +97,11 @@ export class TerminalService {
 
     // Get the preferred shell for the current platform
     const shell = await this.getPreferredShell()
+
+    // A socket asking again ends its first shell: two shells on one socket both got every keystroke. Done after
+    // the await, with nothing awaited from here to where this shell is recorded, so two asks close together
+    // can not both miss each other
+    this.sessionEnders.get(client)?.()
 
     // Spawn a new shell
     const term = this.nodePtyService.spawn(shell, [], {

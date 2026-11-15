@@ -100,6 +100,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): write only a mode a matter fan has, from its mode list, with a new speed
 - fix(accessories): put a matter fan window's switch back by its mode after a failed write
 - fix(spa): read index.html on each request again, so a reload after a ui update gets the new one
+- fix(terminal): end a socket's first shell even when two starts arrive at once
 
 ### Other Changes
 

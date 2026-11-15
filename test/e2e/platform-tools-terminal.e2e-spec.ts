@@ -178,6 +178,34 @@ describe('PlatformToolsTerminal (e2e)', () => {
     expect(second.write).toHaveBeenCalledWith('ls')
   })
 
+  it('ON /platform-tools/terminal/start-session twice at once on one socket still ends the first shell', async () => {
+    // Regression: the first shell was ended before the shell lookup was awaited, and the new one recorded only
+    // after it, so two asks close together (a reconnect) both found nothing to end and both shells got the keys
+    const first = {
+      ...mockTerm,
+      kill: vi.fn(),
+      write: vi.fn(),
+    }
+    const second = {
+      ...mockTerm,
+      kill: vi.fn(),
+      write: vi.fn(),
+    }
+    vi.mocked(nodePtyService.spawn).mockReset()
+    vi.mocked(nodePtyService.spawn).mockImplementationOnce(() => first as any).mockImplementationOnce(() => second as any)
+
+    await Promise.all([
+      terminalService.startSession(client, size),
+      terminalService.startSession(client, size),
+    ])
+
+    expect(first.kill).toHaveBeenCalled()
+    expect(client.listenerCount('stdin')).toBe(1)
+    client.emit('stdin', 'ls')
+    expect(first.write).not.toHaveBeenCalled()
+    expect(second.write).toHaveBeenCalledWith('ls')
+  })
+
   it('ON /platform-tools/terminal/start-session (stdin that is not text is ignored)', async () => {
     // node-pty's write throws for a non-string, and inside a socket listener that ends the whole process
     terminalGateway.startTerminalSession(client, size)
