@@ -702,6 +702,11 @@ export class AuthService {
    * @param user
    */
   async addUser(user: UserDto) {
+    // A user with no password (or an empty one) could never log in, as login refuses an empty password
+    if (typeof user.password !== 'string' || !user.password) {
+      throw new BadRequestException('A password is required.')
+    }
+
     // Salt + password hashing are computed *outside* the auth.json
     // lock so a slow PBKDF2 doesn't block other callers waiting on
     // the file. The duplicate-username check + id derivation + push
