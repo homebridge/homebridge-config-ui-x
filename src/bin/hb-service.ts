@@ -41,6 +41,7 @@ import { DarwinInstaller } from './platforms/darwin.js'
 import { FreeBSDInstaller } from './platforms/freebsd.js'
 import { LinuxInstaller } from './platforms/linux.js'
 import { Win32Installer } from './platforms/win32.js'
+import { gracefulShutdown } from './shutdown.js'
 
 process.title = 'hb-service'
 
@@ -66,6 +67,8 @@ export class HomebridgeServiceHelper {
   private homebridgeBinary: string
   private homebridge: ChildProcessWithoutNullStreams
   private homebridgeOpts = ['-I']
+  private shuttingDown = false
+  private closeUi?: () => Promise<void>
   private homebridgeCustomEnv = {}
   private uiBinary: string
 
@@ -458,17 +461,18 @@ export class HomebridgeServiceHelper {
    */
   private startExitHandler() {
     const exitHandler = () => {
+      if (this.shuttingDown) {
+        return
+      }
+      this.shuttingDown = true
       this.logger.debug('Stopping services...')
-      try {
-        this.homebridge.kill()
-      } catch (e) {}
-
-      setTimeout(() => {
-        try {
-          this.homebridge.kill('SIGKILL')
-        } catch (e) {}
-        process.exit(1282)
-      }, 7000)
+      void gracefulShutdown({
+        child: this.homebridge,
+        closeUi: this.closeUi,
+        log: message => this.logger.warn(message),
+      }).finally(() => {
+        process.exit(0)
+      })
     }
 
     process.on('SIGTERM', exitHandler)
@@ -600,6 +604,11 @@ export class HomebridgeServiceHelper {
   private handleHomebridgeClose(code: number, signal: string) {
     this.logger.log(`Homebridge process ended. Code: ${code}, signal: ${signal}.`)
 
+    // hb-service itself is stopping: Homebridge must not be started again
+    if (this.shuttingDown) {
+      return
+    }
+
     this.checkForStaleHomebridgeProcess()
     this.refreshHomebridgePackage()
 
@@ -622,6 +631,7 @@ export class HomebridgeServiceHelper {
 
       // Extract services
       this.ipcService = ui.get(main.HomebridgeIpcService)
+      this.closeUi = main.shutdownUi
     } catch (e) {
       this.logger.log('The user interface threw an unhandled error.')
       console.error(e)
