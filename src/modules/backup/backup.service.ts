@@ -938,6 +938,7 @@ export class BackupService {
             'layout.json',
             'config.json',
           ].includes(basename(filePath))
+          || BACKUP_EXCLUDED_NAMES.has(basename(filePath))
         ) {
           return false
         }
@@ -952,6 +953,9 @@ export class BackupService {
     if (await pathExists(sourceAccessoriesPath)) {
       await copy(sourceAccessoriesPath, targetAccessoriesPath, {
         filter: (filePath) => {
+          if (BACKUP_EXCLUDED_NAMES.has(basename(filePath))) {
+            return false
+          }
           client.emit('stdout', `Restoring ${basename(filePath)}\r\n`)
           return true
         },
