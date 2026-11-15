@@ -115,6 +115,9 @@ export class ConfigService {
 
   public instanceId: string
 
+  /** `ui.restart` as config.json has it (the run-time `ui.restart` is replaced by setConfig) */
+  public savedUiRestart: string | undefined
+
   constructor() {
     const homebridgeConfig = readJSONSync(this.configPath)
     this.parseConfig(homebridgeConfig)
@@ -143,6 +146,10 @@ export class ConfigService {
     }
 
     process.env.UIX_PLUGIN_NAME = this.ui.name || 'homebridge-config-ui-x'
+
+    // setConfig() and setConfigForDocker() replace `ui.restart` at run time, so keep the value config.json has: a
+    // save compares against it to let an older custom command stay (see assertRestartCommandsSafe)
+    this.savedUiRestart = this.ui.restart
 
     if (this.runningInDocker) {
       this.setConfigForDocker()

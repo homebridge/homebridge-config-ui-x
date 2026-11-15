@@ -130,7 +130,8 @@ export class ConfigEditorService implements OnApplicationBootstrap {
     }
     const oldUi = this.configService.ui as any
     const checks: Array<{ path: string, newValue: unknown, oldValue: unknown }> = [
-      { path: 'restart', newValue: newUi.restart, oldValue: oldUi?.restart },
+      // The run-time `ui.restart` is always replaced at start-up, so compare with the value config.json had
+      { path: 'restart', newValue: newUi.restart, oldValue: this.configService.savedUiRestart },
       { path: 'linux.restart', newValue: newUi.linux?.restart, oldValue: oldUi?.linux?.restart },
       { path: 'linux.shutdown', newValue: newUi.linux?.shutdown, oldValue: oldUi?.linux?.shutdown },
     ]
