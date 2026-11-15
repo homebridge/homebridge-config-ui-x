@@ -412,7 +412,8 @@ export class PluginsService implements OnModuleDestroy {
     }
 
     try {
-      const fromCache = this.npmPluginCache.get(`lookup-${pluginName}`)
+      // Its own cache key: this asks for npm's short document (no keywords), which the full lookup can't use
+      const fromCache = this.npmPluginCache.get(`versions-${pluginName}`)
 
       const pkg: INpmRegistryModule = fromCache || (await firstValueFrom((
         this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(RE_ENCODED_AT, '@')}`, {
@@ -423,7 +424,7 @@ export class PluginsService implements OnModuleDestroy {
       )).data
 
       if (!fromCache) {
-        this.npmPluginCache.set(`lookup-${pluginName}`, pkg, 60)
+        this.npmPluginCache.set(`versions-${pluginName}`, pkg, 60)
       }
 
       return {

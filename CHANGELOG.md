@@ -40,6 +40,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): count logins still being checked toward the lockout, so a burst can't get past it
 - fix(auth): take as long to refuse an unknown username as a wrong password
 - fix(plugins): load the plugin list before a ui update reads its install path from it
+- fix(plugins): cache npm's short version list apart from the full lookup, which needs the keywords
 
 ### Other Changes
 
