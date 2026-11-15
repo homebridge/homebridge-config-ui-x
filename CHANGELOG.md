@@ -64,6 +64,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(backup): save the ui block as config.json has it on an hbfx restore, not its start-up values
 - fix(config-editor): put a plugin's blocks back where its first block was, not past other plugins
 - fix(custom-plugins): pass on only request messages to a plugin's ui server, never junk or null
+- fix(custom-plugins): answer a plugin's page when its cached accessories can't be read
 
 ### Other Changes
 

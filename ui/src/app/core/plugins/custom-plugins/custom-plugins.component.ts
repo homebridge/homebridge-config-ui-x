@@ -679,6 +679,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Failed to get cached accessories:', error)
       this.$toastr.error(this.$translate.instant('toast.title_error'))
+      // Answer the plugin's page as well, or its request waits for ever
+      return this.requestResponse(event, { message: (error as any)?.error?.message || (error as Error)?.message || 'Failed to get cached accessories' }, false)
     }
   }
 
@@ -697,6 +699,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Failed to get cached Matter accessories:', error)
       this.$toastr.error(this.$translate.instant('toast.title_error'))
+      // Answer the plugin's page as well, or its request waits for ever
+      return this.requestResponse(event, { message: (error as any)?.error?.message || (error as Error)?.message || 'Failed to get cached Matter accessories' }, false)
     }
   }
 
