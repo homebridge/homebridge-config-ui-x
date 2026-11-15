@@ -1579,6 +1579,18 @@ describe('AuthController (e2e)', () => {
     ;(authService as any).loginFailureCache.flushAll()
   })
 
+  it('hashes the password for an unknown username too, so the answer time does not show which names exist', async () => {
+    const hash = vi.spyOn(authService as any, 'hashPassword')
+    try {
+      await expect(authService.authenticate('no-such-user', 'whatever', undefined, '10.8.8.8')).rejects.toThrow()
+      expect(hash).toHaveBeenCalledOnce()
+      expect(hash.mock.calls[0][2]).toBe(210000)
+    } finally {
+      hash.mockRestore()
+      ;(authService as any).loginFailureCache.flushAll()
+    }
+  })
+
   afterAll(async () => {
     await app.close()
   })
