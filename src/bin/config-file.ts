@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto'
-import { readFile, realpath, rename, stat, unlink, writeFile } from 'node:fs/promises'
+import { chown, readFile, realpath, rename, stat, unlink, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 
 /**
@@ -24,14 +24,18 @@ export async function readConfigForCheck(path: string): Promise<Record<string, a
 
 /**
  * Write config.json through a temp file and a rename, so a crash or a full disk can never leave half a file
- * (which the next start would treat as broken and replace). A symlink and the file's mode are kept.
+ * (which the next start would treat as broken and replace). A symlink, the file's mode and (as root) its owner
+ * are kept.
  */
 export async function writeConfigAtomically(path: string, config: unknown): Promise<void> {
   let target = path
   let mode: number | undefined
+  let owner: { uid: number, gid: number } | undefined
   try {
     target = await realpath(path)
-    mode = (await stat(target)).mode & 0o7777
+    const current = await stat(target)
+    mode = current.mode & 0o7777
+    owner = { uid: current.uid, gid: current.gid }
   } catch (e) {
     if (e?.code !== 'ENOENT') {
       throw e
@@ -42,6 +46,11 @@ export async function writeConfigAtomically(path: string, config: unknown): Prom
     await writeFile(tmpPath, `${JSON.stringify(config, null, 4)}\n`, mode === undefined
       ? undefined
       : { mode })
+    // The new file belongs to whoever wrote it: under `sudo hb-service install` that is root, and the service user
+    // could then no longer read a 0600 config.json. Give it back to its owner.
+    if (owner && process.getuid?.() === 0) {
+      await chown(tmpPath, owner.uid, owner.gid)
+    }
     await rename(tmpPath, target)
   } catch (e) {
     await unlink(tmpPath).catch(() => undefined)
