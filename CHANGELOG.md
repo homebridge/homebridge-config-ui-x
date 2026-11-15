@@ -60,6 +60,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(terminal): end a socket's first shell when it starts a second, which got the same keystrokes
 - fix(api): keep the reason a route gives for a 404, as json, not a bare not found
 - fix(server): check cached accessory names before stopping homebridge, and skip a missing cache file
+- fix(server): stop homebridge once, not twice, when resetting a bridge pairing
 
 ### Other Changes
 

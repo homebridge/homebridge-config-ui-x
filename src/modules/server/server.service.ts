@@ -257,7 +257,9 @@ export class ServerService {
       this.logger.warn(`Bridge ${id} reset: removed Matter bridge storage at ${matterPath}.`)
     }
 
-    await this.deleteDeviceAccessories(id)
+    // The callers stopped Homebridge already: the public deleteDeviceAccessories() would stop it a second time,
+    // and with several bridges that could kill the Homebridge hb-service had just started again
+    await this.deleteSingleDeviceAccessories(id, join(this.configService.storagePath, 'accessories'))
   }
 
   /**
