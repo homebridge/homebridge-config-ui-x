@@ -29,6 +29,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(backup): keep old scheduled backups when today's fails, and never remove other instances' ones
 - fix(backup): remove the temp folder of a backup upload that fails to extract
 - fix(backup): free the restore slot when a restore fails part-way, and allow a config with no bridge
+- fix(config-editor): keep saving when config.json has an older custom restart command
 
 ### Other Changes
 

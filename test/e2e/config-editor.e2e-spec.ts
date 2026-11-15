@@ -1229,6 +1229,28 @@ describe('ConfigEditorController (e2e)', () => {
       expect(okRes.statusCode).toBe(200)
     })
 
+    it('still saves other changes when config.json has an older custom restart command', async () => {
+      // A command from before the allowlist is kept, so the user is not locked out of every save
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      uiBlock.restart = 'sudo -n systemctl restart homebridge && echo restarted'
+      await writeJson(configFilePath, config)
+      const configService = app.get(ConfigService)
+      configService.parseConfig(await readJson(configFilePath))
+
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { theme: 'red' },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const saved = (await readJson(configFilePath)).platforms.find((p: any) => p.platform === 'config')
+      expect(saved.theme).toBe('red')
+      expect(saved.restart).toBe('sudo -n systemctl restart homebridge && echo restarted')
+    })
+
     it('toggling scheduledBackupDisable re-registers the backup schedule', async () => {
       // The bug was: BackupService.scheduleInstanceBackups only ran once
       // at construction, so a user toggling this flag at runtime had to
