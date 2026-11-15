@@ -13,6 +13,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
+import { HapNumberPipe } from '@/app/core/accessories/types/hap/hap-number.pipe'
 import { ThermostatManageComponent } from '@/app/core/accessories/types/hap/thermostat/thermostat.manage.component'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
@@ -21,6 +22,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 @Component({
   selector: 'app-thermostat',
   imports: [
+    HapNumberPipe,
     LongClickDirective,
     DecimalPipe,
     TranslatePipe,

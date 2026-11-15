@@ -1,4 +1,4 @@
-@let detected = !!service().values?.SmokeDetected;
+@let detected = !!service().values.SmokeDetected;
 
 @let stateText =
   detected ? ('accessories.control.detected' | translate) : ('accessories.control.not_detected' | translate);

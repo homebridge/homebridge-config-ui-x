@@ -18,6 +18,7 @@ import { interval, startWith, Subject, switchMap } from 'rxjs'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
+import { numberValue } from '@/app/core/accessories/types/hap/hap-values'
 import { LIGHTBULB_ADAPTIVE_LIGHTING, LightbulbManageComponent } from '@/app/core/accessories/types/hap/lightbulb/lightbulb.manage.component'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 import { ColourService } from '@/app/core/utilities/colour.service'
@@ -51,18 +52,29 @@ export class LightbulbComponent implements OnInit {
     this.loadAdaptiveLighting()
   }
 
+  public getBulbOpacity(): number {
+    const values = this.service().values
+    if (!('Brightness' in values)) {
+      return 0.75
+    }
+    return 0.25 + ((numberValue(values, 'Brightness') ?? 0) / 100) * 0.5
+  }
+
   public getBulbFill(): string {
     const values = this.service().values
     if (!(values?.On || values?.Active)) {
       return 'none'
     }
 
-    if ('Hue' in values) {
-      return this.$colour.hueSaturationToHsl(values?.Hue, values?.Saturation)
+    const hue = numberValue(values, 'Hue')
+    const saturation = numberValue(values, 'Saturation')
+    if (hue !== undefined && saturation !== undefined) {
+      return this.$colour.hueSaturationToHsl(hue, saturation)
     }
 
-    if ('ColorTemperature' in values) {
-      return this.$colour.kelvinToHsl(this.$colour.miredToKelvin(values?.ColorTemperature))
+    const colorTemperature = numberValue(values, 'ColorTemperature')
+    if (colorTemperature !== undefined) {
+      return this.$colour.kelvinToHsl(this.$colour.miredToKelvin(colorTemperature))
     }
     return '#ffcf55'
   }
@@ -115,7 +127,7 @@ export class LightbulbComponent implements OnInit {
       return undefined
     }
 
-    return this.service().values.Consumption
+    return numberValue(this.service().values, 'Consumption')
   }
 
   public onClick() {
@@ -124,16 +136,16 @@ export class LightbulbComponent implements OnInit {
     }
 
     if ('On' in this.service().values) {
-      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
+      void this.service().getCharacteristic?.('On')?.setValue?.(!this.service().values.On)
     } else if ('Active' in this.service().values) {
-      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active
+      void this.service().getCharacteristic?.('Active')?.setValue?.(this.service().values.Active
         ? 0
         : 1)
     }
 
     // Set the brightness to max if on 0% when turned on
     if ('Brightness' in this.service().values && !this.service().values.On && !this.service().values.Brightness) {
-      this.service().values.Brightness = this.service().getCharacteristic!('Brightness').maxValue
+      this.service().values.Brightness = this.service().getCharacteristic?.('Brightness')?.maxValue
     }
   }
 

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { isOneOf, numberValue } from '@/app/core/accessories/types/hap/hap-values'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
@@ -34,10 +35,10 @@ export class SwitchComponent {
       return !!values.Active
     }
     if ('CurrentMediaState' in values) {
-      return [0, 1].includes(values.CurrentMediaState)
+      return isOneOf(values.CurrentMediaState, [0, 1])
     }
     if ('Mute' in values && 'Volume' in values) {
-      return !values.Mute && values.Volume > 0
+      return !values.Mute && (numberValue(values, 'Volume') ?? 0) > 0
     }
     if ('Mute' in values) {
       return !values.Mute
@@ -46,7 +47,7 @@ export class SwitchComponent {
       return !values.LockTargetState
     }
     if ('CurrentDoorState' in values) {
-      return [0, 2].includes(values.CurrentDoorState)
+      return isOneOf(values.CurrentDoorState, [0, 2])
     }
     return false
   }
@@ -57,23 +58,23 @@ export class SwitchComponent {
     }
 
     if ('On' in this.service().values) {
-      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
+      void this.service().getCharacteristic?.('On')?.setValue?.(!this.service().values.On)
     } else if ('Active' in this.service().values) {
-      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active
+      void this.service().getCharacteristic?.('Active')?.setValue?.(this.service().values.Active
         ? 0
         : 1)
     } else if ('TargetMediaState' in this.service().values) {
-      void this.service().getCharacteristic!('TargetMediaState').setValue!(this.service().values.TargetMediaState === 0
+      void this.service().getCharacteristic?.('TargetMediaState')?.setValue?.(this.service().values.TargetMediaState === 0
         ? 1
         : 0)
     } else if ('Mute' in this.service().values) {
-      void this.service().getCharacteristic!('Mute').setValue!(!this.service().values.Mute)
+      void this.service().getCharacteristic?.('Mute')?.setValue?.(!this.service().values.Mute)
     } else if ('LockTargetState' in this.service().values) {
-      void this.service().getCharacteristic!('LockTargetState').setValue!(this.service().values.LockTargetState
+      void this.service().getCharacteristic?.('LockTargetState')?.setValue?.(this.service().values.LockTargetState
         ? 0
         : 1)
     } else if ('TargetDoorState' in this.service().values) {
-      void this.service().getCharacteristic!('TargetDoorState').setValue!(this.service().values.TargetDoorState
+      void this.service().getCharacteristic?.('TargetDoorState')?.setValue?.(this.service().values.TargetDoorState
         ? 0
         : 1)
     }
@@ -88,6 +89,6 @@ export class SwitchComponent {
       return undefined
     }
 
-    return this.service().values.Consumption
+    return numberValue(this.service().values, 'Consumption')
   }
 }

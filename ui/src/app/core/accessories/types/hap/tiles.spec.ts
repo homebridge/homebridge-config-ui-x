@@ -19,6 +19,7 @@ import { DoorbellManageComponent } from '@/app/core/accessories/types/hap/doorbe
 import { FanComponent } from '@/app/core/accessories/types/hap/fan/fan.component'
 import { FilterMaintenanceComponent } from '@/app/core/accessories/types/hap/filter-maintenance/filter-maintenance.component'
 import { GarageDoorOpenerComponent } from '@/app/core/accessories/types/hap/garage-door-opener/garage-door-opener.component'
+import { HapNumberPipe } from '@/app/core/accessories/types/hap/hap-number.pipe'
 import { HeaterCoolerComponent } from '@/app/core/accessories/types/hap/heater-cooler/heater-cooler.component'
 import { HumidifierDehumidifierComponent } from '@/app/core/accessories/types/hap/humidifier-dehumidifier/humidifier-dehumidifier.component'
 import { LightbulbComponent } from '@/app/core/accessories/types/hap/lightbulb/lightbulb.component'
@@ -109,6 +110,7 @@ describe('the HAP accessory tiles', () => {
           ConvertTempPipe,
           ConvertMiredPipe,
           DurationPipe,
+          HapNumberPipe,
         ],
         schemas: [NO_ERRORS_SCHEMA],
       },

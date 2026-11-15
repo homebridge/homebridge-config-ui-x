@@ -2,11 +2,11 @@
   class="accessory-box"
   tabindex="0"
   [class.accessory-on]="
-    ('LockCurrentState' in service().values && service().values?.LockCurrentState !== 1) || service().values?.On === 1
+    ('LockCurrentState' in service().values && service().values.LockCurrentState !== 1) || service().values.On === 1
   "
-  [class.unlocked]="service().values?.LockCurrentState === 0 || service().values?.On === 1"
-  [class.jammed]="service().values?.LockCurrentState === 2"
-  [class.error]="service().values?.LockCurrentState === 3"
+  [class.unlocked]="service().values.LockCurrentState === 0 || service().values.On === 1"
+  [class.jammed]="service().values.LockCurrentState === 2"
+  [class.error]="service().values.LockCurrentState === 3"
   [class.cursor-pointer]="readyForControl()"
   (shortClick)="onClick()"
   (longClick)="onLongClick()"
@@ -51,24 +51,25 @@
       </svg>
     </div>
     <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
-    @if (service().values?.LockCurrentState < 2) {
+    @let lockState = service().values.LockCurrentState | hapNumber;
+    @if (lockState !== undefined && lockState < 2) {
       <div
         class="accessory-label grey-text"
-        [class.red-text]="!service().values?.LockCurrentState"
-        [class.grey-text]="service().values?.LockCurrentState"
+        [class.red-text]="!service().values.LockCurrentState"
+        [class.grey-text]="service().values.LockCurrentState"
       >
         {{
-          (service().values?.LockCurrentState ? 'accessories.control.locked' : 'accessories.control.unlocked')
+          (service().values.LockCurrentState ? 'accessories.control.locked' : 'accessories.control.unlocked')
             | translate
         }}
-        @if (!service().values?.LockCurrentState && hasCurrentConsumption()) {
+        @if (!service().values.LockCurrentState && hasCurrentConsumption()) {
           &middot;
           {{ currentConsumption() }}W
         }
       </div>
-    } @else if (service().values?.LockCurrentState === 2) {
+    } @else if (service().values.LockCurrentState === 2) {
       <div class="accessory-label red-text">{{ 'accessories.control.jammed' | translate }}</div>
-    } @else if (service().values?.LockCurrentState === 3) {
+    } @else if (service().values.LockCurrentState === 3) {
       <div class="accessory-label red-text">{{ 'accessories.control.unknown' | translate }}</div>
     }
   </div>

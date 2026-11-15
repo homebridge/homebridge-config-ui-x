@@ -10,6 +10,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { AccessoriesService as AccessoriesServiceToken } from '@/app/core/accessories/accessories.service'
 import { AirQualitySensorComponent } from '@/app/core/accessories/types/hap/air-quality-sensor/air-quality-sensor.component'
+import { HapNumberPipe } from '@/app/core/accessories/types/hap/hap-number.pipe'
 import { TemperatureSensorComponent } from '@/app/core/accessories/types/hap/temperature-sensor/temperature-sensor.component'
 import { MatterAirQualitySensorComponent } from '@/app/core/accessories/types/matter/air-quality-sensor/air-quality-sensor.component'
 import { MatterSmokeCoAlarmComponent } from '@/app/core/accessories/types/matter/smoke-co-alarm/smoke-co-alarm.component'
@@ -79,6 +80,7 @@ describe('the sensor tiles', () => {
           DecimalPipe,
           LowerCasePipe,
           UpperCasePipe,
+          HapNumberPipe,
         ],
         schemas: [NO_ERRORS_SCHEMA],
       },

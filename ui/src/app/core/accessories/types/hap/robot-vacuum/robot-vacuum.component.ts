@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { numberValue } from '@/app/core/accessories/types/hap/hap-values'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
@@ -25,9 +26,9 @@ export class RobotVacuumComponent {
     }
 
     if ('On' in this.service().values) {
-      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
+      void this.service().getCharacteristic?.('On')?.setValue?.(!this.service().values.On)
     } else if ('Active' in this.service().values) {
-      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active
+      void this.service().getCharacteristic?.('Active')?.setValue?.(this.service().values.Active
         ? 0
         : 1)
     }
@@ -42,6 +43,6 @@ export class RobotVacuumComponent {
       return undefined
     }
 
-    return this.service().values.Consumption
+    return numberValue(this.service().values, 'Consumption')
   }
 }

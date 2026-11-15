@@ -1,4 +1,4 @@
-@let detected = !!service().values?.MotionDetected;
+@let detected = !!service().values.MotionDetected;
 
 @let stateText =
   detected ? ('accessories.control.detected' | translate) : ('accessories.control.not_detected' | translate);

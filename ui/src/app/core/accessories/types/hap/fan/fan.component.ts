@@ -14,6 +14,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { FanManageComponent } from '@/app/core/accessories/types/hap/fan/fan.manage.component'
+import { numberValue } from '@/app/core/accessories/types/hap/hap-values'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
@@ -57,16 +58,16 @@ export class FanComponent implements OnInit {
     }
 
     if ('On' in this.service().values) {
-      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
+      void this.service().getCharacteristic?.('On')?.setValue?.(!this.service().values.On)
     } else if ('Active' in this.service().values) {
-      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active
+      void this.service().getCharacteristic?.('Active')?.setValue?.(this.service().values.Active
         ? 0
         : 1)
     }
 
     // Set the rotation speed to max if on 0% when turned on
     if ('RotationSpeed' in this.service().values && !this.service().values.On && !this.service().values.RotationSpeed) {
-      this.service().values.RotationSpeed = this.service().getCharacteristic!('RotationSpeed').maxValue
+      this.service().values.RotationSpeed = this.service().getCharacteristic?.('RotationSpeed')?.maxValue
     }
   }
 
@@ -106,6 +107,6 @@ export class FanComponent implements OnInit {
       return undefined
     }
 
-    return this.service().values.Consumption
+    return numberValue(this.service().values, 'Consumption')
   }
 }
