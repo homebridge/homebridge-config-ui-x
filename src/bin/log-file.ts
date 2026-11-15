@@ -32,7 +32,11 @@ export async function truncateLogFile(path: string, maxSize: number, truncateSiz
     return false
   }
 
-  const keep = Math.max(0, Math.min(Math.floor(truncateSize) || 0, size, maxSize, MAX_KEPT_LOG_BYTES))
+  // A maximum of 0 trims at every check, as it always did; it is no limit on what is kept, or the log would be
+  // emptied at every start and every two hours
+  const keep = Math.max(0, Math.min(Math.floor(truncateSize) || 0, size, maxSize > 0
+    ? maxSize
+    : Infinity, MAX_KEPT_LOG_BYTES))
   const handle = await open(path, 'r+')
   try {
     const buffer = Buffer.alloc(keep)

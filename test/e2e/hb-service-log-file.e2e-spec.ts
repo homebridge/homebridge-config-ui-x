@@ -48,6 +48,19 @@ describe('the hb-service log file', () => {
     expect((await stat(path)).size).toBeLessThanOrEqual(100000)
   })
 
+  it('keeps the newest part for a maximum size of 0, instead of emptying the log', async () => {
+    // Regression: the part kept was capped at the maximum, so `"maxSize": 0` emptied homebridge.log at every
+    // start and every two hours
+    const lines = Array.from({ length: 100 }, (_, i) => `line ${i}`).join('\n')
+    await writeFile(path, `${lines}\n`)
+
+    expect(await truncateLogFile(path, 0, 200)).toBe(true)
+
+    const kept = await readFile(path, 'utf8')
+    expect(kept.endsWith('line 99\n')).toBe(true)
+    expect(kept.length).toBeGreaterThan(100)
+  })
+
   it('leaves a log below the maximum size alone, and never trims when the maximum is negative', async () => {
     await writeFile(path, 'short\n')
     expect(await truncateLogFile(path, 1000, 200)).toBe(false)
