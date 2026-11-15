@@ -1127,6 +1127,29 @@ describe('AccessoriesService', () => {
   })
 
   describe('saving the layout', () => {
+    it('saves nothing once the session has stopped, so a modal left open can not wipe the rooms', async () => {
+      // The info modal is opened on document.body, so it outlives the page. Pressing Back and then Save in it
+      // used to send an empty layout, which the server stored as is.
+      await start({
+        layout: [
+          {
+            name: 'Kitchen',
+            isDefault: true,
+            services: [
+              layoutEntry({ customName: 'Kettle' }),
+            ],
+          },
+        ],
+      })
+      sendData(rawHap({ nameBasedUniqueId: 'nb-1' }))
+
+      service.stop()
+      service.saveLayout()
+      await settle()
+
+      expect(io.requests.filter(entry => entry.resource === 'save-layout')).toHaveLength(0)
+    })
+
     it('sends the room names and the fields the layout needs', async () => {
       await start({
         layout: [

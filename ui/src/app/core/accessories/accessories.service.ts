@@ -298,6 +298,12 @@ export class AccessoriesService {
    * Save the room layout
    */
   public saveLayout() {
+    // After stop() the rooms are empty and the saved layout is gone, so a save from a modal that is still open
+    // (opened on the page, then the user went Back) would write an empty layout and wipe every room for the user
+    if (!this.sessionActive || !this.originalLayout) {
+      return
+    }
+
     // Generate layout schema from currently active rooms
     const currentLayout = this.rooms().map(room => ({
       name: room.name,
