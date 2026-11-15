@@ -33,6 +33,17 @@ describe('hb-service config.json check', () => {
     })
   })
 
+  it('reads a good config that starts with a byte order mark, as Windows Notepad saves it', async () => {
+    // Regression: plain JSON.parse refused it, so hb-service replaced a valid config (new bridge username and
+    // pin), which Homebridge itself reads fine
+    await writeFile(path, `\uFEFF${JSON.stringify({
+      bridge: { username: '0E:11:22:33:44:55' },
+    })}`)
+    expect(await readConfigForCheck(path)).toEqual({
+      bridge: { username: '0E:11:22:33:44:55' },
+    })
+  })
+
   it.each([
     ['broken json', '{ "bridge": '],
     ['a list', '[]'],
