@@ -668,6 +668,32 @@ describe('ConfigEditorController (e2e)', () => {
     expect(updatedConfig.platforms).toEqual(mockConfig)
   })
 
+  it('POST /config-editor/plugin/:pluginName puts a plugin with two blocks back where its first block was', async () => {
+    const currentConfig: HomebridgeConfig = await readJson(configFilePath)
+    currentConfig.platforms = [
+      { platform: 'A' },
+      { platform: 'ExampleHomebridgePlugin', name: 'one' },
+      { platform: 'B' },
+      { platform: 'ExampleHomebridgePlugin', name: 'two' },
+      { platform: 'C' },
+    ]
+    await writeJson(configFilePath, currentConfig)
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor/plugin/homebridge-mock-plugin',
+      headers: { authorization },
+      payload: [
+        { platform: 'ExampleHomebridgePlugin', name: 'one' },
+        { platform: 'ExampleHomebridgePlugin', name: 'two' },
+      ],
+    })
+
+    expect(res.statusCode).toBe(201)
+    const saved: HomebridgeConfig = await readJson(configFilePath)
+    expect(saved.platforms.map((p: any) => p.name ?? p.platform)).toEqual(['A', 'one', 'two', 'B', 'C'])
+  })
+
   it('POST /config-editor/plugin/:pluginName (retain index position)', async () => {
     // Empty platforms
     const currentConfig: HomebridgeConfig = await readJson(configFilePath)
