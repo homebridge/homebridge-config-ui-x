@@ -167,12 +167,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(server): add a web root setting, to serve the ui under a path behind a reverse proxy (#746)
 - feat(matter): show left-over matter storage as stale bridges, and remove it with its plugin
 - fix(server): return an empty list, not a 500, when the accessories or persist folder is missing
+- chore(deps): dependency updates
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.4.0`
+- `@homebridge/hap-client` @ `v5.4.1-beta`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
-- `@homebridge/plugin-ui-utils` @ `v2.3.0`
+- `@homebridge/plugin-ui-utils` @ `v2.3.1-beta`
 
 ## v5.30.1 (2026-11-13)
 
