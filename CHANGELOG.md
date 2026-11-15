@@ -159,12 +159,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): close a user's open sockets when the user is deleted or the session is revoked
 - fix(terminal): leave a swipe past the first or last line to the phone, to scroll the page
 - fix(plugins): match the start of words in the plugin search (#3138) (@emreocell)
+- chore(deps): dependency updates
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.4.0`
+- `@homebridge/hap-client` @ `v5.4.1-beta`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
-- `@homebridge/plugin-ui-utils` @ `v2.3.0`
+- `@homebridge/plugin-ui-utils` @ `v2.3.1-beta`
 
 ## v5.30.1 (2026-11-13)
 
