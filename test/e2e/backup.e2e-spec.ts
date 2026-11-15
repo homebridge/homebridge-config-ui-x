@@ -446,6 +446,31 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     expect(managePlugin.mock.calls.map(([, action]) => action.name)).toEqual(['homebridge-good'])
   })
 
+  it('a failed upload removes its temp folder and frees the restore slot', async () => {
+    const tempDirs = async () => (await readdir(tmpdir())).filter(name => name.startsWith('homebridge-backup-'))
+    const before = await tempDirs()
+
+    // Starts like a gzip file, so the extract begins, then fails
+    const payload = new FormData()
+    payload.append('backup.tar.gz', Buffer.concat([
+      Buffer.from([0x1F, 0x8B, 0x08, 0x00]),
+      crypto.randomBytes(4096),
+    ]))
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/backup/restore',
+      headers,
+      payload,
+    })
+
+    expect(res.statusCode).toBeGreaterThanOrEqual(400)
+    expect((await tempDirs()).filter(name => !before.includes(name))).toEqual([])
+    expect((backupService as any).restoreDirectory).toBeUndefined()
+  })
+
   // https://github.com/homebridge/homebridge-config-ui-x/issues/1856
 
   it('POST /backup/restore of a large .homebridge directory should backup, but restore will not work', { timeout: 60_000 }, async () => {

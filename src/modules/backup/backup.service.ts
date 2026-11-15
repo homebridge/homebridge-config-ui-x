@@ -529,9 +529,10 @@ export class BackupService {
     // must lose the race and 409.
     this.reserveRestoreSlot()
 
+    let restoreDir: string | undefined
     try {
       // Prepare a temp working directory
-      const restoreDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
+      restoreDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
 
       // Pipe the data to the temp directory
       await pump(createReadStream(backupPath), extract({
@@ -544,6 +545,10 @@ export class BackupService {
       this.restoreDirectory = restoreDir
     } catch (err) {
       this.restoreDirectory = undefined
+      // A failed extract (too big, not an archive, an unsafe entry) may have written part of the archive already
+      if (restoreDir) {
+        await remove(restoreDir).catch(() => undefined)
+      }
       throw err
     }
   }
@@ -603,9 +608,10 @@ export class BackupService {
     // upload loses the race and 409s.
     this.reserveRestoreSlot()
 
+    let backupDir: string | undefined
     try {
       // Prepare a temp working directory
-      const backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
+      backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
 
       // Pipe the data to the temp directory
       await pump(data.file, extract({
@@ -618,6 +624,10 @@ export class BackupService {
       this.restoreDirectory = backupDir
     } catch (err) {
       this.restoreDirectory = undefined
+      // A failed extract (too big, not an archive, an unsafe entry) may have written part of the archive already
+      if (backupDir) {
+        await remove(backupDir).catch(() => undefined)
+      }
       throw err
     }
   }
@@ -832,9 +842,10 @@ export class BackupService {
     // upload loses the race and 409s.
     this.reserveRestoreSlot()
 
+    let backupDir: string | undefined
     try {
       // Prepare a temp working directory
-      const backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
+      backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
 
       this.logger.log(`Extracting .hbfx file to ${backupDir}.`)
 
@@ -845,6 +856,10 @@ export class BackupService {
       this.restoreDirectory = backupDir
     } catch (err) {
       this.restoreDirectory = undefined
+      // A failed extract (too big, not an archive, an unsafe entry) may have written part of the archive already
+      if (backupDir) {
+        await remove(backupDir).catch(() => undefined)
+      }
       throw err
     }
   }
