@@ -440,6 +440,31 @@ describe('plugin modals', () => {
       expect(onSettingsChange).toHaveBeenCalled()
     })
 
+    it('saves a choice made just before the window closes', async () => {
+      // Regression: the wait before saving came before takeUntilDestroyed, so closing the window within half a
+      // second dropped the choice (the same as the settings page fix)
+      const modalRef = await open(
+        ManageVersionComponent,
+        [
+          {
+            provide: MANAGE_VERSION_MODAL_DATA,
+            useValue: {
+              plugin: makePlugin(),
+              onRefreshPluginList,
+            },
+          },
+        ],
+        () => api.respond('get', /\/plugins\/lookup\//, versionsResponse),
+      )
+      api.clearCalls()
+
+      modalRef.updatePreferenceControl.setValue('none')
+      TestBed.resetTestingModule()
+      await vi.advanceTimersByTimeAsync(500)
+
+      expect(api.callsTo('put').map((call: any) => call.url)).toContain('/config-editor/ui/plugins/hide-updates-for')
+    })
+
     it('puts the dropdown back when saving fails', async () => {
       const modalRef = await open(
         ManageVersionComponent,
