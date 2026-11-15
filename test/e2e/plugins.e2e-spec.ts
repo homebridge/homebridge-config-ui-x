@@ -876,6 +876,43 @@ describe('PluginController (e2e)', () => {
     })
   })
 
+  it('reads a beta changelog from the newest beta branch, not the last one by name', async () => {
+    // Regression: GitHub lists branches by name, so `beta-2.5.1` came after `beta-2.10.0` and was used
+    const fetched: string[] = []
+    const getSpy = vi.spyOn(httpService, 'get').mockImplementation(((url: string) => {
+      fetched.push(url)
+      if (url.startsWith('https://registry.npmjs.org/')) {
+        return of({
+          data: {
+            'dist-tags': { latest: '2.9.0', beta: '2.10.0-beta.1' },
+            'versions': {},
+          },
+        })
+      }
+      if (url.endsWith('/branches')) {
+        return of({
+          data: [
+            { name: 'beta-2.10.0' },
+            { name: 'beta-2.5.1' },
+            { name: 'beta-2.9.1' },
+            { name: 'latest' },
+          ],
+        })
+      }
+      if (url.includes('/refs/heads/')) {
+        return of({ data: '# changelog' })
+      }
+      return throwError(() => new Error('not found'))
+    }) as any)
+    try {
+      await pluginsService.getPluginRelease('homebridge', '2.10.0-beta.1')
+
+      expect(fetched.filter(url => url.includes('/refs/heads/'))[0]).toContain('/refs/heads/beta-2.10.0/')
+    } finally {
+      getSpy.mockRestore()
+    }
+  })
+
   describe('the version to install', () => {
     it.each([
       '1.0.0 --registry=x',
