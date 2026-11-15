@@ -40,7 +40,7 @@ import { createFile, ensureDir, pathExists, pathExistsSync, readJson, remove } f
 import NodeCache from 'node-cache'
 import pLimit from 'p-limit'
 import { firstValueFrom } from 'rxjs'
-import { gt, lt, major, parse, prerelease, rcompare, satisfies, valid } from 'semver'
+import { coerce, compare, gt, lt, major, parse, prerelease, rcompare, satisfies, valid } from 'semver'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
@@ -1825,10 +1825,10 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
         const response = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${owner}/${repo}/branches`, {
           params: { per_page: 100 },
         }))
-        const matched = response.data.filter((b: any) => b.name.includes(keyword))
-        return matched.length > 0
-          ? matched.at(-1).name
-          : null
+        // GitHub lists branches by name, so `beta-2.5.1` comes after `beta-2.10.0`: take the highest version
+        const matched: string[] = response.data.map((b: any) => b.name).filter((name: string) => name.includes(keyword))
+        const versionOf = (name: string) => coerce(name)?.version ?? '0.0.0'
+        return matched.sort((a, b) => compare(versionOf(a), versionOf(b))).at(-1) ?? null
       } catch { }
       return null
     }

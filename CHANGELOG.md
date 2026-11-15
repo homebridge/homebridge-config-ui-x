@@ -109,6 +109,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(backup): remove old scheduled backups of an older bridge username from the default folder
 - fix(status): let only an admin drag the dashboard accessories, as only an admin's order is saved
 - fix(plugins): save an update preference chosen just before the version window closes
+- fix(plugins): read a beta changelog from the newest beta branch, not the last one by name
 
 ### Other Changes
 
