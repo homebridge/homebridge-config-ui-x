@@ -511,6 +511,40 @@ describe('accessoryInfoComponent', () => {
       expect((service as any).customName).toBeUndefined()
     })
 
+    it('undoes the edits when the window closes another way, such as Escape', () => {
+      // Regression: only the close buttons undid them. Escape (ng-bootstrap closes the window itself) left the
+      // "cancelled" name on the tile's service object, and the next layout save stored it
+      const service = hapService({
+        type: 'Switch',
+        overrides: { customName: 'Kitchen', hidden: false, onDashboard: true } as any,
+      })
+      const fixture = open(service)
+
+      Object.assign(fixture.componentInstance.localService, {
+        customName: 'Changed',
+        hidden: true,
+      })
+      fixture.destroy()
+
+      expect(editable(service)).toEqual({
+        customName: 'Kitchen',
+        customType: 'Switch',
+        hidden: false,
+        onDashboard: true,
+      })
+    })
+
+    it('keeps the edits after a save, when the window then closes', () => {
+      const service = hapService()
+      const fixture = open(service)
+
+      fixture.componentInstance.localService.customName = 'Kitchen Light'
+      fixture.componentInstance.saveModal()
+      fixture.destroy()
+
+      expect((service as any).customName).toBe('Kitchen Light')
+    })
+
     it('dismisses the modal', () => {
       open(hapService()).componentInstance.dismissModal()
 
