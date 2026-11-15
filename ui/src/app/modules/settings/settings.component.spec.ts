@@ -407,6 +407,16 @@ describe('SettingsComponent', () => {
       expect(api.lastCall('put', '/server/port')?.body).toEqual({ port: 51830 })
     })
 
+    it('still sends a change typed just before leaving the page', async () => {
+      // The field showed the new value, so it must be saved, not lost with the page (decided by BP)
+      api.clearCalls()
+      component.hbPortFormControl.setValue(51831)
+      fixture.destroy()
+      await vi.advanceTimersByTimeAsync(0)
+
+      expect(api.lastCall('put', '/server/port')?.body).toEqual({ port: 51831 })
+    })
+
     it('sends the homebridge port range', async () => {
       await change('hbStartPortFormControl', 52000)
 
