@@ -26,7 +26,7 @@ import {
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js'
-import { PortRangeDto, SetBridgeAlertDto, SetScheduledRestartCronDto } from './config-editor.dto.js'
+import { PortRangeDto, SetBridgeAlertDto, SetHapEnabledDto, SetMatterEnabledDto, SetScheduledRestartCronDto } from './config-editor.dto.js'
 import { ConfigEditorService } from './config-editor.service.js'
 
 function includesRestartInfo(include: string | undefined): boolean {
@@ -362,7 +362,7 @@ export class ConfigEditorController {
   })
   @ApiBody({ description: 'Matter enablement', type: 'json' })
   @Put('/matter/enabled')
-  setMatterEnabled(@Body() body: { enabled: boolean, restart?: boolean, externalsOnly?: boolean }) {
+  setMatterEnabled(@Body() body: SetMatterEnabledDto) {
     return this.configEditorService.setMatterEnabled(body.enabled, body.restart ?? true, body.externalsOnly ?? false)
   }
 
@@ -383,7 +383,7 @@ export class ConfigEditorController {
   })
   @ApiBody({ description: 'HAP configuration', type: 'json' })
   @Put('/hap')
-  setHapEnabled(@Body() body: { enabled: boolean, restart?: boolean, externalsOnly?: boolean, disableIdentifyingMaterial?: boolean }) {
+  setHapEnabled(@Body() body: SetHapEnabledDto) {
     return this.configEditorService.setHapEnabled(body.enabled, body.restart ?? true, body.externalsOnly ?? false, body.disableIdentifyingMaterial)
   }
 }

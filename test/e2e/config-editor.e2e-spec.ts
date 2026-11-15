@@ -2210,6 +2210,34 @@ describe('ConfigEditorController (e2e)', () => {
     expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: false })
   })
 
+  it.each([
+    ['/config-editor/hap', {}],
+    [
+      '/config-editor/hap',
+      { enabled: 'false' },
+    ],
+    ['/config-editor/matter/enabled', {}],
+    [
+      '/config-editor/matter/enabled',
+      { enabled: 1 },
+    ],
+  ])('PUT %s refuses a body without a true or false enabled (%j)', async (path, payload) => {
+    // An empty body used to turn HAP off (enabled undefined) and restart Homebridge
+    const restart = vi.spyOn(app.get(HomebridgeIpcService), 'restartAndWaitForClose').mockResolvedValue(undefined)
+    try {
+      const res = await app.inject({
+        method: 'PUT',
+        path,
+        headers: { authorization },
+        payload,
+      })
+      expect(res.statusCode).toBe(400)
+      expect(restart).not.toHaveBeenCalled()
+    } finally {
+      restart.mockRestore()
+    }
+  })
+
   it('PUT /config-editor/hap keeps a save made while Homebridge restarts', async () => {
     // The HAP and Matter switches restart Homebridge first. They used to read config.json before that wait and
     // write the whole old copy after it, undoing any other save in between.
