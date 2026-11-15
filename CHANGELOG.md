@@ -76,6 +76,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): clean up a socket that leaves during the first load, which stayed attached
 - fix(log): clean up a socket that leaves while the log file is checked, which kept its tail listener
 - fix(accessories): send a matter control once, not a second time when its reply is slow
+- fix(accessories): show a control on one part of a matter device on that part, not the main tile
 
 ### Other Changes
 

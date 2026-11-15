@@ -1117,8 +1117,9 @@ export class AccessoriesService {
     try {
       const { uuid, partId } = this.parseMatterUniqueId(control.uniqueId)
 
-      // Find the accessory in the cache to get the bridge username
-      const accessory = this.matterAccessories.find(acc => acc.uuid === uuid)
+      // Find the accessory in the cache to get the bridge username. By the full id: the parts of a composed
+      // device share its uuid, and the uuid alone finds the main accessory, whose tile would then be changed
+      const accessory = this.matterAccessories.find(acc => acc.uniqueId === control.uniqueId)
       const bridgeUsername = accessory?.bridge?.username
 
       // Send control command via IPC using unified Matter event channel. Sent once, with no retry: a reply that
