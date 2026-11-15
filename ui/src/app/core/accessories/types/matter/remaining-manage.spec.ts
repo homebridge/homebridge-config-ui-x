@@ -425,6 +425,21 @@ describe('the remaining matter manage modals', () => {
       expect(component.targetSpeed.value).toBe(50)
       expect(toastr.error).toHaveBeenCalled()
     })
+
+    it('puts the switch back by the mode, as the tile shows it, when a speed write is refused', async () => {
+      // Regression: the switch went back by the old speed rule, so a fan turned off by its mode (speed left at
+      // 50) showed On in the window and Off on the tile
+      const service = fan(50, 0)
+      service.failWrites('fanControl', new Error('device offline'))
+      const component = create(MatterFanManageComponent, service)
+
+      await slide(() => {
+        component.targetSpeed.value = 90
+        component.onTargetSpeedChange()
+      })
+
+      expect(component.targetMode).toBe(false)
+    })
   })
 
   describe('door lock', () => {
