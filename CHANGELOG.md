@@ -58,6 +58,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): log to the console when the log file can't be written, instead of crashing
 - fix(hb-service): trim the log safely when the size to keep is over the maximum, from a whole line
 - fix(hb-service): trim the log at start-up too, so a service that restarts often still trims it
+- fix(hb-service): on freebsd, install for the user who ran sudo when no --user is given
 
 ### Homebridge Dependencies
 
