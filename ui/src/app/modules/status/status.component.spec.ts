@@ -1190,6 +1190,18 @@ describe('statusComponent', () => {
       expect(savedLayout()?.map((w: any) => w.component)).toEqual(['UpdateInfoWidgetComponent'])
     })
 
+    it('never saves the shared layout for a non-admin, so the admin keeps the terminal widget', async () => {
+      await open({
+        layout: [
+          widget('TerminalWidgetComponent'),
+          item('HomebridgeStatusWidgetComponent'),
+        ],
+        admin: false,
+      })
+
+      expect(savedLayout()).toBeUndefined()
+    })
+
     it('does not save a layout that needed no migration', async () => {
       await open({
         layout: [
