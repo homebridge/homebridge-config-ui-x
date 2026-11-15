@@ -8,9 +8,6 @@ import { Catch, NotFoundException } from '@nestjs/common'
 
 @Catch(NotFoundException)
 export class SpaFilter implements ExceptionFilter {
-  // The single page app's index.html, read once: it does not change while the UI runs (an update restarts it)
-  private indexHtml: string | undefined
-
   catch(exception: NotFoundException, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
     const req = ctx.getRequest()
@@ -26,11 +23,13 @@ export class SpaFilter implements ExceptionFilter {
       return res.code(404).send('Not Found')
     }
 
-    this.indexHtml ??= readFileSync(resolve(process.env.UIX_BASE_PATH, 'public/index.html'), 'utf-8')
+    // Read each time: a UI update replaces public/ some time before the UI restarts, and an old index.html names
+    // script files that are gone, so a reload on a page such as /plugins would fail (and reload) until then
+    const indexHtml = readFileSync(resolve(process.env.UIX_BASE_PATH, 'public/index.html'), 'utf-8')
     res.type('text/html')
     res.header('Cache-Control', 'no-cache, no-store, must-revalidate')
     res.header('Pragma', 'no-cache')
     res.header('Expires', '0')
-    res.send(this.indexHtml)
+    res.send(indexHtml)
   }
 }

@@ -1,3 +1,8 @@
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import process from 'node:process'
+
 import { NotFoundException } from '@nestjs/common'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -35,5 +40,30 @@ describe('the not-found filter', () => {
     new SpaFilter().catch(new NotFoundException(), host)
 
     expect(res.send).toHaveBeenCalledWith('Not Found')
+  })
+
+  it('serves the index.html that is on disk now, as a ui update replaces it before the ui restarts', async () => {
+    // Regression: it was read once and kept, so after an update a reload on /plugins got the old page, whose
+    // script files were gone
+    const base = await mkdtemp(join(tmpdir(), 'spa-'))
+    const before = process.env.UIX_BASE_PATH
+    process.env.UIX_BASE_PATH = base
+    try {
+      await mkdir(join(base, 'public'))
+      const filter = new SpaFilter()
+      await writeFile(join(base, 'public', 'index.html'), 'old page')
+      const first = hostFor('/plugins')
+      filter.catch(new NotFoundException(), first.host)
+
+      await writeFile(join(base, 'public', 'index.html'), 'new page')
+      const second = hostFor('/plugins')
+      filter.catch(new NotFoundException(), second.host)
+
+      expect(first.res.send).toHaveBeenCalledWith('old page')
+      expect(second.res.send).toHaveBeenCalledWith('new page')
+    } finally {
+      process.env.UIX_BASE_PATH = before
+      await rm(base, { recursive: true, force: true })
+    }
   })
 })
