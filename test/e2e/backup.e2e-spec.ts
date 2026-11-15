@@ -208,6 +208,34 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     expect(backupsAfterJob).toHaveLength(7)
   })
 
+  it('keeps every old backup when the scheduled backup fails', async () => {
+    await remove(configService.instanceBackupPath)
+    await ensureDir(configService.instanceBackupPath)
+    const instanceId = configService.homebridgeConfig.bridge.username.replace(RE_COLON, '')
+    const old = `homebridge-backup-${instanceId}.${dayjs().subtract(10, 'day').valueOf()}.tar.gz`
+    await writeFile(resolve(configService.instanceBackupPath, old), 'xyz')
+    const createBackup = vi.spyOn(backupService as any, 'createBackup').mockRejectedValue(new Error('ENOSPC'))
+
+    try {
+      await backupService.runScheduledBackupJob()
+    } finally {
+      createBackup.mockRestore()
+    }
+
+    expect(await readdir(configService.instanceBackupPath)).toEqual([old])
+  })
+
+  it('removes only its own old backups from a backup folder other instances share', async () => {
+    await remove(configService.instanceBackupPath)
+    await ensureDir(configService.instanceBackupPath)
+    const other = `homebridge-backup-aabbccddeeff.${dayjs().subtract(10, 'day').valueOf()}.tar.gz`
+    await writeFile(resolve(configService.instanceBackupPath, other), 'xyz')
+
+    await backupService.runScheduledBackupJob()
+
+    expect(await readdir(configService.instanceBackupPath)).toContain(other)
+  })
+
   it('saves scheduled backups to the custom path if set and exists', async () => {
     // cleanup
     await remove(customInstanceBackupPath)

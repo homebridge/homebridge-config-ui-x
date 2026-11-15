@@ -369,23 +369,29 @@ export class BackupService {
     }
 
     // Create the backup
+    let instanceId: string
     try {
-      const { backupDir, backupPath, instanceId } = await this.createBackup()
-      await copy(backupPath, resolve(
+      const backup = await this.createBackup()
+      instanceId = backup.instanceId
+      await copy(backup.backupPath, resolve(
         this.configService.instanceBackupPath,
         `homebridge-backup-${instanceId}.${Date.now().toString()}.tar.gz`,
       ))
-      await remove(resolve(backupDir))
+      await remove(resolve(backup.backupDir))
     } catch (e) {
-      this.logger.warn(`Failed to create scheduled instance backup as ${e.message}.`)
+      // Keep every old backup: if backups keep failing (a full disk, a bad custom path), removing the ones older than
+      // 7 days would leave none at all after a week
+      this.logger.warn(`Failed to create scheduled instance backup as ${e.message}. Old backups are kept.`)
+      return
     }
 
-    // Remove backups older than 7 days
+    // Remove this instance's backups older than 7 days. A custom backup folder can be shared by several
+    // instances: their backups are theirs to remove.
     try {
       const backups = await this.listScheduledBackups()
 
       for (const backup of backups) {
-        if (dayjs().diff(dayjs(backup.timestamp), 'day') >= 7) {
+        if (backup.instanceId === instanceId && dayjs().diff(dayjs(backup.timestamp), 'day') >= 7) {
           await remove(resolve(this.configService.instanceBackupPath, backup.fileName))
         }
       }
