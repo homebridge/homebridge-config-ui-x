@@ -16,6 +16,7 @@ import {
   ensureDir,
   pathExists,
   readdir,
+  readFile,
   readJson,
   remove,
   writeFile,
@@ -2236,6 +2237,30 @@ describe('ConfigEditorController (e2e)', () => {
     } finally {
       restart.mockRestore()
     }
+  })
+
+  it.each([
+    ['a list', []],
+    [
+      'a list of objects',
+      [
+        { bridge: {} },
+      ],
+    ],
+    [
+      'a bridge that is text',
+      { bridge: 'x', platforms: [] },
+    ],
+  ])('POST /config-editor refuses %s and keeps config.json', async (_label, payload) => {
+    const before = await readFile(configFilePath, 'utf8')
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: { authorization },
+      payload,
+    })
+    expect(res.statusCode).toBe(400)
+    expect(await readFile(configFilePath, 'utf8')).toBe(before)
   })
 
   it('PUT /config-editor/hap keeps a save made while Homebridge restarts', async () => {

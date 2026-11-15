@@ -1,6 +1,7 @@
 import type { HomebridgeUiBridgeConfig } from '../../core/config/config.interfaces.js'
 
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -64,6 +65,11 @@ export class ConfigEditorController {
   })
   @Post()
   updateConfig(@Body() body, @Query('include') include?: string) {
+    // The whole of config.json: it must be an object (a list would be saved as `[]`, wiping the config)
+    if (!body || typeof body !== 'object' || Array.isArray(body)
+      || (body.bridge !== undefined && (body.bridge === null || typeof body.bridge !== 'object' || Array.isArray(body.bridge)))) {
+      throw new BadRequestException('The config must be a JSON object, with an object for "bridge".')
+    }
     if (includesRestartInfo(include)) {
       return this.configEditorService.updateConfigFileWithRestartInfo(body)
     }

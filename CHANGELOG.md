@@ -44,6 +44,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(scheduler): restart a shared child bridge once, cancel every old job, and warn on a bad cron
 - fix(config): read a session timeout typed as text as seconds, not milliseconds
 - fix(config-editor): refuse a hap or matter switch with no true or false, which turned hap off
+- fix(config-editor): refuse a whole config that is not an object, which was saved as an empty list
 
 ### Other Changes
 
