@@ -92,6 +92,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): show the log with hb-service view on macos, windows and freebsd
 - ci: pin the third-party actions to a commit
 - chore: add the homepage url to package.json
+- chore: drop the stale maintainers field from package.json
 
 ### Homebridge Dependencies
 
