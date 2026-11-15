@@ -259,6 +259,22 @@ describe('ChildBridges (e2e)', () => {
       expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(0)
     })
 
+    it('watches a socket once, however often it asks, so each update arrives once', async () => {
+      // Regression: the socket is shared by every page, widget and the update-all window in a tab, and each
+      // asked again, so every update was sent once per ask
+      await childBridgesService.watchChildBridgeStatus(client)
+      await childBridgesService.watchChildBridgeStatus(client)
+
+      homebridgeIpcService.emit('childBridgeStatusUpdate', { status: 'ok', username: '0E:AA:BB:CC:DD:EE' })
+      expect(vi.mocked(client.emit).mock.calls.filter(([event]) => event === 'child-bridge-status-update')).toHaveLength(1)
+
+      // After an end it can be watched again
+      client.emit('end')
+      await childBridgesService.watchChildBridgeStatus(client)
+      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(1)
+      client.emit('end')
+    })
+
     it('should clean up listeners on client end', async () => {
       await childBridgesService.watchChildBridgeStatus(client)
 
