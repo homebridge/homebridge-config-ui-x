@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { TtlCacheService } from '@/app/core/caching/ttl-cache.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
+import { CONFIRMED_ACTION_STATE } from '@/app/core/utilities/confirmed-action'
 import { PowerOptionsComponent } from '@/app/modules/power-options/power-options.component'
 import { RestartComponent } from '@/app/modules/restart/restart.component'
 import { fakeApi, fakeWs, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
@@ -344,7 +345,7 @@ describe('restarting homebridge', () => {
 
       page.restartServer()
 
-      expect(navigate).toHaveBeenCalledWith(['/platform-tools/linux/restart-server'])
+      expect(navigate).toHaveBeenCalledWith(['/platform-tools/linux/restart-server'], { state: CONFIRMED_ACTION_STATE })
     })
 
     it('sends a container restart to its own page', async () => {
@@ -354,7 +355,7 @@ describe('restarting homebridge', () => {
 
       page.dockerRestartContainer()
 
-      expect(navigate).toHaveBeenCalledWith(['/platform-tools/docker/restart-container'])
+      expect(navigate).toHaveBeenCalledWith(['/platform-tools/docker/restart-container'], { state: CONFIRMED_ACTION_STATE })
     })
 
     it('asks before shutting the machine down', async () => {
@@ -380,7 +381,7 @@ describe('restarting homebridge', () => {
       modal.lastOpened()!.ref.close()
       await done
 
-      expect(navigate).toHaveBeenCalledWith(['/platform-tools/linux/shutdown-server'])
+      expect(navigate).toHaveBeenCalledWith(['/platform-tools/linux/shutdown-server'], { state: CONFIRMED_ACTION_STATE })
     })
 
     it('does nothing when the shutdown is called off', async () => {

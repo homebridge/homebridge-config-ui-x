@@ -9,6 +9,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { CONFIRMED_ACTION_STATE } from '@/app/core/utilities/confirmed-action'
 import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 
 @Component({
@@ -66,7 +67,7 @@ export class PowerOptionsComponent implements OnInit {
 
   public restartServer() {
     this.closeRestartToast()
-    void this.$router.navigate(['/platform-tools/linux/restart-server'])
+    void this.$router.navigate(['/platform-tools/linux/restart-server'], { state: CONFIRMED_ACTION_STATE })
   }
 
   public async shutdownServer(): Promise<void> {
@@ -92,7 +93,7 @@ export class PowerOptionsComponent implements OnInit {
 
     try {
       await ref.result
-      void this.$router.navigate(['/platform-tools/linux/shutdown-server'])
+      void this.$router.navigate(['/platform-tools/linux/shutdown-server'], { state: CONFIRMED_ACTION_STATE })
     } catch {
       // Modal dismissed, do nothing
     }
@@ -100,6 +101,6 @@ export class PowerOptionsComponent implements OnInit {
 
   public dockerRestartContainer() {
     this.closeRestartToast()
-    void this.$router.navigate(['/platform-tools/docker/restart-container'])
+    void this.$router.navigate(['/platform-tools/docker/restart-container'], { state: CONFIRMED_ACTION_STATE })
   }
 }
