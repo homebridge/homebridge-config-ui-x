@@ -1484,6 +1484,14 @@ describe('AuthController (e2e)', () => {
       expect(old.statusCode).toBe(404)
     })
 
+    it('accepts the name an upload with no file extension is saved as, and the other jpeg extensions', () => {
+      // Regression: an upload named `photo` is saved as `ui-wallpaper`, which the new check refused, so that
+      // wallpaper (and every existing install set to it) stopped showing
+      expect(configService.getWallpaperPath('ui-wallpaper')).toBe(resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper'))
+      expect(configService.getWallpaperPath('photo.jfif')).toBe(resolve(process.env.UIX_STORAGE_PATH, 'photo.jfif'))
+      expect(configService.getWallpaperPath('ui-wallpaper-x')).toBeUndefined()
+    })
+
     it('accepts only a plain image file name in the storage folder', () => {
       expect(configService.getWallpaperPath('ui-wallpaper.jpg')).toBe(resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper.jpg'))
       expect(configService.getWallpaperPath('my-photo.JPEG')).toBe(resolve(process.env.UIX_STORAGE_PATH, 'my-photo.JPEG'))
