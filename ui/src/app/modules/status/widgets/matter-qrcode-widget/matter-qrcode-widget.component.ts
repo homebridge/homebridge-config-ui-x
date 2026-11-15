@@ -90,7 +90,8 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
   private applyMatterStatus(data: HomebridgeStatusResponse): void {
     if (data.matter) {
       this.enabled.set(data.matter.enabled)
-      this.startFailed.set(Boolean(data.matter.enabled && data.matter.startFailed))
+      // Homebridge sends `enabled: false` with it (the server is not running), so `startFailed` decides on its own
+      this.startFailed.set(data.matter.startFailed === true)
       if (this.startFailed()) {
         // No server, so no code to pair with: an old pin and an empty box would look like it is still starting
         this.pin.set('')
