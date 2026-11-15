@@ -9,7 +9,11 @@ import {
   IsString,
 } from 'class-validator'
 
+// The app's ValidationPipe uses `skipMissingProperties`, so a required field needs @IsDefined: without it a missing
+// field passes and the handler fails later with a 500
+
 export class UserActivateOtpDto {
+  @IsDefined()
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ type: String })
@@ -17,6 +21,7 @@ export class UserActivateOtpDto {
 }
 
 export class UserDeactivateOtpDto {
+  @IsDefined()
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ type: String })
@@ -73,11 +78,13 @@ export class UserDto {
 }
 
 export class UserUpdatePasswordDto {
+  @IsDefined()
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ type: String })
   currentPassword: string
 
+  @IsDefined()
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ type: String })

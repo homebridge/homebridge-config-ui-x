@@ -35,6 +35,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(terminal): ignore terminal input that is not text, which crashed the ui process
 - fix(server): accept only a 12 hex digit id when reading one pairing, not a path
 - fix(feature-flags): keep the hap bridge disable switch on for homebridge 3 and later
+- fix(users): answer 400, not 500, when a password or 2fa field is missing, and require a password
 
 ### Other Changes
 
