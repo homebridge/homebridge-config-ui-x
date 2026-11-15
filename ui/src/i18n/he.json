@@ -917,6 +917,7 @@
   "status.widget.info.synology_package": "חבילת Synology",
   "status.widget.info.timezone": "אזור זמן",
   "status.widget.info.yes": "כן",
+  "status.widget.matter_start_failed": "Matter failed to start. See the Homebridge log.",
   "status.widget.network.history_items": "פריטי היסטוריה",
   "status.widget.network.items": "פריטים",
   "status.widget.network.network_interface": "ממשק רשת",

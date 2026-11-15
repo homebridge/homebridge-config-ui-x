@@ -45,6 +45,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config): read a session timeout typed as text as seconds, not milliseconds
 - fix(config-editor): refuse a hap or matter switch with no true or false, which turned hap off
 - fix(config-editor): refuse a whole config that is not an object, which was saved as an empty list
+- feat(status): say matter failed to start on the dashboard code widget, in place of an empty box
 
 ### Other Changes
 

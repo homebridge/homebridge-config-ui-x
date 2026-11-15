@@ -31,6 +31,7 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
   readonly pincodeElement = viewChild<ElementRef>('pincodeMatter')
   readonly qrcodeContainerElement = viewChild<ElementRef>('qrcodecontainerMatter')
   public readonly enabled = signal<boolean>(false)
+  public readonly startFailed = signal<boolean>(false)
   public readonly loading = signal<boolean>(true)
   public readonly commissioned = signal<boolean>(false)
   public readonly pin = signal<string>('')
@@ -89,7 +90,13 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
   private applyMatterStatus(data: HomebridgeStatusResponse): void {
     if (data.matter) {
       this.enabled.set(data.matter.enabled)
-      if (data.matter.enabled) {
+      this.startFailed.set(Boolean(data.matter.enabled && data.matter.startFailed))
+      if (this.startFailed()) {
+        // No server, so no code to pair with: an old pin and an empty box would look like it is still starting
+        this.pin.set('')
+        this.setupUri.set(null)
+        this.commissioned.set(false)
+      } else if (data.matter.enabled) {
         this.pin.set(data.matter.pin || this.pin())
         this.commissioned.set(data.matter.commissioned || false)
         this.setupUri.set(data.matter.setupUri || null)
@@ -99,6 +106,7 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
       }
     } else {
       this.enabled.set(false)
+      this.startFailed.set(false)
       this.pin.set('')
       this.setupUri.set(null)
       this.commissioned.set(false)

@@ -917,6 +917,7 @@
   "status.widget.info.synology_package": "Pacchetto Synology",
   "status.widget.info.timezone": "Fuso orario",
   "status.widget.info.yes": "Sì",
+  "status.widget.matter_start_failed": "Matter failed to start. See the Homebridge log.",
   "status.widget.network.history_items": "Elementi cronologia",
   "status.widget.network.items": "elementi",
   "status.widget.network.network_interface": "Interfaccia di rete",
