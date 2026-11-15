@@ -205,6 +205,9 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
    * run is SCHEDULED - so back-to-back calls (the homebridge-updater plugin
    * applying several updates, updater#278) otherwise run npm concurrently.
    */
+  /** How long one npm run may take before it is stopped */
+  public static NPM_RUN_TIMEOUT_MS = 30 * 60 * 1000
+
   private packageOperationQueue: Promise<unknown> = Promise.resolve()
   private packageOperationsPending = 0
 
@@ -2917,10 +2920,21 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
           }
         })
 
-        // If the command spends to long trying to execute kill it after 5 minutes
+        // Stop a run that hangs. The limit is long: killing npm part-way can leave a package half-unpacked,
+        // and on a Raspberry Pi 1 / Zero a UI update can take 15 minutes. If npm ignores SIGTERM it is killed
+        // outright, and the run fails either way, so the package queue (and a waiting restart) moves on.
         timeoutTimer = setTimeout(() => {
-          term.kill('SIGTERM')
-        }, 300000)
+          client.emit('stdout', red(`\n\rnpm did not finish within ${PluginsService.NPM_RUN_TIMEOUT_MS / 60000} minutes and was stopped.\n\r`))
+          try {
+            term.kill('SIGTERM')
+          } catch {}
+          timeoutTimer = setTimeout(() => {
+            try {
+              term.kill('SIGKILL')
+            } catch {}
+            rej(new Error('npm did not finish in time and was stopped.'))
+          }, 10000)
+        }, PluginsService.NPM_RUN_TIMEOUT_MS)
       })
     } finally {
       // Invalidate the cache only after npm exits, not before — invalidating
