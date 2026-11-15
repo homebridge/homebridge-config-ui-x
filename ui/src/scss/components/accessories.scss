@@ -143,6 +143,13 @@
     }
   }
 
+  // Dim the tile of a device that is not responding, like the Home app. The
+  // opacity gives the tile its own stacking layer, which would paint over the
+  // button that comes before it, so the button is lifted back on top below.
+  .accessory-not-responding-indicator ~ * {
+    opacity: 0.5;
+  }
+
   .manage-accessory-button {
     opacity: 0;
 
@@ -155,6 +162,46 @@
 
     .accessory-hidden-hover-icon {
       display: none;
+    }
+
+    // Not responding: a red triangle that swaps to the menu icon on hover,
+    // like the hidden indicator, so the menu stays reachable
+    .accessory-not-responding-icon,
+    .accessory-not-responding-hover-icon {
+      display: inline-block;
+      width: 1em;
+      text-align: center;
+    }
+
+    .accessory-not-responding-icon {
+      color: var(--bs-danger);
+    }
+
+    .accessory-not-responding-hover-icon {
+      display: none;
+    }
+
+    &.accessory-not-responding-indicator {
+      opacity: 1;
+      z-index: 2;
+
+      // Keep the triangle red where the buttons are otherwise greyed out
+      @media (max-width: 991px) {
+        filter: none;
+      }
+
+      @media (hover: hover) {
+        &:hover,
+        &:active {
+          .accessory-not-responding-icon {
+            display: none;
+          }
+
+          .accessory-not-responding-hover-icon {
+            display: inline;
+          }
+        }
+      }
     }
 
     &.accessory-hidden-indicator {
