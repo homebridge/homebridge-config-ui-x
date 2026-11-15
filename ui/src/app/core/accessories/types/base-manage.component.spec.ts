@@ -264,17 +264,15 @@ describe('BaseManageComponent', () => {
       expect(component.debounced).toEqual([7])
     })
 
-    it('drops a pending value when the modal closes first', () => {
-      // Otherwise a slider nudged and then cancelled still writes to the
-      // accessory after the modal has gone
+    it('sends a pending value at once when the modal closes first', () => {
+      // The user saw the slider move, and every other change is sent: closing is not a cancel (decided by BP)
       vi.useFakeTimers()
       component.debounce()
 
       component.changes$.next(9)
       fixture.destroy()
-      vi.advanceTimersByTime(1000)
 
-      expect(component.debounced).toEqual([])
+      expect(component.debounced).toEqual([9])
     })
   })
 
