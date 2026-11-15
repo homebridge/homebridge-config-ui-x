@@ -58,6 +58,12 @@ const MAX_SERVICE_TOKEN_LIFETIME_SECONDS = 300
  */
 const MAX_SESSION_LIFETIME_SECONDS = 30 * 24 * 60 * 60
 
+/**
+ * auth.json holds password hashes and 2fa secrets: a new file is readable by its owner only.
+ * An existing file keeps its mode (see JsonFileStoreService).
+ */
+const AUTH_FILE_WRITE_OPTIONS = { spaces: 4, mode: 0o600 }
+
 @Injectable()
 export class AuthService {
   private otpUsageCache = new NodeCache({ stdTTL: 90 })
@@ -556,7 +562,7 @@ export class AuthService {
         current => (Array.isArray(current)
           ? current
           : []),
-        { spaces: 4 },
+        AUTH_FILE_WRITE_OPTIONS,
       )
 
       const createdUser = await this.addUser(user)
@@ -682,7 +688,7 @@ export class AuthService {
         result = await mutator(users)
         return users
       },
-      { spaces: 4 },
+      AUTH_FILE_WRITE_OPTIONS,
     )
     // Every write to the auth file goes through here, so this is the one place
     // that has to drop the token-validation cache. Without it a deletion or
@@ -1041,7 +1047,7 @@ export class AuthService {
         this.logger.warn(`Marked ${username} as having legacy OTP secret.`)
         return authfile
       },
-      { spaces: 4 },
+      AUTH_FILE_WRITE_OPTIONS,
     )
   }
 }

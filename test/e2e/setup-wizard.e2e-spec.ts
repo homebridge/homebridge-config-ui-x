@@ -3,6 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 
 import type { UserDto } from '../../src/modules/users/users.dto.js'
 
+import { stat } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -291,6 +292,17 @@ describe('SetupWizard (e2e)', () => {
       const users = await readJson(authFilePath)
       expect(users.map((u: UserDto) => u.username)).toEqual(['guest', 'test'])
     })
+  })
+
+  it.skipIf(process.platform === 'win32')('creates auth.json readable by its owner only', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/setup-wizard/create-first-user',
+      payload: { name: 'Tester', username: 'test', password: 'test' },
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect((await stat(authFilePath)).mode & 0o777).toBe(0o600)
   })
 
   afterAll(async () => {
