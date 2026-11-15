@@ -55,6 +55,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - build: stop publishing three build-only scripts, and fix the patches note in claude.md
 - fix(hb-service): on stop, wait for homebridge to end before closing the ui, and never restart it
 - fix(hb-service): only replace a config.json that is not valid json, never one that failed to save
+- fix(hb-service): log to the console when the log file can't be written, instead of crashing
 
 ### Homebridge Dependencies
 
