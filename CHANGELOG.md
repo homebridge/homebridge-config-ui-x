@@ -129,6 +129,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): keep a config.json that starts with a byte order mark, instead of replacing it
 - test(server): make the wallpaper delete test fail without its fix, using a file not config.json
 - fix(hb-service): write homebridge output that never ends a line, instead of holding it for ever
+- fix(hb-service): keep the newest part of the log for a maximum size of 0, not empty it
 
 ### Homebridge Dependencies
 
