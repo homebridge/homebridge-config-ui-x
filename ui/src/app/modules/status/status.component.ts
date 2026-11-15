@@ -705,6 +705,12 @@ export class StatusComponent implements OnInit, OnDestroy {
       return cleanItem
     })
 
+    // The layout is shared by every user and only an admin may change it. A non-admin's copy has the widgets they
+    // may not use (the terminal) taken out, so saving it would take them off every admin's dashboard as well.
+    if (!this.isAdmin) {
+      return
+    }
+
     // Save to server
     try {
       await firstValueFrom(this.io.request('set-dashboard-layout', layout))

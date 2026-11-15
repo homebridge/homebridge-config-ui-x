@@ -13,7 +13,7 @@ import { promisify } from 'node:util'
 
 import { HttpService } from '@nestjs/axios'
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
-import { readJson, writeJsonSync } from 'fs-extra/esm'
+import { readJson, writeJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { firstValueFrom, Subject } from 'rxjs'
 import { gt } from 'semver'
@@ -262,8 +262,12 @@ export class StatusService {
   /**
    * Saves the current dashboard layout
    */
-  public async setDashboardLayout(layout: any) {
-    writeJsonSync(resolve(this.configService.storagePath, '.uix-dashboard.json'), layout)
+  public async setDashboardLayout(layout: unknown) {
+    // The layout is shared by every user: a value that is not a list of widgets would break the dashboard for all
+    if (!Array.isArray(layout) || !layout.every(item => item !== null && typeof item === 'object' && !Array.isArray(item))) {
+      throw new Error('The dashboard layout must be a list of widgets.')
+    }
+    await writeJson(resolve(this.configService.storagePath, '.uix-dashboard.json'), layout)
     this.dashboardLayout = layout
     return { status: 'ok' }
   }

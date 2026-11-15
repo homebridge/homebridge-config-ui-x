@@ -8,11 +8,13 @@ import process from 'node:process'
 import { HttpService } from '@nestjs/axios'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+import { WsException } from '@nestjs/websockets'
 import { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { copy, pathExists, readFile, remove, writeFile } from 'fs-extra'
 import { of } from 'rxjs'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { WsAdminGuard } from '../../src/core/auth/guards/ws-admin-guard.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
@@ -105,6 +107,32 @@ describe('StatusGateway (e2e)', () => {
       const getResult = await statusGateway.getDashboardLayout()
       expect(getResult).toEqual(layout)
     })
+
+    it('only lets an admin change the shared layout', () => {
+      const guards = Reflect.getMetadata('__guards__', StatusGateway.prototype.setDashboardLayout) ?? []
+      expect(guards).toContain(WsAdminGuard)
+    })
+
+    it.each([
+      ['a text', 'x'],
+      [
+        'an object',
+        { widget: 'cpu' },
+      ],
+      [
+        'a list with a null',
+        [null],
+      ],
+      ['null', null],
+    ])(
+      'refuses %s as the layout and keeps the saved one',
+      async (_label, layout) => {
+        const before = await statusGateway.getDashboardLayout()
+        const result = await statusGateway.setDashboardLayout(client, layout)
+        expect(result).toBeInstanceOf(WsException)
+        expect(await statusGateway.getDashboardLayout()).toEqual(before)
+      },
+    )
 
     it('should return layout from cache after being set', async () => {
       // The layout was set in the previous test and cached in memory
