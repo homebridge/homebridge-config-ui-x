@@ -16,6 +16,8 @@ import { NodePtyService } from '../../../core/node-pty/node-pty.service.js'
 export class TerminalService {
   private static persistentTerminal: IPty | null = null
   private static connectedClients: Set<WsEventEmitter> = new Set()
+  // Ends the shell a socket started (non-persistent mode), if it has one
+  private sessionEnders = new WeakMap<WsEventEmitter, () => void>()
   private static dataListenerAttached = false
   private static terminalBuffer: string = ''
   private static persistentAptHintInjected = false
@@ -86,6 +88,9 @@ export class TerminalService {
 
   private async createNewTerminal(client: WsEventEmitter, size: TermSize) {
     this.logger.debug('Starting new terminal session.')
+
+    // A socket asking again ends its first shell: two shells on one socket both got every keystroke
+    this.sessionEnders.get(client)?.()
 
     // Per-session closure flag. This service is a singleton serving every
     // client, so a shared instance-level `ending` let one client's disconnect
@@ -167,6 +172,10 @@ export class TerminalService {
 
     client.on('end', onEnd)
     client.on('disconnect', onEnd)
+    this.sessionEnders.set(client, () => {
+      this.sessionEnders.delete(client)
+      onEnd()
+    })
   }
 
   private async attachToPersistentTerminal(client: WsEventEmitter, size: TermSize) {
