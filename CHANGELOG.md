@@ -142,6 +142,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): append the kept log when trimming, so a line written meanwhile is not cut
 - test(scheduler): check the old restart jobs on a copy, as the refresh empties the list in place
 - fix(hb-service): keep config.json's owner when saving it as root, as sudo hb-service install does
+- ci: name the release tag the upload-release-assets pin points at, v4.0.0, not the v4.0 branch
 
 ### Homebridge Dependencies
 
