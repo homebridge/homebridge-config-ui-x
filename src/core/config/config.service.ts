@@ -431,8 +431,10 @@ export class ConfigService {
       secretKey: randomBytes(32).toString('hex'),
     }
 
-    const tmpPath = `${this.secretPath}.tmp.${process.pid}`
-    writeFileSync(tmpPath, `${JSON.stringify(secrets)}\n`, { mode: 0o600 })
+    // A new temp file every time (`wx` refuses one that is there): `mode` applies only when the file is made, so a
+    // temp file left by a crash under the same pid (common in Docker) would give the key its old 0644
+    const tmpPath = `${this.secretPath}.tmp.${process.pid}.${randomBytes(6).toString('hex')}`
+    writeFileSync(tmpPath, `${JSON.stringify(secrets)}\n`, { mode: 0o600, flag: 'wx' })
     renameSync(tmpPath, this.secretPath)
 
     return secrets

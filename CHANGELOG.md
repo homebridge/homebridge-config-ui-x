@@ -93,6 +93,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): run npm on windows from a user folder with a ! or % in its name, as before
 - fix(plugins): treat an empty version in a plugin update as latest again, not refuse it
 - fix(auth): show a wallpaper uploaded with no file extension, saved as ui-wallpaper
+- fix(auth): write a new signing key through a new temp file, so a leftover one can't make it 0644
 
 ### Other Changes
 
