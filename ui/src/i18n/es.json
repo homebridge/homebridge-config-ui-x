@@ -406,6 +406,7 @@
   "menu.label_settings": "Configuración",
   "menu.label_status": "Estado",
   "menu.linux.label_logs": "Registros",
+  "menu.linux.label_restart_modal": "Are you sure you want to restart the operating system? Homebridge and this UI will be offline until it is back up.",
   "menu.linux.label_restart_server": "Reiniciar sistema",
   "menu.linux.label_shutdown_modal": "¿Seguro que quieres apagar el sistema operativo? Necesitarás acceso físico para volver a encenderlo.",
   "menu.linux.label_shutdown_server": "Apagar sistema",

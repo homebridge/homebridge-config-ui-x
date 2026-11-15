@@ -406,6 +406,7 @@
   "menu.label_settings": "การตั้งค่า",
   "menu.label_status": "สถานะ",
   "menu.linux.label_logs": "Logs",
+  "menu.linux.label_restart_modal": "Are you sure you want to restart the operating system? Homebridge and this UI will be offline until it is back up.",
   "menu.linux.label_restart_server": "รีสตาร์ทเซิร์ฟเวอร์",
   "menu.linux.label_shutdown_modal": "คุณแน่ใจหรือไม่ว่าต้องการปิดระบบปฏิบัติการ? คุณจะต้องเข้าถึงทางกายภาพเพื่อเปิดระบบอีกครั้ง",
   "menu.linux.label_shutdown_server": "ปิดเซิร์ฟเวอร์",

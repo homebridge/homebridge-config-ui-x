@@ -343,7 +343,9 @@ describe('restarting homebridge', () => {
         env: { canShutdownRestartHost: true },
       })
 
-      page.restartServer()
+      const done = page.restartServer()
+      modal.lastOpened()!.ref.close()
+      await done
 
       expect(navigate).toHaveBeenCalledWith(['/platform-tools/linux/restart-server'], { state: CONFIRMED_ACTION_STATE })
     })
