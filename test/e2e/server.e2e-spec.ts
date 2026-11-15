@@ -1394,6 +1394,21 @@ describe('ServerController (e2e)', () => {
     expect((await readJson(resolve(accessoriesPath, 'cachedAccessories'))).map((x: any) => x.UUID)).toEqual(['keep-me'])
   })
 
+  it('DELETE /server/pairings/:deviceId stops homebridge once, not twice', async () => {
+    const restart = vi.spyOn(app.get(HomebridgeIpcService), 'restartAndWaitForClose').mockResolvedValue(undefined)
+    try {
+      const res = await app.inject({
+        method: 'DELETE',
+        path: '/server/pairings/67E41F0EA05D',
+        headers: { authorization },
+      })
+      expect(res.statusCode).toBeLessThan(300)
+      expect(restart).toHaveBeenCalledOnce()
+    } finally {
+      restart.mockRestore()
+    }
+  })
+
   it('DELETE /server/pairings (bulk)', async () => {
     const res = await app.inject({
       method: 'DELETE',
