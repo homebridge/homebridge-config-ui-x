@@ -65,6 +65,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config-editor): put a plugin's blocks back where its first block was, not past other plugins
 - fix(custom-plugins): pass on only request messages to a plugin's ui server, never junk or null
 - fix(custom-plugins): answer a plugin's page when its cached accessories can't be read
+- refactor(accessories): let the temperature and mired pipes take a missing value
 
 ### Other Changes
 
