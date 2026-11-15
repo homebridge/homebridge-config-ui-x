@@ -69,6 +69,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - refactor(accessories): read hap tile values through typed helpers, ready for hap-client 5.4.1
 - refactor(accessories): read hap control window values through typed helpers, for hap-client 5.4.1
 - refactor(accessories): type the service-update handler as the list of services it gets
+- fix(accessories): send a slider change made just before closing a control window
 
 ### Other Changes
 
