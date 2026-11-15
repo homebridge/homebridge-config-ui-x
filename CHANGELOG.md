@@ -91,6 +91,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): match update-node 22.1 to v22.1.x, not v22.19.0, and 2 to nothing, not v26
 - fix(hb-service): show the log with hb-service view on macos, windows and freebsd
 - ci: pin the third-party actions to a commit
+- chore: add the homepage url to package.json
 
 ### Homebridge Dependencies
 
