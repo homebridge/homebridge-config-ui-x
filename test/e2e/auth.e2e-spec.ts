@@ -3,6 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
+import { chmod, readdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -10,7 +11,7 @@ import { HttpException, ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { WsException } from '@nestjs/websockets'
-import { copy, pathExists, readJson, remove } from 'fs-extra'
+import { copy, pathExists, readJson, remove, writeJson } from 'fs-extra'
 import jwt from 'jsonwebtoken'
 import { generate, generateSecret } from 'otplib'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -1471,6 +1472,55 @@ describe('AuthController (e2e)', () => {
       expect(configService.getWallpaperPath('/tmp/x.png')).toBeUndefined()
       expect(configService.getWallpaperPath(42)).toBeUndefined()
       expect(configService.getWallpaperPath(undefined)).toBeUndefined()
+    })
+  })
+
+  describe('the signing key file (.uix-secrets)', () => {
+    afterEach(async () => {
+      // Put back the key the running app signs with
+      await writeJson(secretsFilePath, configService.secrets)
+    })
+
+    it.skipIf(process.platform === 'win32')('is created readable by its owner only', async () => {
+      await remove(secretsFilePath)
+      const fresh = new ConfigService()
+      expect(fresh.secrets.secretKey).toMatch(/^[0-9a-f]{64}$/)
+      expect((await stat(secretsFilePath)).mode & 0o777).toBe(0o600)
+    })
+
+    it.skipIf(process.platform === 'win32')('is made private when an older ui left it readable by everyone', async () => {
+      await writeJson(secretsFilePath, {
+        secretKey: 'a'.repeat(64),
+      })
+      await chmod(secretsFilePath, 0o644)
+      const fresh = new ConfigService()
+      expect(fresh.secrets.secretKey).toBe('a'.repeat(64))
+      expect((await stat(secretsFilePath)).mode & 0o777).toBe(0o600)
+    })
+
+    it('is read once, so a config save never swaps the key the running ui signs with', async () => {
+      const key = configService.secrets.secretKey
+      const instanceId = configService.instanceId
+      await writeJson(secretsFilePath, {
+        secretKey: 'b'.repeat(64),
+      })
+
+      configService.parseConfig(await readJson(process.env.UIX_CONFIG_PATH))
+
+      expect(configService.secrets.secretKey).toBe(key)
+      expect(configService.instanceId).toBe(instanceId)
+    })
+
+    it('sets a file it can not read aside instead of overwriting it', async () => {
+      const before = (await readdir(process.env.UIX_STORAGE_PATH)).filter(f => f.startsWith('.uix-secrets.corrupt-'))
+      await writeFile(secretsFilePath, '{ not json')
+      const fresh = new ConfigService()
+      const after = (await readdir(process.env.UIX_STORAGE_PATH)).filter(f => f.startsWith('.uix-secrets.corrupt-'))
+      const added = after.filter(f => !before.includes(f))
+      expect(added).toHaveLength(1)
+      expect(await readFile(resolve(process.env.UIX_STORAGE_PATH, added[0]), 'utf8')).toBe('{ not json')
+      expect(fresh.secrets.secretKey).toMatch(/^[0-9a-f]{64}$/)
+      await remove(resolve(process.env.UIX_STORAGE_PATH, added[0]))
     })
   })
 
