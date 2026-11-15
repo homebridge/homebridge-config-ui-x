@@ -125,6 +125,10 @@ export class AuthService {
       const user = await this.findByUsername(username)
 
       if (!user) {
+        // Do the same work as for a real user, so the time the answer takes does not tell which usernames exist
+        await this.hashPassword(typeof password === 'string'
+          ? password
+          : '', 'no-such-user', PBKDF2_ITERATIONS)
         throw new ForbiddenException()
       }
 
