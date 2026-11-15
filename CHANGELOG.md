@@ -97,6 +97,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - build: declare socket.io, whose Socket type the accessories service imports
 - build: compile the server for es2024, which node 22 runs in full, instead of the moving esnext
 - ci: name the labeler job labeler, not stale
+- ci: fix the labeler comment that says alpha pull requests get the beta label
 
 ### Homebridge Dependencies
 
