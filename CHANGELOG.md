@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): let only an admin save the shared dashboard layout, and refuse one that is not a list
 - fix(ipc): ignore a null or malformed message from homebridge instead of crashing the ui process
 - fix(accessories): wait for homebridge's accessoryInfoData reply when getting one matter accessory
+- fix(plugins): stop the major update policy offering a beta of homebridge or the ui
 
 ### Other Changes
 

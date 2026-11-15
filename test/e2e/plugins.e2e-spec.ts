@@ -23,7 +23,7 @@ import { ConfigService } from '../../src/core/config/config.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
 import { PluginsModule } from '../../src/modules/plugins/plugins.module.js'
-import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
+import { latestStableInSameMajor, PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
 vi.mock('node:child_process', async () => {
   const actual = await vi.importActual<typeof import('node:child_process')>('node:child_process')
@@ -2058,6 +2058,53 @@ describe('PluginController (e2e)', () => {
 
       const [, cwd] = npmSpy.mock.calls[0]
       expect(cwd).toBe(resolve(shadowParent, '../'))
+    })
+  })
+
+  describe('the "major" update policy', () => {
+    it('offers the newest stable version of the same major, never a beta', () => {
+      const available = [
+        '2.5.0',
+        '2.5.1-beta.2',
+        '2.5.1-beta.1',
+        '2.4.9',
+        '3.0.0',
+        '3.0.0-alpha.1',
+      ]
+      expect(latestStableInSameMajor(available, '2.5.0')).toBeUndefined()
+      expect(latestStableInSameMajor([...available, '2.6.0'], '2.5.0')).toBe('2.6.0')
+      expect(latestStableInSameMajor(available, '2.4.0')).toBe('2.5.0')
+      // Someone on a beta is offered the stable release of it
+      expect(latestStableInSameMajor([...available, '2.5.1'], '2.5.1-beta.2')).toBe('2.5.1')
+    })
+
+    it('is what getHomebridgePackage offers', async () => {
+      const configService = app.get(ConfigService)
+      const before = configService.ui.homebridgeUpdatePolicy
+      configService.ui.homebridgeUpdatePolicy = 'major'
+      const installPath = resolve(process.env.UIX_STORAGE_PATH, 'fake-homebridge-major', 'node_modules', 'homebridge')
+      await mkdir(installPath, { recursive: true })
+      await writeFile(join(installPath, 'package.json'), JSON.stringify({ name: 'homebridge', version: '2.5.0' }))
+      vi.spyOn(pluginsService as any, 'getInstalledModules').mockResolvedValue([
+        { name: 'homebridge', path: installPath, installPath },
+      ])
+      vi.spyOn(pluginsService as any, 'parsePackageJson').mockResolvedValue({
+        name: 'homebridge',
+        installedVersion: '2.5.0',
+        latestVersion: '2.5.0',
+      })
+      vi.spyOn(pluginsService, 'getAvailablePluginVersions').mockResolvedValue({
+        versions: { '2.5.0': {}, '2.5.1-beta.2': {}, '3.0.0': {} },
+      } as any)
+      try {
+        const homebridge = await pluginsService.getHomebridgePackage()
+        expect(homebridge.updateAvailable).toBe(false)
+        expect(homebridge.latestVersion).not.toBe('2.5.1-beta.2')
+      } finally {
+        configService.ui.homebridgeUpdatePolicy = before
+        vi.restoreAllMocks()
+        await remove(resolve(process.env.UIX_STORAGE_PATH, 'fake-homebridge-major'))
+      }
     })
   })
 
