@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - ci: pin the wiki notification action to a commit and keep the npm publish token to the publish job
 - build: stop publishing 134 source maps whose sources are not shipped, and 134 unused type files
 - test: typecheck the server tests and ui tests in ci, and fix the six type errors it found
+- build: stop publishing three build-only scripts, and fix the patches note in claude.md
 
 ### Homebridge Dependencies
 
