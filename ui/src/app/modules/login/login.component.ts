@@ -44,6 +44,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   public readonly backgroundStyle = signal<string>('')
   public readonly invalidCredentials = signal(false)
+  // A failure that is not a wrong username or password: the lockout (429), or the server could not be reached
+  public readonly loginError = signal<'locked' | 'unreachable' | null>(null)
   public readonly invalid2faCode = signal(false)
   public readonly twoFactorCodeRequired = signal(false)
   public readonly inProgress = signal(false)
@@ -103,6 +105,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   public async onSubmit() {
     this.invalidCredentials.set(false)
+    this.loginError.set(null)
     this.invalid2faCode.set(false)
     this.inProgress.set(true)
     document.getElementById('submit-button')?.blur()
@@ -154,6 +157,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.twoFactorCodeRequired.set(true)
         // The code field only exists once the template re-renders, and the callback is dropped if the page is destroyed first
         afterNextRender(() => this.otpInput()?.nativeElement.focus(), { injector: this.injector })
+      } else if (error.status === 429) {
+        // Locked out after too many failed attempts: "wrong password" would have the user keep trying
+        this.loginError.set('locked')
+      } else if (!error.status || error.status >= 500) {
+        this.loginError.set('unreachable')
       } else {
         this.invalidCredentials.set(true)
       }

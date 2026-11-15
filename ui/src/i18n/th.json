@@ -382,6 +382,8 @@
   "login.invalid_credentials_2": "หากคุณสูญเสียการเข้าถึง ให้ลบไฟล์ <code>auth.json</code> ในไดเรกทอรีพื้นที่จัดเก็บ Homebridge ของคุณ แล้วรีสตาร์ท Homebridge จากนั้นรีเฟรชหน้านี้เพื่อตั้งค่าบัญชีผู้ดูแลระบบใหม่ การตั้งค่า Homebridge/UI ของคุณจะยังคงเดิม ยกเว้นบัญชีผู้ใช้ UI บัญชีผู้ใช้เดียวที่จะเป็นบัญชีผู้ดูแลระบบที่คุณกำลังตั้งค่าอยู่ในขณะนี้",
   "login.invalid_password": "รหัสผ่านไม่ถูกต้อง",
   "login.label_2fa_code": "รหัสรับรองความถูกต้องสองปัจจัย",
+  "login.server_unreachable": "Could not reach the Homebridge UI. Please check it is running and try again.",
+  "login.too_many_attempts": "Too many failed attempts. Please wait a few minutes and try again.",
   "logs.download.error": "ไม่สามารถดาวน์โหลดไฟล์ log ได้",
   "logs.download_warning": "ไฟล์บันทึกของ Homebridge อาจมีข้อมูลส่วนบุคคลรหัสผ่านหรือโทเค็นการเข้าถึง โปรดตรวจสอบไฟล์บันทึกและลบข้อมูลที่ละเอียดอ่อนออกก่อนแบ่งปันกับผู้อื่น",
   "logs.log_file_truncated": "ไฟล์บันทึกถูกตัดให้สั้นลง",

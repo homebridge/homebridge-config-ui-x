@@ -382,6 +382,8 @@
   "login.invalid_credentials_2": "Якщо Ви втратите доступ, видаліть файл <code>auth.json</code> у каталозі сховища Homebridge та перезапустіть Homebridge. Потім оновіть цю сторінку, щоб налаштувати новий обліковий запис адміністратора. Ваші налаштування Homebridge/інтерфейсу користувача залишаться незмінними, за винятком облікових записів користувачів інтерфейсу користувача. Єдиним обліковим записом користувача буде обліковий запис адміністратора, який Ви налаштовуєте зараз.",
   "login.invalid_password": "Невірний пароль",
   "login.label_2fa_code": "Код 2FA",
+  "login.server_unreachable": "Could not reach the Homebridge UI. Please check it is running and try again.",
+  "login.too_many_attempts": "Too many failed attempts. Please wait a few minutes and try again.",
   "logs.download.error": "Не вдалося завантажити файл журналу.",
   "logs.download_warning": "Файли журналу Homebridge можуть містити особисту інформацію, паролі або маркери доступу. Будь ласка, перегляньте файл журналу та видаліть будь-яку конфіденційну інформацію, перш ніж поділитися з іншими.",
   "logs.log_file_truncated": "Файл журналу скорочено.",

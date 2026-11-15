@@ -382,6 +382,8 @@
   "login.invalid_credentials_2": "If you lose access, delete the <code>auth.json</code> file in your Homebridge storage directory and restart Homebridge. Then refresh this page to set up a new admin account. Your Homebridge/UI settings will remain unchanged, except for UI user accounts. The only user account will be the admin account that you are setting up now.",
   "login.invalid_password": "סיסמה שגויה",
   "login.label_2fa_code": "קוד גישה דו שלבית",
+  "login.server_unreachable": "Could not reach the Homebridge UI. Please check it is running and try again.",
+  "login.too_many_attempts": "Too many failed attempts. Please wait a few minutes and try again.",
   "logs.download.error": "כשל בהורדת קובץ הלוג.",
   "logs.download_warning": "קבצי הלוג של Homebridge עלולים להכיל מידע אישי, סיסמאות או אסימוני גישה. אנא בדוק את קובץ הלוג והסר כל מידע רגיש לפני שיתוף עם אחרים.",
   "logs.log_file_truncated": "קובץ הלוג נמחק לגמרי",

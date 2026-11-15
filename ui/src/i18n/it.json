@@ -382,6 +382,8 @@
   "login.invalid_credentials_2": "Se perdi l'accesso, elimina il file <code>auth.json</code> nella tua directory di archiviazione di Homebridge e riavvia Homebridge. Quindi aggiorna questa pagina per configurare un nuovo account amministratore. Le impostazioni di Homebridge/UI rimarranno invariate, ad eccezione degli account utente dell'interfaccia. L'unico account utente sarà l'account amministratore che stai configurando ora.",
   "login.invalid_password": "Password non valida",
   "login.label_2fa_code": "Codice di autenticazione a 2 fattori",
+  "login.server_unreachable": "Could not reach the Homebridge UI. Please check it is running and try again.",
+  "login.too_many_attempts": "Too many failed attempts. Please wait a few minutes and try again.",
   "logs.download.error": "Impossibile scaricare il file di log.",
   "logs.download_warning": "I file dei log di Homebridge potrebbero contenere informazioni personali, password o chiavi di accesso. Per piacere convalida il file dei log e rimuovi qualunque informazione riservata prima di condividerlo con terzi.",
   "logs.log_file_truncated": "File di log troncato.",

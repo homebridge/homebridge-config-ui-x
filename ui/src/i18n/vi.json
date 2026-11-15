@@ -382,6 +382,8 @@
   "login.invalid_credentials_2": "Nếu bạn mất quyền truy cập, hãy xóa tệp <code>auth.json</code> trong thư mục lưu trữ Homebridge và khởi động lại Homebridge. Sau đó tải lại trang để thiết lập tài khoản admin mới. Cài đặt Homebridge/UI sẽ không thay đổi, ngoại trừ tài khoản người dùng UI.",
   "login.invalid_password": "Mật khẩu không đúng",
   "login.label_2fa_code": "Mã xác thực hai bước",
+  "login.server_unreachable": "Could not reach the Homebridge UI. Please check it is running and try again.",
+  "login.too_many_attempts": "Too many failed attempts. Please wait a few minutes and try again.",
   "logs.download.error": "Không thể tải tệp nhật ký.",
   "logs.download_warning": "Tệp nhật ký Homebridge có thể chứa thông tin cá nhân, mật khẩu hoặc token truy cập. Vui lòng kiểm tra và xóa thông tin nhạy cảm trước khi chia sẻ.",
   "logs.log_file_truncated": "Tệp nhật ký đã được cắt gọn.",
