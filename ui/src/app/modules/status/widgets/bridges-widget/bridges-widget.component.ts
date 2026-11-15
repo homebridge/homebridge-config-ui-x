@@ -258,12 +258,8 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    if (this.ioMain) {
-      this.ioMain.end?.()
-    }
-    if (this.ioChild) {
-      this.ioChild.end?.()
-    }
+    // No `end` on the status or child-bridges socket: the dashboard and its other widgets share them, and an
+    // `end` stops the server sending their updates too. This widget's listeners come off with destroyRef.
     if (this.homebridgeAnnouncementTimeout) {
       clearTimeout(this.homebridgeAnnouncementTimeout)
     }
