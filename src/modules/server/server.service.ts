@@ -366,7 +366,7 @@ export class ServerService {
     const persistPath = join(this.configService.storagePath, 'persist')
 
     const devices = (await readdir(persistPath))
-      .filter(x => x.match(RE_ACCESSORY_INFO_FILE))
+      .filter(x => x.match(RE_ACCESSORY_INFO_FILE) && RE_HEX_12.test(x.split('.')[1]))
 
     const configFile = await this.configEditorService.getConfigFile()
     const externalAttribution = await this.getExternalAccessoryAttribution()
@@ -549,6 +549,12 @@ export class ServerService {
     configFile = null,
     externalAttribution: Map<string, { plugin: string, displayName?: string, category?: number, port?: number }> | null = null,
   ) {
+    // The id comes from the url (decoded, so `..%2F..%2Fx` is `../../x`): a 12 hex digit id only, as the
+    // other pairing routes check, or any json file on the host could be read
+    if (typeof deviceId !== 'string' || !RE_HEX_12.test(deviceId)) {
+      throw new BadRequestException('Invalid device id.')
+    }
+
     const persistPath = join(this.configService.storagePath, 'persist')
 
     let device: any

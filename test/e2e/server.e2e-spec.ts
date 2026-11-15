@@ -427,6 +427,23 @@ describe('ServerController (e2e)', () => {
     })
   })
 
+  it('GET /server/pairings/:deviceId refuses an id that is a path', async () => {
+    const outside = resolve(process.env.UIX_STORAGE_PATH, 'outside.json')
+    await writeJson(outside, { secret: 'not a pairing' })
+    try {
+      const res = await app.inject({
+        method: 'GET',
+        path: `/server/pairings/${encodeURIComponent('../outside')}`,
+        headers: { authorization },
+      })
+
+      expect(res.statusCode).toBe(400)
+      expect(res.body).not.toContain('not a pairing')
+    } finally {
+      await remove(outside)
+    }
+  })
+
   it('DELETE /server/pairings/:deviceId', async () => {
     const res = await app.inject({
       method: 'DELETE',
