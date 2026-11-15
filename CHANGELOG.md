@@ -31,6 +31,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - test: typecheck the server tests and ui tests in ci, and fix the six type errors it found
 - build: stop publishing three build-only scripts, and fix the patches note in claude.md
 - fix(hb-service): on stop, wait for homebridge to end before closing the ui, and never restart it
+- fix(hb-service): only replace a config.json that is not valid json, never one that failed to save
 
 ### Homebridge Dependencies
 
