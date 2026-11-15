@@ -67,6 +67,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(custom-plugins): answer a plugin's page when its cached accessories can't be read
 - refactor(accessories): let the temperature and mired pipes take a missing value
 - refactor(accessories): read hap tile values through typed helpers, ready for hap-client 5.4.1
+- refactor(accessories): read hap control window values through typed helpers, for hap-client 5.4.1
 
 ### Other Changes
 

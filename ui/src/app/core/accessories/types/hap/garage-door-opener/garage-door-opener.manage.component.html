@@ -12,7 +12,7 @@
   <div class="modal-body text-center px-5">
     <div class="d-flex justify-content-center mb-4 p-0">
       <div class="mb-0 mx-0 p-3 btn-read w-100" role="status" aria-live="polite" aria-atomic="true">
-        @switch (service.values?.CurrentDoorState) {
+        @switch (service.values.CurrentDoorState) {
           @case (0) {
             {{ 'accessories.control.open' | translate }}
           }
@@ -29,7 +29,7 @@
             {{ 'accessories.control.stopped' | translate }}
           }
         }
-        @if (service.values?.ObstructionDetected) {
+        @if (service.values.ObstructionDetected) {
           ({{ 'accessories.control.obstructed' | translate }})
         }
       </div>

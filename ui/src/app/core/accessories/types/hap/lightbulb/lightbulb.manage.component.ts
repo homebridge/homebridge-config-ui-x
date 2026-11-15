@@ -67,7 +67,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
   protected setupComponent() {
     this.createDebouncedSubscription(this.targetBrightnessChanged, (value) => {
       this.brightnessPending = false
-      void this.service.getCharacteristic!('Brightness').setValue!(value)
+      void this.service.getCharacteristic?.('Brightness')?.setValue?.(value)
 
       // A later explicit power choice takes precedence over a queued slider change.
       if (this.brightnessPowerRevision !== this.powerRevision) {
@@ -77,23 +77,23 @@ export class LightbulbManageComponent extends BaseManageComponent {
       // Turn the bulb on or off when brightness is adjusted
       if (value && !this.service.values.On) {
         this.targetMode = true
-        void this.service.getCharacteristic!('On').setValue!(this.targetMode)
+        void this.service.getCharacteristic?.('On')?.setValue?.(this.targetMode)
       } else if (!value && this.service.values.On) {
         this.targetMode = false
-        void this.service.getCharacteristic!('On').setValue!(this.targetMode)
+        void this.service.getCharacteristic?.('On')?.setValue?.(this.targetMode)
       }
     })
 
     this.createDebouncedSubscription(this.targetHueChanged, (value) => {
-      void this.service.getCharacteristic!('Hue').setValue!(value)
+      void this.service.getCharacteristic?.('Hue')?.setValue?.(value)
     })
 
     this.createDebouncedSubscription(this.targetSaturationChanged, (value) => {
-      void this.service.getCharacteristic!('Saturation').setValue!(value)
+      void this.service.getCharacteristic?.('Saturation')?.setValue?.(value)
     })
 
     this.createDebouncedSubscription(this.targetColorTemperatureChanged, (miredValue) => {
-      void this.service.getCharacteristic!('ColorTemperature').setValue!(miredValue)
+      void this.service.getCharacteristic?.('ColorTemperature')?.setValue?.(miredValue)
     })
 
     this.targetMode = !!this.service.values.On
@@ -106,16 +106,16 @@ export class LightbulbManageComponent extends BaseManageComponent {
   protected handleAccessoryUpdate() {
     this.targetMode = !!this.service.values.On
     if (this.targetBrightness && !this.brightnessPending) {
-      this.targetBrightness.value = this.service.getCharacteristic!('Brightness').value as number
+      this.targetBrightness.value = this.service.getCharacteristic?.('Brightness')?.value as number
     }
     if (this.targetHue) {
-      this.targetHue.value = this.service.getCharacteristic!('Hue').value as number
+      this.targetHue.value = this.service.getCharacteristic?.('Hue')?.value as number
     }
     if (this.targetSaturation) {
-      this.targetSaturation.value = this.service.getCharacteristic!('Saturation').value as number
+      this.targetSaturation.value = this.service.getCharacteristic?.('Saturation')?.value as number
     }
     if (this.targetColorTemperature) {
-      const colorTempValue = this.service.getCharacteristic!('ColorTemperature').value as number
+      const colorTempValue = this.service.getCharacteristic?.('ColorTemperature')?.value as number
       this.targetColorTemperature.value = this.$colour.miredToKelvin(colorTempValue)
       this.targetColorTemperature.mired = colorTempValue
     }
@@ -124,11 +124,11 @@ export class LightbulbManageComponent extends BaseManageComponent {
   public setTargetMode(value: boolean, event: MouseEvent) {
     this.powerRevision++
     this.targetMode = value
-    void this.service.getCharacteristic!('On').setValue!(this.targetMode)
+    void this.service.getCharacteristic?.('On')?.setValue?.(this.targetMode)
 
     // Set the brightness to max if on 0% when turned on
     if (this.targetMode && this.targetBrightness && !this.targetBrightness.value) {
-      this.targetBrightness.value = this.service.getCharacteristic!('Brightness').maxValue as number
+      this.targetBrightness.value = this.service.getCharacteristic?.('Brightness')?.maxValue as number
     }
 
     this.blurTarget(event)
@@ -156,7 +156,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
   }
 
   private loadTargetBrightness() {
-    const TargetBrightness = this.service.getCharacteristic!('Brightness')
+    const TargetBrightness = this.service.getCharacteristic?.('Brightness')
     if (TargetBrightness) {
       this.targetBrightness = {
         value: TargetBrightness.value as number,
@@ -169,7 +169,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
   }
 
   private loadTargetHue() {
-    const Hue = this.service.getCharacteristic!('Hue')
+    const Hue = this.service.getCharacteristic?.('Hue')
     if (Hue) {
       this.targetHue = {
         value: Hue.value as number,
@@ -187,7 +187,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
   }
 
   private loadTargetSaturation() {
-    const Saturation = this.service.getCharacteristic!('Saturation')
+    const Saturation = this.service.getCharacteristic?.('Saturation')
     if (Saturation) {
       this.targetSaturation = {
         value: Saturation.value as number,
@@ -198,7 +198,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
   }
 
   private loadTargetColorTemperature() {
-    const TargetColorTemperature = this.service.getCharacteristic!('ColorTemperature')
+    const TargetColorTemperature = this.service.getCharacteristic?.('ColorTemperature')
     if (TargetColorTemperature) {
       // Here, the min and max are switched because mired and kelvin are inversely related
       this.targetColorTemperature = {
