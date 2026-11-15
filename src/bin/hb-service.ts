@@ -399,6 +399,10 @@ export class HomebridgeServiceHelper {
       // Start logging to file
       await this.startLog()
 
+      // Trim the log now as well as every two hours: a service that restarts more often than that (a crash loop)
+      // would otherwise never trim it
+      await this.truncateLog()
+
       // Verify the config
       await this.configCheck()
 
