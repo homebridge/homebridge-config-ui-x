@@ -553,6 +553,48 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     }
   })
 
+  it('an hbfx restore writes none of the files a backup leaves out, such as the token signing key', async () => {
+    // Regression: the .tar.gz restore skipped them, but the .hbfx one copied everything under etc/, so a
+    // crafted file could replace the key that signs logins, or add a startup.sh that Docker runs as root
+    const dir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
+    await writeJson(join(dir, 'package.json'), { name: 'hbfx', version: '1.0.0' })
+    await ensureDir(join(dir, 'etc', 'accessories'))
+    await writeJson(join(dir, 'etc', 'config.json'), {
+      bridge: {
+        name: 'Old',
+        username: '0E:22:22:22:22:22',
+        port: 51826,
+        pin: '111-22-333',
+      },
+    })
+    await writeFile(join(dir, 'etc', '.uix-secrets'), '{"secretKey":"known"}')
+    await writeFile(join(dir, 'etc', 'startup.sh'), 'echo pwned')
+    await writeFile(join(dir, 'etc', 'accessories', 'startup.sh'), 'echo pwned')
+    await writeJson(join(dir, 'etc', 'accessories', 'cachedAccessories'), [])
+    ;(backupService as any).restoreDirectory = dir
+    const storage = configService.storagePath
+    const configBefore = await readFile(configService.configPath)
+    const secretsBefore = await readFile(join(storage, '.uix-secrets'))
+    const hadStartup = await pathExists(join(storage, 'startup.sh'))
+
+    try {
+      await backupService.restoreHbfxBackup(new EventEmitter())
+
+      expect(await readFile(join(storage, '.uix-secrets'))).toEqual(secretsBefore)
+      expect(await pathExists(join(storage, 'startup.sh'))).toBe(hadStartup)
+      expect(await pathExists(join(storage, 'accessories', 'startup.sh'))).toBe(false)
+      expect(await pathExists(join(storage, 'accessories', 'cachedAccessories'))).toBe(true)
+    } finally {
+      await writeFile(configService.configPath, configBefore)
+      await writeFile(join(storage, '.uix-secrets'), secretsBefore)
+      if (!hadStartup) {
+        await remove(join(storage, 'startup.sh'))
+      }
+      await remove(join(storage, 'accessories', 'startup.sh'))
+      await backupService.removeRestoreDirectory()
+    }
+  })
+
   // https://github.com/homebridge/homebridge-config-ui-x/issues/1856
 
   it('POST /backup/restore of a large .homebridge directory should backup, but restore will not work', { timeout: 60_000 }, async () => {
