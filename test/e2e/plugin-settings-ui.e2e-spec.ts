@@ -979,13 +979,27 @@ describe('PluginsSettingsUiController (e2e)', () => {
       const { client, emitSpy } = await createClient()
 
       await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
-      client.emit('request', { requestId: 'r1', path: '/x' })
+      client.emit('request', { action: 'request', requestId: 'r1', path: '/x' })
 
       expect(emitSpy).toHaveBeenCalledWith('response', {
         requestId: 'r1',
         success: false,
         data: { message: customUiUnavailable },
       })
+
+      client.emit('end')
+    })
+
+    it('passes on only request messages, so junk never reaches a plugin server that would crash on it', async () => {
+      const { client, emitSpy } = await createClient()
+
+      await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+      client.emit('request', null)
+      client.emit('request', 'text')
+      client.emit('request', [1, 2])
+      client.emit('request', { action: 'config.get', requestId: 'r9' })
+
+      expect(countEmits(emitSpy as any, 'response')).toBe(0)
 
       client.emit('end')
     })
@@ -997,7 +1011,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', a.client)
       await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', b.client)
 
-      a.client.emit('request', { requestId: 'r-a', path: '/x' })
+      a.client.emit('request', { action: 'request', requestId: 'r-a', path: '/x' })
 
       expect(a.emitSpy).toHaveBeenCalledWith('response', {
         requestId: 'r-a',
@@ -1075,7 +1089,7 @@ process.on('message', (request) => {
 
         expect(await waitForEmit(emitSpy, 'ready')).toEqual({ server: true })
 
-        client.emit('request', { requestId: 'r2', path: '/hello' })
+        client.emit('request', { action: 'request', requestId: 'r2', path: '/hello' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r2'))
           .toEqual({
@@ -1096,7 +1110,7 @@ process.on('message', (request) => {
 
         expect(client.listenerCount('request')).toBe(1)
 
-        client.emit('request', { requestId: 'r-second', path: '/again' })
+        client.emit('request', { action: 'request', requestId: 'r-second', path: '/again' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-second'))
           .toEqual({
@@ -1118,7 +1132,7 @@ process.on('message', (request) => {
         await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
         await waitForEmit(emitSpy, 'ready')
 
-        client.emit('request', { requestId: 'r-exit', path: '/exit' })
+        client.emit('request', { action: 'request', requestId: 'r-exit', path: '/exit' })
 
         // The child's `connected` flag drops a moment after the child itself is gone, so a single
         // post-exit request can still be handed to it and vanish. Re-emitting under a fresh request
@@ -1129,7 +1143,7 @@ process.on('message', (request) => {
 
         await vi.waitFor(() => {
           const requestId = `r-dead-${attempt++}`
-          client.emit('request', { requestId, path: '/x' })
+          client.emit('request', { action: 'request', requestId, path: '/x' })
           const call = emitSpy.mock.calls.find(([name, payload]) => name === 'response' && payload?.requestId === requestId)
           if (!call) {
             throw new Error('the socket has not received a rejection yet')
@@ -1164,7 +1178,7 @@ process.on('message', (request) => {
         expect(client.listenerCount('disconnect')).toBe(1)
         expect(client.listenerCount('end')).toBe(1)
 
-        client.emit('request', { requestId: 'r-again', path: '/back' })
+        client.emit('request', { action: 'request', requestId: 'r-again', path: '/back' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-again'))
           .toEqual({
@@ -1186,7 +1200,7 @@ process.on('message', (request) => {
 
         expect(client.listenerCount('request')).toBe(1)
 
-        client.emit('request', { requestId: 'r-single', path: '/single' })
+        client.emit('request', { action: 'request', requestId: 'r-single', path: '/single' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-single'))
           .toEqual({
@@ -1209,8 +1223,8 @@ process.on('message', (request) => {
         await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
         await waitForEmit(emitSpy, 'ready')
 
-        client.emit('request', { requestId: 'r-hang', path: '/hang' })
-        client.emit('request', { requestId: 'r-exit2', path: '/exit' })
+        client.emit('request', { action: 'request', requestId: 'r-hang', path: '/hang' })
+        client.emit('request', { action: 'request', requestId: 'r-exit2', path: '/exit' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-hang'))
           .toEqual({
