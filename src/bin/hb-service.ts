@@ -32,7 +32,7 @@ import { Tail } from 'tail'
 import { extract } from 'tar'
 import { check as tcpCheck } from 'tcp-port-used'
 
-import { isNodeMajorKnown, isNodeMajorSupported, pickNodeUpdate } from '../core/node-version.constants.js'
+import { findRequestedNodeVersion, isNodeMajorKnown, isNodeMajorSupported, pickNodeUpdate } from '../core/node-version.constants.js'
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
 import { readConfigForCheck, writeConfigAtomically } from './config-file.js'
 import { confirmUnknownNode } from './confirm-unknown-node.js'
@@ -1267,7 +1267,7 @@ export class HomebridgeServiceHelper {
     }
 
     if (requestedVersion) {
-      const wantedVersion = versionList.find(x => x.version.startsWith(`v${requestedVersion}`))
+      const wantedVersion = findRequestedNodeVersion(versionList, requestedVersion)
       if (wantedVersion) {
         // Check the requested version is greater than v22.12.0
         if (!gte(wantedVersion.version, '22.12.0')) {

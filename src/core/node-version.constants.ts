@@ -100,6 +100,18 @@ export interface NodeReleaseEntry {
 }
 
 /**
+ * The release `hb-service update-node <version>` asks for: a whole version, or the newest release of a whole part
+ * of one. `22.1` is the newest 22.1.x (never 22.19.0), and `2` matches nothing (never v26). The list is newest first.
+ */
+export function findRequestedNodeVersion<T extends NodeReleaseEntry>(versionList: T[], requested: string): T | undefined {
+  const wanted = String(requested).trim().replace(/^v/, '')
+  if (!wanted) {
+    return undefined
+  }
+  return versionList.find(x => x.version === `v${wanted}` || x.version.startsWith(`v${wanted}.`))
+}
+
+/**
  * Pick the Node.js release a plain `hb-service update-node` should install, or
  * nothing when already up to date. Prefers the newest LTS release, and otherwise
  * the newest release of the major version already installed.
