@@ -194,6 +194,7 @@ export class AccessoriesService {
     // requests can short-circuit at the next `await` boundary instead of
     // burning IPC + HAP work whose result has nowhere to go.
     let disconnected = false
+    const notResponding = new Set<string>()
 
     const loadAllAccessories = async (refresh: boolean) => {
       if (disconnected) {
@@ -211,7 +212,7 @@ export class AccessoriesService {
       if (disconnected) {
         return
       }
-      this.refreshCharacteristics(hapServices)
+      this.refreshAndEmitNotResponding(client, hapServices, notResponding, () => disconnected)
 
       // Emit HAP ready immediately so HAP accessories can be controlled
       client.emit('hap-accessories-ready-for-control')
@@ -285,7 +286,7 @@ export class AccessoriesService {
 
               // Do a refresh to check if any accessories changed after this action
               setTimeout(() => {
-                this.refreshCharacteristics(hapServices)
+                this.refreshAndEmitNotResponding(client, hapServices, notResponding, () => disconnected)
               }, 1500)
               // Update services list with new HAP services
               services = [
@@ -383,8 +384,36 @@ export class AccessoriesService {
    * Refresh the characteristics from Homebridge
    * @param services
    */
-  private refreshCharacteristics(services: ServiceType[]) {
-    Promise.all(services.map(service =>
+  /**
+   * Refresh the services, then send the client the ones with a characteristic
+   * that answered with a HAP error status, so the UI can show them as not
+   * responding. The refresh is not awaited before the first emit, so that list
+   * goes out without statuses.
+   */
+  private refreshAndEmitNotResponding(client: Socket, services: ServiceType[], notResponding: Set<string>, isDisconnected: () => boolean) {
+    void this.refreshCharacteristics(services).then(() => {
+      if (isDisconnected()) {
+        return
+      }
+      // Send the services that are failing now, and those that have recovered
+      const changed = services.filter((service) => {
+        const failing = service.serviceCharacteristics.some(c => c.status)
+        const wasFailing = notResponding.has(service.uniqueId)
+        if (failing) {
+          notResponding.add(service.uniqueId)
+        } else {
+          notResponding.delete(service.uniqueId)
+        }
+        return failing || wasFailing
+      })
+      if (changed.length) {
+        client.emit('accessories-data', changed)
+      }
+    })
+  }
+
+  private refreshCharacteristics(services: ServiceType[]): Promise<unknown> {
+    return Promise.all(services.map(service =>
       service.refreshCharacteristics().catch((error) => {
         // A device that is off is normal, and this runs on every page load, so
         // say so quietly - its other values were still refreshed
