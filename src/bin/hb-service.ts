@@ -19,7 +19,6 @@ import { mkdtemp, readFile, rename, stat } from 'node:fs/promises'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
-import { StringDecoder } from 'node:string_decoder'
 import { fileURLToPath } from 'node:url'
 
 import axios from 'axios'
@@ -36,6 +35,7 @@ import { findRequestedNodeVersion, isNodeMajorKnown, isNodeMajorSupported, pickN
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
 import { readConfigForCheck, writeConfigAtomically } from './config-file.js'
 import { confirmUnknownNode } from './confirm-unknown-node.js'
+import { LineBuffer } from './line-buffer.js'
 import { openLogFile, truncateLogFile } from './log-file.js'
 import { Logger } from './logger.js'
 import { DarwinInstaller } from './platforms/darwin.js'
@@ -539,56 +539,16 @@ export class HomebridgeServiceHelper {
 
     this.logger.success(`Started Homebridge v${this.homebridgePackage.version} with PID: ${this.homebridge.pid}.`)
 
-    // Buffer per-stream output and flush whole lines so concurrent
-    // stdout/stderr writes don't interleave mid-line in the log file.
-    const outDecoder = new StringDecoder('utf8')
-    const errDecoder = new StringDecoder('utf8')
-    let outBuf = ''
-    let errBuf = ''
-    const flushLines = (key: 'out' | 'err') => {
-      const buf = key === 'out'
-        ? outBuf
-        : errBuf
-      let consumed = 0
-      let idx = buf.indexOf('\n', consumed)
-      while (idx !== -1) {
-        this.logFile.write(buf.slice(consumed, idx + 1))
-        consumed = idx + 1
-        idx = buf.indexOf('\n', consumed)
-      }
-      const remainder = buf.slice(consumed)
-      if (key === 'out') {
-        outBuf = remainder
-      } else {
-        errBuf = remainder
-      }
-    }
+    // Write each stream to the log in whole lines, so stdout and stderr do not mix half-way through a line
+    const out = new LineBuffer(text => this.logFile.write(text))
+    const err = new LineBuffer(text => this.logFile.write(text))
 
-    this.homebridge.stdout.on('data', (data) => {
-      outBuf += outDecoder.write(data)
-      flushLines('out')
-    })
-
-    this.homebridge.stderr.on('data', (data) => {
-      errBuf += errDecoder.write(data)
-      flushLines('err')
-    })
+    this.homebridge.stdout.on('data', data => out.push(data))
+    this.homebridge.stderr.on('data', data => err.push(data))
 
     this.homebridge.on('close', (code, signal) => {
-      outBuf += outDecoder.end()
-      errBuf += errDecoder.end()
-      if (outBuf) {
-        this.logFile.write(outBuf.endsWith('\n')
-          ? outBuf
-          : `${outBuf}\n`)
-        outBuf = ''
-      }
-      if (errBuf) {
-        this.logFile.write(errBuf.endsWith('\n')
-          ? errBuf
-          : `${errBuf}\n`)
-        errBuf = ''
-      }
+      out.end()
+      err.end()
       this.handleHomebridgeClose(code, signal)
     })
   }
