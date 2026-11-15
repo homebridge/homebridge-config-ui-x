@@ -46,6 +46,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config-editor): refuse a hap or matter switch with no true or false, which turned hap off
 - fix(config-editor): refuse a whole config that is not an object, which was saved as an empty list
 - feat(status): say matter failed to start on the dashboard code widget, in place of an empty box
+- feat(plugins): say matter failed to start for a child bridge, not to restart to see the code
 
 ### Other Changes
 
