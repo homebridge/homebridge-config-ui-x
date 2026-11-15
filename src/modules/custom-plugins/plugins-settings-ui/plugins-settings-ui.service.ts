@@ -24,6 +24,9 @@ import { PluginsService } from '../../plugins/plugins.service.js'
 // script and a helper that is momentarily gone.
 const CUSTOM_UI_UNAVAILABLE = 'The custom UI server for this plugin is not available.'
 
+// What a plugin's custom UI server (plugin-ui-utils) sends: 'error' reaches the page as 'server_error'
+const CHILD_MESSAGE_ACTIONS = new Set(['ready', 'response', 'stream', 'error'])
+
 @Injectable()
 export class PluginsSettingsUiService {
   private pluginUiMetadataCache = new NodeCache({ stdTTL: 86400 })
@@ -454,15 +457,24 @@ export class PluginsSettingsUiService {
       settleOutstanding()
     })
 
-    child.addListener('message', (response: { action: string, payload: any }) => {
-      if (typeof response === 'object' && response.action) {
-        if (response.action === 'response' && response.payload?.requestId) {
-          outstanding.delete(response.payload.requestId)
-        }
-        response.action = response.action === 'error'
-          ? 'server_error'
-          : response.action
-        client.emit(response.action, response.payload)
+    // Only the messages plugin-ui-utils sends go on to the plugin's page. Anything else from the plugin's own
+    // code (null, a reserved socket.io name such as 'disconnect') would throw here, and an exception in this
+    // listener ends the whole ui process.
+    child.addListener('message', (response: { action?: unknown, payload?: any } | null) => {
+      if (!response || typeof response !== 'object' || typeof response.action !== 'string'
+        || !CHILD_MESSAGE_ACTIONS.has(response.action)) {
+        return
+      }
+      if (response.action === 'response' && response.payload?.requestId) {
+        outstanding.delete(response.payload.requestId)
+      }
+      const event = response.action === 'error'
+        ? 'server_error'
+        : response.action
+      try {
+        client.emit(event, response.payload)
+      } catch (e) {
+        this.loggerService.error(`[${pluginName}] could not pass on a message from the custom UI server: ${e?.message ?? e}`)
       }
     })
   }

@@ -1067,6 +1067,12 @@ process.on('message', (request) => {
     return
   }
 
+  if (request.path === '/junk') {
+    process.send(null)
+    process.send({ action: 'disconnect' })
+    process.send({ action: 42 })
+  }
+
   process.send({ action: 'response', payload: { requestId: request.requestId, success: true, data: { echo: request.path } } })
 })
 `
@@ -1097,6 +1103,28 @@ process.on('message', (request) => {
             success: true,
             data: { echo: '/hello' },
           })
+
+        client.emit('end')
+      })
+
+      it('ignores a null or junk message from the helper instead of crashing the ui process', async () => {
+        // Regression: `null.action` threw, and a reserved socket.io name such as 'disconnect' threw in
+        // `client.emit`, inside the child's message listener: an uncaught exception that ended the ui process
+        const { client, emitSpy } = await createClient()
+
+        await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+        await waitForEmit(emitSpy, 'ready')
+
+        client.emit('request', { action: 'request', requestId: 'r-junk', path: '/junk' })
+
+        expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-junk'))
+          .toEqual({
+            requestId: 'r-junk',
+            success: true,
+            data: { echo: '/junk' },
+          })
+        expect(emitSpy).not.toHaveBeenCalledWith('disconnect', undefined)
+        expect(emitSpy).not.toHaveBeenCalledWith(42, undefined)
 
         client.emit('end')
       })
