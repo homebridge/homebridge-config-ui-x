@@ -154,6 +154,30 @@ describe('PlatformToolsTerminal (e2e)', () => {
     expect(mockTerm.write).toHaveBeenCalledWith('help')
   })
 
+  it('ON /platform-tools/terminal/start-session twice on one socket ends the first shell', async () => {
+    const first = {
+      ...mockTerm,
+      kill: vi.fn(),
+      write: vi.fn(),
+    }
+    const second = {
+      ...mockTerm,
+      kill: vi.fn(),
+      write: vi.fn(),
+    }
+    vi.mocked(nodePtyService.spawn).mockReset()
+    vi.mocked(nodePtyService.spawn).mockImplementationOnce(() => first as any).mockImplementationOnce(() => second as any)
+
+    await terminalService.startSession(client, size)
+    await terminalService.startSession(client, size)
+
+    expect(first.kill).toHaveBeenCalled()
+    expect(client.listenerCount('stdin')).toBe(1)
+    client.emit('stdin', 'ls')
+    expect(first.write).not.toHaveBeenCalled()
+    expect(second.write).toHaveBeenCalledWith('ls')
+  })
+
   it('ON /platform-tools/terminal/start-session (stdin that is not text is ignored)', async () => {
     // node-pty's write throws for a non-string, and inside a socket listener that ends the whole process
     terminalGateway.startTerminalSession(client, size)

@@ -57,6 +57,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ui): take seven pages' socket listeners off when they close, so each visit no longer adds one
 - fix(plugins): wait for an npm run to finish before the ui closes, so a restart never cuts it short
 - fix(plugins): give npm 30 minutes, not 5, then kill it if needed so the queue moves on
+- fix(terminal): end a socket's first shell when it starts a second, which got the same keystrokes
 
 ### Other Changes
 
