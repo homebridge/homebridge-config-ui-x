@@ -932,6 +932,33 @@ describe('matter-device.utils', () => {
       ])
     })
 
+    it.each([
+      // [fanModeSequence, speed, mode written]
+      [1, 40, 1],
+      [1, 60, 3],
+      [3, 50, 1],
+      [4, 20, 3],
+      [5, 50, 3],
+      [0, 50, 2],
+      [2, 50, 2],
+      [undefined, 50, 2],
+    ])('writes a mode the fan has (sequence %s, speed %s, mode %s)', async (sequence, speed, mode) => {
+      // Regression: the mode came from a fixed Low / Medium / High split, so an Off-High fan was sent Medium,
+      // which its plugin refuses, and the fan stayed as it was
+      const service = device({
+        fanControl: { fanMode: 0, percentSetting: 0, fanModeSequence: sequence },
+      })
+
+      await setFanSpeed(service, speed)
+
+      expect(service.writes).toEqual([
+        {
+          cluster: 'fanControl',
+          attributes: { fanMode: mode, percentSetting: speed },
+        },
+      ])
+    })
+
     it('throws when the cluster is missing', async () => {
       await expect(toggleFan(device())).rejects.toThrow('Fan control cluster not found')
       await expect(setFanSpeed(device(), 50)).rejects.toThrow('Fan control cluster not found')

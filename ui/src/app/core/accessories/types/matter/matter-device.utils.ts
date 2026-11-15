@@ -791,17 +791,31 @@ function hasFanMode(service: ServiceTypeX): boolean {
 }
 
 /**
- * The fan mode that goes with a speed, as Matter's 3-speed mapping has it
+ * The fan mode that goes with a speed, from the modes this fan has (its `fanModeSequence`: 0 Off-Low-Med-High,
+ * 1 Off-Low-High, 2 Off-Low-Med-High-Auto, 3 Off-Low-High-Auto, 4 Off-High-Auto, 5 Off-High). A mode the fan
+ * does not have (Medium for an Off-High fan) is refused by the plugin, and the fan then stays as it was.
+ * A fan that reports no sequence gets the 3-speed mapping.
  */
-function fanModeForPercent(percent: number): number {
+function fanModeForPercent(percent: number, sequence?: number): number {
   if (percent <= 0) {
     return 0
   }
-  return percent <= 33
-    ? 1
-    : percent <= 66
-      ? 2
-      : 3
+  switch (sequence) {
+    case 1:
+    case 3:
+      return percent <= 50
+        ? 1
+        : 3
+    case 4:
+    case 5:
+      return 3
+    default:
+      return percent <= 33
+        ? 1
+        : percent <= 66
+          ? 2
+          : 3
+  }
 }
 
 /**
@@ -842,7 +856,7 @@ export async function setFanSpeed(service: ServiceTypeX, percent: number): Promi
   try {
     await cluster.setAttributes(hasFanMode(service)
       ? {
-          fanMode: fanModeForPercent(percent),
+          fanMode: fanModeForPercent(percent, service.clusters?.fanControl?.fanModeSequence),
           percentSetting: percent,
         }
       : { percentSetting: percent })
