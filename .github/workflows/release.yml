@@ -58,7 +58,7 @@ jobs:
       - name: Get Release Tag (Latest Only)
         if: steps.release-type.outputs.type == 'latest'
         id: get_version
-        uses: jannemattila/get-version-from-tag@v4
+        uses: jannemattila/get-version-from-tag@22de24a56e53ef11268538c9e6a77659a142afa7 # v4
 
       - name: Tag Info (Latest Only)
         if: steps.release-type.outputs.type == 'latest'
@@ -236,7 +236,7 @@ jobs:
 
       - name: Create nightly release
         id: create_release
-        uses: viperproject/create-nightly-release@v2
+        uses: viperproject/create-nightly-release@57d9a49ddd9a99ac251861663ae92972b6c2607b # v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -327,7 +327,7 @@ jobs:
             ./SHASUMS256.txt
 
       - name: Attach Bundle v${{ needs.publish.outputs.npm_version }}
-        uses: AButler/upload-release-assets@v4.0
+        uses: AButler/upload-release-assets@34491005a5d7ec239a784e460807ce844fde7962 # v4.0
         with:
           files: 'homebridge-config-ui-x-${{ needs.publish.outputs.npm_version }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
