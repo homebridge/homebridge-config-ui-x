@@ -1,3 +1,8 @@
+import type { } from '../child-bridges/child-bridges.service.js'
+import type { HomebridgePlugin } from '../plugins/plugins.interfaces.js'
+import type { } from './update-all-journal.service.js'
+import type { UpdateAllExclusionReason, UpdateAllJournal, UpdateAllPlan, UpdateAllPlanItem, UpdateAllRestartImpact } from './update-all.interfaces.js'
+
 import { Buffer } from 'node:buffer'
 import { EventEmitter } from 'node:events'
 import process from 'node:process'
@@ -10,11 +15,8 @@ import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.s
 import { Logger } from '../../core/logger/logger.service.js'
 import { BackupService } from '../backup/backup.service.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
-import { HomebridgePlugin } from '../plugins/plugins.interfaces.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import { UpdateAllJournalService } from './update-all-journal.service.js'
-import { UpdateAllExclusionReason, UpdateAllJournal, UpdateAllPlan, UpdateAllPlanItem, UpdateAllRestartImpact } from './update-all.interfaces.js'
-
 /** What the completed items of a run call for - the finale acts on this */
 interface RestartNeeds {
   homebridge: boolean

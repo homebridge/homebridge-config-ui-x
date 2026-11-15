@@ -1,23 +1,23 @@
+import type { OnApplicationBootstrap } from '@nestjs/common'
+import type { } from 'node:path'
+
+import type { AccessoryConfig, HomebridgeConfig, HomebridgeUiBridgeConfig, PlatformConfig } from '../../core/config/config.interfaces.js'
+import type { } from '../../core/logger/logger.service.js'
+import type { MatterConfig } from '../../core/matter/matter.interfaces.js'
+
 import { randomInt } from 'node:crypto'
 import { copyFile, readdir, readFile, unlink } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 
-import { BadRequestException, Inject, Injectable, NotFoundException, OnApplicationBootstrap } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
 import dayjs from 'dayjs'
 import { ensureDir, move, pathExists, readJson, remove } from 'fs-extra/esm'
 import { gte } from 'semver'
 
-import {
-  AccessoryConfig,
-  HomebridgeConfig,
-  HomebridgeUiBridgeConfig,
-  PlatformConfig,
-} from '../../core/config/config.interfaces.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
-import { MatterConfig } from '../../core/matter/matter.interfaces.js'
 import { RE_COLON, RE_CONFIG_BACKUP, RE_PIN, RE_PLUGIN_NAME, RE_SAFE_RESTART_CMD, RE_USERNAME } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { BackupService } from '../backup/backup.service.js'

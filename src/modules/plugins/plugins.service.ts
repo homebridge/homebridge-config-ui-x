@@ -1,5 +1,8 @@
 /* global NodeJS */
 
+import type { } from '@nestjs/axios'
+import type { BeforeApplicationShutdown, OnModuleDestroy } from '@nestjs/common'
+
 import type { HomebridgeConfig } from '../../core/config/config.interfaces.js'
 import type {
   HomebridgePlugin,
@@ -33,7 +36,7 @@ import {
 import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
-import { BadRequestException, BeforeApplicationShutdown, Inject, Injectable, InternalServerErrorException, NotFoundException, OnModuleDestroy } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import axios from 'axios'
 import { cyan, green, red, yellow } from 'bash-color'
 import { createFile, ensureDir, pathExists, pathExistsSync, readJson, remove } from 'fs-extra/esm'

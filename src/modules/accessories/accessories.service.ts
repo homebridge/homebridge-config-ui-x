@@ -1,6 +1,7 @@
 import type { ServiceType } from '@homebridge/hap-client'
 import type { Socket } from 'socket.io'
 
+import type { MatterAccessoriesResponse, MatterAccessory, MatterAccessoryInfo, MatterAccessoryPart, MatterControlResponse, MatterEvent, MatterService, MatterStateUpdate } from '../../core/matter/matter.interfaces.js'
 import type { AccessoryControlMessage } from './accessories.interfaces.js'
 
 import { join } from 'node:path'
@@ -14,17 +15,6 @@ import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
-import {
-  MatterAccessoriesResponse,
-  MatterAccessory,
-  MatterAccessoryInfo,
-  MatterAccessoryPart,
-  MatterControlResponse,
-  MatterEvent,
-  MatterService,
-  MatterStateUpdate,
-} from '../../core/matter/matter.interfaces.js'
-
 /**
  * Whether a hap-client error is a characteristic answering with a HAP error
  * status (a device that is off or not responding), rather than a failed request.

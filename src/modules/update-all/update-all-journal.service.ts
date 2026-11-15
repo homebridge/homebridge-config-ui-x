@@ -1,13 +1,17 @@
+import type { OnModuleInit } from '@nestjs/common'
+import type { } from 'node:path'
+
+import type { } from '../../core/logger/logger.service.js'
+import type { UpdateAllItemStatus, UpdateAllJournal, UpdateAllJournalItem } from './update-all.interfaces.js'
+
 import { randomUUID } from 'node:crypto'
 import { resolve } from 'node:path'
 
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
-import { UpdateAllItemStatus, UpdateAllJournal, UpdateAllJournalItem } from './update-all.interfaces.js'
-
 /** How many lines of an item's update output the journal keeps */
 const LOG_TAIL_LINES = 30
 

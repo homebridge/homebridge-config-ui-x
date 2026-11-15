@@ -1,8 +1,9 @@
+import type { OnModuleInit } from '@nestjs/common'
 import type { Job } from 'node-schedule'
 
 import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../config/config.interfaces.js'
 
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { cancelJob, RecurrenceRule, scheduledJobs, scheduleJob } from 'node-schedule'
 
 import { ConfigService } from '../config/config.service.js'
