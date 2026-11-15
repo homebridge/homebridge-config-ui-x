@@ -19,6 +19,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
 import { ServerModule } from '../../src/modules/server/server.module.js'
 import { ServerService } from '../../src/modules/server/server.service.js'
@@ -1341,6 +1342,56 @@ describe('ServerController (e2e)', () => {
 
     const authAfter = await readJson(authFilePath)
     expect(authAfter).toEqual(authBefore)
+  })
+
+  it('DELETE /server/cached-accessories (bulk - checks the names before stopping homebridge)', async () => {
+    const restart = vi.spyOn(app.get(HomebridgeIpcService), 'restartAndWaitForClose').mockResolvedValue(undefined)
+    try {
+      const res = await app.inject({
+        method: 'DELETE',
+        path: '/server/cached-accessories',
+        headers: { authorization },
+        payload: [
+          { uuid: 'some-uuid', cacheFile: 'auth.json' },
+        ],
+      })
+      expect(res.statusCode).toBe(400)
+      expect(restart).not.toHaveBeenCalled()
+
+      // No body at all: a 400, not a 500
+      const empty = await app.inject({
+        method: 'DELETE',
+        path: '/server/cached-accessories',
+        headers: { authorization },
+      })
+      expect(empty.statusCode).toBe(400)
+    } finally {
+      restart.mockRestore()
+    }
+  })
+
+  it('DELETE /server/cached-accessories (bulk - a missing cache file is skipped, the others are still done)', async () => {
+    const accessoriesPath = resolve(process.env.UIX_STORAGE_PATH, 'accessories')
+    await writeJson(resolve(accessoriesPath, 'cachedAccessories'), [
+      { UUID: 'keep-me' },
+      { UUID: 'remove-me' },
+    ])
+    const restart = vi.spyOn(app.get(HomebridgeIpcService), 'restartAndWaitForClose').mockResolvedValue(undefined)
+    try {
+      const res = await app.inject({
+        method: 'DELETE',
+        path: '/server/cached-accessories',
+        headers: { authorization },
+        payload: [
+          { uuid: 'x', cacheFile: 'cachedAccessories.0E0000000000' },
+          { uuid: 'remove-me', cacheFile: 'cachedAccessories' },
+        ],
+      })
+      expect(res.statusCode).toBeLessThan(300)
+    } finally {
+      restart.mockRestore()
+    }
+    expect((await readJson(resolve(accessoriesPath, 'cachedAccessories'))).map((x: any) => x.UUID)).toEqual(['keep-me'])
   })
 
   it('DELETE /server/pairings (bulk)', async () => {
