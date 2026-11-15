@@ -27,6 +27,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(backup): leave the token signing key out, and restore none of the files a backup leaves out
 - fix(backup): install only plugins with a valid name and version when restoring a backup
 - fix(backup): keep old scheduled backups when today's fails, and never remove other instances' ones
+- fix(backup): remove the temp folder of a backup upload that fails to extract
 
 ### Other Changes
 
