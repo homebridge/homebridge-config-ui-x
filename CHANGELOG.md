@@ -85,6 +85,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): log out only for a 401 from the ui's own server, not from the weather widget's site
 - fix(child-bridges): watch a socket once however often it asks, so each status update arrives once
 - fix(status): keep the dashboard's status updates when the bridges widget is removed or re-made
+- fix(update-all): keep the page's child bridge status updates when the update all window closes
 
 ### Other Changes
 
