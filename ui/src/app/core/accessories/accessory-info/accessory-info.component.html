@@ -133,9 +133,9 @@
                 <span class="text-nowrap">{{ characteristic.description }}</span>
               }
               @if (hasErrorStatus(characteristic.status)) {
-                <span class="text-danger font-monospace ms-1" [title]="hapStatusKey(characteristic.status) | translate">
+                <span class="text-danger font-monospace ms-1">
                   <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
-                  {{ characteristic.status }}
+                  {{ hapStatusKey(characteristic.status) | translate }} ({{ characteristic.status }})
                 </span>
               }
               @if (isDetailsVisible[characteristic.uuid]) {
@@ -252,9 +252,9 @@
                 {{ characteristic.description }}
               }
               @if (hasErrorStatus(characteristic.status)) {
-                <span class="text-danger font-monospace ms-1" [title]="hapStatusKey(characteristic.status) | translate">
+                <span class="text-danger font-monospace ms-1">
                   <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
-                  {{ characteristic.status }}
+                  {{ hapStatusKey(characteristic.status) | translate }} ({{ characteristic.status }})
                 </span>
               }
               @if (isDetailsVisible[characteristic.uuid]) {
