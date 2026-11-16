@@ -176,6 +176,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       ...this.singleEditorOptions,
       readOnly: true,
       domReadOnly: true,
+      // Monaco's own 'Cannot edit in read-only editor' does not say how to edit
+      readOnlyMessage: {
+        value: this.$translate.instant('config.privacy.locked'),
+      },
     }
     this.previewEditorModel = {
       value: '',

@@ -171,6 +171,32 @@ describe('ConfigEditorComponent', () => {
       expect(JSON.parse(component.homebridgeConfig()).password).toBe('original-secret')
     })
 
+    it('shows the toggle as a lock icon, with the masking notice only in its tooltip', () => {
+      component.toggleSecrets()
+      fixture.detectChanges()
+      const toggle = (): HTMLButtonElement => fixture.nativeElement.querySelector('button')
+      const icon = (): HTMLElement => toggle().querySelector('i') as HTMLElement
+
+      // masked: an unlock icon, no text on the button, and the notice is not printed on the page
+      expect(component.secretsRevealed()).toBe(false)
+      expect(icon().classList).toContain('fa-unlock')
+      expect(toggle().textContent?.trim()).toBe('')
+      expect(toggle().getAttribute('aria-label')).toBe('config.privacy.reveal')
+      expect(toggle().getAttribute('aria-description')).toBe('config.privacy.notice')
+      expect(fixture.nativeElement.textContent).not.toContain('config.privacy.notice')
+      // the only button, so no gap on its right: the save button takes that place once unlocked
+      expect(toggle().classList).not.toContain('me-2')
+
+      // revealed: a lock icon to hide the secrets again
+      toggle().click()
+      fixture.detectChanges()
+      expect(icon().classList).toContain('fa-lock')
+      expect(toggle().textContent?.trim()).toBe('')
+      expect(toggle().getAttribute('aria-label')).toBe('config.privacy.hide')
+      expect(toggle().classList).toContain('me-2')
+      expect(toggle().hasAttribute('aria-description')).toBe(false)
+    })
+
     it('fails closed for incomplete edits and keeps those edits when revealed again', () => {
       component.homebridgeConfig.set('{"password":"unfinished')
       component.toggleSecrets()
@@ -286,6 +312,8 @@ describe('ConfigEditorComponent', () => {
           ...component.singleEditorOptions,
           readOnly: true,
           domReadOnly: true,
+          // says how to edit, not Monaco's own 'Cannot edit in read-only editor'
+          readOnlyMessage: { value: 'config.privacy.locked' },
         })
         // Neither has the empty strip left of the line numbers; the compare view keeps it
         expect(component.singleEditorOptions.glyphMargin).toBe(false)
