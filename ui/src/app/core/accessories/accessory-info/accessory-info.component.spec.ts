@@ -160,10 +160,10 @@ describe('accessoryInfoComponent', () => {
         ],
       })).nativeElement as HTMLElement
 
-      // The status row plus the characteristic row, each with the HAP code
+      // The status row plus the characteristic row, each with the description and HAP code
       const marks = element.querySelectorAll('.text-danger')
       expect(marks).toHaveLength(2)
-      marks.forEach(mark => expect(mark.textContent).toContain('-70402'))
+      marks.forEach(mark => expect(mark.textContent).toContain('(-70402)'))
     })
 
     it('shows no not responding marks when everything answered', () => {

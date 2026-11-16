@@ -146,7 +146,7 @@
   // Dim the tile of a device that is not responding, like the Home app. The
   // opacity gives the tile its own stacking layer, which would paint over the
   // button that comes before it, so the button is lifted back on top below.
-  .accessory-not-responding-indicator ~ * {
+  .accessory-not-responding-indicator ~ * .accessory-box {
     opacity: 0.5;
   }
 
