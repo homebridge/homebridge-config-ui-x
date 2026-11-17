@@ -167,6 +167,8 @@ export const ADD_USER_MODAL_DATA = new InjectionToken<AddUserModalData>('AddUser
 export interface NetworkInterfacesModalData {
   adaptersAvailable: any[]
   adaptersSelected: any[]
+  // Whether to offer an adapter's IP addresses in place of its name (needs a Homebridge that takes one for Matter)
+  canBindByAddress?: boolean
 }
 
 export const NETWORK_INTERFACES_MODAL_DATA = new InjectionToken<NetworkInterfacesModalData>('NetworkInterfacesModalData')

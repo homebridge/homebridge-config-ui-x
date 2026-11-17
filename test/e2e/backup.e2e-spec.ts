@@ -6,7 +6,7 @@ import { Buffer } from 'node:buffer'
 import crypto from 'node:crypto'
 import { EventEmitter } from 'node:events'
 import { lstat, mkdtemp, symlink, writeFile as writeFileAsync } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
+import { networkInterfaces, tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 
@@ -552,6 +552,25 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
         await writeFile(configService.configPath, configBefore)
       }
     })
+  })
+
+  it('a restore keeps a bridge.bind ip address this machine has, and drops what it does not have', async () => {
+    // bridge.bind may hold an address in place of an adapter name. Checking it
+    // against adapter names alone dropped every address, on the same machine too
+    const hasLoopback = Object.values(networkInterfaces())
+      .some(addresses => addresses?.some(x => x.address === '127.0.0.1'))
+    // 203.0.113.0/24 is reserved for documentation, so no machine has this address
+    const restoredConfig: any = {
+      bridge: {
+        bind: ['127.0.0.1', '203.0.113.7', 'no-such-adapter0'],
+      },
+    }
+
+    await (backupService as any).checkBridgeBindConfig(restoredConfig)
+
+    expect(restoredConfig.bridge.bind).toEqual(hasLoopback
+      ? ['127.0.0.1']
+      : undefined)
   })
 
   it('an hbfx restore saves the ui block as config.json has it, not the values the ui works out at start-up', async () => {

@@ -69,7 +69,7 @@ describe('SettingsComponent', () => {
         ENV_NODE_OPTIONS: '',
       })
       .respond('get', '/server/network-interfaces/system', [])
-      .respond('get', '/server/network-interfaces/bridge', [])
+      .respond('get', '/server/network-interfaces/bridge/resolved', [])
       .respond('get', '/server/mdns-advertiser', { advertiser: 'ciao' })
       .respond('get', '/server/port', { port: 51826 })
       .respond('get', '/server/ports', { start: 52100, end: 52200 })
@@ -1683,6 +1683,32 @@ describe('SettingsComponent', () => {
         await pending
       })
 
+      it('does not offer ip addresses on a Homebridge that cannot take one', async () => {
+        // ⚠️ Before v2.5.1, an address in bridge.bind stops Matter from starting
+        const pending = component.selectNetworkInterfaces()
+        await Promise.resolve()
+
+        expect(modal.dataFor(NETWORK_INTERFACES_MODAL_DATA)?.canBindByAddress).toBe(false)
+
+        modal.lastOpened()!.ref.dismiss('Dismiss')
+        await pending
+      })
+
+      it('offers ip addresses on a Homebridge that takes them', async () => {
+        create({
+          featureFlags: { bridgeBindByAddress: true },
+        })
+        await vi.advanceTimersByTimeAsync(0)
+
+        const pending = component.selectNetworkInterfaces()
+        await Promise.resolve()
+
+        expect(modal.dataFor(NETWORK_INTERFACES_MODAL_DATA)?.canBindByAddress).toBe(true)
+
+        modal.lastOpened()!.ref.dismiss('Dismiss')
+        await pending
+      })
+
       it('marks an adapter the machine no longer has', async () => {
         // ⚠️ A network card that has been removed, or renamed by a system update.
         // Dropping it silently would take the bridge off an interface the user
@@ -1691,13 +1717,67 @@ describe('SettingsComponent', () => {
           broken.respond('get', '/server/network-interfaces/system', [
             { iface: 'eth0', ip4: '192.168.1.10' },
           ])
-          broken.respond('get', '/server/network-interfaces/bridge', ['eth0', 'wlan0'])
+          broken.respond('get', '/server/network-interfaces/bridge/resolved', [
+            { entry: 'eth0', iface: 'eth0', isAddress: false },
+            { entry: 'wlan0', iface: null, isAddress: false },
+          ])
         })
         await vi.advanceTimersByTimeAsync(0)
 
         expect(component.adaptersSelected()).toEqual([
-          expect.objectContaining({ iface: 'eth0', selected: true, missing: false }),
-          expect.objectContaining({ iface: 'wlan0', selected: true, missing: true }),
+          expect.objectContaining({
+            entry: 'eth0',
+            iface: 'eth0',
+            selected: true,
+            missing: false,
+          }),
+          expect.objectContaining({
+            entry: 'wlan0',
+            iface: 'wlan0',
+            selected: true,
+            missing: true,
+          }),
+        ])
+      })
+
+      it('shows an ip address against the adapter that has it', async () => {
+        // ⚠️ bridge.bind may hold an address in place of an adapter name, which
+        // keeps the bridge on one network when the adapter names move (a Docker
+        // container on two networks). Looked up as a name it matched nothing,
+        // and a working setting was shown as not connected
+        create({}, undefined, (broken) => {
+          broken.respond('get', '/server/network-interfaces/system', [
+            { iface: 'eth1', ip4: '192.168.1.50' },
+          ])
+          broken.respond('get', '/server/network-interfaces/bridge/resolved', [
+            { entry: '192.168.1.50', iface: 'eth1', isAddress: true },
+          ])
+        })
+        await vi.advanceTimersByTimeAsync(0)
+
+        expect(component.adaptersSelected()).toEqual([
+          expect.objectContaining({
+            entry: '192.168.1.50',
+            iface: 'eth1',
+            byAddress: true,
+            missing: false,
+          }),
+        ])
+      })
+
+      it('marks an ip address that no adapter has', async () => {
+        create({}, undefined, (broken) => {
+          broken.respond('get', '/server/network-interfaces/system', [
+            { iface: 'eth1', ip4: '192.168.1.50' },
+          ])
+          broken.respond('get', '/server/network-interfaces/bridge/resolved', [
+            { entry: '10.0.0.1', iface: null, isAddress: true },
+          ])
+        })
+        await vi.advanceTimersByTimeAsync(0)
+
+        expect(component.adaptersSelected()).toEqual([
+          expect.objectContaining({ entry: '10.0.0.1', byAddress: true, missing: true }),
         ])
       })
 
@@ -1706,7 +1786,7 @@ describe('SettingsComponent', () => {
           broken.respond('get', '/server/network-interfaces/system', [
             { iface: 'eth0', ip4: '192.168.1.10' },
           ])
-          broken.respond('get', '/server/network-interfaces/bridge', [])
+          broken.respond('get', '/server/network-interfaces/bridge/resolved', [])
         })
         await vi.advanceTimersByTimeAsync(0)
 
@@ -1726,6 +1806,34 @@ describe('SettingsComponent', () => {
         expect(settings.showRestartToast).toHaveBeenCalled()
       })
 
+      it('saves an ip address chosen in place of an adapter name, and shows it against its adapter', async () => {
+        component.adaptersAvailable.set([
+          { iface: 'eth1', ip4: '192.168.1.50' },
+        ] as any)
+        // What the server answers once the address is saved
+        api.respond('get', '/server/network-interfaces/bridge/resolved', [
+          { entry: '192.168.1.50', iface: 'eth1', isAddress: true },
+        ])
+
+        const pending = component.selectNetworkInterfaces()
+        await Promise.resolve()
+        modal.lastOpened()!.ref.close(['192.168.1.50'])
+        await pending
+
+        expect(api.lastCall('put', '/server/network-interfaces/bridge')?.body).toEqual({
+          adapters: ['192.168.1.50'],
+        })
+        // The page cannot tell which adapter has an address, so it asks the server again
+        expect(component.adaptersSelected()).toEqual([
+          expect.objectContaining({
+            entry: '192.168.1.50',
+            iface: 'eth1',
+            byAddress: true,
+            missing: false,
+          }),
+        ])
+      })
+
       it('saves nothing when the picker is dismissed', async () => {
         const pending = component.selectNetworkInterfaces()
         await Promise.resolve()
@@ -1739,6 +1847,10 @@ describe('SettingsComponent', () => {
         vi.spyOn(console, 'error').mockImplementation(() => {})
         api.fail('put', '/server/network-interfaces/bridge', new Error('config not writable'))
 
+        component.adaptersSelected.set([
+          { entry: 'wlan0', iface: 'wlan0' },
+        ] as any)
+
         const pending = component.selectNetworkInterfaces()
         await Promise.resolve()
         modal.lastOpened()!.ref.close(['eth0'])
@@ -1746,6 +1858,10 @@ describe('SettingsComponent', () => {
 
         expect(toastr.error).toHaveBeenCalled()
         expect(settings.showRestartToast).not.toHaveBeenCalled()
+        // Nothing was saved, so the page keeps showing what config.json holds
+        expect(component.adaptersSelected()).toEqual([
+          expect.objectContaining({ entry: 'wlan0' }),
+        ])
       })
     })
   })

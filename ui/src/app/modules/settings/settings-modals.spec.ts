@@ -227,12 +227,27 @@ describe('settings modals', () => {
 
   describe('network interface selection', () => {
     const available = [
-      { iface: 'eth0', ip4: '192.168.1.10', selected: false },
-      { iface: 'wlan0', ip4: '192.168.1.11', selected: false },
+      {
+        iface: 'eth0',
+        ip4: '192.168.1.10',
+        ip6: 'fd00::10',
+        selected: false,
+      },
+      {
+        iface: 'wlan0',
+        ip4: '192.168.1.11',
+        ip6: '',
+        selected: false,
+      },
       { iface: 'lo', ip4: '127.0.0.1', selected: false },
     ]
 
-    function configure(selectedIfaces: string[]) {
+    /**
+     * @param selected - what bridge.bind holds: an adapter name, or `{ entry, iface }`
+     * for an ip address (`entry`) and the adapter that has it (`iface`)
+     * @param canBindByAddress - whether Homebridge is new enough to take an address
+     */
+    function configure(selected: Array<string | { entry: string, iface: string }>, canBindByAddress = true) {
       TestBed.resetTestingModule()
       activeModal = activeModalStub()
 
@@ -245,7 +260,10 @@ describe('settings modals', () => {
             useValue: {
               // Cloned so one test's ticking does not leak into the next
               adaptersAvailable: available.map(a => ({ ...a })),
-              adaptersSelected: selectedIfaces.map(iface => ({ iface })),
+              adaptersSelected: selected.map(x => typeof x === 'string'
+                ? { entry: x, iface: x, byAddress: false }
+                : { ...x, byAddress: true }),
+              canBindByAddress,
             },
           },
         ],
@@ -328,6 +346,261 @@ describe('settings modals', () => {
       // that did not undo the ticks would leave them changed on the page
       expect(modal.adaptersAvailable.map(a => a.selected)).toEqual([true, false, false])
       expect(activeModal.dismiss).toHaveBeenCalled()
+    })
+
+    /**
+     * An adapter can be bound by one of its ip addresses instead of its name.
+     *
+     * ⚠️ This is what keeps a bridge on one network when the adapter names move:
+     * in a Docker container on two networks, which of eth0/eth1 sits on which
+     * network changes from one start to the next, but the address on each does not.
+     */
+    describe('binding an adapter by ip address', () => {
+      it('offers an adapter\'s name and each address it has', async () => {
+        configure([])
+        const modal = await open(SelectNetworkInterfacesComponent)
+
+        expect(modal.bindOptions(modal.adaptersAvailable[0])).toEqual(['eth0', '192.168.1.10', 'fd00::10'])
+        // An adapter with no IPv6 address reports an empty string for it
+        expect(modal.bindOptions(modal.adaptersAvailable[1])).toEqual(['wlan0', '192.168.1.11'])
+      })
+
+      it('binds by name unless told otherwise', async () => {
+        configure(['eth0'])
+        const modal = await open(SelectNetworkInterfacesComponent)
+
+        expect(modal.adaptersAvailable.map(a => a.bindBy)).toEqual(['eth0', 'wlan0', 'lo'])
+      })
+
+      it('ticks the adapter that has an address already in use, and shows the address as chosen', async () => {
+        configure([
+          { entry: '192.168.1.11', iface: 'wlan0' },
+        ])
+        const modal = await open(SelectNetworkInterfacesComponent)
+
+        expect(modal.adaptersAvailable.map(a => a.selected)).toEqual([false, true, false])
+        expect(modal.adaptersAvailable[1].bindBy).toBe('192.168.1.11')
+        expect(modal.isUnchanged()).toBe(true)
+      })
+
+      it('offers an address in use that is not one of the two the adapter is listed with', async () => {
+        // An adapter can have more addresses than the one IPv4 and one IPv6 shown
+        configure([
+          { entry: '192.168.1.99', iface: 'eth0' },
+        ])
+        const modal = await open(SelectNetworkInterfacesComponent)
+
+        expect(modal.adaptersAvailable[0].bindBy).toBe('192.168.1.99')
+        expect(modal.bindOptions(modal.adaptersAvailable[0])).toContain('192.168.1.99')
+      })
+
+      it('notices a switch from name to address on a ticked adapter', async () => {
+        configure(['eth0'])
+        const modal = await open(SelectNetworkInterfacesComponent)
+
+        modal.adaptersAvailable[0].bindBy = '192.168.1.10'
+        modal.onAdapterSelectionChange()
+
+        // The same adapters are ticked, so comparing ticks alone would grey out save
+        expect(modal.isUnchanged()).toBe(false)
+      })
+
+      it('returns to unchanged when switched back to the name', async () => {
+        configure(['eth0'])
+        const modal = await open(SelectNetworkInterfacesComponent)
+
+        modal.adaptersAvailable[0].bindBy = '192.168.1.10'
+        modal.onAdapterSelectionChange()
+        modal.adaptersAvailable[0].bindBy = 'eth0'
+        modal.onAdapterSelectionChange()
+
+        expect(modal.isUnchanged()).toBe(true)
+      })
+
+      it('closes with the address in place of the name', async () => {
+        configure(['eth0'])
+        const modal = await open(SelectNetworkInterfacesComponent)
+        modal.adaptersAvailable[0].bindBy = '192.168.1.10'
+        modal.adaptersAvailable[1].selected = true
+
+        modal.submit()
+
+        expect(activeModal.close).toHaveBeenCalledWith(['192.168.1.10', 'wlan0'])
+      })
+
+      it('keeps an address already in use when another adapter is added', async () => {
+        // Saving names only would quietly turn the address back into a name
+        configure([
+          { entry: '192.168.1.11', iface: 'wlan0' },
+        ])
+        const modal = await open(SelectNetworkInterfacesComponent)
+        modal.adaptersAvailable[0].selected = true
+
+        modal.submit()
+
+        expect(activeModal.close).toHaveBeenCalledWith(['eth0', '192.168.1.11'])
+      })
+
+      it('puts the name-or-address choice back when cancelled', async () => {
+        configure([
+          { entry: '192.168.1.11', iface: 'wlan0' },
+        ])
+        const modal = await open(SelectNetworkInterfacesComponent)
+        modal.adaptersAvailable[0].selected = true
+        modal.adaptersAvailable[0].bindBy = '192.168.1.10'
+        modal.adaptersAvailable[1].bindBy = 'wlan0'
+
+        modal.closeAndReset()
+
+        expect(modal.adaptersAvailable.map(a => a.selected)).toEqual([false, true, false])
+        expect(modal.adaptersAvailable.map(a => a.bindBy)).toEqual(['eth0', '192.168.1.11', 'lo'])
+      })
+
+      it('shows the name-or-address choice only for a ticked adapter', async () => {
+        configure(['eth0'])
+        const fixture = TestBed.createComponent(SelectNetworkInterfacesComponent)
+        fixture.detectChanges()
+        await fixture.whenStable()
+
+        const selects = fixture.nativeElement.querySelectorAll('select')
+        expect(selects).toHaveLength(1)
+        expect(selects[0].id).toBe('bindByeth0')
+        expect(selects[0].querySelectorAll('option')).toHaveLength(3)
+      })
+
+      /**
+       * ⚠️ An adapter makes up its own link-local address (fe80::), often from
+       * its MAC address, so in Docker it can change when the container
+       * restarts. Offered here, it would be an address that stops matching
+       * after the next restart, which is the very thing an address is chosen
+       * to avoid. `ip6` is the link-local address when the adapter has no other.
+       */
+      describe('an IPv6 link-local address', () => {
+        function adapter(modal: SelectNetworkInterfacesComponent, values: Record<string, any>) {
+          return Object.assign(modal.adaptersAvailable[0], values)
+        }
+
+        it('is not offered', async () => {
+          configure([])
+          const modal = await open(SelectNetworkInterfacesComponent)
+
+          expect(modal.bindOptions(adapter(modal, { ip6: 'fe80::42:acff:fe12:5' }))).toEqual(['eth0', '192.168.1.10'])
+        })
+
+        it('is not offered anywhere in fe80::/10, however it is written', async () => {
+          configure([])
+          const modal = await open(SelectNetworkInterfacesComponent)
+
+          for (const ip6 of [
+            'fe80::1',
+            'FE80::1',
+            'fe9a::1',
+            'feab::1',
+            'febf::1',
+          ]) {
+            expect(modal.bindOptions(adapter(modal, { ip6 }))).toEqual(['eth0', '192.168.1.10'])
+          }
+        })
+
+        it('does not take a nearby address for link-local', async () => {
+          // A unique local address (fd00::/8) is what an IPv6 Docker network
+          // hands out, and it stays put. fec0:: and fe7f:: lie just outside fe80::/10
+          configure([])
+          const modal = await open(SelectNetworkInterfacesComponent)
+
+          for (const ip6 of [
+            'fd00::10',
+            '2001:db8::10',
+            'fec0::1',
+            'fe7f::1',
+          ]) {
+            expect(modal.bindOptions(adapter(modal, { ip6 }))).toEqual(['eth0', '192.168.1.10', ip6])
+          }
+        })
+
+        it('leaves an adapter that has nothing else with its name only, and no choice to show', async () => {
+          // A tunnel or peer-to-peer adapter (utun0, awdl0) has only a link-local address
+          configure(['eth0'])
+          const fixture = TestBed.createComponent(SelectNetworkInterfacesComponent)
+          adapter(fixture.componentInstance, { ip4: '', ip6: 'fe80::1' })
+          fixture.detectChanges()
+          await fixture.whenStable()
+
+          expect(fixture.componentInstance.bindOptions(fixture.componentInstance.adaptersAvailable[0])).toEqual(['eth0'])
+          expect(fixture.nativeElement.querySelectorAll('select')).toHaveLength(0)
+        })
+
+        it('stays a choice when config.json already holds it', async () => {
+          // Written by hand: it is not ours to remove, and saving another
+          // change must not turn it into a name
+          configure([
+            { entry: 'fe80::42:acff:fe12:5', iface: 'eth0' },
+          ])
+          const modal = await open(SelectNetworkInterfacesComponent)
+          adapter(modal, { ip6: 'fe80::42:acff:fe12:5' })
+          modal.adaptersAvailable[1].selected = true
+
+          expect(modal.bindOptions(modal.adaptersAvailable[0])).toEqual(['eth0', '192.168.1.10', 'fe80::42:acff:fe12:5'])
+
+          modal.submit()
+
+          expect(activeModal.close).toHaveBeenCalledWith(['fe80::42:acff:fe12:5', 'wlan0'])
+        })
+      })
+
+      it('still offers the address the modal opened with after a switch to the name', async () => {
+        // Without it, a switch away from an address that is not one of the two
+        // listed could only be undone by cancelling
+        configure([
+          { entry: '192.168.1.99', iface: 'eth0' },
+        ])
+        const modal = await open(SelectNetworkInterfacesComponent)
+
+        modal.adaptersAvailable[0].bindBy = 'eth0'
+
+        expect(modal.bindOptions(modal.adaptersAvailable[0])).toContain('192.168.1.99')
+      })
+
+      /**
+       * ⚠️ Before v2.5.1, Homebridge hands an address in bridge.bind to Matter
+       * as an adapter name, and Matter then fails to start. On such a version
+       * the modal must not offer what would break the bridge.
+       */
+      describe('on a Homebridge that cannot take an address', () => {
+        it('offers only the adapter name', async () => {
+          configure(['eth0'], false)
+          const modal = await open(SelectNetworkInterfacesComponent)
+
+          expect(modal.bindOptions(modal.adaptersAvailable[0])).toEqual(['eth0'])
+        })
+
+        it('shows no name-or-address choice and no advice to pick an address', async () => {
+          configure(['eth0'], false)
+          const fixture = TestBed.createComponent(SelectNetworkInterfacesComponent)
+          fixture.detectChanges()
+          await fixture.whenStable()
+
+          expect(fixture.nativeElement.querySelectorAll('select')).toHaveLength(0)
+          // Only the standing note about leaving every adapter unticked
+          expect(fixture.nativeElement.querySelectorAll('.modal-body ul:not(.list-group) li')).toHaveLength(1)
+        })
+
+        it('keeps an address written in config.json by hand, and lets it be swapped for the name', async () => {
+          // HAP alone has always taken an address, so one may already be there.
+          // It is not ours to remove, and saving another change must not drop it
+          configure([
+            { entry: '192.168.1.11', iface: 'wlan0' },
+          ], false)
+          const modal = await open(SelectNetworkInterfacesComponent)
+          modal.adaptersAvailable[0].selected = true
+
+          expect(modal.bindOptions(modal.adaptersAvailable[1])).toEqual(['wlan0', '192.168.1.11'])
+
+          modal.submit()
+
+          expect(activeModal.close).toHaveBeenCalledWith(['eth0', '192.168.1.11'])
+        })
+      })
     })
   })
 

@@ -1,3 +1,5 @@
+import type { ResolvedBindEntry } from '@/app/modules/settings/settings.interfaces'
+
 import { DatePipe } from '@angular/common'
 import { HttpClient, HttpParams } from '@angular/common/http'
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
@@ -147,8 +149,15 @@ export class WidgetControlComponent implements OnInit {
   }
 
   private async loadNetworkInterfaces(): Promise<void> {
-    const adapters = await this.$api.get('/server/network-interfaces/bridge')
-    this.networkInterfaces.set(adapters)
+    // The widget needs adapter names, and bridge.bind may hold an IP address in place of one,
+    // so an address is swapped for the adapter that has it (and left out if none does)
+    const entries = await this.$api.get<ResolvedBindEntry[]>('/server/network-interfaces/bridge/resolved')
+    const names = (entries ?? [])
+      .map(({ entry, iface, isAddress }) => isAddress ? iface : entry)
+      .filter((name): name is string => !!name)
+    this.networkInterfaces.set([
+      ...new Set(names),
+    ])
   }
 
   public dismissModal(): void {

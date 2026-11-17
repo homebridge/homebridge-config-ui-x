@@ -30,6 +30,7 @@ import { networkInterfaces } from 'systeminformation'
 import { create, extract, ReadEntry } from 'tar'
 import { Parse } from 'unzipper'
 
+import { resolveBindEntries } from '../../core/bridge-bind.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
@@ -1092,10 +1093,14 @@ export class BackupService {
         return
       }
 
-      // Check each interface exists on the new host
+      // Check each interface exists on the new host. An entry may also be an IP address, which
+      // is kept when this host has it: Homebridge cannot advertise on an address the host lacks
       const interfaces = await networkInterfaces()
       const ifaceNames = interfaces.map(i => i.iface)
-      restoredConfig.bridge.bind = restoredConfig.bridge.bind.filter(x => ifaceNames.includes(x))
+      const ownedAddresses = resolveBindEntries(restoredConfig.bridge.bind)
+        .filter(x => x.isAddress && x.iface !== null)
+        .map(x => x.entry)
+      restoredConfig.bridge.bind = restoredConfig.bridge.bind.filter(x => ifaceNames.includes(x) || ownedAddresses.includes(x))
 
       // If empty delete
       if (!restoredConfig.bridge.bind.length) {

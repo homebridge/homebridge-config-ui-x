@@ -79,4 +79,9 @@ export const FEATURE_FLAGS: FeatureFlagDefinition[] = [
     description: 'Homebridge core includes the commissioned Matter fabric list (matterFabrics/matterFabricCount) in child bridge metadata, so the UI can show which controllers hold a fabric rather than a bare paired flag. Older runtimes omit the fields.',
     range: '>=2.2.2-beta.8',
   },
+  {
+    key: 'bridgeBindByAddress',
+    description: 'Offers an IP address in place of a network interface name for `bridge.bind`, so the bridge follows a network when interface names change between restarts (a Docker container on several networks). HAP has always accepted an address; older runtimes pass it to matter.js as an interface name, and Matter then fails to start.',
+    range: '>=2.5.1-beta.3',
+  },
 ]

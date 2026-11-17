@@ -2464,6 +2464,27 @@ describe('ConfigEditorController (e2e)', () => {
     expect(homebridgeConfigService.getFeatureFlags().hapDisableIdentifyingMaterial).toBe(true)
   })
 
+  it('should enable the bridgeBindByAddress feature flag from Homebridge 2.5.1-beta.3', () => {
+    // The first version that gives Matter the adapter that has an address in
+    // bridge.bind. Earlier ones pass the address on as a name, and Matter fails to start
+    const before = homebridgeConfigService.homebridgeVersion
+    try {
+      homebridgeConfigService.homebridgeVersion = '2.5.0'
+      expect(homebridgeConfigService.getFeatureFlags().bridgeBindByAddress).toBe(false)
+
+      homebridgeConfigService.homebridgeVersion = '2.5.1-beta.2'
+      expect(homebridgeConfigService.getFeatureFlags().bridgeBindByAddress).toBe(false)
+
+      homebridgeConfigService.homebridgeVersion = '2.5.1-beta.3'
+      expect(homebridgeConfigService.getFeatureFlags().bridgeBindByAddress).toBe(true)
+
+      homebridgeConfigService.homebridgeVersion = '2.5.1'
+      expect(homebridgeConfigService.getFeatureFlags().bridgeBindByAddress).toBe(true)
+    } finally {
+      homebridgeConfigService.homebridgeVersion = before
+    }
+  })
+
   it('PUT /config-editor/hap (should persist and preserve disableIdentifyingMaterial)', async () => {
     homebridgeConfigService.homebridgeVersion = '2.2.2-beta.0'
 

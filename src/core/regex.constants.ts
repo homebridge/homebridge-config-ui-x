@@ -57,6 +57,10 @@ export const RE_USERNAME = /^(?:[0-9a-f]{2}:){5}[0-9a-f]{2}$/i
 export const RE_HEX_12 = /^[a-f0-9]{12}$/i
 export const RE_HEX_ANY = /^[a-f0-9]+$/i
 
+// Network
+// The zone of an IPv6 address given as a scope id (fe80::1%3) rather than an interface name (fe80::1%eth0)
+export const RE_DIGITS_ONLY = /^\d+$/
+
 // Homebridge accessory / cache files
 export const RE_ACCESSORY_INFO_FILE = /AccessoryInfo\.([A-Fa-f0-9]+)\.json$/
 export const RE_CACHED_ACCESSORIES_EXACT = /^cachedAccessories\.([A-F,0-9]+)$/

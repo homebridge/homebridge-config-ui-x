@@ -1,4 +1,4 @@
-import type { NetworkAdapterAvailable, NetworkAdapterSelected } from '@/app/modules/settings/settings.interfaces'
+import type { NetworkAdapterAvailable, NetworkAdapterSelected, ResolvedBindEntry } from '@/app/modules/settings/settings.interfaces'
 import type { WritableSignal } from '@angular/core'
 
 import { TitleCasePipe } from '@angular/common'
@@ -984,6 +984,8 @@ export class SettingsComponent implements OnInit {
         useValue: {
           adaptersAvailable: this.adaptersAvailable(),
           adaptersSelected: this.adaptersSelected(),
+          // Before v2.5.1, Homebridge fails to start Matter when bridge.bind holds an address
+          canBindByAddress: this.$settings.isFeatureEnabled('bridgeBindByAddress'),
         },
       },
     ], this.injector)
@@ -995,10 +997,13 @@ export class SettingsComponent implements OnInit {
     })
 
     try {
+      // Adapter names, or the IP address chosen in place of a name
       const adapters: string[] = await ref.result
-      this.buildBridgeNetworkAdapterList(adapters)
       await this.$api.put('/server/network-interfaces/bridge', { adapters })
       this.$settings.showRestartToast()
+      this.buildBridgeNetworkAdapterList(
+        await this.$api.get<ResolvedBindEntry[]>('/server/network-interfaces/bridge/resolved'),
+      )
     } catch (error: any) {
       if (error !== 'Dismiss') {
         console.error(error)
@@ -1077,7 +1082,7 @@ export class SettingsComponent implements OnInit {
   private async getNetworkSettings(): Promise<void> {
     const [system, adapters, mdnsAdvertiser, port, ports] = await Promise.all([
       this.$api.get<NetworkAdapterAvailable[]>('/server/network-interfaces/system'),
-      this.$api.get<string[]>('/server/network-interfaces/bridge'),
+      this.$api.get<ResolvedBindEntry[]>('/server/network-interfaces/bridge/resolved'),
       this.$api.get<{ advertiser: string }>('/server/mdns-advertiser'),
       this.$api.get<{ port: number }>('/server/port'),
       this.$api.get<{ start?: number, end?: number }>('/server/ports'),
@@ -2629,16 +2634,20 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private buildBridgeNetworkAdapterList(adapters: string[]) {
-    if (!adapters.length) {
+  // A bridge.bind entry is an adapter name or an IP address. The server works out which adapter an
+  // address belongs to now, as Homebridge does at start, so an address is shown against its adapter
+  private buildBridgeNetworkAdapterList(entries: ResolvedBindEntry[]) {
+    if (!entries?.length) {
       this.adaptersSelected.set([])
       return
     }
 
-    this.adaptersSelected.set(adapters.map((interfaceName) => {
-      const i = this.adaptersAvailable().find(x => x.iface === interfaceName)
+    this.adaptersSelected.set(entries.map(({ entry, iface, isAddress }) => {
+      const i = this.adaptersAvailable().find(x => x.iface === iface)
       if (i) {
         return {
+          entry,
+          byAddress: isAddress,
           iface: i.iface,
           selected: true,
           missing: false,
@@ -2647,7 +2656,9 @@ export class SettingsComponent implements OnInit {
         }
       } else {
         return {
-          iface: interfaceName,
+          entry,
+          byAddress: isAddress,
+          iface: entry,
           selected: true,
           missing: true,
         }
