@@ -4,6 +4,7 @@ import type { TestingModule } from '@nestjs/testing'
 import type { HomebridgeConfig } from '../../src/core/config/config.interfaces.js'
 
 import { Buffer } from 'node:buffer'
+import { networkInterfaces } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -519,6 +520,88 @@ describe('ServerController (e2e)', () => {
     // check the value was saved
     const config = await readJson(configService.configPath)
     expect(config.bridge.bind).toBeUndefined()
+  })
+
+  it('PUT /server/network-interfaces/bridge (an ip address in place of an adapter name)', async () => {
+    // Homebridge takes either in bridge.bind, and an address is what keeps a
+    // bridge on one network when the adapter names change between starts
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/network-interfaces/bridge',
+      headers: {
+        authorization,
+      },
+      payload: {
+        adapters: ['192.168.1.50', 'en0'],
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    const config = await readJson(configService.configPath)
+    expect(config.bridge.bind).toEqual(['192.168.1.50', 'en0'])
+  })
+
+  it('GET /server/network-interfaces/bridge/resolved', async () => {
+    // Whichever adapter this machine has 127.0.0.1 on (lo, lo0, "Loopback Pseudo-Interface 1")
+    const loopback = Object.entries(networkInterfaces())
+      .find(([, addresses]) => addresses?.some(x => x.address === '127.0.0.1'))?.[0] ?? null
+
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    // 203.0.113.0/24 is reserved for documentation, so no machine has this address
+    config.bridge.bind = ['127.0.0.1', '203.0.113.7', 'no-such-adapter0']
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/network-interfaces/bridge/resolved',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual([
+      { entry: '127.0.0.1', iface: loopback, isAddress: true },
+      { entry: '203.0.113.7', iface: null, isAddress: true },
+      { entry: 'no-such-adapter0', iface: null, isAddress: false },
+    ])
+  })
+
+  it('GET /server/network-interfaces/bridge/resolved (bind is one name, not a list)', async () => {
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    config.bridge.bind = 'no-such-adapter0'
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/network-interfaces/bridge/resolved',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual([
+      { entry: 'no-such-adapter0', iface: null, isAddress: false },
+    ])
+  })
+
+  it('GET /server/network-interfaces/bridge/resolved (bind not set)', async () => {
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    delete config.bridge.bind
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/network-interfaces/bridge/resolved',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual([])
   })
 
   it('PUT /server/network-interfaces/bridge (bad payload)', async () => {
