@@ -383,6 +383,10 @@ export class SettingsService implements OnDestroy {
     FONT_SIZE: 13,
     FONT_WEIGHT: '400' as const,
     LINE_HEIGHT: 1.2,
+    // xterm 6 scrolls in code and draws its own scrollbar, 14px wide. On a touch
+    // screen that is too thin to grab, so it gets a finger-sized one (#3125).
+    // terminal.scss draws only the right-hand 8px of it, so it still looks slim
+    TOUCH_SCROLLBAR_WIDTH: 24,
   } as const
 
   private readonly TERMINAL_COLORS = {
@@ -444,6 +448,11 @@ export class SettingsService implements OnDestroy {
     }
   }
 
+  /** Whether the main way of pointing is a finger, as on a phone or a tablet. */
+  private isTouchScreen(): boolean {
+    return window.matchMedia?.('(pointer: coarse)').matches ?? false
+  }
+
   /**
    * Get terminal options with global font settings applied
    * @param overrides - Optional overrides for terminal options
@@ -461,6 +470,9 @@ export class SettingsService implements OnDestroy {
       theme: themeOptions.theme,
       allowTransparency: themeOptions.allowTransparency,
       screenReaderMode: true,
+      ...(this.isTouchScreen() && {
+        scrollbar: { width: this.TERMINAL_DEFAULTS.TOUCH_SCROLLBAR_WIDTH },
+      }),
       ...overrides,
     } as ITerminalOptions
   }

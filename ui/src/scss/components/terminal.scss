@@ -21,6 +21,31 @@
   -ms-overflow-style: none; // edge
 }
 
+// xterm 6 fades its scrollbar out until the pointer hovers over it. A finger
+// cannot hover, so on a touch screen the bar stays visible and can be dragged (#3125)
+@media (pointer: coarse) {
+  .xterm .xterm-scrollable-element > .xterm-scrollbar.xterm-vertical.xterm-invisible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  // The bar is 24px wide so that a finger can grab it (TOUCH_SCROLLBAR_WIDTH in the settings service),
+  // but only its right-hand 8px is drawn, so it looks slim. The clear border still takes the touch.
+  // xterm sets the colour with the `background` shorthand, which would undo the clip without !important
+  .xterm .xterm-scrollable-element > .xterm-scrollbar.xterm-vertical > .xterm-slider {
+    box-sizing: border-box;
+    border-left: 16px solid transparent;
+    background-clip: padding-box !important;
+  }
+}
+
+// A finger dragging xterm's scrollbar is a drag, not a pan of the page. Without this, the
+// phone moves the terminal a couple of lines, then takes the touch over and scrolls the page (#3125)
+.xterm .xterm-scrollable-element > .xterm-scrollbar,
+.xterm .xterm-scrollable-element > .xterm-scrollbar > .xterm-slider {
+  touch-action: none;
+}
+
 // https://github.com/xtermjs/xterm.js/pull/4979/files
 .terminal .xterm-rows span {
   pointer-events: none;
