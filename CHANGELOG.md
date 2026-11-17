@@ -115,6 +115,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(config): show the masked config in a read-only monaco editor on a big screen
 - fix(config): drop the empty strip left of the line numbers in the config editor
 - feat(config): show the secrets toggle as a lock icon, with the masking notice in its tooltip
+- fix(logs): make the log and terminal scrollbar wide and always visible on touch screens
 
 ### Other Changes
 

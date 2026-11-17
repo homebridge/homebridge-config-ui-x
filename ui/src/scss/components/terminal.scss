@@ -21,6 +21,15 @@
   -ms-overflow-style: none; // edge
 }
 
+// xterm 6 fades its scrollbar out until the pointer hovers over it. A finger
+// cannot hover, so on a touch screen the bar stays visible and can be dragged (#3125)
+@media (pointer: coarse) {
+  .xterm .xterm-scrollable-element > .xterm-scrollbar.xterm-vertical.xterm-invisible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
 // https://github.com/xtermjs/xterm.js/pull/4979/files
 .terminal .xterm-rows span {
   pointer-events: none;
