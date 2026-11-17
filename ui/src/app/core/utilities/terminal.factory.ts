@@ -5,6 +5,8 @@ import { FitAddon } from '@xterm/addon-fit'
 import { WebLinksAddon } from '@xterm/addon-web-links'
 import { Terminal } from '@xterm/xterm'
 
+import { TouchMomentumAddon } from '@/app/core/utilities/touch-momentum.addon'
+
 /**
  * How the terminal and its addons get built.
  *
@@ -24,7 +26,12 @@ export interface TerminalFactory {
 export const TERMINAL_FACTORY = new InjectionToken<TerminalFactory>('TERMINAL_FACTORY', {
   providedIn: 'root',
   factory: () => ({
-    createTerminal: options => new Terminal(options),
+    createTerminal: (options) => {
+      const terminal = new Terminal(options)
+      // Every terminal gets the long glide after a flick on a touch screen (#3125)
+      terminal.loadAddon(new TouchMomentumAddon())
+      return terminal
+    },
     createFitAddon: () => new FitAddon(),
     createWebLinksAddon: handler => new WebLinksAddon(handler),
   }),

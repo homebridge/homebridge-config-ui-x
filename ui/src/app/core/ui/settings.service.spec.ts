@@ -515,6 +515,21 @@ describe('SettingsService', () => {
       expect(service.getTerminalOptions()).toMatchObject({ fontSize: 18, fontWeight: '700' })
     })
 
+    it('gives a touch screen a slim scrollbar, and leaves a mouse the default', () => {
+      // The width is also what xterm keeps free of text. The part a finger can grab is widened in terminal.scss (#3125)
+      const matchMedia = vi.spyOn(window, 'matchMedia')
+      try {
+        matchMedia.mockReturnValue({ matches: false } as MediaQueryList)
+        expect(service.getTerminalOptions().scrollbar).toBeUndefined()
+
+        matchMedia.mockReturnValue({ matches: true } as MediaQueryList)
+        expect(service.getTerminalOptions().scrollbar).toEqual({ width: 12 })
+        expect(matchMedia).toHaveBeenLastCalledWith('(pointer: coarse)')
+      } finally {
+        matchMedia.mockRestore()
+      }
+    })
+
     it('lets a caller override anything', () => {
       const options = service.getTerminalOptions({ disableStdin: true, fontSize: 20 })
 
