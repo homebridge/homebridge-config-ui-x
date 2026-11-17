@@ -1,6 +1,7 @@
 import type { MultipartFile } from '@fastify/multipart'
 import type { Systeminformation } from 'systeminformation'
 
+import type { ResolvedBindEntry } from '../../core/bridge-bind.js'
 import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces.js'
 import type { NetworkOverviewEntry, StoredMatterAccessory } from '../../core/matter/matter.interfaces.js'
 
@@ -29,6 +30,7 @@ import NodeCache from 'node-cache'
 import { networkInterfaces } from 'systeminformation'
 import { check as tcpCheck } from 'tcp-port-used'
 
+import { resolveBindEntries } from '../../core/bridge-bind.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { writePrivateFile } from '../../core/fs/private-file.js'
@@ -1212,6 +1214,15 @@ export class ServerService {
     }
 
     return []
+  }
+
+  /**
+   * Returns the `bridge.bind` entries, each with the network adapter it stands for on this host.
+   * An entry may be an IP address instead of an adapter name: Homebridge then uses the adapter
+   * that owns the address when it starts, so the UI has to look the address up the same way.
+   */
+  public async getHomebridgeNetworkInterfacesResolved(): Promise<ResolvedBindEntry[]> {
+    return resolveBindEntries(await this.getHomebridgeNetworkInterfaces())
   }
 
   /**
