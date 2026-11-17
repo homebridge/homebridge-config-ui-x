@@ -1,0 +1,35 @@
+# Prerelease Dependencies
+# Bumps upstream @homebridge packages on the highest alpha-* branch via a PR that auto-merges when required checks pass; merging publishes an alpha.
+name: Prerelease Dependencies
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    if: github.repository == 'homebridge/homebridge-config-ui-x'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        stream: [alpha]
+    steps:
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.DEPENDENCY_BOT_APP_ID }}
+          private-key: ${{ secrets.DEPENDENCY_BOT_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Run dependency bot
+        uses: homebridge/dependency-bot@v2.0.0
+        with:
+          config_file: .github/homebridge-dependency-bot-${{ matrix.stream }}.json
+          release_stream: ${{ matrix.stream }}
+          branch_pattern: ${{ matrix.stream }}-*.*.*
+          PUBLISH_TOKEN: ${{ steps.app-token.outputs.token }}
