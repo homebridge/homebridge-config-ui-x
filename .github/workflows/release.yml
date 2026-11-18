@@ -19,9 +19,9 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+# Concurrency is set per job, per branch: a newer push on the same branch cancels an older run while
+# it is still testing (so a burst of merges publishes once), but never once it has reached publish
+# (a run stopped after npm publish leaves a version with no pre-release). Branches never affect each other.
 
 jobs:
   determine-release-type:
@@ -95,6 +95,11 @@ jobs:
     needs: determine-release-type
     name: Build and Test (${{ needs.determine-release-type.outputs.release_type }})
     if: needs.determine-release-type.outputs.release_type == 'beta' || needs.determine-release-type.outputs.release_type == 'alpha'
+    # One group per branch and OS: a newer run's leg cancels the same leg of an older run on this branch.
+    # A cancelled leg makes this job's result 'cancelled', so the older run's publish is skipped.
+    concurrency:
+      group: ${{ github.workflow }}-build-${{ github.ref }}-${{ matrix.os }}
+      cancel-in-progress: true
     strategy:
       fail-fast: false
       matrix:
@@ -132,6 +137,10 @@ jobs:
       (needs.build_and_test_beta.result == 'success' ||
        needs.build_and_test_beta.result == 'skipped')
     name: Publish to npm (${{ needs.determine-release-type.outputs.npm_tag }})
+    # Never cancelled once started; a second run's publish on this branch waits for it.
+    concurrency:
+      group: ${{ github.workflow }}-publish-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     permissions:
       id-token: write

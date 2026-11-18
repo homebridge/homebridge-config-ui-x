@@ -155,6 +155,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - test(i18n): find a missing key in a ternary, a helper call or a template, not only before translate
 - fix: import types with import type, so each server file builds on its own as the swc dev server needs
 - chore(dev): run the dev server through swc, so nest checks api data in dev as a release does
+- ci: set release concurrency per job and branch, so a publish is never cancelled part-way (#3128)
 
 ### Homebridge Dependencies
 
