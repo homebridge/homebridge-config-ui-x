@@ -40,7 +40,7 @@ jobs:
           permission-pull-requests: write
 
       - name: Refresh ${{ matrix.stream }} upstream dependencies
-        uses: homebridge/dependency-bot@v2.0.0
+        uses: homebridge/dependency-bot@latest
         with:
           config_file: .github/homebridge-dependency-bot-${{ matrix.stream }}.json
           release_stream: ${{ matrix.stream }}
