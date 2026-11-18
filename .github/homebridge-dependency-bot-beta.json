@@ -1,0 +1,26 @@
+{
+  "auto_merge": true,
+  "merge_when_green": true,
+  "update_method": "pr",
+  "update_lockfile": true,
+  "git_user": {
+    "name": "homebridge[bot]",
+    "email": "354207881+homebridge[bot]@users.noreply.github.com"
+  },
+  "directories": [
+    {
+      "directory": ".",
+      "packages": [
+        { "name": "@homebridge/hap-client", "tag": ["beta", "latest"] },
+        { "name": "@homebridge/node-pty-prebuilt-multiarch", "tag": ["beta", "latest"] }
+      ]
+    },
+    {
+      "directory": "ui",
+      "packages": [
+        { "name": "@homebridge/hap-client", "tag": ["beta", "latest"] },
+        { "name": "@homebridge/plugin-ui-utils", "tag": ["beta", "latest"] }
+      ]
+    }
+  ]
+}
