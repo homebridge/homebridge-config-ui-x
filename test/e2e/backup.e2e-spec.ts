@@ -6,7 +6,7 @@ import { Buffer } from 'node:buffer'
 import crypto from 'node:crypto'
 import { EventEmitter } from 'node:events'
 import { lstat, mkdtemp, symlink, writeFile as writeFileAsync } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
+import { networkInterfaces, tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 
@@ -32,7 +32,7 @@ import {
   writeJson,
   writeSync,
 } from 'fs-extra'
-import { create as tarCreate } from 'tar'
+import { create as tarCreate, list as tarList } from 'tar'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -208,6 +208,65 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     expect(backupsAfterJob).toHaveLength(7)
   })
 
+  it('keeps every old backup when the scheduled backup fails', async () => {
+    await remove(configService.instanceBackupPath)
+    await ensureDir(configService.instanceBackupPath)
+    const instanceId = configService.homebridgeConfig.bridge.username.replace(RE_COLON, '')
+    const old = `homebridge-backup-${instanceId}.${dayjs().subtract(10, 'day').valueOf()}.tar.gz`
+    await writeFile(resolve(configService.instanceBackupPath, old), 'xyz')
+    const createBackup = vi.spyOn(backupService as any, 'createBackup').mockRejectedValue(new Error('ENOSPC'))
+
+    try {
+      await backupService.runScheduledBackupJob()
+    } finally {
+      createBackup.mockRestore()
+    }
+
+    expect(await readdir(configService.instanceBackupPath)).toEqual([old])
+  })
+
+  it('removes only its own old backups from a custom backup folder other instances share', async () => {
+    const before = { ui: configService.ui.scheduledBackupPath, path: configService.instanceBackupPath }
+    await remove(customInstanceBackupPath)
+    await ensureDir(customInstanceBackupPath)
+    configService.ui.scheduledBackupPath = customInstanceBackupPath
+    configService.instanceBackupPath = customInstanceBackupPath
+    const instanceId = configService.homebridgeConfig.bridge.username.replace(RE_COLON, '')
+    const other = `homebridge-backup-aabbccddeeff.${dayjs().subtract(10, 'day').valueOf()}.tar.gz`
+    const own = `homebridge-backup-${instanceId}.${dayjs().subtract(10, 'day').valueOf()}.tar.gz`
+    await writeFile(resolve(customInstanceBackupPath, other), 'xyz')
+    await writeFile(resolve(customInstanceBackupPath, own), 'xyz')
+
+    try {
+      await backupService.runScheduledBackupJob()
+
+      const left = await readdir(customInstanceBackupPath)
+      expect(left).toContain(other)
+      expect(left).not.toContain(own)
+      // and today's backup was made
+      expect(left).toHaveLength(2)
+    } finally {
+      configService.ui.scheduledBackupPath = before.ui
+      configService.instanceBackupPath = before.path
+      await remove(customInstanceBackupPath)
+    }
+  })
+
+  it('removes old backups made under an older bridge username from the default backup folder', async () => {
+    // Regression: only backups of the current username were removed, so after a bridge reset or a restore from
+    // another machine, up to seven old ones stayed in the instance's own folder for good
+    await remove(configService.instanceBackupPath)
+    await ensureDir(configService.instanceBackupPath)
+    const oldUsername = `homebridge-backup-aabbccddeeff.${dayjs().subtract(10, 'day').valueOf()}.tar.gz`
+    await writeFile(resolve(configService.instanceBackupPath, oldUsername), 'xyz')
+
+    await backupService.runScheduledBackupJob()
+
+    const left = await readdir(configService.instanceBackupPath)
+    expect(left).not.toContain(oldUsername)
+    expect(left).toHaveLength(1)
+  })
+
   it('saves scheduled backups to the custom path if set and exists', async () => {
     // cleanup
     await remove(customInstanceBackupPath)
@@ -326,6 +385,264 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
 
     // Ensure the temp restore directory was removed
     expect(await pathExists(restoreDirectory)).toBe(false)
+  })
+
+  it('GET /backup/download leaves out the token signing key', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/backup/download',
+      headers: { authorization },
+    })
+    expect(res.statusCode).toBe(200)
+    await writeFile(tempBackupPath, res.rawPayload)
+
+    const entries: string[] = []
+    await tarList({
+      file: tempBackupPath,
+      onReadEntry: entry => entries.push(entry.path),
+    })
+
+    expect(entries).toContain('storage/config.json')
+    expect(entries.filter(e => e.endsWith('.uix-secrets'))).toEqual([])
+  })
+
+  it('a restore writes none of the files a backup leaves out', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/backup/download',
+      headers: { authorization },
+    })
+    await writeFile(tempBackupPath, res.rawPayload)
+    const payload = new FormData()
+    payload.append('backup.tar.gz', await readFile(tempBackupPath))
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+    expect((await app.inject({
+      method: 'POST',
+      path: '/backup/restore',
+      headers,
+      payload,
+    })).statusCode).toBe(201)
+    await new Promise(r => setTimeout(r, 100))
+
+    // What a hand-made or edited archive could carry: a docker start script, a plugin folder, another signing key
+    const restoreDirectory = (backupService as any).restoreDirectory
+    await writeFile(join(restoreDirectory, 'storage', 'startup.sh'), '#!/bin/sh\necho owned\n')
+    await ensureDir(join(restoreDirectory, 'storage', 'node_modules', 'homebridge-evil'))
+    await writeFile(join(restoreDirectory, 'storage', 'node_modules', 'homebridge-evil', 'index.js'), 'x')
+    await writeFile(join(restoreDirectory, 'storage', '.uix-secrets'), JSON.stringify({
+      secretKey: 'f'.repeat(64),
+    }))
+    const secretsBefore = await readFile(secretsFilePath, 'utf8')
+    await remove(resolve(process.env.UIX_STORAGE_PATH, 'startup.sh'))
+    vi.spyOn(pluginsService, 'managePlugin').mockResolvedValue(true)
+
+    await backupGateway.doRestore(new EventEmitter())
+
+    expect(await pathExists(resolve(process.env.UIX_STORAGE_PATH, 'startup.sh'))).toBe(false)
+    expect(await pathExists(resolve(process.env.UIX_STORAGE_PATH, 'node_modules', 'homebridge-evil'))).toBe(false)
+    expect(await readFile(secretsFilePath, 'utf8')).toBe(secretsBefore)
+  })
+
+  it('a restore installs only plugins with a valid name and version', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/backup/download',
+      headers: { authorization },
+    })
+    await writeFile(tempBackupPath, res.rawPayload)
+    const payload = new FormData()
+    payload.append('backup.tar.gz', await readFile(tempBackupPath))
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+    expect((await app.inject({
+      method: 'POST',
+      path: '/backup/restore',
+      headers,
+      payload,
+    })).statusCode).toBe(201)
+    await new Promise(r => setTimeout(r, 100))
+
+    const restoreDirectory = (backupService as any).restoreDirectory
+    await writeJson(join(restoreDirectory, 'plugins.json'), [
+      { name: 'homebridge-good', installedVersion: '1.2.3', publicPackage: true },
+      { name: '--registry=https://evil.example', installedVersion: '1.0.0', publicPackage: true },
+      { name: 'homebridge-bad-version', installedVersion: '1.0; rm -rf /', publicPackage: true },
+      { name: 'homebridge-not-text', installedVersion: 5, publicPackage: true },
+    ])
+    const managePlugin = vi.spyOn(pluginsService, 'managePlugin').mockResolvedValue(true)
+
+    await backupGateway.doRestore(new EventEmitter())
+
+    expect(managePlugin.mock.calls.map(([, action]) => action.name)).toEqual(['homebridge-good'])
+  })
+
+  it('a failed upload removes its temp folder and frees the restore slot', async () => {
+    const tempDirs = async () => (await readdir(tmpdir())).filter(name => name.startsWith('homebridge-backup-'))
+    const before = await tempDirs()
+
+    // Starts like a gzip file, so the extract begins, then fails
+    const payload = new FormData()
+    payload.append('backup.tar.gz', Buffer.concat([
+      Buffer.from([0x1F, 0x8B, 0x08, 0x00]),
+      crypto.randomBytes(4096),
+    ]))
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/backup/restore',
+      headers,
+      payload,
+    })
+
+    expect(res.statusCode).toBeGreaterThanOrEqual(400)
+    expect((await tempDirs()).filter(name => !before.includes(name))).toEqual([])
+    expect((backupService as any).restoreDirectory).toBeUndefined()
+  })
+
+  describe('a restore that does not finish', () => {
+    const upload = async () => {
+      const res = await app.inject({
+        method: 'GET',
+        path: '/backup/download',
+        headers: { authorization },
+      })
+      await writeFile(tempBackupPath, res.rawPayload)
+      const payload = new FormData()
+      payload.append('backup.tar.gz', await readFile(tempBackupPath))
+      const headers = payload.getHeaders()
+      headers.authorization = authorization
+      return app.inject({
+        method: 'POST',
+        path: '/backup/restore',
+        headers,
+        payload,
+      })
+    }
+
+    it('frees the slot for the next upload when it fails part-way', async () => {
+      expect((await upload()).statusCode).toBe(201)
+      const restoreDirectory = (backupService as any).restoreDirectory
+      await writeJson(join(restoreDirectory, 'plugins.json'), [])
+      const write = vi.spyOn((backupService as any).jsonStore, 'write').mockRejectedValueOnce(new Error('ENOSPC'))
+
+      await expect(backupService.restoreFromBackup(new EventEmitter())).rejects.toThrow('ENOSPC')
+      write.mockRestore()
+
+      expect((backupService as any).restoreDirectory).toBeUndefined()
+      expect(await pathExists(restoreDirectory)).toBe(false)
+      expect((await upload()).statusCode).toBe(201)
+      await backupService.removeRestoreDirectory()
+    })
+
+    it('finishes a backup whose config.json has no bridge section', async () => {
+      expect((await upload()).statusCode).toBe(201)
+      const restoreDirectory = (backupService as any).restoreDirectory
+      await writeJson(join(restoreDirectory, 'plugins.json'), [])
+      const config = await readJson(join(restoreDirectory, 'storage', 'config.json'))
+      delete config.bridge
+      await writeJson(join(restoreDirectory, 'storage', 'config.json'), config)
+      const configBefore = await readFile(configService.configPath)
+
+      try {
+        await expect(backupService.restoreFromBackup(new EventEmitter())).resolves.toEqual({ status: 0 })
+      } finally {
+        await writeFile(configService.configPath, configBefore)
+      }
+    })
+  })
+
+  it('a restore keeps a bridge.bind ip address this machine has, and drops what it does not have', async () => {
+    // bridge.bind may hold an address in place of an adapter name. Checking it
+    // against adapter names alone dropped every address, on the same machine too
+    const hasLoopback = Object.values(networkInterfaces())
+      .some(addresses => addresses?.some(x => x.address === '127.0.0.1'))
+    // 203.0.113.0/24 is reserved for documentation, so no machine has this address
+    const restoredConfig: any = {
+      bridge: {
+        bind: ['127.0.0.1', '203.0.113.7', 'no-such-adapter0'],
+      },
+    }
+
+    await (backupService as any).checkBridgeBindConfig(restoredConfig)
+
+    expect(restoredConfig.bridge.bind).toEqual(hasLoopback
+      ? ['127.0.0.1']
+      : undefined)
+  })
+
+  it('an hbfx restore saves the ui block as config.json has it, not the values the ui works out at start-up', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
+    await writeJson(join(dir, 'package.json'), { name: 'hbfx', version: '1.0.0' })
+    await ensureDir(join(dir, 'etc'))
+    await writeJson(join(dir, 'etc', 'config.json'), {
+      bridge: {
+        name: 'Old',
+        username: '0E:22:22:22:22:22',
+        port: 51826,
+        pin: '111-22-333',
+      },
+    })
+    ;(backupService as any).restoreDirectory = dir
+    const configBefore = await readFile(configService.configPath)
+    const uiOnDisk = (await readJson(configService.configPath)).platforms.find((x: any) => x.platform === 'config')
+
+    try {
+      await backupService.restoreHbfxBackup(new EventEmitter())
+      const restoredUi = (await readJson(configService.configPath)).platforms.find((x: any) => x.platform === 'config')
+
+      // `sudo`, the native log path and the default session timeout are worked out at start-up, not settings
+      expect(restoredUi.log).toEqual(uiOnDisk.log)
+      expect(restoredUi.sudo).toEqual(uiOnDisk.sudo)
+      expect(restoredUi.sessionTimeout).toEqual(uiOnDisk.sessionTimeout)
+    } finally {
+      await writeFile(configService.configPath, configBefore)
+      await backupService.removeRestoreDirectory()
+    }
+  })
+
+  it('an hbfx restore writes none of the files a backup leaves out, such as the token signing key', async () => {
+    // Regression: the .tar.gz restore skipped them, but the .hbfx one copied everything under etc/, so a
+    // crafted file could replace the key that signs logins, or add a startup.sh that Docker runs as root
+    const dir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
+    await writeJson(join(dir, 'package.json'), { name: 'hbfx', version: '1.0.0' })
+    await ensureDir(join(dir, 'etc', 'accessories'))
+    await writeJson(join(dir, 'etc', 'config.json'), {
+      bridge: {
+        name: 'Old',
+        username: '0E:22:22:22:22:22',
+        port: 51826,
+        pin: '111-22-333',
+      },
+    })
+    await writeFile(join(dir, 'etc', '.uix-secrets'), '{"secretKey":"known"}')
+    await writeFile(join(dir, 'etc', 'startup.sh'), 'echo pwned')
+    await writeFile(join(dir, 'etc', 'accessories', 'startup.sh'), 'echo pwned')
+    await writeJson(join(dir, 'etc', 'accessories', 'cachedAccessories'), [])
+    ;(backupService as any).restoreDirectory = dir
+    const storage = configService.storagePath
+    const configBefore = await readFile(configService.configPath)
+    const secretsBefore = await readFile(join(storage, '.uix-secrets'))
+    const hadStartup = await pathExists(join(storage, 'startup.sh'))
+
+    try {
+      await backupService.restoreHbfxBackup(new EventEmitter())
+
+      expect(await readFile(join(storage, '.uix-secrets'))).toEqual(secretsBefore)
+      expect(await pathExists(join(storage, 'startup.sh'))).toBe(hadStartup)
+      expect(await pathExists(join(storage, 'accessories', 'startup.sh'))).toBe(false)
+      expect(await pathExists(join(storage, 'accessories', 'cachedAccessories'))).toBe(true)
+    } finally {
+      await writeFile(configService.configPath, configBefore)
+      await writeFile(join(storage, '.uix-secrets'), secretsBefore)
+      if (!hadStartup) {
+        await remove(join(storage, 'startup.sh'))
+      }
+      await remove(join(storage, 'accessories', 'startup.sh'))
+      await backupService.removeRestoreDirectory()
+    }
   })
 
   // https://github.com/homebridge/homebridge-config-ui-x/issues/1856

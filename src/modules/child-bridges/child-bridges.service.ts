@@ -8,6 +8,9 @@ import { AccessoriesService } from '../accessories/accessories.service.js'
 
 @Injectable()
 export class ChildBridgesService {
+  // Sockets that are already sent child bridge status updates
+  private readonly watchedClients = new WeakSet<object>()
+
   constructor(
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
     @Inject(AccessoriesService) private readonly accessoriesService: AccessoriesService,
@@ -30,6 +33,13 @@ export class ChildBridgesService {
    * @param client
    */
   public async watchChildBridgeStatus(client) {
+    // One watch per socket. The socket is shared by every page and widget (and the update-all window) in a
+    // browser tab, and each asks for the updates: a second watch would send every update twice
+    if (this.watchedClients.has(client)) {
+      return
+    }
+    this.watchedClients.add(client)
+
     const listener = (data) => {
       client.emit('child-bridge-status-update', data)
     }
@@ -39,6 +49,7 @@ export class ChildBridgesService {
 
     // Cleanup on disconnect
     const onEnd = () => {
+      this.watchedClients.delete(client)
       client.removeAllListeners('end')
       client.removeAllListeners('disconnect')
       client.setMaxListeners(client.getMaxListeners() - 2)

@@ -1,6 +1,7 @@
 import type { MultipartFile } from '@fastify/multipart'
 import type { Systeminformation } from 'systeminformation'
 
+import type { ResolvedBindEntry } from '../../core/bridge-bind.js'
 import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces.js'
 import type { NetworkOverviewEntry, StoredMatterAccessory } from '../../core/matter/matter.interfaces.js'
 
@@ -8,7 +9,7 @@ import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
 import { createPublicKey, randomInt, X509Certificate } from 'node:crypto'
 import { createWriteStream } from 'node:fs'
-import { readdir, readFile, unlink, writeFile } from 'node:fs/promises'
+import { readdir, readFile, rename, unlink, writeFile } from 'node:fs/promises'
 import { basename, extname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { pipeline, Readable } from 'node:stream'
@@ -29,8 +30,10 @@ import NodeCache from 'node-cache'
 import { networkInterfaces } from 'systeminformation'
 import { check as tcpCheck } from 'tcp-port-used'
 
+import { resolveBindEntries } from '../../core/bridge-bind.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
+import { writePrivateFile } from '../../core/fs/private-file.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import {
@@ -256,7 +259,9 @@ export class ServerService {
       this.logger.warn(`Bridge ${id} reset: removed Matter bridge storage at ${matterPath}.`)
     }
 
-    await this.deleteDeviceAccessories(id)
+    // The callers stopped Homebridge already: the public deleteDeviceAccessories() would stop it a second time,
+    // and with several bridges that could kill the Homebridge hb-service had just started again
+    await this.deleteSingleDeviceAccessories(id, join(this.configService.storagePath, 'accessories'))
   }
 
   /**
@@ -365,7 +370,7 @@ export class ServerService {
     const persistPath = join(this.configService.storagePath, 'persist')
 
     const devices = (await readdir(persistPath))
-      .filter(x => x.match(RE_ACCESSORY_INFO_FILE))
+      .filter(x => x.match(RE_ACCESSORY_INFO_FILE) && RE_HEX_12.test(x.split('.')[1]))
 
     const configFile = await this.configEditorService.getConfigFile()
     const externalAttribution = await this.getExternalAccessoryAttribution()
@@ -548,6 +553,12 @@ export class ServerService {
     configFile = null,
     externalAttribution: Map<string, { plugin: string, displayName?: string, category?: number, port?: number }> | null = null,
   ) {
+    // The id comes from the url (decoded, so `..%2F..%2Fx` is `../../x`): a 12 hex digit id only, as the
+    // other pairing routes check, or any json file on the host could be read
+    if (typeof deviceId !== 'string' || !RE_HEX_12.test(deviceId)) {
+      throw new BadRequestException('Invalid device id.')
+    }
+
     const persistPath = join(this.configService.storagePath, 'persist')
 
     let device: any
@@ -851,14 +862,14 @@ export class ServerService {
    * Remove multiple cached accessories
    */
   public async deleteCachedAccessories(accessories: { uuid: string, cacheFile: string }[]) {
-    this.logger.warn(`Shutting down Homebridge before removing cached accessories ${accessories.map(x => x.uuid).join(', ')}.`)
-
-    // Wait for homebridge to stop.
-    await this.homebridgeIpcService.restartAndWaitForClose()
+    if (!Array.isArray(accessories)) {
+      throw new BadRequestException('A list of accessories is required.')
+    }
 
     const accessoriesByCacheFile = new Map<string, { uuid: string }[]>()
 
-    // Group accessories by cacheFile
+    // Group accessories by cacheFile, and check every name before Homebridge is stopped: a bad name must not cost
+    // a restart for nothing
     for (const { cacheFile, uuid } of accessories) {
       const accessoryCacheFile = basename(cacheFile || 'cachedAccessories')
       if (accessoryCacheFile !== 'cachedAccessories' && !RE_CACHED_ACCESSORIES_EXACT.test(accessoryCacheFile)) {
@@ -870,6 +881,11 @@ export class ServerService {
       accessoriesByCacheFile.get(accessoryCacheFile).push({ uuid })
     }
 
+    this.logger.warn(`Shutting down Homebridge before removing cached accessories ${accessories.map(x => x.uuid).join(', ')}.`)
+
+    // Wait for homebridge to stop.
+    await this.homebridgeIpcService.restartAndWaitForClose()
+
     // Process each group of accessories
     for (const [cacheFile, accessories] of accessoriesByCacheFile.entries()) {
       const cachedAccessoriesPath = resolve(this.configService.storagePath, 'accessories', cacheFile)
@@ -878,9 +894,9 @@ export class ServerService {
           // Don't auto-create a fresh cache file just because a caller
           // pointed at a path that doesn't exist (e.g. an attempted
           // path-traversal that basename() flattened to an unrelated
-          // name). Skip this cacheFile and let other groups proceed.
+          // name). Skip this cacheFile (returning null writes nothing) and let the other groups proceed.
           this.logger.error(`Cached accessories file not found: ${cacheFile}.`)
-          throw new NotFoundException(`Cache file ${cacheFile} not found.`)
+          return null
         }
         for (const { uuid } of accessories) {
           try {
@@ -1198,6 +1214,15 @@ export class ServerService {
     }
 
     return []
+  }
+
+  /**
+   * Returns the `bridge.bind` entries, each with the network adapter it stands for on this host.
+   * An entry may be an IP address instead of an adapter name: Homebridge then uses the adapter
+   * that owns the address when it starts, so the UI has to look the address up the same way.
+   */
+  public async getHomebridgeNetworkInterfacesResolved(): Promise<ResolvedBindEntry[]> {
+    return resolveBindEntries(await this.getHomebridgeNetworkInterfaces())
   }
 
   /**
@@ -1640,23 +1665,30 @@ export class ServerService {
     const uiConfigBlock = configFile.platforms.find(x => x.platform === 'config')
 
     if (uiConfigBlock) {
-      // Delete the old wallpaper if it exists
-      if (uiConfigBlock.wallpaper) {
-        const oldPath = join(this.configService.storagePath, uiConfigBlock.wallpaper)
-        if (await pathExists(oldPath)) {
-          try {
-            await unlink(oldPath)
-            this.logger.log(`Old wallpaper file ${oldPath} deleted successfully.`)
-          } catch (e) {
-            this.logger.error(`Failed to delete old wallpaper ${oldPath} as ${e.message}.`)
-          }
-        }
+      // Write the upload to a temp file first, and only then put it in place and remove the old wallpaper: a
+      // failed upload must leave the old wallpaper (and the config that names it) as they were
+      const fileExtension = extname(data.filename).toLowerCase().replace(/[^.a-z0-9]/g, '')
+      const newPath = join(this.configService.storagePath, `ui-wallpaper${fileExtension}`)
+      const tmpPath = `${newPath}.upload-${randomInt(1e9)}`
+      try {
+        await pump(data.file, createWriteStream(tmpPath))
+        await rename(tmpPath, newPath)
+      } catch (e) {
+        await unlink(tmpPath).catch(() => undefined)
+        throw e
       }
 
-      // Save the uploaded image file to the storage path
-      const fileExtension = extname(data.filename)
-      const newPath = join(this.configService.storagePath, `ui-wallpaper${fileExtension}`)
-      await pump(data.file, createWriteStream(newPath))
+      // Delete the old wallpaper if it was another file
+      // Only a plain file name in the storage folder is ever deleted (see `getWallpaperPath`)
+      const oldPath = this.configService.getWallpaperPath(uiConfigBlock.wallpaper)
+      if (oldPath && oldPath !== newPath && await pathExists(oldPath)) {
+        try {
+          await unlink(oldPath)
+          this.logger.log(`Old wallpaper file ${oldPath} deleted successfully.`)
+        } catch (e) {
+          this.logger.error(`Failed to delete old wallpaper ${oldPath} as ${e.message}.`)
+        }
+      }
 
       // Update the config file with the new wallpaper path
       uiConfigBlock.wallpaper = `ui-wallpaper${fileExtension}`
@@ -1672,11 +1704,11 @@ export class ServerService {
     // Get the config file and find the UI config block
     const configFile = await this.configEditorService.getConfigFile()
     const uiConfigBlock = configFile.platforms.find(x => x.platform === 'config')
-    const fullPath = join(this.configService.storagePath, uiConfigBlock.wallpaper)
 
-    // Delete the wallpaper file if it exists
+    // Delete the wallpaper file if it exists. Only a plain file name in the storage folder is ever deleted.
     if (uiConfigBlock && uiConfigBlock.wallpaper) {
-      if (await pathExists(fullPath)) {
+      const fullPath = this.configService.getWallpaperPath(uiConfigBlock.wallpaper)
+      if (fullPath && await pathExists(fullPath)) {
         try {
           await unlink(fullPath)
           this.logger.log(`Wallpaper file ${uiConfigBlock.wallpaper} deleted successfully.`)
@@ -1827,7 +1859,7 @@ export class ServerService {
     await ensureDir(sslDir)
 
     // If existing files exist at these paths, overwrite them
-    await writeFile(keyPath, keyPem)
+    await writePrivateFile(keyPath, keyPem)
     await writeFile(certPath, certPem)
 
     // Update config.json UI block
@@ -1924,7 +1956,7 @@ export class ServerService {
     const sslDir = join(this.configService.storagePath, 'ssl-certs')
     const pfxPath = join(sslDir, 'ui-ssl.pfx')
     await ensureDir(sslDir)
-    await writeFile(pfxPath, pfxBuffer)
+    await writePrivateFile(pfxPath, pfxBuffer)
 
     // Update config
     const configFile = await this.configEditorService.getConfigFile()

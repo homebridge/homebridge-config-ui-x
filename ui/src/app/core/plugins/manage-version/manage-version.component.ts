@@ -74,7 +74,8 @@ export class ManageVersionComponent implements OnInit {
     const currentPref = this.getCurrentUpdatePreference()
     this.updatePreferenceControl.setValue(currentPref)
     this.updatePreferenceControl.valueChanges
-      .pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef))
+      // takeUntilDestroyed first, so a choice made just before the window closes is still saved
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(500))
       .subscribe((value: HomebridgeUpdatePolicy | null) => {
         if (value !== null) {
           void this.updatePreference(value)

@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto'
-import { copyFile, open, rename, unlink } from 'node:fs/promises'
+import { copyFile, open, realpath, rename, stat, unlink } from 'node:fs/promises'
 import { isAbsolute, normalize } from 'node:path'
 import { pid } from 'node:process'
 
@@ -35,6 +35,11 @@ export interface JsonWriteOptions {
    * silently tolerated.
    */
   backupTo?: string
+  /**
+   * File mode for a file that does not exist yet (for example 0o600 for a file that holds secrets).
+   * An existing file always keeps the mode it has.
+   */
+  mode?: number
 }
 
 /**
@@ -141,18 +146,40 @@ export class JsonFileStoreService {
         }
       }
     }
-    const tmpPath = `${path}.tmp.${pid}.${randomBytes(6).toString('hex')}`
+    // Write through a symlink to the file it points at (a config.json that is a link into a NAS share or a
+    // Docker bind mount must stay a link), and keep the mode of an existing file: a temp file made with the
+    // default mode would turn an auth.json the user set to 0600 back into 0644 on every save.
+    let target = path
+    let mode = opts.mode
+    try {
+      target = await realpath(path)
+      mode = (await stat(target)).mode & 0o7777
+    } catch (e: any) {
+      if (e?.code !== 'ENOENT') {
+        throw e
+      }
+    }
+    const tmpPath = `${target}.tmp.${pid}.${randomBytes(6).toString('hex')}`
     const body = `${JSON.stringify(data, null, opts.spaces ?? 4)}\n`
     let handle: Awaited<ReturnType<typeof open>> | undefined
     try {
-      handle = await open(tmpPath, 'w')
+      handle = await open(tmpPath, 'w', mode ?? 0o666)
+      if (mode !== undefined) {
+        // `open` applies the umask; chmod does not
+        await handle.chmod(mode)
+      }
       await handle.writeFile(body, 'utf8')
       await handle.sync()
+    } catch (e) {
+      await handle?.close()
+      handle = undefined
+      await unlink(tmpPath).catch(() => undefined)
+      throw e
     } finally {
       await handle?.close()
     }
     try {
-      await rename(tmpPath, path)
+      await rename(tmpPath, target)
     } catch (e) {
       await unlink(tmpPath).catch(() => undefined)
       throw e

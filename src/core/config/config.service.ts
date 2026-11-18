@@ -3,18 +3,35 @@ import type { ReadStream } from 'node:fs'
 import type { HomebridgeConfig, HomebridgeUiConfig } from './config.interfaces.js'
 
 import { createHash, randomBytes } from 'node:crypto'
-import { createReadStream } from 'node:fs'
+import { chmodSync, createReadStream, renameSync, statSync, writeFileSync } from 'node:fs'
 import { stat } from 'node:fs/promises'
 import { homedir, platform, totalmem } from 'node:os'
-import { resolve } from 'node:path'
+import { basename, extname, resolve } from 'node:path'
 import process from 'node:process'
 import { isDeepStrictEqual } from 'node:util'
 
 import { Injectable } from '@nestjs/common'
-import { pathExists, pathExistsSync, readJson, readJSONSync, readJsonSync, writeJsonSync } from 'fs-extra/esm'
+import { pathExists, pathExistsSync, readJson, readJSONSync, readJsonSync } from 'fs-extra/esm'
 import { satisfies } from 'semver'
 
 import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry.js'
+
+const WALLPAPER_EXTENSIONS = new Set([
+  '.avif',
+  '.bmp',
+  '.gif',
+  '.heic',
+  '.ico',
+  '.jfif',
+  '.jpe',
+  '.jpeg',
+  '.jpg',
+  '.png',
+  '.svg',
+  '.tif',
+  '.tiff',
+  '.webp',
+])
 
 @Injectable()
 export class ConfigService {
@@ -100,6 +117,9 @@ export class ConfigService {
 
   public instanceId: string
 
+  /** `ui.restart` as config.json has it (the run-time `ui.restart` is replaced by setConfig) */
+  public savedUiRestart: string | undefined
+
   constructor() {
     const homebridgeConfig = readJSONSync(this.configPath)
     this.parseConfig(homebridgeConfig)
@@ -129,6 +149,10 @@ export class ConfigService {
 
     process.env.UIX_PLUGIN_NAME = this.ui.name || 'homebridge-config-ui-x'
 
+    // setConfig() and setConfigForDocker() replace `ui.restart` at run time, so keep the value config.json has: a
+    // save compares against it to let an older custom command stay (see assertRestartCommandsSafe)
+    this.savedUiRestart = this.ui.restart
+
     if (this.runningInDocker) {
       this.setConfigForDocker()
     }
@@ -139,6 +163,12 @@ export class ConfigService {
       this.ui.port = 8080
     }
 
+    // A number of seconds. Typed as text in the JSON editor ("28800"), jsonwebtoken reads it as milliseconds, which
+    // gives a token that lasts 28 seconds and logs the user out in a loop
+    const sessionTimeout = Number(this.ui.sessionTimeout)
+    this.ui.sessionTimeout = Number.isFinite(sessionTimeout) && sessionTimeout > 0
+      ? sessionTimeout
+      : undefined
     if (!this.ui.sessionTimeout) {
       this.ui.sessionTimeout = this.ui.auth === 'none'
         ? 1296000
@@ -155,8 +185,13 @@ export class ConfigService {
     // and turning that off for everyone on upgrade would be a surprise.
     this.restrictLogsToAdmins = Boolean(this.ui.restrictLogsToAdmins)
 
-    this.secrets = this.getSecrets()
-    this.instanceId = this.getInstanceId()
+    // The signing key is read once. Every config save runs parseConfig, and the REST auth captured the key at
+    // start-up: a key read again here (after a restore copied in another one) would make new tokens pass on REST
+    // and fail on every socket until the UI restarts.
+    if (!this.secrets) {
+      this.secrets = this.getSecrets()
+      this.instanceId = this.getInstanceId()
+    }
 
     this.freezeUiSettings()
     this.getCustomWallpaperHash()
@@ -347,34 +382,60 @@ export class ConfigService {
   }
 
   /**
-   * Gets the unique secrets for signing JWTs
+   * Gets the unique secrets for signing JWTs.
+   *
+   * The file holds the key that signs every token, so it is kept readable by its owner only (0600).
+   * A file that is there but can not be used is set aside as `.uix-secrets.corrupt-<time>`, never overwritten.
    */
-  private getSecrets() {
+  private getSecrets(): { secretKey: string } {
     if (pathExistsSync(this.secretPath)) {
       try {
         const secrets = readJsonSync(this.secretPath)
-        if (!secrets.secretKey) {
-          return this.generateSecretToken()
-        } else {
+        if (typeof secrets?.secretKey === 'string' && secrets.secretKey) {
+          this.restrictSecretsFileMode()
           return secrets
         }
       } catch (e) {
-        return this.generateSecretToken()
+        // Set aside below
       }
-    } else {
-      return this.generateSecretToken()
+      try {
+        renameSync(this.secretPath, `${this.secretPath}.corrupt-${Date.now()}`)
+      } catch (e) {
+        // Overwritten below
+      }
+    }
+    return this.generateSecretToken()
+  }
+
+  /**
+   * An older UI wrote the file with the default mode (often 0644, readable by every user on the host)
+   */
+  private restrictSecretsFileMode() {
+    if (platform() === 'win32') {
+      return
+    }
+    try {
+      if ((statSync(this.secretPath).mode & 0o077) !== 0) {
+        chmodSync(this.secretPath, 0o600)
+      }
+    } catch (e) {
+      // Not the owner of the file: leave it
     }
   }
 
   /**
-   * Generates the secret token for signing JWTs
+   * Generates the secret token for signing JWTs, written through a temp file so a crash can not leave half a key
    */
-  private generateSecretToken() {
+  private generateSecretToken(): { secretKey: string } {
     const secrets = {
       secretKey: randomBytes(32).toString('hex'),
     }
 
-    writeJsonSync(this.secretPath, secrets)
+    // A new temp file every time (`wx` refuses one that is there): `mode` applies only when the file is made, so a
+    // temp file left by a crash under the same pid (common in Docker) would give the key its old 0644
+    const tmpPath = `${this.secretPath}.tmp.${process.pid}.${randomBytes(6).toString('hex')}`
+    writeFileSync(tmpPath, `${JSON.stringify(secrets)}\n`, { mode: 0o600, flag: 'wx' })
+    renameSync(tmpPath, this.secretPath)
 
     return secrets
   }
@@ -391,8 +452,8 @@ export class ConfigService {
    */
   private async getCustomWallpaperHash(): Promise<void> {
     try {
-      if (this.ui.wallpaper) {
-        const filePath = resolve(this.storagePath, this.ui.wallpaper)
+      const filePath = this.getWallpaperPath(this.ui.wallpaper)
+      if (filePath) {
         const fileStat = await stat(filePath)
         const hash = createHash('sha256')
         hash.update(`${fileStat.birthtime}${fileStat.ctime}${fileStat.size}${fileStat.blocks}`)
@@ -408,10 +469,30 @@ export class ConfigService {
   }
 
   /**
-   * Stream the custom wallpaper
+   * The full path of a wallpaper named in the ui config, or undefined when the name is not a plain image file name
+   * (or the `ui-wallpaper.<ext>` the upload route saves) in the storage folder. The wallpaper is served without a login, so a name like `auth.json`, `.uix-secrets` or
+   * `/etc/passwd` must never reach the file system.
    */
-  public streamCustomWallpaper(): ReadStream {
-    return createReadStream(resolve(this.storagePath, this.ui.wallpaper))
+  public getWallpaperPath(name: unknown): string | undefined {
+    if (typeof name !== 'string' || basename(name) !== name || name.includes('\\') || name.startsWith('.')) {
+      return undefined
+    }
+    // The upload route saves `ui-wallpaper` with the uploaded file's extension, so with none for a file that had none
+    if (name !== 'ui-wallpaper' && !name.startsWith('ui-wallpaper.') && !WALLPAPER_EXTENSIONS.has(extname(name).toLowerCase())) {
+      return undefined
+    }
+    return resolve(this.storagePath, name)
+  }
+
+  /**
+   * Stream the custom wallpaper, or undefined when none is set (or the hash in the url is not the current one)
+   */
+  public streamCustomWallpaper(hash?: string): ReadStream | undefined {
+    const filePath = this.getWallpaperPath(this.ui.wallpaper)
+    if (!filePath || !this.customWallpaperHash || (hash !== undefined && hash !== this.customWallpaperHash)) {
+      return undefined
+    }
+    return createReadStream(filePath)
   }
 
   /**

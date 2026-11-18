@@ -12,6 +12,7 @@ import { AuthService } from '@/app/core/auth/auth.service'
 import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
+import { listenUntilDestroyed } from '@/app/core/communication/socket-listener'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
@@ -124,7 +125,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
       void this.initialize()
     })
 
-    this.io.socket.on('child-bridge-status-update', (data) => {
+    listenUntilDestroyed(this.destroyRef, this.io.socket).on('child-bridge-status-update', (data) => {
       const existingBridge = this.childBridges().find(x => x.username === data.username)
       if (existingBridge) {
         Object.assign(existingBridge, data)

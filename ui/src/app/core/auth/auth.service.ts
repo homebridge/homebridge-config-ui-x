@@ -1,4 +1,3 @@
-/* global NodeJS */
 import { inject, Injectable } from '@angular/core'
 import { JwtHelperService } from '@auth0/angular-jwt'
 import { firstValueFrom } from 'rxjs'
@@ -26,7 +25,7 @@ export class AuthService {
   // check isLoggedIn() at startup must await this so they don't see the
   // pre-load empty state on a fast first navigation.
   public readonly tokenReady: Promise<void>
-  private logoutTimer!: NodeJS.Timeout
+  private logoutTimer!: ReturnType<typeof setTimeout>
   private lastRefreshTime: number = Date.now()
   private isRefreshing: boolean = false
 

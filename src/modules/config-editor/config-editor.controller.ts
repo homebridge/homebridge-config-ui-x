@@ -1,6 +1,7 @@
 import type { HomebridgeUiBridgeConfig } from '../../core/config/config.interfaces.js'
 
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -26,7 +27,7 @@ import {
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js'
-import { PortRangeDto, SetBridgeAlertDto, SetScheduledRestartCronDto } from './config-editor.dto.js'
+import { PortRangeDto, SetBridgeAlertDto, SetHapEnabledDto, SetMatterEnabledDto, SetScheduledRestartCronDto } from './config-editor.dto.js'
 import { ConfigEditorService } from './config-editor.service.js'
 
 function includesRestartInfo(include: string | undefined): boolean {
@@ -64,6 +65,11 @@ export class ConfigEditorController {
   })
   @Post()
   updateConfig(@Body() body, @Query('include') include?: string) {
+    // The whole of config.json: it must be an object (a list would be saved as `[]`, wiping the config)
+    if (!body || typeof body !== 'object' || Array.isArray(body)
+      || (body.bridge !== undefined && (body.bridge === null || typeof body.bridge !== 'object' || Array.isArray(body.bridge)))) {
+      throw new BadRequestException('The config must be a JSON object, with an object for "bridge".')
+    }
     if (includesRestartInfo(include)) {
       return this.configEditorService.updateConfigFileWithRestartInfo(body)
     }
@@ -362,7 +368,7 @@ export class ConfigEditorController {
   })
   @ApiBody({ description: 'Matter enablement', type: 'json' })
   @Put('/matter/enabled')
-  setMatterEnabled(@Body() body: { enabled: boolean, restart?: boolean, externalsOnly?: boolean }) {
+  setMatterEnabled(@Body() body: SetMatterEnabledDto) {
     return this.configEditorService.setMatterEnabled(body.enabled, body.restart ?? true, body.externalsOnly ?? false)
   }
 
@@ -383,7 +389,7 @@ export class ConfigEditorController {
   })
   @ApiBody({ description: 'HAP configuration', type: 'json' })
   @Put('/hap')
-  setHapEnabled(@Body() body: { enabled: boolean, restart?: boolean, externalsOnly?: boolean, disableIdentifyingMaterial?: boolean }) {
+  setHapEnabled(@Body() body: SetHapEnabledDto) {
     return this.configEditorService.setHapEnabled(body.enabled, body.restart ?? true, body.externalsOnly ?? false, body.disableIdentifyingMaterial)
   }
 }

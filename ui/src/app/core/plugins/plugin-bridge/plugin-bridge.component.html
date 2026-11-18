@@ -503,10 +503,23 @@
                         class="mx-auto d-flex align-items-center justify-content-center qr-code-placeholder primary-text p-3"
                       >
                         <div>
-                          <div class="text-center grey-text">
-                            <i aria-hidden="true" class="fas fa-qrcode fa-2x mb-2 primary-text"></i>
-                          </div>
-                          <div class="text-center small grey-text">{{ 'child_bridge.return_to_pair' | translate }}</div>
+                          @if (
+                            matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.startFailed
+                          ) {
+                            <div class="text-center">
+                              <i aria-hidden="true" class="fas fa-exclamation-triangle fa-2x mb-2 orange-text"></i>
+                            </div>
+                            <div class="text-center small grey-text">
+                              {{ 'status.widget.matter_start_failed' | translate }}
+                            </div>
+                          } @else {
+                            <div class="text-center grey-text">
+                              <i aria-hidden="true" class="fas fa-qrcode fa-2x mb-2 primary-text"></i>
+                            </div>
+                            <div class="text-center small grey-text">
+                              {{ 'child_bridge.return_to_pair' | translate }}
+                            </div>
+                          }
                         </div>
                       </div>
                     </div>

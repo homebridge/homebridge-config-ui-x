@@ -1,8 +1,8 @@
 @let hasLux = 'CurrentAmbientLightLevel' in service().values;
-@let lux = service().values?.CurrentAmbientLightLevel;
+@let lux = service().values.CurrentAmbientLightLevel | hapNumber;
 @let luxText =
   hasLux
-    ? `${lux < 1 ? (lux | number: '0.1-1') : (lux | number: '1.0-0')} lux`
+    ? `${(lux ?? 0) < 1 ? (lux | number: '0.1-1') : (lux | number: '1.0-0')} lux`
     : ('accessories.control.no_data' | translate);
 
 @let srBaseName = (service().customName || service().serviceName || '').trim();
@@ -57,7 +57,7 @@
     </div>
     <div class="accessory-label mt-auto" aria-hidden="true">{{ service().customName || service().serviceName }}</div>
     @if (hasLux) {
-      @if (lux < 1) {
+      @if ((lux ?? 0) < 1) {
         <div class="accessory-label grey-text" aria-hidden="true">{{ lux | number: '0.1-1' }} lux</div>
       } @else {
         <div class="accessory-label grey-text" aria-hidden="true">{{ lux | number: '1.0-0' }} lux</div>

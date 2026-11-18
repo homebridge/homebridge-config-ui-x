@@ -171,6 +171,32 @@ describe('ConfigEditorComponent', () => {
       expect(JSON.parse(component.homebridgeConfig()).password).toBe('original-secret')
     })
 
+    it('shows the toggle as a lock icon, with the masking notice only in its tooltip', () => {
+      component.toggleSecrets()
+      fixture.detectChanges()
+      const toggle = (): HTMLButtonElement => fixture.nativeElement.querySelector('button')
+      const icon = (): HTMLElement => toggle().querySelector('i') as HTMLElement
+
+      // masked: an unlock icon, no text on the button, and the notice is not printed on the page
+      expect(component.secretsRevealed()).toBe(false)
+      expect(icon().classList).toContain('fa-unlock')
+      expect(toggle().textContent?.trim()).toBe('')
+      expect(toggle().getAttribute('aria-label')).toBe('config.privacy.reveal')
+      expect(toggle().getAttribute('aria-description')).toBe('config.privacy.notice')
+      expect(fixture.nativeElement.textContent).not.toContain('config.privacy.notice')
+      // the only button, so no gap on its right: the save button takes that place once unlocked
+      expect(toggle().classList).not.toContain('me-2')
+
+      // revealed: a lock icon to hide the secrets again
+      toggle().click()
+      fixture.detectChanges()
+      expect(icon().classList).toContain('fa-lock')
+      expect(toggle().textContent?.trim()).toBe('')
+      expect(toggle().getAttribute('aria-label')).toBe('config.privacy.hide')
+      expect(toggle().classList).toContain('me-2')
+      expect(toggle().hasAttribute('aria-description')).toBe(false)
+    })
+
     it('fails closed for incomplete edits and keeps those edits when revealed again', () => {
       component.homebridgeConfig.set('{"password":"unfinished')
       component.toggleSecrets()
@@ -258,6 +284,83 @@ describe('ConfigEditorComponent', () => {
 
       expect(() => component.toggleSecrets()).not.toThrow()
       expect(component.secretsRevealed()).toBe(false)
+    })
+
+    describe('the masked preview on a big screen', () => {
+      function fakeEditor() {
+        const model = {
+          setValue: vi.fn(),
+          dispose: vi.fn(),
+        }
+        return {
+          model,
+          editor: {
+            getModel: () => model,
+            dispose: vi.fn(),
+          },
+        }
+      }
+
+      it('uses a read-only Monaco editor, and the text box on phones or by choice', () => {
+        component.isMobile.set(false)
+        component.preferPlainTextEditor.set(false)
+        expect(component.previewInMonaco()).toBe(true)
+        expect(component.previewEditorOptions.readOnly).toBe(true)
+        expect(component.previewEditorOptions.domReadOnly).toBe(true)
+        // Same layout as the editable view, so the text does not jump when revealed
+        expect(component.previewEditorOptions).toEqual({
+          ...component.singleEditorOptions,
+          readOnly: true,
+          domReadOnly: true,
+          // says how to edit, not Monaco's own 'Cannot edit in read-only editor'
+          readOnlyMessage: { value: 'config.privacy.locked' },
+        })
+        // Neither has the empty strip left of the line numbers; the compare view keeps it
+        expect(component.singleEditorOptions.glyphMargin).toBe(false)
+        expect(component.editorOptions.glyphMargin).toBe(true)
+        expect(component.previewEditorModel.uri).toBeUndefined()
+
+        component.preferPlainTextEditor.set(true)
+        expect(component.previewInMonaco()).toBe(false)
+        component.preferPlainTextEditor.set(false)
+        component.isMobile.set(true)
+        expect(component.previewInMonaco()).toBe(false)
+      })
+
+      it('shows only the masked text, apart from the editor a save reads', () => {
+        component.toggleSecrets()
+        component.homebridgeConfig.set(JSON.stringify({ ...validConfig, password: 'preview-secret' }))
+        const { model, editor } = fakeEditor()
+        component.onPreviewEditorInit(editor)
+
+        const shown = model.setValue.mock.calls.at(-1)?.[0] as string
+        expect(shown).toContain('********')
+        expect(shown).not.toContain('preview-secret')
+        expect(component.monacoEditor).toBeUndefined()
+        expect(window.editor).toBeUndefined()
+      })
+
+      it('follows a changed config', () => {
+        component.toggleSecrets()
+        const { model, editor } = fakeEditor()
+        component.onPreviewEditorInit(editor)
+        component.homebridgeConfig.set(JSON.stringify({
+          ...validConfig,
+          bridge: { ...validConfig.bridge, name: 'Renamed' },
+        }))
+        TestBed.tick()
+        expect(model.setValue.mock.calls.at(-1)?.[0]).toContain('Renamed')
+      })
+
+      it('is cleaned up when the config is revealed', () => {
+        component.toggleSecrets()
+        const { model, editor } = fakeEditor()
+        component.onPreviewEditorInit(editor)
+        component.toggleSecrets()
+        expect(component.secretsRevealed()).toBe(true)
+        expect(editor.dispose).toHaveBeenCalled()
+        expect(model.dispose).toHaveBeenCalled()
+      })
     })
 
     it('captures unsaved Monaco edits before hiding', () => {

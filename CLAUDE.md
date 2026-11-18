@@ -27,11 +27,14 @@ npm run build:ui            # ng build production → public/ (prebuild regenera
 
 # Dev (live reload, two processes via concurrently)
 npm run watch               # UI dev server on :4200, backend (hb-service + Homebridge) on :8581
-npm start                   # backend only, no Homebridge: tsx src/main.ts (port 8080 if config has none)
+npm start                   # backend only, no Homebridge: src/main.ts through SWC (port 8080 if config has none)
 
 # Lint (eslint flat config, antfu base, max-warnings=0; covers both packages)
 npm run lint
 npm run lint:fix
+
+# Typecheck (server code + server tests, then the UI tests; the builds only check shipped code)
+npm run typecheck
 
 # Tests
 npm run test                # test:server then test:ui
@@ -122,7 +125,7 @@ Set by `hb-service`, the watch script, Docker/packages, or the user. Most are re
 - `HOMEBRIDGE_CONFIG_UI_TERMINAL=1` — enable the terminal. `HOMEBRIDGE_CONFIG_UI_PORT` — port override.
 - `HOMEBRIDGE_CONFIG_UI=1` (Docker), `HOMEBRIDGE_SYNOLOGY_PACKAGE=1`, `HOMEBRIDGE_APT_PACKAGE=1`, `HOMEBRIDGE_MACOS_PACKAGE=1` — packaging-mode flags that toggle features like terminal access and host shutdown/restart.
 
-`nodemon.json` shows the canonical dev invocation: `UIX_DEVELOPMENT=1 UIX_INSECURE_MODE=1 UIX_SERVICE_MODE=1 HOMEBRIDGE_CONFIG_UI_TERMINAL=1 node scripts/watch-supervisor.mjs tsx src/bin/hb-service.ts run --stdout`. The supervisor restarts hb-service after the UI exits cleanly (which is how it restarts itself after an update) — nodemon alone would just wait for a file change.
+`nodemon.json` shows the canonical dev invocation: `UIX_DEVELOPMENT=1 UIX_INSECURE_MODE=1 UIX_SERVICE_MODE=1 HOMEBRIDGE_CONFIG_UI_TERMINAL=1 node scripts/watch-supervisor.mjs node --import @swc-node/register/esm-register src/bin/hb-service.ts run --stdout`. The supervisor restarts hb-service after the UI exits cleanly (which is how it restarts itself after an update) — nodemon alone would just wait for a file change.
 
 ## Pull requests and the changelog
 
@@ -136,7 +139,7 @@ Set by `hb-service`, the watch script, Docker/packages, or the user. Most are re
 ## Things that bite
 
 - **ESM throughout**: both packages have `"type": "module"`. Local imports must use the `.js` extension even from `.ts` source (e.g. `import { Foo } from './foo.js'`). The compiled output is what runs.
-- **Backend constructor params need `@Inject(Token)`**: e.g. `@Inject(ConfigService) private readonly configService: ConfigService`. `tsx` (used by `npm start` and `npm run watch`) emits no decorator metadata, so a param without `@Inject` is `undefined` **in dev only** — `tsc` builds and the SWC tests still work, which hides it.
+- **Backend constructor params need `@Inject(Token)`**: e.g. `@Inject(ConfigService) private readonly configService: ConfigService`. The dev server (`npm start`, `npm run watch`) runs through SWC (`@swc-node/register`), which emits decorator metadata like the `tsc` build does, so dev and release now match. Keep the explicit `@Inject` anyway: anything run with `tsx` (such as `scripts/`) still gets no metadata, and a param without `@Inject` is then `undefined`.
 - **Nest 12 does not inherit `@Optional()`**: a class that extends a Nest class with `@Optional()` params and has no constructor of its own fails with "Nest can't resolve dependencies". Redeclare the constructor with its own `@Optional()` params.
 - **Angular `inject()` dies after the first `await`** (NG0203) in guards and other functional code. Capture what you need, or the `Injector`, before awaiting — `core/auth/guards/logs.guard.ts` uses `runInInjectionContext` for this.
 - **Monaco assets are copied with name-specific globs** in `ui/angular.json` (to skip ~80 unused languages). Monaco renames its hashed chunks between versions, so a bump can silently drop files and leave the JSON config editor blank. `postbuild:ui` (`scripts/verify-monaco-assets.mjs`) catches this — fix the globs, don't skip the check.
@@ -145,5 +148,5 @@ Set by `hb-service`, the watch script, Docker/packages, or the user. Most are re
 - **Two `node_modules`**: if you change a dep in `ui/package.json`, run `npm install --prefix ui` — root `npm install` won't touch it.
 - **Built UI is gitignored but shipped on publish**: `public/` is the compiled UI. It is in `.gitignore`, so `npm run build:ui` won't show up in `git status` — don't expect (or try to commit) a `public/` diff. It still reaches the npm package: `prepublishOnly` runs `npm run build` to regenerate it, and `.npmignore` (which npm uses in preference to `.gitignore` because it exists) does not exclude `public/`.
 - **Translations**: `ui/src/i18n/en.json` is the source of truth; other locales are synced from it via `npm run lang-sync`. Don't hand-edit non-English files for new keys.
-- **Patched dependencies**: `scripts/apply-patches.mjs` runs from `prepare` in both packages (it skips quietly on production installs). Patches live in `patches/` (`thread-stream`) and `ui/patches/` (`@ng-formworks/*`), named with the exact version. If you bump one of those packages, re-create the patch or it will fail to apply.
+- **Patched dependencies**: `scripts/apply-patches.mjs` runs from `prepare` in `ui/` (it skips quietly on production installs). Patches live in `ui/patches/` (`@ng-formworks/*`), named with the exact version. The root package has none. If you bump one of those packages, re-create the patch or it will fail to apply.
 - **Install-script allow-list**: both `package.json` files have an `allowScripts` block — npm's install-script approval, one `true`/`false` per package (`false` denies). A new package with an install script makes npm prompt; approve it with `npm install-scripts approve <pkg>`.

@@ -12,6 +12,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { listenUntilDestroyed } from '@/app/core/communication/socket-listener'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ChildBridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
@@ -332,7 +333,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.ioStatus.socket.emit('monitor-server-status')
     })
 
-    this.ioStatus.socket.on('homebridge-status', (data: any) => {
+    listenUntilDestroyed(this.destroyRef, this.ioStatus.socket).on('homebridge-status', (data: any) => {
       if (data.username) {
         this.bridgeUsernameToNameMap.set(data.username, 'Homebridge')
       }
@@ -345,7 +346,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.fetchChildBridges()
     })
 
-    this.ioChild.socket.on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
+    listenUntilDestroyed(this.destroyRef, this.ioChild.socket).on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
       this.bridgeUsernameToNameMap.set(data.username, data.name)
     })
   }

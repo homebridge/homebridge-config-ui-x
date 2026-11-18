@@ -11,6 +11,7 @@ import { inject, Injector } from '@angular/core'
 import { catchError, throwError } from 'rxjs'
 
 import { AuthService } from '@/app/core/auth/auth.service'
+import { environment } from '@/environments/environment'
 
 const SKIP_PATHS = [
   '/auth/login',
@@ -20,7 +21,20 @@ const SKIP_PATHS = [
 ]
 
 function shouldSkip(url: string): boolean {
-  return SKIP_PATHS.some(path => url.includes(path))
+  return !isOwnServer(url) || SKIP_PATHS.some(path => url.includes(path))
+}
+
+/**
+ * A 401 only says something about our session when our own server sent it. Other sites (the weather widget's
+ * OpenWeatherMap, for one, answers 401 for a bad API key) must never log the user out of every device.
+ */
+function isOwnServer(url: string): boolean {
+  try {
+    const target = new URL(url, window.location.href).origin
+    return target === window.location.origin || target === new URL(environment.api.base, window.location.href).origin
+  } catch {
+    return true
+  }
 }
 
 /**

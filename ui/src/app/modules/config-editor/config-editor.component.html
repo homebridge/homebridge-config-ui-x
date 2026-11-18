@@ -6,20 +6,24 @@
     <div class="col-6 text-end">
       <button
         type="button"
-        class="btn btn-elegant my-0 me-2"
+        class="btn btn-elegant waves-effect my-0"
+        container="body"
+        placement="bottom"
+        triggers="hover"
+        [class.me-2]="secretsRevealed()"
         [disabled]="saveInProgress()"
+        [openDelay]="150"
+        [ngbTooltip]="(secretsRevealed() ? 'config.privacy.hide' : 'config.privacy.notice') | translate"
         [attr.aria-label]="(secretsRevealed() ? 'config.privacy.hide' : 'config.privacy.reveal') | translate"
+        [attr.aria-description]="secretsRevealed() ? null : ('config.privacy.notice' | translate)"
         (click)="toggleSecrets()"
       >
         <i
-          class="fas me-sm-2"
+          class="fas"
           aria-hidden="true"
-          [class.fa-eye]="!secretsRevealed()"
-          [class.fa-eye-slash]="secretsRevealed()"
+          [class.fa-unlock]="!secretsRevealed()"
+          [class.fa-lock]="secretsRevealed()"
         ></i>
-        <span class="d-none d-sm-inline">
-          {{ (secretsRevealed() ? 'config.privacy.hide' : 'config.privacy.reveal') | translate }}
-        </span>
       </button>
       @if (secretsRevealed()) {
         <div ngbDropdown placement="bottom-end" class="d-none d-sm-inline-block me-2">
@@ -152,16 +156,25 @@
   </div>
 
   @if (!secretsRevealed()) {
-    <p class="grey-text mt-3 mb-2">{{ 'config.privacy.notice' | translate }}</p>
     @if (redactedConfig() !== null) {
-      <textarea
-        readonly
-        wrap="off"
-        class="hb-plain-text-editor h-100 w-100 my-3"
-        spellcheck="false"
-        [attr.aria-label]="'config.privacy.preview' | translate"
-        [value]="redactedConfig()"
-      ></textarea>
+      @if (previewInMonaco()) {
+        <ngx-monaco-editor
+          class="flex-grow-1 h-100 w-100 mt-3 mb-0"
+          [attr.aria-label]="'config.privacy.preview' | translate"
+          [options]="previewEditorOptions"
+          [model]="previewEditorModel"
+          (onInit)="onPreviewEditorInit($event)"
+        />
+      } @else {
+        <textarea
+          readonly
+          wrap="off"
+          class="hb-plain-text-editor h-100 w-100 my-3"
+          spellcheck="false"
+          [attr.aria-label]="'config.privacy.preview' | translate"
+          [value]="redactedConfig()"
+        ></textarea>
+      }
     } @else {
       <p class="grey-text" role="status">{{ 'config.privacy.invalid' | translate }}</p>
     }
@@ -169,7 +182,7 @@
     @if (!preferPlainTextEditor() && !isMobile() && !originalConfig()) {
       <ngx-monaco-editor
         class="flex-grow-1 h-100 w-100 mt-3 mb-0"
-        [options]="editorOptions"
+        [options]="singleEditorOptions"
         [model]="monacoEditorModel"
         (onInit)="onEditorInit($event)"
         (keydown.control.s)="$event.preventDefault(); onSave()"

@@ -1,5 +1,8 @@
 import type { EventEmitter } from 'node:events'
 
+import type { } from '../../core/regex.constants.js'
+import type { TermSize } from '../platform-tools/terminal/terminal.interfaces.js'
+
 import { exec, spawn } from 'node:child_process'
 import { createReadStream, existsSync } from 'node:fs'
 import { stat } from 'node:fs/promises'
@@ -14,8 +17,6 @@ import { Tail } from 'tail'
 import { ConfigService } from '../../core/config/config.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
 import { RE_SUPERVISOR_DEBUG_LINE, RE_SUPERVISOR_LEVEL_TAG } from '../../core/regex.constants.js'
-import { TermSize } from '../platform-tools/terminal/terminal.interfaces.js'
-
 // How long a trailing partial line is held back waiting for its terminator
 // before being flushed to the client anyway
 const PARTIAL_LINE_FLUSH_MS = 50
@@ -289,9 +290,23 @@ export class LogService {
       client.emit('stdout', red(`No log file exists at path: ${this.configService.ui.log.path}\n\r`))
     }
 
+    // The socket can leave while the file is checked below, before its clean-up handler exists: note it here
+    let disconnected = false
+    const markDisconnected = () => {
+      disconnected = true
+    }
+    client.once('end', markDisconnected)
+    client.once('disconnect', markDisconnected)
+
     // Read the first 50000 bytes of the log and emit to the client
     try {
       const logStats = await stat(this.configService.ui.log.path)
+      client.removeListener('end', markDisconnected)
+      client.removeListener('disconnect', markDisconnected)
+      if (disconnected) {
+        this.activeClients.delete(client)
+        return
+      }
       const logStartPosition = logStats.size <= 50000
         ? 0
         : logStats.size - 50000
@@ -308,6 +323,8 @@ export class LogService {
         logStream.close()
       })
     } catch (e) {
+      client.removeListener('end', markDisconnected)
+      client.removeListener('disconnect', markDisconnected)
       client.emit('stdout', red(`Failed to read log file: ${e.message}\n\r`))
       // No tail was started (the file is missing or unreadable), so no `onEnd`
       // will run to release the guard. Release it here, otherwise this socket

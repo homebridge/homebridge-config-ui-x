@@ -1,7 +1,7 @@
 <div
   class="accessory-box"
   tabindex="0"
-  [class.accessory-on]="service().values?.TargetHeatingCoolingState > 0"
+  [class.accessory-on]="((service().values.TargetHeatingCoolingState | hapNumber) ?? 0) > 0"
   [class.cursor-pointer]="readyForControl()"
   (longClick)="onClick()"
   (shortClick)="onClick()"
@@ -66,7 +66,7 @@
         <!-- current temperature -->
         @if ('CurrentTemperature' in service().values) {
           <text x="16" y="13" font-size="8" text-anchor="middle" fill="#7f7f7f" font-family="Arial, sans-serif">
-            {{ service().values?.CurrentTemperature | convertTemp | number: '1.0-1' }}&deg;{{
+            {{ service().values.CurrentTemperature | convertTemp | number: '1.0-1' }}&deg;{{
               temperatureUnits | uppercase
             }}
           </text>
@@ -76,15 +76,15 @@
     <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
 
     <div class="accessory-label grey-text">
-      @if (service().values?.TargetHeatingCoolingState === 0) {
+      @if (service().values.TargetHeatingCoolingState === 0) {
         {{ 'accessories.control.off' | translate }}
-      } @else if (service().values?.CurrentHeatingCoolingState === 1) {
+      } @else if (service().values.CurrentHeatingCoolingState === 1) {
         {{ 'accessories.control.heat' | translate }}
-      } @else if (service().values?.CurrentHeatingCoolingState === 2) {
+      } @else if (service().values.CurrentHeatingCoolingState === 2) {
         {{ 'accessories.control.cool' | translate }}
-      } @else if (service().values?.TargetHeatingCoolingState === 3) {
+      } @else if (service().values.TargetHeatingCoolingState === 3) {
         <i class="fa fas fa-bullseye"></i>
-        {{ service().values?.TargetTemperature | convertTemp | number: '1.0-1' }}&deg;{{ temperatureUnits | uppercase }}
+        {{ service().values.TargetTemperature | convertTemp | number: '1.0-1' }}&deg;{{ temperatureUnits | uppercase }}
       }
     </div>
   </div>

@@ -40,7 +40,7 @@ export class MatterFanManageComponent extends BaseManageComponent {
           this.showGenericErrorToast(error)
           // Revert to previous value on error
           this.targetSpeed.value = previousSpeed
-          this.targetMode = previousSpeed > 0
+          this.targetMode = isFanOn(this.service)
           this.cdr.markForCheck()
         }
       },

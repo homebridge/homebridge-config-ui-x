@@ -4,7 +4,7 @@ import type { IDisposable, ITerminalOptions, Terminal } from '@xterm/xterm'
 
 import { ElementRef, inject, Injectable } from '@angular/core'
 import { Subject } from 'rxjs'
-import { debounceTime, takeUntil } from 'rxjs/operators'
+import { debounceTime, skip, takeUntil } from 'rxjs/operators'
 
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
@@ -181,8 +181,26 @@ export class TerminalService {
       })
 
       // Remove existing listeners to avoid duplicates
+      this.io.socket.removeAllListeners('disconnect')
       this.io.socket.removeAllListeners('stdout')
       this.io.socket.removeAllListeners('process-exit')
+
+      // As in startTerminal: say when the socket drops, and start the session again when it comes back. The
+      // connection that is up now is replayed first and skipped, as the rejoin below covers it.
+      this.io.socket.on('disconnect', () => {
+        this.term?.write(
+          '\n\r\n\rTerminal disconnected. Is the server running?\n\r\n\r',
+        )
+      })
+      this.io.connected!
+        .pipe(
+          skip(1),
+          debounceTime(200),
+          takeUntil(this.destroy$),
+        )
+        .subscribe(() => {
+          this.startSession()
+        })
 
       // Subscribe to incoming data events from server to client
       this.io.socket.on('stdout', (data: string) => {

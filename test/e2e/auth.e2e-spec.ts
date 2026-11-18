@@ -3,6 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
+import { chmod, readdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -10,7 +11,7 @@ import { HttpException, ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { WsException } from '@nestjs/websockets'
-import { copy, pathExists, readJson, remove } from 'fs-extra'
+import { copy, pathExists, readJson, remove, writeJson } from 'fs-extra'
 import jwt from 'jsonwebtoken'
 import { generate, generateSecret } from 'otplib'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -1242,13 +1243,14 @@ describe('AuthController (e2e)', () => {
     } as any)
 
     const jwt = await import('jsonwebtoken')
+    const { sessionVersion } = (await readJson(authFilePath)).find((u: any) => u.username === 'someone')
     const nonAdminToken = jwt.sign(
       {
         username: 'someone',
         name: 'Someone',
         admin: false,
         instanceId: configService.instanceId,
-        sessionVersion: 0,
+        sessionVersion,
       },
       configService.secrets.secretKey,
     )
@@ -1288,6 +1290,24 @@ describe('AuthController (e2e)', () => {
 
     expect(await app.get(WsGuard).canActivate(context)).toBe(true)
     expect(disconnect).not.toHaveBeenCalled()
+  })
+
+  it('WsGuard records the user it verified on the socket, for handlers that act for that user', async () => {
+    const token = (await authService.signIn('admin', 'admin')).access_token
+    const client: any = {
+      handshake: {
+        auth: { token },
+      },
+      disconnect: vi.fn(),
+    }
+    const context: any = {
+      switchToWs: () => ({
+        getClient: () => client,
+      }),
+    }
+
+    expect(await app.get(WsGuard).canActivate(context)).toBe(true)
+    expect(client.data.user).toEqual({ username: 'admin', admin: true })
   })
 
   it('WsLogGuard follows the restrictLogsToAdmins setting', async () => {
@@ -1413,6 +1433,232 @@ describe('AuthController (e2e)', () => {
 
     expect([r1, r2].filter(Boolean)).toHaveLength(1)
   })
+
+  describe('the wallpaper route (no login needed)', () => {
+    const wallpaperFile = () => resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper.png')
+
+    afterEach(async () => {
+      delete configService.ui.wallpaper
+      configService.customWallpaperHash = undefined
+      await remove(wallpaperFile())
+    })
+
+    it.each([
+      'auth.json',
+      '.uix-secrets',
+      'config.json',
+      '../config.json',
+      '/etc/hosts',
+      'persist/x.png',
+      '..\\x.png',
+    ])(
+      'never serves a wallpaper set to %s',
+      async (name) => {
+        configService.ui.wallpaper = name
+        configService.customWallpaperHash = 'abc.jpg'
+
+        const res = await app.inject({ method: 'GET', path: '/auth/wallpaper/abc.jpg' })
+
+        expect(res.statusCode).toBe(404)
+        expect(res.body).not.toContain('password')
+        expect(res.body).not.toContain('secretKey')
+        expect(res.body).not.toContain('localhost')
+      },
+    )
+
+    it('answers 404, not 500, when no wallpaper is set', async () => {
+      const res = await app.inject({ method: 'GET', path: '/auth/wallpaper/abc.jpg' })
+      expect(res.statusCode).toBe(404)
+    })
+
+    it('serves the uploaded wallpaper for the current hash only', async () => {
+      await copy(resolve(__dirname, '../mocks/persist/wallpaper.png'), wallpaperFile())
+      configService.ui.wallpaper = 'ui-wallpaper.png'
+      configService.customWallpaperHash = 'abc.jpg'
+
+      const ok = await app.inject({ method: 'GET', path: '/auth/wallpaper/abc.jpg' })
+      expect(ok.statusCode).toBe(200)
+      expect(ok.rawPayload.length).toBeGreaterThan(0)
+
+      const old = await app.inject({ method: 'GET', path: '/auth/wallpaper/old.jpg' })
+      expect(old.statusCode).toBe(404)
+    })
+
+    it('accepts the name an upload with no file extension is saved as, and the other jpeg extensions', () => {
+      // Regression: an upload named `photo` is saved as `ui-wallpaper`, which the new check refused, so that
+      // wallpaper (and every existing install set to it) stopped showing
+      expect(configService.getWallpaperPath('ui-wallpaper')).toBe(resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper'))
+      expect(configService.getWallpaperPath('photo.jfif')).toBe(resolve(process.env.UIX_STORAGE_PATH, 'photo.jfif'))
+      expect(configService.getWallpaperPath('ui-wallpaper-x')).toBeUndefined()
+    })
+
+    it('accepts only a plain image file name in the storage folder', () => {
+      expect(configService.getWallpaperPath('ui-wallpaper.jpg')).toBe(resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper.jpg'))
+      expect(configService.getWallpaperPath('my-photo.JPEG')).toBe(resolve(process.env.UIX_STORAGE_PATH, 'my-photo.JPEG'))
+      expect(configService.getWallpaperPath('auth.json')).toBeUndefined()
+      expect(configService.getWallpaperPath('/tmp/x.png')).toBeUndefined()
+      expect(configService.getWallpaperPath(42)).toBeUndefined()
+      expect(configService.getWallpaperPath(undefined)).toBeUndefined()
+    })
+  })
+
+  describe('the signing key file (.uix-secrets)', () => {
+    afterEach(async () => {
+      // Put back the key the running app signs with
+      await writeJson(secretsFilePath, configService.secrets)
+    })
+
+    it.skipIf(process.platform === 'win32')('is created readable by its owner only', async () => {
+      await remove(secretsFilePath)
+      const fresh = new ConfigService()
+      expect(fresh.secrets.secretKey).toMatch(/^[0-9a-f]{64}$/)
+      expect((await stat(secretsFilePath)).mode & 0o777).toBe(0o600)
+    })
+
+    it.skipIf(process.platform === 'win32')('is made private when an older ui left it readable by everyone', async () => {
+      await writeJson(secretsFilePath, {
+        secretKey: 'a'.repeat(64),
+      })
+      await chmod(secretsFilePath, 0o644)
+      const fresh = new ConfigService()
+      expect(fresh.secrets.secretKey).toBe('a'.repeat(64))
+      expect((await stat(secretsFilePath)).mode & 0o777).toBe(0o600)
+    })
+
+    it.skipIf(process.platform === 'win32')('is created private even when a temp file of the same process is left over', async () => {
+      // Regression: the temp name was `.uix-secrets.tmp.<pid>`, and `mode` only applies to a new file, so a
+      // leftover 0644 temp file (a crash, then the same pid again in Docker) gave the new key mode 0644
+      const stale = `${secretsFilePath}.tmp.${process.pid}`
+      await writeFile(stale, 'old')
+      await chmod(stale, 0o644)
+      await remove(secretsFilePath)
+      try {
+        const fresh = new ConfigService()
+        expect(fresh.secrets.secretKey).toMatch(/^[0-9a-f]{64}$/)
+        expect((await stat(secretsFilePath)).mode & 0o777).toBe(0o600)
+      } finally {
+        await remove(stale)
+      }
+    })
+
+    it('is read once, so a config save never swaps the key the running ui signs with', async () => {
+      const key = configService.secrets.secretKey
+      const instanceId = configService.instanceId
+      await writeJson(secretsFilePath, {
+        secretKey: 'b'.repeat(64),
+      })
+
+      configService.parseConfig(await readJson(process.env.UIX_CONFIG_PATH))
+
+      expect(configService.secrets.secretKey).toBe(key)
+      expect(configService.instanceId).toBe(instanceId)
+    })
+
+    it('sets a file it can not read aside instead of overwriting it', async () => {
+      const before = (await readdir(process.env.UIX_STORAGE_PATH)).filter(f => f.startsWith('.uix-secrets.corrupt-'))
+      await writeFile(secretsFilePath, '{ not json')
+      const fresh = new ConfigService()
+      const after = (await readdir(process.env.UIX_STORAGE_PATH)).filter(f => f.startsWith('.uix-secrets.corrupt-'))
+      const added = after.filter(f => !before.includes(f))
+      expect(added).toHaveLength(1)
+      expect(await readFile(resolve(process.env.UIX_STORAGE_PATH, added[0]), 'utf8')).toBe('{ not json')
+      expect(fresh.secrets.secretKey).toMatch(/^[0-9a-f]{64}$/)
+      await remove(resolve(process.env.UIX_STORAGE_PATH, added[0]))
+    })
+  })
+
+  it('a token of a deleted user does not work for a new user given the same name', async () => {
+    await authService.addUser({
+      name: 'Bob',
+      username: 'bob',
+      password: 'bob-pw-1',
+      admin: false,
+    } as any)
+    const oldToken = (await authService.signIn('bob', 'bob-pw-1')).access_token
+    const oldPayload: any = jwt.decode(oldToken)
+    const bob = (await readJson(authFilePath)).find((u: any) => u.username === 'bob')
+    await authService.deleteUser(bob.id)
+
+    await authService.addUser({
+      name: 'Bob',
+      username: 'bob',
+      password: 'bob-pw-2',
+      admin: false,
+    } as any)
+
+    expect(await authService.validateUser(oldPayload)).toBeFalsy()
+  })
+
+  it('the login lockout also holds for many wrong passwords sent at once', async () => {
+    const results = await Promise.allSettled(
+      Array.from({ length: 30 }, () => authService.authenticate('admin', 'wrong-password', undefined, '10.9.9.9')),
+    )
+    const statuses = results.map(r => (r.status === 'rejected'
+      ? r.reason.getStatus?.()
+      : 200))
+
+    // At most 10 are checked; the rest are refused before the password is looked at
+    expect(statuses.filter(status => status === 403).length).toBeLessThanOrEqual(10)
+    expect(statuses.filter(status => status === 429).length).toBeGreaterThanOrEqual(20)
+    ;(authService as any).loginFailureCache.flushAll()
+  })
+
+  it('hashes the password for an unknown username too, so the answer time does not show which names exist', async () => {
+    const hash = vi.spyOn(authService as any, 'hashPassword')
+    try {
+      await expect(authService.authenticate('no-such-user', 'whatever', undefined, '10.8.8.8')).rejects.toThrow()
+      expect(hash).toHaveBeenCalledOnce()
+      expect(hash.mock.calls[0][2]).toBe(210000)
+    } finally {
+      hash.mockRestore()
+      ;(authService as any).loginFailureCache.flushAll()
+    }
+  })
+
+  it('checks at most two passwords at once, so made-up usernames can not fill the thread pool', async () => {
+    // Regression: each unknown username does a full hash, and a new name each time is never locked out, so a
+    // burst could keep every thread of Node's pool busy, which also holds up the ui's file reads and writes
+    let running = 0
+    let most = 0
+    const hash = vi.spyOn(authService as any, 'hashPassword').mockImplementation(async () => {
+      running++
+      most = Math.max(most, running)
+      await new Promise(resolve => setTimeout(resolve, 20))
+      running--
+      return 'ff'.repeat(64)
+    })
+    try {
+      const logins = Array.from({ length: 8 }, (_, i) => authService.authenticate(`made-up-${i}`, 'x', undefined, '10.9.9.9'))
+      const results = await Promise.allSettled(logins)
+
+      expect(results.every(result => result.status === 'rejected')).toBe(true)
+      expect(hash).toHaveBeenCalledTimes(8)
+      expect(most).toBe(2)
+    } finally {
+      hash.mockRestore()
+      ;(authService as any).loginFailureCache.flushAll()
+    }
+  })
+
+  it.each([
+    ['28800', 28800],
+    [' 3600 ', 3600],
+    ['abc', 28800],
+    [-5, 28800],
+  ])(
+    'reads a session timeout of %j as %i seconds',
+    async (value, seconds) => {
+      const config = await readJson(process.env.UIX_CONFIG_PATH)
+      config.platforms.find((p: any) => p.platform === 'config').sessionTimeout = value
+      const before = configService.ui.sessionTimeout
+      try {
+        configService.parseConfig(config)
+        expect(configService.ui.sessionTimeout).toBe(seconds)
+      } finally {
+        configService.ui.sessionTimeout = before
+      }
+    },
+  )
 
   afterAll(async () => {
     await app.close()

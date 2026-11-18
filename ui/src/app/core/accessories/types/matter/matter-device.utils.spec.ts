@@ -850,20 +850,65 @@ describe('matter-device.utils', () => {
         { fanMode: 1, percentSetting: 0 },
         true,
       ],
+      // Homebridge 2.5.1 keeps the speed when a controller turns the fan off: the mode decides (decided by BP)
       [
         { fanMode: 0, percentSetting: 40 },
+        false,
+      ],
+      [
+        { fanMode: 3, percentSetting: 0 },
         true,
+      ],
+      // A fan that reports no mode is judged by its speed
+      [
+        { percentSetting: 40 },
+        true,
+      ],
+      // A plugin that sends only the speed leaves the mode at Off: running now means on (decided by BP)
+      [
+        { fanMode: 0, percentSetting: 40, percentCurrent: 40 },
+        true,
+      ],
+      [
+        { fanMode: 0, percentSetting: 40, percentCurrent: 0 },
+        false,
       ],
     ])('treats %o as running: %s', (fanControl, expected) => {
       expect(isFanOn(device({ fanControl }))).toBe(expected)
     })
 
-    it('toggles through the percent setting', async () => {
+    it('toggles the mode and the speed together for a fan that reports a mode', async () => {
       const off = device({
-        fanControl: { fanMode: 0, percentSetting: 0 },
+        fanControl: { fanMode: 0, percentSetting: 50 },
       })
       const on = device({
-        fanControl: { fanMode: 0, percentSetting: 40 },
+        fanControl: { fanMode: 3, percentSetting: 0 },
+      })
+
+      await toggleFan(off)
+      await toggleFan(on)
+
+      expect(off.writes).toEqual([
+        {
+          cluster: 'fanControl',
+          attributes: { fanMode: 3, percentSetting: 100 },
+        },
+      ])
+      // Writing only the speed left the mode at High, so the tile stayed on and every tap sent 0 again
+      expect(on.writes).toEqual([
+        {
+          cluster: 'fanControl',
+          attributes: { fanMode: 0, percentSetting: 0 },
+        },
+      ])
+    })
+
+    it('toggles through the percent setting for a fan with no mode', async () => {
+      const off = device({
+        fanControl: { percentSetting: 0 },
+      })
+      const on = device({
+        fanControl: { percentSetting: 40 },
       })
 
       await toggleFan(off)
@@ -892,6 +937,33 @@ describe('matter-device.utils', () => {
         {
           cluster: 'fanControl',
           attributes: { percentSetting: 65 },
+        },
+      ])
+    })
+
+    it.each([
+      // [fanModeSequence, speed, mode written]
+      [1, 40, 1],
+      [1, 60, 3],
+      [3, 50, 1],
+      [4, 20, 3],
+      [5, 50, 3],
+      [0, 50, 2],
+      [2, 50, 2],
+      [undefined, 50, 2],
+    ])('writes a mode the fan has (sequence %s, speed %s, mode %s)', async (sequence, speed, mode) => {
+      // Regression: the mode came from a fixed Low / Medium / High split, so an Off-High fan was sent Medium,
+      // which its plugin refuses, and the fan stayed as it was
+      const service = device({
+        fanControl: { fanMode: 0, percentSetting: 0, fanModeSequence: sequence },
+      })
+
+      await setFanSpeed(service, speed)
+
+      expect(service.writes).toEqual([
+        {
+          cluster: 'fanControl',
+          attributes: { fanMode: mode, percentSetting: speed },
         },
       ])
     })

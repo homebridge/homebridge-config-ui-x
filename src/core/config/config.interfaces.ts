@@ -1,6 +1,6 @@
 import type { Buffer } from 'node:buffer'
 
-import { BridgeHapConfig, MatterConfig } from '../matter/matter.interfaces.js'
+import type { BridgeHapConfig, MatterConfig } from '../matter/matter.interfaces.js'
 
 export interface StartupConfig {
   host?: '::' | '0.0.0.0' | string

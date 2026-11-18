@@ -840,11 +840,13 @@
                       @if (adapter.missing) {
                         <i aria-hidden="true" class="fas fa-exclamation-triangle"></i>
                       }
-                      {{ adapter.iface }}:
+                      {{ adapter.entry }}:
                       <span class="fw-normal">{{
                         adapter.missing
                           ? ('settings.mdns_advertiser_not_connected' | translate)
-                          : adapter.ip4 || adapter.ip6
+                          : adapter.byAddress
+                            ? adapter.iface
+                            : adapter.ip4 || adapter.ip6
                       }}</span>
                     </span>
                   }

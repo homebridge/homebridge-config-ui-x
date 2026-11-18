@@ -378,10 +378,11 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
     if (this.childRestartTimer) {
       clearTimeout(this.childRestartTimer)
     }
+    // No `end` on child-bridges: the page behind this window shares that socket, and an `end` stops the server
+    // sending its child bridge status too. Taking this window's own listeners off is enough.
     for (const [event, handler] of this.childListeners) {
       this.ioChild?.socket.off(event, handler)
     }
-    this.ioChild?.end?.()
   }
 
   private async subscribeToRun(): Promise<void> {

@@ -46,6 +46,7 @@ export class AccessoriesService {
   // so an in-flight payload landing after a session stops can't push stale
   // services to subscribers.
   private sessionActive = false
+  private socketHandlers: Array<[string, (...args: any[]) => void]> = []
   private hiddenTypes = new Set([
     'InputSource',
     'LockManagement',
@@ -196,6 +197,13 @@ export class AccessoriesService {
     // the whole bridge until a manual page refresh.
     this.sessionActive = false
 
+    // The namespace is cached and shared, and `end()` only emits `end`: the handlers start() added must be taken
+    // off here, or every visit adds one more set (N toasts for one failure, N reloads for one new bridge)
+    for (const [event, handler] of this.socketHandlers) {
+      this.io?.socket?.off(event, handler)
+    }
+    this.socketHandlers = []
+
     this.io?.end?.()
     this.rooms.set([])
     this.accessories = { services: [] }
@@ -209,6 +217,14 @@ export class AccessoriesService {
     // Reset the internal unsubscribe channel for the next session. The public
     // Subjects persist for the lifetime of this singleton service.
     this.stop$ = new Subject<void>()
+  }
+
+  /**
+   * Add a socket handler for this session; stop() takes it off again
+   */
+  private listen(event: string, handler: (...args: any[]) => void) {
+    this.socketHandlers.push([event, handler])
+    this.io.socket.on(event, handler)
   }
 
   /**
@@ -235,7 +251,7 @@ export class AccessoriesService {
       })
 
     // Subscribe to accessory events
-    this.io.socket.on('accessories-data', (data: ServiceType[]) => {
+    this.listen('accessories-data', (data: ServiceType[]) => {
       // Drop events that arrive after the session was stopped (e.g. an
       // in-flight payload landing between `stop()` and the socket closing).
       if (!this.sessionActive) {
@@ -267,29 +283,29 @@ export class AccessoriesService {
     // doubled the live listeners — and because each fired another reload, the
     // count grew with every late-discovered bridge. Re-fetching in place keeps
     // the single set of handlers; parseServices() merges the new bridge in.
-    this.io.socket.on('accessories-reload-required', () => {
+    this.listen('accessories-reload-required', () => {
       this.io.socket.emit('accessory-control', { refresh: true })
     })
 
     // When only Matter accessories need to reload
-    this.io.socket.on('matter-accessories-reload-required', async () => {
+    this.listen('matter-accessories-reload-required', async () => {
       // Trigger reload by emitting accessory-control-refresh
       // This will reload accessories from the backend without full reconnection
       this.matterReadyForControl = false
       this.io.socket.emit('accessory-control', { refresh: true })
     })
 
-    this.io.socket.on('accessory-control-failure', (message: string) => {
+    this.listen('accessory-control-failure', (message: string) => {
       console.error(message)
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
     })
 
     // Protocol-specific ready events
-    this.io.socket.on('hap-accessories-ready-for-control', () => {
+    this.listen('hap-accessories-ready-for-control', () => {
       this.hapReadyForControl = true
     })
 
-    this.io.socket.on('matter-accessories-ready-for-control', () => {
+    this.listen('matter-accessories-ready-for-control', () => {
       this.matterReadyForControl = true
     })
   }
@@ -298,6 +314,12 @@ export class AccessoriesService {
    * Save the room layout
    */
   public saveLayout() {
+    // After stop() the rooms are empty and the saved layout is gone, so a save from a modal that is still open
+    // (opened on the page, then the user went Back) would write an empty layout and wipe every room for the user
+    if (!this.sessionActive || !this.originalLayout) {
+      return
+    }
+
     // Generate layout schema from currently active rooms
     const currentLayout = this.rooms().map(room => ({
       name: room.name,

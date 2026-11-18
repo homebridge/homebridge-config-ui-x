@@ -1,4 +1,6 @@
-import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common'
+import type { CanActivate, ExecutionContext } from '@nestjs/common'
+
+import { Inject, Injectable } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 import { WsException } from '@nestjs/websockets'
 import jwt from 'jsonwebtoken'
@@ -6,7 +8,7 @@ import jwt from 'jsonwebtoken'
 import { UserDto } from '../../../modules/users/users.dto.js'
 import { ConfigService } from '../../config/config.service.js'
 import { AuthService } from '../auth.service.js'
-import { extractWsToken } from './ws-token.js'
+import { extractWsToken, setWsUser } from './ws-token.js'
 
 @Injectable()
 export class WsGuard implements CanActivate {
@@ -49,6 +51,7 @@ export class WsGuard implements CanActivate {
       if (!await this.authService.validateUser(payload)) {
         throw new Error('User no longer valid')
       }
+      setWsUser(client, payload)
       return true
     } catch (e) {
       client.disconnect()

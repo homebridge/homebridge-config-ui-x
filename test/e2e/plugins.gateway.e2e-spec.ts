@@ -93,6 +93,72 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     ;(pluginsService as any).npmMajorVersion = 11
   })
 
+  it('stops an npm run that hangs, kills it if it ignores that, and fails the run so the queue moves on', async () => {
+    const term = {
+      onData: vi.fn(),
+      onExit: vi.fn(),
+      kill: vi.fn(),
+    }
+    const spawn = vi.spyOn(nodePtyService, 'spawn').mockImplementation(() => term as any)
+    const before = PluginsService.NPM_RUN_TIMEOUT_MS
+    PluginsService.NPM_RUN_TIMEOUT_MS = 50
+    vi.useFakeTimers({
+      toFake: ['setTimeout', 'clearTimeout'],
+    })
+    try {
+      const run = (pluginsService as any).runNpmCommand(['npm', 'install', 'homebridge-x'], pluginsPath, client)
+      const settled = run.then(() => 'resolved', (e: Error) => e.message)
+      // npm is started after some file checks
+      while (!spawn.mock.calls.length) {
+        await new Promise(resolve => setImmediate(resolve))
+      }
+      await vi.advanceTimersByTimeAsync(60)
+      expect(term.kill).toHaveBeenCalledWith('SIGTERM')
+      await vi.advanceTimersByTimeAsync(10000)
+      expect(term.kill).toHaveBeenCalledWith('SIGKILL')
+      expect(await settled).toContain('did not finish in time')
+    } finally {
+      vi.useRealTimers()
+      PluginsService.NPM_RUN_TIMEOUT_MS = before
+    }
+  })
+
+  it('fails an npm run stopped at the time limit, which node-pty reports as exit code 0', async () => {
+    // Regression: node-pty gives a process ended by SIGTERM `{ exitCode: 0, signal: 15 }`, so a run stopped
+    // for hanging said "Operation succeeded!" and resolved, and a ui update then restarted onto a broken install
+    let exit: (e: { exitCode: number, signal?: number }) => void
+    const term = {
+      onData: vi.fn(),
+      onExit: vi.fn((handler) => {
+        exit = handler
+      }),
+      kill: vi.fn((signal: string) => {
+        if (signal === 'SIGTERM') {
+          exit({ exitCode: 0, signal: 15 })
+        }
+      }),
+    }
+    const spawn = vi.spyOn(nodePtyService, 'spawn').mockImplementation(() => term as any)
+    const before = PluginsService.NPM_RUN_TIMEOUT_MS
+    PluginsService.NPM_RUN_TIMEOUT_MS = 50
+    vi.useFakeTimers({
+      toFake: ['setTimeout', 'clearTimeout'],
+    })
+    try {
+      const run = (pluginsService as any).runNpmCommand(['npm', 'install', 'homebridge-x'], pluginsPath, client)
+      const settled = run.then(() => 'resolved', (e: Error) => e.message)
+      while (!spawn.mock.calls.length) {
+        await new Promise(resolve => setImmediate(resolve))
+      }
+      await vi.advanceTimersByTimeAsync(60)
+      expect(await settled).toContain('did not finish in time')
+      expect(client.emit).not.toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded'))
+    } finally {
+      vi.useRealTimers()
+      PluginsService.NPM_RUN_TIMEOUT_MS = before
+    }
+  })
+
   it('ON /plugins/install', async () => {
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {

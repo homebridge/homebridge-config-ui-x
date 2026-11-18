@@ -5,6 +5,7 @@ import { NouisliderComponent } from 'ng2-nouislider'
 import { Subject } from 'rxjs'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
+import { asNumber } from '@/app/core/accessories/types/hap/hap-values'
 
 interface TiltControl {
   value: any
@@ -25,7 +26,7 @@ interface TiltControl {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WindowCoveringManageComponent extends BaseManageComponent {
-  public targetMode!: string
+  public targetMode!: boolean
   public targetPositionChanged: Subject<string> = new Subject<string>()
   public targetPosition!: {
     value: any
@@ -47,38 +48,39 @@ export class WindowCoveringManageComponent extends BaseManageComponent {
 
   protected setupComponent() {
     this.createDebouncedSubscription(this.targetPositionChanged, () => {
-      if (this.service.getCharacteristic!('CurrentPosition')!.value < this.targetPosition.value) {
+      const currentPosition = asNumber(this.service.getCharacteristic?.('CurrentPosition')?.value)
+      if (currentPosition !== undefined && currentPosition < this.targetPosition.value) {
         this.service.values.PositionState = 1
-      } else if (this.service.getCharacteristic!('CurrentPosition')!.value > this.targetPosition.value) {
+      } else if (currentPosition !== undefined && currentPosition > this.targetPosition.value) {
         this.service.values.PositionState = 0
       }
-      void this.service.getCharacteristic!('TargetPosition').setValue!(this.targetPosition.value)
+      void this.service.getCharacteristic?.('TargetPosition')?.setValue?.(this.targetPosition.value)
     })
 
     this.createDebouncedSubscription(this.targetHorizontalTiltChanged, () => {
-      void this.service.getCharacteristic!('TargetHorizontalTiltAngle')?.setValue!(this.targetHorizontalTilt!.value)
+      void this.service.getCharacteristic?.('TargetHorizontalTiltAngle')?.setValue?.(this.targetHorizontalTilt!.value)
     })
 
     this.createDebouncedSubscription(this.targetVerticalTiltChanged, () => {
-      void this.service.getCharacteristic!('TargetVerticalTiltAngle')?.setValue!(this.targetVerticalTilt!.value)
+      void this.service.getCharacteristic?.('TargetVerticalTiltAngle')?.setValue?.(this.targetVerticalTilt!.value)
     })
 
-    this.targetMode = this.service.values.On
+    this.targetMode = !!this.service.values.On
     this.loadTargetPosition()
     this.targetHorizontalTilt = this.loadTilt('TargetHorizontalTiltAngle')
     this.targetVerticalTilt = this.loadTilt('TargetVerticalTiltAngle')
   }
 
   protected handleAccessoryUpdate() {
-    this.targetMode = this.service.values.On
+    this.targetMode = !!this.service.values.On
     if (this.targetPosition && 'TargetPosition' in this.service.values) {
-      this.targetPosition.value = this.service.getCharacteristic!('TargetPosition').value
+      this.targetPosition.value = this.service.getCharacteristic?.('TargetPosition')?.value
     }
     if (this.targetHorizontalTilt && 'TargetHorizontalTiltAngle' in this.service.values) {
-      this.targetHorizontalTilt.value = this.service.getCharacteristic!('TargetHorizontalTiltAngle').value
+      this.targetHorizontalTilt.value = this.service.getCharacteristic?.('TargetHorizontalTiltAngle')?.value
     }
     if (this.targetVerticalTilt && 'TargetVerticalTiltAngle' in this.service.values) {
-      this.targetVerticalTilt.value = this.service.getCharacteristic!('TargetVerticalTiltAngle').value
+      this.targetVerticalTilt.value = this.service.getCharacteristic?.('TargetVerticalTiltAngle')?.value
     }
   }
 
@@ -95,7 +97,7 @@ export class WindowCoveringManageComponent extends BaseManageComponent {
   }
 
   private loadTargetPosition() {
-    const TargetPosition = this.service.getCharacteristic!('TargetPosition')
+    const TargetPosition = this.service.getCharacteristic?.('TargetPosition')
 
     if (TargetPosition) {
       this.targetPosition = {
@@ -115,7 +117,7 @@ export class WindowCoveringManageComponent extends BaseManageComponent {
    * default, so an accessory that narrows them is respected.
    */
   private loadTilt(name: string): TiltControl | undefined {
-    const characteristic = this.service.getCharacteristic!(name)
+    const characteristic = this.service.getCharacteristic?.(name)
 
     if (!characteristic) {
       return undefined
@@ -130,10 +132,10 @@ export class WindowCoveringManageComponent extends BaseManageComponent {
   }
 
   public get currentHorizontalTilt(): number {
-    return this.service.getCharacteristic!('CurrentHorizontalTiltAngle')?.value as number
+    return this.service.getCharacteristic?.('CurrentHorizontalTiltAngle')?.value as number
   }
 
   public get currentVerticalTilt(): number {
-    return this.service.getCharacteristic!('CurrentVerticalTiltAngle')?.value as number
+    return this.service.getCharacteristic?.('CurrentVerticalTiltAngle')?.value as number
   }
 }

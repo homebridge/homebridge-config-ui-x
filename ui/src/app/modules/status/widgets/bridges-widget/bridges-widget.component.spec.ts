@@ -688,8 +688,17 @@ describe('bridgesWidgetComponent', () => {
       // The widget can be switched off mid-restart, and a timer firing into a
       // destroyed component announces into nothing
       expect(widget.homebridgeLiveMessage()).toBe('')
-      expect(mainIo.end).toHaveBeenCalled()
-      expect(childIo.end).toHaveBeenCalled()
+    })
+
+    it('leaves the shared status and child bridge sockets open when the widget is removed', async () => {
+      // Regression: the widget sent `end` on both, which stopped the server sending homebridge status (and
+      // child bridge status) to the whole dashboard, for example after unlocking the layout re-made the widget
+      await open()
+
+      TestBed.resetTestingModule()
+
+      expect(mainIo.end).not.toHaveBeenCalled()
+      expect(childIo.end).not.toHaveBeenCalled()
     })
   })
 

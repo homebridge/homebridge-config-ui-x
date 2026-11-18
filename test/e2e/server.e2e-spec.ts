@@ -4,6 +4,7 @@ import type { TestingModule } from '@nestjs/testing'
 import type { HomebridgeConfig } from '../../src/core/config/config.interfaces.js'
 
 import { Buffer } from 'node:buffer'
+import { networkInterfaces } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -12,18 +13,27 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import FormData from 'form-data'
-import { copy, ensureDir, pathExists, readFile, readJson, remove, writeJson } from 'fs-extra'
+import { copy, ensureDir, pathExists, readdir, readFile, readJson, remove, stat, writeFile, writeJson } from 'fs-extra'
 import forge from 'node-forge'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
 import { ServerModule } from '../../src/modules/server/server.module.js'
 import { ServerService } from '../../src/modules/server/server.service.js'
 
 import '../../src/global-defaults.js'
+
+/** A file that holds a secret is readable by its owner only (Windows has no such file modes) */
+async function expectOwnerOnly(path: string) {
+  if (process.platform === 'win32') {
+    return
+  }
+  expect((await stat(path)).mode & 0o777).toBe(0o600)
+}
 
 describe('ServerController (e2e)', () => {
   let app: NestFastifyApplication
@@ -419,6 +429,23 @@ describe('ServerController (e2e)', () => {
     })
   })
 
+  it('GET /server/pairings/:deviceId refuses an id that is a path', async () => {
+    const outside = resolve(process.env.UIX_STORAGE_PATH, 'outside.json')
+    await writeJson(outside, { secret: 'not a pairing' })
+    try {
+      const res = await app.inject({
+        method: 'GET',
+        path: `/server/pairings/${encodeURIComponent('../outside')}`,
+        headers: { authorization },
+      })
+
+      expect(res.statusCode).toBe(400)
+      expect(res.body).not.toContain('not a pairing')
+    } finally {
+      await remove(outside)
+    }
+  })
+
   it('DELETE /server/pairings/:deviceId', async () => {
     const res = await app.inject({
       method: 'DELETE',
@@ -493,6 +520,88 @@ describe('ServerController (e2e)', () => {
     // check the value was saved
     const config = await readJson(configService.configPath)
     expect(config.bridge.bind).toBeUndefined()
+  })
+
+  it('PUT /server/network-interfaces/bridge (an ip address in place of an adapter name)', async () => {
+    // Homebridge takes either in bridge.bind, and an address is what keeps a
+    // bridge on one network when the adapter names change between starts
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/network-interfaces/bridge',
+      headers: {
+        authorization,
+      },
+      payload: {
+        adapters: ['192.168.1.50', 'en0'],
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    const config = await readJson(configService.configPath)
+    expect(config.bridge.bind).toEqual(['192.168.1.50', 'en0'])
+  })
+
+  it('GET /server/network-interfaces/bridge/resolved', async () => {
+    // Whichever adapter this machine has 127.0.0.1 on (lo, lo0, "Loopback Pseudo-Interface 1")
+    const loopback = Object.entries(networkInterfaces())
+      .find(([, addresses]) => addresses?.some(x => x.address === '127.0.0.1'))?.[0] ?? null
+
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    // 203.0.113.0/24 is reserved for documentation, so no machine has this address
+    config.bridge.bind = ['127.0.0.1', '203.0.113.7', 'no-such-adapter0']
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/network-interfaces/bridge/resolved',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual([
+      { entry: '127.0.0.1', iface: loopback, isAddress: true },
+      { entry: '203.0.113.7', iface: null, isAddress: true },
+      { entry: 'no-such-adapter0', iface: null, isAddress: false },
+    ])
+  })
+
+  it('GET /server/network-interfaces/bridge/resolved (bind is one name, not a list)', async () => {
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    config.bridge.bind = 'no-such-adapter0'
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/network-interfaces/bridge/resolved',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual([
+      { entry: 'no-such-adapter0', iface: null, isAddress: false },
+    ])
+  })
+
+  it('GET /server/network-interfaces/bridge/resolved (bind not set)', async () => {
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    delete config.bridge.bind
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/network-interfaces/bridge/resolved',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual([])
   })
 
   it('PUT /server/network-interfaces/bridge (bad payload)', async () => {
@@ -807,6 +916,60 @@ describe('ServerController (e2e)', () => {
     // 2. The wallpaper was set in the config
     const config = await readJson(configService.configPath)
     expect(config.platforms[0].wallpaper).toBe('ui-wallpaper.png')
+  })
+
+  it('keeps the old wallpaper when an upload fails part-way', async () => {
+    // Regression: the old file was deleted before the new one was written, so a failed upload left a part-file
+    // and a config naming a wallpaper that was gone
+    const old = resolve(configService.storagePath, 'ui-wallpaper.jpg')
+    await remove(resolve(configService.storagePath, 'ui-wallpaper.png'))
+    await writeFile(old, 'old image')
+    const config = await readJson(configService.configPath)
+    config.platforms[0].wallpaper = 'ui-wallpaper.jpg'
+    await writeJson(configService.configPath, config)
+    const { Readable } = await import('node:stream')
+    const file = new Readable({
+      read() {
+        this.push('half an ima')
+        this.destroy(new Error('connection lost'))
+      },
+    })
+
+    try {
+      await expect(serverService.uploadWallpaper({ filename: 'new.png', file } as any)).rejects.toThrow('connection lost')
+
+      expect(await readFile(old, 'utf8')).toBe('old image')
+      expect(await pathExists(resolve(configService.storagePath, 'ui-wallpaper.png'))).toBe(false)
+      expect((await readJson(configService.configPath)).platforms[0].wallpaper).toBe('ui-wallpaper.jpg')
+      expect((await readdir(configService.storagePath)).filter(name => name.includes('.upload-'))).toEqual([])
+    } finally {
+      await remove(old)
+    }
+  })
+
+  it('DELETE /server/wallpaper never deletes a file the wallpaper setting names outside the wallpaper files', async () => {
+    // A separate file: config.json itself would not show it, as the delete writes config.json again after
+    const keep = resolve(configService.storagePath, 'keep-me.json')
+    await writeJson(keep, { keep: true })
+    const config = await readJson(configService.configPath)
+    config.platforms[0].wallpaper = 'keep-me.json'
+    await writeJson(configService.configPath, config)
+
+    try {
+      const res = await app.inject({
+        method: 'DELETE',
+        path: '/server/wallpaper',
+        headers: { authorization },
+      })
+
+      expect(res.statusCode).toBe(204)
+      // The named file is still there, and the bad reference is gone
+      expect(await readJson(keep)).toEqual({ keep: true })
+      const after = await readJson(configService.configPath)
+      expect(after.platforms[0].wallpaper).toBeUndefined()
+    } finally {
+      await remove(keep)
+    }
   })
 
   it('DELETE /server/wallpaper', async () => {
@@ -1301,6 +1464,71 @@ describe('ServerController (e2e)', () => {
     expect(authAfter).toEqual(authBefore)
   })
 
+  it('DELETE /server/cached-accessories (bulk - checks the names before stopping homebridge)', async () => {
+    const restart = vi.spyOn(app.get(HomebridgeIpcService), 'restartAndWaitForClose').mockResolvedValue(undefined)
+    try {
+      const res = await app.inject({
+        method: 'DELETE',
+        path: '/server/cached-accessories',
+        headers: { authorization },
+        payload: [
+          { uuid: 'some-uuid', cacheFile: 'auth.json' },
+        ],
+      })
+      expect(res.statusCode).toBe(400)
+      expect(restart).not.toHaveBeenCalled()
+
+      // No body at all: a 400, not a 500
+      const empty = await app.inject({
+        method: 'DELETE',
+        path: '/server/cached-accessories',
+        headers: { authorization },
+      })
+      expect(empty.statusCode).toBe(400)
+    } finally {
+      restart.mockRestore()
+    }
+  })
+
+  it('DELETE /server/cached-accessories (bulk - a missing cache file is skipped, the others are still done)', async () => {
+    const accessoriesPath = resolve(process.env.UIX_STORAGE_PATH, 'accessories')
+    await writeJson(resolve(accessoriesPath, 'cachedAccessories'), [
+      { UUID: 'keep-me' },
+      { UUID: 'remove-me' },
+    ])
+    const restart = vi.spyOn(app.get(HomebridgeIpcService), 'restartAndWaitForClose').mockResolvedValue(undefined)
+    try {
+      const res = await app.inject({
+        method: 'DELETE',
+        path: '/server/cached-accessories',
+        headers: { authorization },
+        payload: [
+          { uuid: 'x', cacheFile: 'cachedAccessories.0E0000000000' },
+          { uuid: 'remove-me', cacheFile: 'cachedAccessories' },
+        ],
+      })
+      expect(res.statusCode).toBeLessThan(300)
+    } finally {
+      restart.mockRestore()
+    }
+    expect((await readJson(resolve(accessoriesPath, 'cachedAccessories'))).map((x: any) => x.UUID)).toEqual(['keep-me'])
+  })
+
+  it('DELETE /server/pairings/:deviceId stops homebridge once, not twice', async () => {
+    const restart = vi.spyOn(app.get(HomebridgeIpcService), 'restartAndWaitForClose').mockResolvedValue(undefined)
+    try {
+      const res = await app.inject({
+        method: 'DELETE',
+        path: '/server/pairings/67E41F0EA05D',
+        headers: { authorization },
+      })
+      expect(res.statusCode).toBeLessThan(300)
+      expect(restart).toHaveBeenCalledOnce()
+    } finally {
+      restart.mockRestore()
+    }
+  })
+
   it('DELETE /server/pairings (bulk)', async () => {
     const res = await app.inject({
       method: 'DELETE',
@@ -1528,6 +1756,8 @@ describe('ServerController (e2e)', () => {
     expect(res.json().mode).toBe('keycert')
     expect(res.json().keyPath).toBeDefined()
     expect(res.json().certPath).toBeDefined()
+    // The private key is readable by its owner only
+    await expectOwnerOnly(res.json().keyPath)
   })
 
   it('POST /server/ssl/selfsigned/generate (selfsigned mode)', async () => {
@@ -1643,6 +1873,7 @@ describe('ServerController (e2e)', () => {
     expect(res.json().ok).toBe(true)
     expect(res.json().type).toBe('keycert')
     expect((await readFile(res.json().keyPath)).equals(keyPem)).toBe(true)
+    await expectOwnerOnly(res.json().keyPath)
     expect((await readFile(res.json().certPath)).equals(certPem)).toBe(true)
 
     const config = await readJson(configService.configPath)
@@ -1688,6 +1919,7 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(201)
     expect(res.json().ok).toBe(true)
     expect(res.json().type).toBe('pfx')
+    await expectOwnerOnly(res.json().pfxPath)
 
     const config = await readJson(configService.configPath)
     const uiBlock = config.platforms.find(x => x.platform === 'config')

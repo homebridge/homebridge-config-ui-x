@@ -162,6 +162,20 @@ jobs:
         run: npm run test
         working-directory: ui
 
+  # tsc checks the server code and tests, and the UI tests; the builds only check the code they ship
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm i && cd ui && npm i
+      - name: Run typecheck
+        run: npm run typecheck
+
   lint:
     needs: build_and_test
     uses: homebridge/.github/.github/workflows/eslint.yml@latest

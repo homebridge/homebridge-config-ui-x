@@ -9,6 +9,8 @@
             <div class="d-flex align-items-center justify-content-center w-100 h-100 qr-loading-container">
               @if (loading()) {
                 <i class="fas fa-circle-notch fa-spin fa-2xl grey-text"></i>
+              } @else if (startFailed()) {
+                <i class="fas fa-exclamation-triangle fa-2xl orange-text"></i>
               } @else if (!enabled()) {
                 <i class="fas fa-matter grey-text fa-2xl"></i>
               }
@@ -25,7 +27,9 @@
       </p>
       <p class="grey-text mb-1 small">
         <i class="fas fa-matter"></i>
-        @if (enabled()) {
+        @if (startFailed()) {
+          {{ 'status.widget.matter_start_failed' | translate }}
+        } @else if (enabled()) {
           @if (pin()) {
             Matter &middot;
             <i class="fas fa-link" [class.green-text]="commissioned()" [class.grey-text]="!commissioned()"></i>

@@ -16,6 +16,8 @@ import { NodePtyService } from '../../../core/node-pty/node-pty.service.js'
 export class TerminalService {
   private static persistentTerminal: IPty | null = null
   private static connectedClients: Set<WsEventEmitter> = new Set()
+  // Ends the shell a socket started (non-persistent mode), if it has one
+  private sessionEnders = new WeakMap<WsEventEmitter, () => void>()
   private static dataListenerAttached = false
   private static terminalBuffer: string = ''
   private static persistentAptHintInjected = false
@@ -96,6 +98,11 @@ export class TerminalService {
     // Get the preferred shell for the current platform
     const shell = await this.getPreferredShell()
 
+    // A socket asking again ends its first shell: two shells on one socket both got every keystroke. Done after
+    // the await, with nothing awaited from here to where this shell is recorded, so two asks close together
+    // can not both miss each other
+    this.sessionEnders.get(client)?.()
+
     // Spawn a new shell
     const term = this.nodePtyService.spawn(shell, [], {
       name: 'xterm-color',
@@ -132,8 +139,11 @@ export class TerminalService {
     })
 
     // Write input to the terminal
+    // Only text: node-pty throws for anything else, and a throw in a socket listener ends the whole UI process
     client.on('stdin', (data) => {
-      term.write(data)
+      if (typeof data === 'string') {
+        term.write(data)
+      }
     })
 
     // capture resize events
@@ -164,6 +174,10 @@ export class TerminalService {
 
     client.on('end', onEnd)
     client.on('disconnect', onEnd)
+    this.sessionEnders.set(client, () => {
+      this.sessionEnders.delete(client)
+      onEnd()
+    })
   }
 
   private async attachToPersistentTerminal(client: WsEventEmitter, size: TermSize) {
@@ -279,6 +293,10 @@ export class TerminalService {
     this.logger.debug(`[${this.instanceId}] Adding stdin and resize listeners`)
 
     client.on('stdin', (data) => {
+      // Only text: node-pty throws for anything else, and a throw in a socket listener ends the whole UI process
+      if (typeof data !== 'string') {
+        return
+      }
       if (TerminalService.persistentTerminal) {
         TerminalService.persistentTerminal.write(data)
       } else {

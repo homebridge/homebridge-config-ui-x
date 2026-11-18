@@ -12,9 +12,9 @@
   <div class="modal-body text-center px-5">
     <h6 class="mt-2 mb-4 fs-4">
       <i [class]="`fas fa-temperature-full ${getStatusClass()}`"></i
-      >{{ service.values?.CurrentTemperature | convertTemp | number: '1.0-1' }}°{{ temperatureUnits | uppercase }}
+      >{{ service.values.CurrentTemperature | convertTemp | number: '1.0-1' }}°{{ temperatureUnits | uppercase }}
       @if (hasHumidity) {
-        &middot; {{ service.values?.CurrentRelativeHumidity }}%
+        &middot; {{ service.values.CurrentRelativeHumidity }}%
       }
     </h6>
     <div

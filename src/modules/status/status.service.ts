@@ -3,6 +3,9 @@ import type { Subscription } from 'rxjs'
 import type { Systeminformation } from 'systeminformation'
 
 import type { HomebridgeStatusMatterUpdate } from '../../core/matter/matter.interfaces.js'
+import type { } from '../../core/regex.constants.js'
+import type { DockerRelease, DockerReleaseInfo } from '../platform-tools/docker/docker.interfaces.js'
+import type { HomebridgeStatsResponse, HomebridgeStatusUpdate } from './status.interfaces.js'
 
 import { exec, execSync } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
@@ -13,7 +16,7 @@ import { promisify } from 'node:util'
 
 import { HttpService } from '@nestjs/axios'
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
-import { readJson, writeJsonSync } from 'fs-extra/esm'
+import { readJson, writeJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { firstValueFrom, Subject } from 'rxjs'
 import { gt } from 'semver'
@@ -33,14 +36,9 @@ import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.s
 import { Logger } from '../../core/logger/logger.service.js'
 import { isNodeMajorSupported } from '../../core/node-version.constants.js'
 import { RE_BETA_DATE, RE_STABLE_DATE, RE_TEST_DATE, RE_TRAILING_DATE } from '../../core/regex.constants.js'
-import { DockerRelease, DockerReleaseInfo } from '../platform-tools/docker/docker.interfaces.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import { ServerService } from '../server/server.service.js'
-import {
-  HomebridgeStatsResponse,
-  HomebridgeStatus,
-  HomebridgeStatusUpdate,
-} from './status.interfaces.js'
+import { HomebridgeStatus } from './status.interfaces.js'
 
 const execAsync = promisify(exec)
 
@@ -262,8 +260,12 @@ export class StatusService {
   /**
    * Saves the current dashboard layout
    */
-  public async setDashboardLayout(layout: any) {
-    writeJsonSync(resolve(this.configService.storagePath, '.uix-dashboard.json'), layout)
+  public async setDashboardLayout(layout: unknown) {
+    // The layout is shared by every user: a value that is not a list of widgets would break the dashboard for all
+    if (!Array.isArray(layout) || !layout.every(item => item !== null && typeof item === 'object' && !Array.isArray(item))) {
+      throw new Error('The dashboard layout must be a list of widgets.')
+    }
+    await writeJson(resolve(this.configService.storagePath, '.uix-dashboard.json'), layout)
     this.dashboardLayout = layout
     return { status: 'ok' }
   }

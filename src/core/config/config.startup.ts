@@ -62,9 +62,12 @@ export async function getStartupConfig() {
       }
     } else if ((ui.ssl.key && ui.ssl.cert) || ui.ssl.pfx) {
       // Traditional file-based SSL
+      // A missing file must not stop the UI from starting: it then starts without SSL (below), so the user can
+      // open it and fix the path
       for (const attribute of ['key', 'cert', 'pfx']) {
         if (ui.ssl[attribute]) {
-          if (!(await (stat(ui.ssl[attribute]))).isFile()) {
+          const isFile = await stat(ui.ssl[attribute]).then(s => s.isFile(), () => false)
+          if (!isFile) {
             logger.error(`SSL config error: ui.ssl.${attribute}: ${ui.ssl[attribute]} is not a valid file.`)
           }
         }

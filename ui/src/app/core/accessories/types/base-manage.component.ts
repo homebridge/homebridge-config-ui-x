@@ -128,8 +128,11 @@ export abstract class BaseManageComponent implements OnInit {
     callback: (value: T) => void,
     debounceMs: number = 500,
   ) {
+    // takeUntilDestroyed goes first: when the window closes the source completes, and debounceTime then sends the
+    // value still waiting at once. The other way round a slider moved just before closing was never sent, though
+    // the user saw it move (decided by BP: send it).
     subject$
-      .pipe(debounceTime(debounceMs), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(debounceMs))
       .subscribe(callback)
   }
 

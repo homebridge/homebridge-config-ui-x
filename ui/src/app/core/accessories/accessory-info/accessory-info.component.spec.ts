@@ -153,6 +153,29 @@ describe('accessoryInfoComponent', () => {
       ])
     })
 
+    it('shows the status and marks the characteristic that did not respond', () => {
+      const element = open(hapService({
+        characteristics: [
+          characteristic('On', true, { status: -70402 }),
+        ],
+      })).nativeElement as HTMLElement
+
+      // The status row plus the characteristic row, each with the description and HAP code
+      const marks = element.querySelectorAll('.text-danger')
+      expect(marks).toHaveLength(2)
+      marks.forEach(mark => expect(mark.textContent).toContain('(-70402)'))
+    })
+
+    it('shows no not responding marks when everything answered', () => {
+      const element = open(hapService({
+        characteristics: [
+          characteristic('On', true, { status: 0 }),
+        ],
+      })).nativeElement as HTMLElement
+
+      expect(element.querySelector('.fa-triangle-exclamation')).toBeNull()
+    })
+
     it('knows it is not a matter accessory', () => {
       expect(open(hapService()).componentInstance.isMatterAccessory).toBe(false)
     })
@@ -486,6 +509,40 @@ describe('accessoryInfoComponent', () => {
       info.dismissModal()
 
       expect((service as any).customName).toBeUndefined()
+    })
+
+    it('undoes the edits when the window closes another way, such as Escape', () => {
+      // Regression: only the close buttons undid them. Escape (ng-bootstrap closes the window itself) left the
+      // "cancelled" name on the tile's service object, and the next layout save stored it
+      const service = hapService({
+        type: 'Switch',
+        overrides: { customName: 'Kitchen', hidden: false, onDashboard: true } as any,
+      })
+      const fixture = open(service)
+
+      Object.assign(fixture.componentInstance.localService, {
+        customName: 'Changed',
+        hidden: true,
+      })
+      fixture.destroy()
+
+      expect(editable(service)).toEqual({
+        customName: 'Kitchen',
+        customType: 'Switch',
+        hidden: false,
+        onDashboard: true,
+      })
+    })
+
+    it('keeps the edits after a save, when the window then closes', () => {
+      const service = hapService()
+      const fixture = open(service)
+
+      fixture.componentInstance.localService.customName = 'Kitchen Light'
+      fixture.componentInstance.saveModal()
+      fixture.destroy()
+
+      expect((service as any).customName).toBe('Kitchen Light')
     })
 
     it('dismisses the modal', () => {

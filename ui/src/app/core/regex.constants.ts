@@ -26,6 +26,11 @@ export const RE_WORD_START = /\b\w/g
 // MAC address / device ID
 export const RE_USERNAME = /^(?:[0-9a-f]{2}:){5}[0-9a-f]{2}$/i
 
+// Network
+// An IPv6 link-local address (fe80::/10). An adapter gives itself one, often built from its
+// MAC address, so it can change when the adapter is created again (a container restart)
+export const RE_IPV6_LINK_LOCAL = /^fe[89ab][0-9a-f]:/i
+
 // Plugin identification
 export const RE_HOMEBRIDGE_PREFIX = /^homebridge /i
 

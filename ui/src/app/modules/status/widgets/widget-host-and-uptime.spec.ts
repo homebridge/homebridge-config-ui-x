@@ -99,26 +99,20 @@ describe('the dashboard widget host', () => {
     expect(fixture.nativeElement.children).toHaveLength(0)
   })
 
-  it('closes the widget streams when the tile goes', () => {
-    // They are per-tile, so leaving them open leaks a subscription per widget the
-    // user removes.
-    //
-    // ⚠️ Asserted through a completion handler, not `subject.closed`: `complete()`
-    // stops a Subject but does not close it, so a `closed` check passes whether the
-    // streams were completed or not
+  it('leaves the widget streams open when the tile goes, as a re-made tile is handed the same ones', () => {
+    // Regression: the host completed them. Unlocking, locking or configuring the dashboard re-makes every tile
+    // with the SAME streams (they belong to the layout item), so the new tile got finished streams, and
+    // resizing a terminal, log, QR code or chart widget did nothing until a reload
     const widget = makeWidget('ClockWidgetComponent')
+    host(widget).destroy()
+
     const fixture = host(widget)
-    const completed: string[] = []
-    widget.$resizeEvent.subscribe({
-      complete: () => completed.push('resize'),
-    })
-    widget.$configureEvent.subscribe({
-      complete: () => completed.push('configure'),
-    })
+    const rendered = (fixture.componentInstance as any).componentRef.instance
+    const resized: string[] = []
+    rendered.resizeEvent.subscribe(() => resized.push('resize'))
+    widget.$resizeEvent.next()
 
-    fixture.destroy()
-
-    expect(completed).toEqual(['resize', 'configure'])
+    expect(resized).toEqual(['resize'])
   })
 
   it('leaves the streams alone when there was no widget to build', () => {

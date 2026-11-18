@@ -29,6 +29,9 @@ import './global-defaults.js'
 
 export { HomebridgeIpcService } from './core/homebridge-ipc/homebridge-ipc.service.js'
 
+let closeUi: (() => Promise<void>) | undefined
+let uiClosing: Promise<void> | undefined
+
 async function bootstrap(): Promise<NestFastifyApplication> {
   const startupConfig = await getStartupConfig()
 
@@ -229,8 +232,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     }
   }
 
-  const handleShutdown = (signal: string) => {
-    logger.debug(`Received ${signal}, starting graceful shutdown...`)
+  closeUi = async () => {
     if (bonjour) {
       try {
         logger.log('Shutting down mDNS service advertising...')
@@ -241,15 +243,35 @@ async function bootstrap(): Promise<NestFastifyApplication> {
         logger.error('Error during mDNS cleanup:', error)
       }
     }
-    app.close().finally(() => {
-      process.exit(0)
-    })
+    await app.close()
   }
 
-  process.once('SIGINT', () => handleShutdown('SIGINT'))
-  process.once('SIGTERM', () => handleShutdown('SIGTERM'))
+  // Under hb-service the UI runs inside the hb-service process, and hb-service handles the signals: it stops
+  // Homebridge first, then calls `shutdownUi()`. A second handler here would exit the process at once, while
+  // Homebridge is still stopping.
+  if (process.env.UIX_SERVICE_MODE !== '1') {
+    const handleShutdown = (signal: string) => {
+      logger.debug(`Received ${signal}, starting graceful shutdown...`)
+      void shutdownUi().finally(() => {
+        process.exit(0)
+      })
+    }
+
+    process.once('SIGINT', () => handleShutdown('SIGINT'))
+    process.once('SIGTERM', () => handleShutdown('SIGTERM'))
+  }
 
   return app
+}
+
+/**
+ * Close the UI: stop the mDNS advertisement and close the Nest app. Safe to call more than once.
+ */
+export function shutdownUi(): Promise<void> {
+  uiClosing ??= closeUi
+    ? closeUi()
+    : Promise.resolve()
+  return uiClosing
 }
 
 export const app = bootstrap()
