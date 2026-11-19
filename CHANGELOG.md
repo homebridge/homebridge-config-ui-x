@@ -118,6 +118,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(logs): make the log and terminal scrollbar always visible and easy to grab on touch screens
 - feat(settings): bind homebridge to a network interface by its ip address, not only its name (#3126) (@stalinCCCP415)
 - feat(accessories): choose an accessory's room from its info dialog
+- feat(accessories): search, filter, group and sort accessories, with built-in views (including batteries), room badges, collapsible groups and bulk move
 
 ### Other Changes
 

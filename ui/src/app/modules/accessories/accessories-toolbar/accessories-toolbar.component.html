@@ -1,0 +1,179 @@
+<div class="accessories-toolbar mb-3" role="toolbar" [attr.aria-label]="'accessories.toolbar.label' | translate">
+  <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+    <div
+      class="btn-group btn-group-sm flex-wrap"
+      role="group"
+      [attr.aria-label]="'accessories.views.label' | translate"
+    >
+      <button
+        type="button"
+        class="btn btn-elegant"
+        [class.active]="activeView() === 'all'"
+        [attr.aria-pressed]="activeView() === 'all'"
+        (click)="applyView(null)"
+      >
+        {{ 'accessories.views.all' | translate }}
+      </button>
+      @for (view of views; track view.id) {
+        <button
+          type="button"
+          class="btn btn-elegant"
+          [class.active]="activeView() === view.id"
+          [attr.aria-pressed]="activeView() === view.id"
+          (click)="applyView(view)"
+        >
+          {{ view.labelKey | translate }}
+        </button>
+      }
+    </div>
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <button
+        type="button"
+        class="btn btn-sm btn-elegant my-0"
+        [class.active]="manageLayoutActive()"
+        [attr.aria-pressed]="manageLayoutActive()"
+        [attr.aria-label]="'accessories.manage_layout' | translate"
+        (click)="manageLayoutToggle.emit()"
+      >
+        <i class="fas fa-up-down-left-right" aria-hidden="true"></i>
+        <span class="ms-1 d-none d-md-inline">{{ 'accessories.manage_layout' | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-elegant my-0"
+        [class.active]="selectActive()"
+        [attr.aria-pressed]="selectActive()"
+        [disabled]="manageLayoutActive()"
+        [attr.aria-label]="'accessories.toolbar.select' | translate"
+        (click)="selectToggle.emit()"
+      >
+        <i class="fas fa-square-check" aria-hidden="true"></i>
+        <span class="ms-1 d-none d-md-inline">{{ 'accessories.toolbar.select' | translate }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+    <input
+      #searchInput
+      type="search"
+      class="form-control form-control-sm accessories-search"
+      [value]="searchText()"
+      [placeholder]="'accessories.toolbar.search' | translate"
+      [attr.aria-label]="'accessories.toolbar.search' | translate"
+      (input)="onSearch(searchInput.value)"
+    />
+    @if (narrow()) {
+      <button
+        type="button"
+        class="btn btn-sm btn-elegant my-0"
+        aria-controls="accessories-toolbar-chips"
+        [attr.aria-expanded]="chipsOpen()"
+        (click)="toggleChips()"
+      >
+        <i class="fas fa-filter" aria-hidden="true"></i>
+        {{ 'accessories.toolbar.filters' | translate }}
+      </button>
+    }
+    <div class="small text-secondary ms-auto" role="status" aria-live="polite">
+      {{ 'accessories.toolbar.showing' | translate: { shown: shown(), total: total() } }}
+    </div>
+    @if (active()) {
+      <button
+        type="button"
+        class="btn btn-sm btn-link p-0"
+        [attr.aria-label]="'accessories.toolbar.clear' | translate"
+        (click)="clear()"
+      >
+        {{ 'accessories.toolbar.clear' | translate }}
+      </button>
+    }
+  </div>
+
+  <div
+    id="accessories-toolbar-chips"
+    class="d-flex flex-wrap align-items-center gap-2 mb-2"
+    [class.d-none]="narrow() && !chipsOpen()"
+  >
+    @for (facet of facets(); track facet.key) {
+      <div ngbDropdown autoClose="outside" class="d-inline-block">
+        <button
+          type="button"
+          class="btn btn-sm btn-elegant my-0 accessories-chip"
+          ngbDropdownToggle
+          [class.active]="facet.selected.length > 0"
+          [attr.aria-label]="facet.labelKey | translate"
+        >
+          @if (facet.selected.length) {
+            {{ facet.selected[0].translate ? (facet.selected[0].label | translate) : facet.selected[0].label }}
+            ({{ facet.selected[0].count }})
+            @if (facet.selected.length > 1) {
+              <span>{{ 'accessories.toolbar.more' | translate: { count: facet.selected.length - 1 } }}</span>
+            }
+          } @else {
+            {{ facet.labelKey | translate }}
+          }
+        </button>
+        <div ngbDropdownMenu>
+          @for (option of facet.options; track option.value) {
+            <button
+              type="button"
+              ngbDropdownItem
+              [class.active]="isSelected(facet, option)"
+              [attr.aria-pressed]="isSelected(facet, option)"
+              (click)="toggleValue(facet.key, option.value)"
+            >
+              <span class="accessories-check">
+                @if (isSelected(facet, option)) {
+                  <i class="fas fa-check primary-text" aria-hidden="true"></i>
+                }
+              </span>
+              {{ option.translate ? (option.label | translate) : option.label }}
+              ({{ option.count }})
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="d-flex flex-wrap align-items-center gap-3">
+    <div class="d-flex align-items-center gap-2">
+      <label class="small text-secondary mb-0" for="accessories-group-by">{{
+        'accessories.toolbar.group_by' | translate
+      }}</label>
+      <select id="accessories-group-by" class="form-select form-select-sm w-auto" (change)="onGroupBy($event)">
+        @for (option of groupOptions; track option.value) {
+          <option [value]="option.value" [selected]="filter().groupBy === option.value">
+            {{ option.labelKey | translate }}
+          </option>
+        }
+      </select>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <label class="small text-secondary mb-0" for="accessories-sort-by">{{
+        'accessories.toolbar.sort_by' | translate
+      }}</label>
+      <select id="accessories-sort-by" class="form-select form-select-sm w-auto" (change)="onSortBy($event)">
+        @for (option of sortOptions; track option.value) {
+          <option [value]="option.value" [selected]="filter().sortBy === option.value">
+            {{ option.labelKey | translate }}
+          </option>
+        }
+      </select>
+    </div>
+    <div class="form-check form-switch mb-0">
+      <input
+        id="accessories-show-hidden"
+        class="form-check-input"
+        type="checkbox"
+        role="switch"
+        [checked]="filter().showHidden"
+        (change)="onShowHidden($event)"
+      />
+      <label class="form-check-label small" for="accessories-show-hidden">{{
+        'accessories.toolbar.show_hidden' | translate
+      }}</label>
+    </div>
+  </div>
+</div>
