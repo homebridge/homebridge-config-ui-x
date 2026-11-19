@@ -1,8 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { FormsModule } from '@angular/forms'
-import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -11,31 +9,37 @@ import { DragulaModule, DragulaService } from 'ng2-dragula'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
+import { buildBatteryIndex } from '@/app/core/accessories/filters/accessory-battery'
+import { AccessoryFilterState, AccessoryGroup, DEFAULT_FILTER_STATE, groupAndSort } from '@/app/core/accessories/filters/accessory-filters'
+import { RoomSummary, summarizeRoom } from '@/app/core/accessories/filters/room-summary'
+import { serviceBridgeName } from '@/app/core/accessories/filters/service-helpers'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { listenUntilDestroyed } from '@/app/core/communication/socket-listener'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
+import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { ChildBridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { AccessoriesToolbarComponent } from '@/app/modules/accessories/accessories-toolbar/accessories-toolbar.component'
 import { AccessorySupportComponent } from '@/app/modules/accessories/accessory-support/accessory-support.component'
 import { AddRoomComponent } from '@/app/modules/accessories/add-room/add-room.component'
 import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-here-placeholder/drag-here-placeholder.component'
 import { EditRoomComponent } from '@/app/modules/accessories/edit-room/edit-room.component'
 import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accessories/modal-data-tokens'
 
+/** localStorage key for the collapsed group ids */
+const COLLAPSED_STORAGE_KEY = 'accessories-collapsed-v1'
+
 @Component({
   selector: 'app-accessories',
   imports: [
     NgTemplateOutlet,
     NgbTooltip,
-    NgbDropdown,
-    NgbDropdownToggle,
-    NgbDropdownMenu,
-    NgbDropdownItem,
     DragulaModule,
     AccessoryTileComponent,
+    AccessoriesToolbarComponent,
+    ConvertTempPipe,
     DragHerePlaceholderComponent,
     TranslatePipe,
-    FormsModule,
   ],
   standalone: true,
   templateUrl: './accessories.component.html',
@@ -65,22 +69,86 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public enableAccessories = this.$settings.env.enableAccessories
   // The room/tile layout starts locked; toggleLayoutLock opens it for editing
   public readonly layoutLocked = signal<boolean>(true)
-  public readonly hideHidden = signal(true)
   public readonly linkInsecure = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
   public readonly hasPlugins = signal(this.$settings.env.hasInstalledPlugins ?? true)
   public manageLayoutMode = false
-  private previousBridgeSelection: string[] | null = null
+  /** The user's filter, put back when manage-layout mode is left */
+  private filterBeforeManage: AccessoryFilterState | null = null
 
   // Signal references for persisted properties from service (persist across navigation)
   public readonly availableBridges = this.$accessories.availableBridges
-  public readonly selectedBridges = this.$accessories.selectedBridges
+  public readonly filter = this.$accessories.filterState
+  public readonly collapsed = signal<ReadonlySet<string>>(this.loadCollapsed())
+  public readonly selectMode = signal(false)
+  public readonly selectedIds = signal<ReadonlySet<string>>(new Set())
+  public readonly bulkRoom = signal('')
+  public readonly placeholders = Array.from({ length: 10 })
+
+  /** Bumped when a bridge is renamed on the socket, so the labelled rooms are rebuilt */
+  private readonly bridgeNamesVersion = signal(0)
 
   /**
-   * Computed property to check if filter UI should be shown
+   * The rooms with each bridge named the way the page shows it (the name from the config
+   * when there is one). The filter matches bridges by these names.
    */
-  public readonly shouldShowFilters = computed(() =>
-    this.hasPlugins() && this.availableBridges().length > 0,
+  public readonly labelledRooms = computed(() => {
+    this.bridgeNamesVersion()
+    return this.$accessories.rooms().map(room => ({
+      ...room,
+      services: room.services.map(service => this.withBridgeName(service)),
+    }))
+  })
+
+  public readonly batteryIndex = computed(() =>
+    buildBatteryIndex(this.labelledRooms().flatMap(room => room.services)),
   )
+
+  /** The accessories to show, filtered, grouped and sorted */
+  public readonly groups = computed<AccessoryGroup[]>(() =>
+    groupAndSort(this.labelledRooms(), this.filter(), this.batteryIndex()),
+  )
+
+  public readonly totalCount = computed(() =>
+    this.labelledRooms().reduce((count, room) => count + room.services.length, 0),
+  )
+
+  public readonly shownCount = computed(() =>
+    this.groups().reduce((count, group) => count + group.services.length, 0),
+  )
+
+  public readonly allCollapsed = computed(() => {
+    const groups = this.groups()
+    return groups.length > 0 && groups.every(group => this.collapsed().has(this.groupId(group)))
+  })
+
+  /** The name a service's bridge is shown under: the custom name from the config, else the bridge's own */
+  private withBridgeName(service: ServiceTypeX): ServiceTypeX {
+    const username = service.instance?.username
+    if (!username) {
+      return service
+    }
+    const name = this.bridgeUsernameToNameMap.get(username) || service.instance?.name
+    if (!name || name === serviceBridgeName(service)) {
+      return service
+    }
+    const bridge = typeof service.bridge === 'object' && service.bridge !== null
+      ? service.bridge
+      : {}
+    return {
+      ...service,
+      bridge: {
+        ...bridge,
+        username,
+        name,
+      },
+    } as unknown as ServiceTypeX
+  }
+
+  /** Called when a bridge name arrives or changes on the socket */
+  private bridgeNamesChanged(): void {
+    this.bridgeNamesVersion.update(version => version + 1)
+    this.updateAvailableBridges()
+  }
 
   // Getter/setter for dragula two-way binding
   public get rooms(): Array<{ name: string, isDefault?: boolean, services: ServiceTypeX[] }> {
@@ -119,14 +187,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     // Set page title
     const title = this.$translate.instant('menu.label_accessories')
     this.$settings.setPageTitle(title)
-
-    // Initialize selectedBridges if null or empty - default to showing all bridges
-    const selected = this.selectedBridges()
-    if ((selected === null || selected.length === 0) && this.availableBridges().length > 0) {
-      this.selectedBridges.set([
-        ...this.availableBridges(),
-      ])
-    }
 
     void this.$accessories.start()
 
@@ -336,6 +396,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     listenUntilDestroyed(this.destroyRef, this.ioStatus.socket).on('homebridge-status', (data: any) => {
       if (data.username) {
         this.bridgeUsernameToNameMap.set(data.username, 'Homebridge')
+        this.bridgeNamesChanged()
       }
     })
 
@@ -348,6 +409,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
     listenUntilDestroyed(this.destroyRef, this.ioChild.socket).on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
       this.bridgeUsernameToNameMap.set(data.username, data.name)
+      this.bridgeNamesChanged()
     })
   }
 
@@ -359,6 +421,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       data.forEach((bridge) => {
         this.bridgeUsernameToNameMap.set(bridge.username, bridge.name)
       })
+      this.bridgeNamesChanged()
     })
   }
 
@@ -369,12 +432,11 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   private updateAvailableBridges(): void {
     const bridges = new Set<string>()
 
-    this.$accessories.rooms().forEach((room) => {
+    this.labelledRooms().forEach((room) => {
       room.services.forEach((service) => {
         if (service.instance?.username) {
-          // Use custom name from mapping if available, otherwise fallback to instance.name
-          const customName = this.bridgeUsernameToNameMap.get(service.instance.username)
-          const bridgeName = customName || service.instance.name
+          // Custom name from the config when there is one, otherwise the bridge's own name
+          const bridgeName = serviceBridgeName(service)
           if (bridgeName) {
             bridges.add(bridgeName)
           }
@@ -396,29 +458,10 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     // Only update if the bridge list has changed AND is not fewer bridges than before
     // This prevents race condition where WebSocket bridge names haven't loaded yet
     const currentAvailable = this.availableBridges()
-    const currentSelected = this.selectedBridges()
     const shouldUpdate = JSON.stringify(newBridges) !== JSON.stringify(currentAvailable)
       && newBridges.length >= currentAvailable.length
 
     if (shouldUpdate) {
-      if (currentSelected === null || currentSelected.length === 0) {
-        // First initialization or no bridges selected - select all bridges by default
-        this.selectedBridges.set([...newBridges])
-      } else {
-        // Check if we were showing all bridges before the update
-        const wasShowingAll = currentSelected.length === currentAvailable.length
-          && currentAvailable.length > 0
-
-        if (wasShowingAll) {
-          // If showing all, keep showing all even when new bridges appear
-          this.selectedBridges.set([...newBridges])
-        } else {
-          // Remove any selected bridges that no longer exist, but don't add new ones
-          this.selectedBridges.set(currentSelected.filter(bridge => newBridges.includes(bridge)))
-        }
-      }
-
-      // Update available bridges after handling selection
       this.availableBridges.set(newBridges)
     }
   }
@@ -442,162 +485,175 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Check if a service should be displayed based on current filters
+   * Called by the toolbar with the next filter. Picking a filter leaves manage-layout
+   * mode, because a filtered view must not be rearranged (#2790).
    */
-  public shouldDisplayService(service: ServiceTypeX): boolean {
-    // In manage layout mode, show ALL accessories so the dragula model and DOM stay 1-to-1 (#2790).
-    // Filtering inside the dragula container desynchronises model indexes from DOM indexes,
-    // which causes drops to move the wrong (unrelated) accessory.
+  public onFilterChange(next: AccessoryFilterState): void {
     if (this.manageLayoutMode) {
-      return true
-    }
-
-    // Check hidden filter
-    if (this.hideHidden() && service.hidden) {
-      return false
-    }
-
-    // Check bridge filter
-    if (service.instance?.username) {
-      // Use custom name from mapping if available, otherwise fallback to instance.name
-      const customName = this.bridgeUsernameToNameMap.get(service.instance.username)
-      const bridgeName = customName || service.instance.name
-
-      const selected = this.selectedBridges()
-
-      // If not initialized yet, show all
-      if (selected === null) {
-        return true
-      }
-
-      // If no bridges selected, show nothing
-      if (selected.length === 0) {
-        return false
-      }
-
-      // Show only if bridge is in selected list
-      if (bridgeName && !selected.includes(bridgeName)) {
-        return false
-      }
-    }
-
-    return true
-  }
-
-  /**
-   * Toggle a bridge in the filter
-   */
-  public toggleBridge(bridgeName: string): void {
-    // If in manage layout mode, start fresh with just this bridge selected
-    if (this.manageLayoutMode) {
-      this.selectedBridges.set([bridgeName])
       this.manageLayoutMode = false
-      this.previousBridgeSelection = null
-
+      this.filterBeforeManage = null
       if (!this.layoutLocked()) {
         this.toggleLayoutLock()
       }
-      return
     }
-
-    // Normal toggle behavior when not in manage layout mode
-    const current = this.selectedBridges() ?? []
-    const index = current.indexOf(bridgeName)
-    if (index === -1) {
-      this.selectedBridges.set([...current, bridgeName])
-    } else {
-      this.selectedBridges.set(current.filter((_, i) => i !== index))
-    }
-
-    if (!this.layoutLocked()) {
-      this.toggleLayoutLock()
-    }
+    this.$accessories.setFilterState(next)
   }
 
   /**
-   * Check if a bridge is selected
-   */
-  public isBridgeSelected(bridgeName: string): boolean {
-    // In manage layout mode, no bridges should show as selected
-    if (this.manageLayoutMode) {
-      return false
-    }
-    return this.selectedBridges()?.includes(bridgeName) ?? false
-  }
-
-  /**
-   * Toggle between all bridges and no bridges
-   */
-  public clearBridgeFilter(): void {
-    // If in manage layout mode, selecting "All Bridges" should select all
-    if (this.manageLayoutMode) {
-      this.selectedBridges.set([
-        ...this.availableBridges(),
-      ])
-      this.manageLayoutMode = false
-      this.previousBridgeSelection = null
-
-      if (!this.layoutLocked()) {
-        this.toggleLayoutLock()
-      }
-      return
-    }
-
-    if (this.isShowingAllBridges) {
-      // All bridges selected, so unselect everything
-      this.selectedBridges.set([])
-    } else {
-      // Not all bridges selected, so select all
-      this.selectedBridges.set([
-        ...this.availableBridges(),
-      ])
-    }
-
-    if (!this.layoutLocked()) {
-      this.toggleLayoutLock()
-    }
-  }
-
-  /**
-   * Check if all bridges are shown (all bridges selected)
-   */
-  public get isShowingAllBridges(): boolean {
-    const selected = this.selectedBridges()
-    const available = this.availableBridges()
-    return selected !== null
-      && selected.length === available.length
-      && available.length > 0
-      && !this.manageLayoutMode
-  }
-
-  /**
-   * Toggle manage layout mode
+   * Toggle manage layout mode. It forces the default filter while on, so every tile is
+   * shown and drag-and-drop stays 1-to-1 with the model (#2790). The user's filter comes back when it ends.
    */
   public toggleManageLayout(): void {
-    this.manageLayoutMode = !this.manageLayoutMode
-
     if (this.manageLayoutMode) {
-      // Save current bridge selection
-      const current = this.selectedBridges()
-      this.previousBridgeSelection = current
-        ? [...current]
-        : null
-
-      // Unlock layout
-      if (this.layoutLocked()) {
-        this.toggleLayoutLock()
+      this.manageLayoutMode = false
+      if (this.filterBeforeManage) {
+        this.$accessories.setFilterState(this.filterBeforeManage)
       }
-    } else {
-      // Restore previous bridge selection when toggling off via the button
-      this.selectedBridges.set(this.previousBridgeSelection
-        ? [...this.previousBridgeSelection]
-        : null)
-      this.previousBridgeSelection = null
-
-      // Lock layout when exiting manage mode
+      this.filterBeforeManage = null
       if (!this.layoutLocked()) {
         this.toggleLayoutLock()
       }
+      return
     }
+
+    this.clearSelection()
+    this.selectMode.set(false)
+    this.manageLayoutMode = true
+    this.filterBeforeManage = {
+      ...this.filter(),
+    }
+    this.$accessories.setFilterState({ ...DEFAULT_FILTER_STATE }, false)
+
+    if (this.layoutLocked()) {
+      this.toggleLayoutLock()
+    }
+  }
+
+  /** Room badges for a group, computed from the services shown in it */
+  public summaryFor(group: AccessoryGroup): RoomSummary {
+    return summarizeRoom(group.services, this.batteryIndex())
+  }
+
+  /** Identifies a group across renders, including its grouping, so collapse state is per view */
+  public groupId(group: AccessoryGroup): string {
+    return `${this.filter().groupBy}:${group.key}`
+  }
+
+  public isCollapsed(group: AccessoryGroup): boolean {
+    return this.collapsed().has(this.groupId(group))
+  }
+
+  public toggleGroup(group: AccessoryGroup): void {
+    const next = new Set(this.collapsed())
+    const id = this.groupId(group)
+    if (next.has(id)) {
+      next.delete(id)
+    } else {
+      next.add(id)
+    }
+    this.setCollapsed(next)
+  }
+
+  /** Collapse every group on screen, or expand them all when they are already collapsed */
+  public toggleAllGroups(): void {
+    this.setCollapsed(this.allCollapsed()
+      ? new Set()
+      : new Set(this.groups().map(group => this.groupId(group))))
+  }
+
+  public isSelected(service: ServiceTypeX): boolean {
+    return this.selectedIds().has(service.uniqueId ?? '')
+  }
+
+  public toggleSelectMode(): void {
+    if (this.manageLayoutMode) {
+      return
+    }
+    this.clearSelection()
+    this.selectMode.update(active => !active)
+  }
+
+  public toggleSelected(service: ServiceTypeX): void {
+    const id = service.uniqueId ?? ''
+    if (!id) {
+      return
+    }
+    const next = new Set(this.selectedIds())
+    if (next.has(id)) {
+      next.delete(id)
+    } else {
+      next.add(id)
+    }
+    this.selectedIds.set(next)
+  }
+
+  /** Select every accessory in the current filtered result */
+  public selectAllMatching(): void {
+    const ids = this.groups()
+      .flatMap(group => group.services)
+      .map(service => service.uniqueId ?? '')
+      .filter(id => id !== '')
+    this.selectedIds.set(new Set(ids))
+  }
+
+  public onBulkRoom(event: Event): void {
+    this.bulkRoom.set((event.target as HTMLSelectElement).value)
+  }
+
+  public moveSelectedToRoom(): void {
+    const room = this.bulkRoom()
+    if (!room || this.selectedIds().size === 0) {
+      return
+    }
+    this.$accessories.moveServicesToRoom([
+      ...this.selectedIds(),
+    ], room)
+    this.clearSelection()
+  }
+
+  public hideSelected(): void {
+    if (this.selectedIds().size === 0) {
+      return
+    }
+    this.$accessories.updateServicesFlags([
+      ...this.selectedIds(),
+    ], { hidden: true })
+    this.clearSelection()
+  }
+
+  public showSelectedOnDashboard(): void {
+    if (this.selectedIds().size === 0) {
+      return
+    }
+    this.$accessories.updateServicesFlags([
+      ...this.selectedIds(),
+    ], { onDashboard: true })
+    this.clearSelection()
+  }
+
+  private clearSelection(): void {
+    this.selectedIds.set(new Set())
+    this.bulkRoom.set('')
+  }
+
+  private setCollapsed(next: ReadonlySet<string>): void {
+    this.collapsed.set(next)
+    try {
+      localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify([...next]))
+    } catch {
+      // Storage unavailable: collapse still works for this visit
+    }
+  }
+
+  private loadCollapsed(): ReadonlySet<string> {
+    try {
+      const parsed: unknown = JSON.parse(localStorage.getItem(COLLAPSED_STORAGE_KEY) ?? '[]')
+      if (Array.isArray(parsed)) {
+        return new Set(parsed.filter((entry): entry is string => typeof entry === 'string'))
+      }
+    } catch {
+      // Corrupt or unavailable storage: start with every group expanded
+    }
+    return new Set()
   }
 }

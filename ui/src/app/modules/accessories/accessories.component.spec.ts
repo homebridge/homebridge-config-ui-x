@@ -1,7 +1,7 @@
 import type { FakeIoNamespace, FakeModalService, FakeSettings, FakeWs } from '@/testing'
 
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core'
-import { TestBed } from '@angular/core/testing'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import { TranslatePipe } from '@ngx-translate/core'
 import { DragulaService } from 'ng2-dragula'
@@ -9,6 +9,8 @@ import { Subject } from 'rxjs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { DEFAULT_FILTER_STATE } from '@/app/core/accessories/filters/accessory-filters'
+import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { AccessoriesComponent } from '@/app/modules/accessories/accessories.component'
 import { AccessorySupportComponent } from '@/app/modules/accessories/accessory-support/accessory-support.component'
 import { AddRoomComponent } from '@/app/modules/accessories/add-room/add-room.component'
@@ -41,13 +43,14 @@ describe('accessoriesComponent', () => {
   let accessoryData: Subject<any>
   let dragula: Record<string, ReturnType<typeof vi.fn>>
   let dropEvents: Subject<any>
+  let fixture: ComponentFixture<AccessoriesComponent>
 
   /**
    * Build the page.
    * @param options - how to set it up
    * @param options.rooms - the room layout the service reports
    * @param options.availableBridges - the bridges the filter can offer
-   * @param options.selectedBridges - the filter's starting state
+   * @param options.filter - the filter's starting state
    * @param options.bridgeNames - the username-to-name map the service holds
    * @param options.env - settings env overrides
    * @param options.admin - whether the signed-in user is an admin
@@ -56,7 +59,7 @@ describe('accessoriesComponent', () => {
   async function open(options: {
     rooms?: any[]
     availableBridges?: string[]
-    selectedBridges?: string[] | null
+    filter?: Record<string, any>
     bridgeNames?: Map<string, string>
     env?: Record<string, any>
     admin?: boolean
@@ -78,7 +81,13 @@ describe('accessoriesComponent', () => {
     accessories = {
       rooms: signal(options.rooms ?? []),
       availableBridges: signal(options.availableBridges ?? []),
-      selectedBridges: signal<string[] | null>(options.selectedBridges ?? null),
+      filterState: signal<any>({
+        ...DEFAULT_FILTER_STATE,
+        ...(options.filter ?? {}),
+      }),
+      setFilterState: vi.fn((state: any) => accessories.filterState.set(state)),
+      moveServicesToRoom: vi.fn(),
+      updateServicesFlags: vi.fn(),
       bridgeUsernameToNameMap: options.bridgeNames ?? new Map<string, string>(),
       accessoryData,
       start: vi.fn(async () => undefined),
@@ -115,12 +124,12 @@ describe('accessoriesComponent', () => {
     // layout to do anything useful
     TestBed.overrideComponent(AccessoriesComponent, {
       set: {
-        imports: [TranslatePipe],
+        imports: [TranslatePipe, ConvertTempPipe],
         schemas: [NO_ERRORS_SCHEMA],
       },
     })
 
-    const fixture = TestBed.createComponent(AccessoriesComponent)
+    fixture = TestBed.createComponent(AccessoriesComponent)
     fixture.detectChanges()
     await fixture.whenStable()
 
@@ -129,6 +138,11 @@ describe('accessoriesComponent', () => {
     }
 
     return fixture.componentInstance
+  }
+
+  /** A room as the page receives it. */
+  function roomOf(name: string, services: any[]): any {
+    return { name, services }
   }
 
   /**
@@ -161,28 +175,6 @@ describe('accessoriesComponent', () => {
       expect(accessories.start).toHaveBeenCalled()
     })
 
-    it('shows every bridge the first time the page is opened', async () => {
-      const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: null,
-      })
-
-      // A brand new user has never chosen a filter, and an empty selection means
-      // nothing at all is shown
-      expect(page.selectedBridges()).toEqual(['Homebridge', 'Hue'])
-    })
-
-    it('keeps a filter the user chose earlier', async () => {
-      const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
-      })
-
-      // The selection lives on the service so it survives navigating away and
-      // back
-      expect(page.selectedBridges()).toEqual(['Hue'])
-    })
-
     it('starts with the layout locked', async () => {
       const page = await open()
 
@@ -192,28 +184,6 @@ describe('accessoriesComponent', () => {
       expect(page.manageLayoutMode).toBe(false)
     })
 
-    it('hides hidden accessories to begin with', async () => {
-      const page = await open()
-
-      expect(page.hideHidden()).toBe(true)
-    })
-
-    it('offers the filter only when there is something to filter', async () => {
-      expect((await open({ availableBridges: [] })).shouldShowFilters()).toBe(false)
-      expect((await open({
-        availableBridges: ['Homebridge'],
-      })).shouldShowFilters()).toBe(true)
-    })
-
-    it('hides the filter when no plugins are installed', async () => {
-      const page = await open({
-        availableBridges: ['Homebridge'],
-        env: { hasInstalledPlugins: false },
-      })
-
-      expect(page.shouldShowFilters()).toBe(false)
-    })
-
     it('stops the feed when the page closes', async () => {
       await open()
 
@@ -221,190 +191,274 @@ describe('accessoriesComponent', () => {
 
       expect(accessories.stop).toHaveBeenCalled()
     })
+
+    it('uses the saved filter, so the toolbar opens as the user left it', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
+        filter: {
+          rooms: ['Kitchen'],
+          showHidden: true,
+        },
+      })
+
+      expect(page.filter().rooms).toEqual(['Kitchen'])
+      expect(page.filter().showHidden).toBe(true)
+    })
+
+    it('does not offer the toolbar when no plugins are installed', async () => {
+      const page = await open({
+        env: { hasInstalledPlugins: false },
+      })
+
+      expect(page.hasPlugins()).toBe(false)
+    })
   })
 
-  describe('deciding which tiles to show', () => {
-    it('shows an accessory from a selected bridge', async () => {
+  describe('the filtered result', () => {
+    it('shows the accessories of every room by default', async () => {
       const page = await open({
-        availableBridges: ['Homebridge'],
-        selectedBridges: ['Homebridge'],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+          roomOf('Office', [
+            makeService({ uniqueId: 'b' }),
+          ]),
+        ],
       })
 
-      expect(page.shouldDisplayService(makeService())).toBe(true)
+      expect(page.groups().map(group => group.key)).toEqual(['Kitchen', 'Office'])
+      expect(page.shownCount()).toBe(2)
+      expect(page.totalCount()).toBe(2)
     })
 
-    it('hides an accessory from a bridge that is filtered out', async () => {
+    it('hides hidden accessories until the user asks for them', async () => {
       const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+            makeService({ uniqueId: 'h', hidden: true }),
+          ]),
+        ],
       })
 
-      expect(page.shouldDisplayService(makeService())).toBe(false)
-    })
+      expect(page.shownCount()).toBe(1)
 
-    it('hides everything when no bridge is selected', async () => {
-      const page = await open({
-        availableBridges: ['Homebridge'],
-        selectedBridges: [],
+      page.onFilterChange({
+        ...page.filter(),
+        showHidden: true,
       })
-      page.selectedBridges.set([])
 
-      expect(page.shouldDisplayService(makeService())).toBe(false)
+      expect(page.shownCount()).toBe(2)
     })
 
-    it('shows everything before a filter has been decided', async () => {
-      const page = await open({ availableBridges: [] })
-      page.selectedBridges.set(null)
-
-      expect(page.shouldDisplayService(makeService())).toBe(true)
-    })
-
-    it('matches on the custom bridge name rather than the reported one', async () => {
+    it('narrows to the rooms picked', async () => {
       const page = await open({
-        availableBridges: ['Kitchen Bridge'],
-        selectedBridges: ['Kitchen Bridge'],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+          roomOf('Office', [
+            makeService({ uniqueId: 'b' }),
+          ]),
+        ],
+        filter: {
+          rooms: ['Office'],
+        },
+      })
+
+      expect(page.groups().map(group => group.key)).toEqual(['Office'])
+      expect(page.shownCount()).toBe(1)
+    })
+
+    it('searches the custom name, ignoring case', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a', customName: 'Kettle' }),
+            makeService({ uniqueId: 'b', customName: 'Lamp' }),
+          ]),
+        ],
+        filter: { search: 'KETT' },
+      })
+
+      expect(page.groups()[0].services.map(service => service.uniqueId)).toEqual(['a'])
+    })
+
+    it('filters by the bridge name from the config, not the name the bridge reports', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({
+              uniqueId: 'a',
+              instance: { username: 'AA:11', name: 'Homebridge' },
+            }),
+            makeService({
+              uniqueId: 'b',
+              instance: { username: 'BB:22', name: 'Homebridge' },
+            }),
+          ]),
+        ],
         bridgeNames: new Map([
-          ['0E:11:11:11:11:11', 'Kitchen Bridge'],
+          ['AA:11', 'Kitchen Bridge'],
         ]),
+        availableBridges: ['Kitchen Bridge', 'Homebridge'],
+        filter: {
+          bridges: ['Kitchen Bridge'],
+        },
       })
 
-      // The bridge name in the filter is the one from the child-bridge socket,
-      // which is what the user renamed it to; the accessory only knows the
-      // original
-      expect(page.shouldDisplayService(makeService())).toBe(true)
+      expect(page.groups()[0].services.map(service => service.uniqueId)).toEqual(['a'])
     })
 
-    it('hides a hidden accessory', async () => {
+    it('drops rooms with nothing left once a filter is on', async () => {
       const page = await open({
-        availableBridges: ['Homebridge'],
-        selectedBridges: ['Homebridge'],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a', customName: 'Kettle' }),
+          ]),
+          roomOf('Office', [
+            makeService({ uniqueId: 'b', customName: 'Lamp' }),
+          ]),
+        ],
+        filter: { search: 'lamp' },
       })
 
-      expect(page.shouldDisplayService(makeService({ hidden: true }))).toBe(false)
+      expect(page.groups().map(group => group.key)).toEqual(['Office'])
     })
 
-    it('shows a hidden accessory once the user asks for it', async () => {
+    it('groups by category, keyed by the category', async () => {
       const page = await open({
-        availableBridges: ['Homebridge'],
-        selectedBridges: ['Homebridge'],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a', type: 'Lightbulb' }),
+            makeService({ uniqueId: 'b', type: 'TemperatureSensor' }),
+          ]),
+        ],
+        filter: { groupBy: 'category' },
       })
-      page.hideHidden.set(false)
 
-      expect(page.shouldDisplayService(makeService({ hidden: true }))).toBe(true)
+      expect(page.groups().map(group => group.key)).toEqual(['lights', 'sensors'])
+      expect(page.groups().map(group => group.label)).toEqual(['accessories.categories.lights', 'accessories.categories.sensors'])
     })
 
-    it('shows an accessory with no bridge of its own', async () => {
+    it('sorts by name when asked', async () => {
       const page = await open({
-        availableBridges: ['Homebridge'],
-        selectedBridges: [],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'b', customName: 'Lamp' }),
+            makeService({ uniqueId: 'a', customName: 'Kettle' }),
+          ]),
+        ],
+        filter: { sortBy: 'name' },
       })
 
-      // Nothing to filter it by, so filtering it out would make it unreachable
-      expect(page.shouldDisplayService(makeService({ instance: undefined }))).toBe(true)
+      expect(page.groups()[0].services.map(service => service.uniqueId)).toEqual(['a', 'b'])
     })
 
     it('shows absolutely everything in manage layout mode', async () => {
       const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+            makeService({ uniqueId: 'h', hidden: true }),
+          ]),
+        ],
       })
 
       page.toggleManageLayout()
+      fixture.detectChanges()
 
-      // The heart of #2790: the dragula model and the DOM have to stay 1-to-1,
-      // and a hidden tile breaks that, so every filter is suspended here
-      expect(page.shouldDisplayService(makeService())).toBe(true)
-      expect(page.shouldDisplayService(makeService({ hidden: true }))).toBe(true)
+      // The drag model and the DOM must match one-to-one, so the hidden tile is still drawn
+      expect(fixture.nativeElement.querySelectorAll('app-accessory-tile').length).toBe(2)
     })
   })
 
   describe('manage layout mode', () => {
-    it('unlocks the layout and remembers the filter', async () => {
+    it('unlocks the layout and forces the default filter while on', async () => {
       const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
+        filter: {
+          rooms: ['Kitchen'],
+          showHidden: true,
+        },
       })
 
       page.toggleManageLayout()
 
       expect(page.manageLayoutMode).toBe(true)
       expect(page.layoutLocked()).toBe(false)
+      expect(page.filter().rooms).toEqual([])
+      expect(page.filter().showHidden).toBe(false)
+      // Forced for this visit only, so the saved filter is not overwritten
+      expect(accessories.setFilterState).toHaveBeenLastCalledWith(expect.objectContaining({ rooms: [] }), false)
     })
 
-    it('puts the filter back when the user leaves it', async () => {
+    it('puts the user filter back when the user leaves it', async () => {
       const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
+        filter: {
+          rooms: ['Kitchen'],
+          showHidden: true,
+        },
       })
 
       page.toggleManageLayout()
       page.toggleManageLayout()
-
-      // Rearranging rooms is not meant to lose the filter the user was working
-      // with beforehand
-      expect(page.selectedBridges()).toEqual(['Hue'])
-      expect(page.layoutLocked()).toBe(true)
-      expect(page.manageLayoutMode).toBe(false)
-    })
-
-    it('shows no bridge as selected while rearranging', async () => {
-      const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
-      })
-
-      page.toggleManageLayout()
-
-      // The filter is suspended rather than changed, so showing a tick would
-      // claim a filter that is not being applied
-      expect(page.isBridgeSelected('Hue')).toBe(false)
-      expect(page.isShowingAllBridges).toBe(false)
-    })
-
-    it('leaves manage mode when a bridge is picked from the filter', async () => {
-      const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
-      })
-      page.toggleManageLayout()
-
-      page.toggleBridge('Homebridge')
-
-      // Picking a filter is the user saying they are done rearranging; carrying
-      // on with a filter applied is the state that reorders the wrong accessory
-      expect(page.manageLayoutMode).toBe(false)
-      expect(page.selectedBridges()).toEqual(['Homebridge'])
-      expect(page.layoutLocked()).toBe(true)
-    })
-
-    it('leaves manage mode when all bridges are picked', async () => {
-      const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
-      })
-      page.toggleManageLayout()
-
-      page.clearBridgeFilter()
 
       expect(page.manageLayoutMode).toBe(false)
-      expect(page.selectedBridges()).toEqual(['Homebridge', 'Hue'])
       expect(page.layoutLocked()).toBe(true)
+      expect(page.filter().rooms).toEqual(['Kitchen'])
+      expect(page.filter().showHidden).toBe(true)
     })
 
-    it('does not restore the old filter when leaving through the filter', async () => {
+    it('leaves manage mode when a filter is picked, and does not bring back the old one', async () => {
       const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
+        filter: {
+          rooms: ['Kitchen'],
+        },
       })
+
       page.toggleManageLayout()
-      page.toggleBridge('Homebridge')
+      page.onFilterChange({
+        ...page.filter(),
+        rooms: ['Office'],
+      })
+
+      expect(page.manageLayoutMode).toBe(false)
+      expect(page.layoutLocked()).toBe(true)
+      expect(page.filter().rooms).toEqual(['Office'])
 
       page.toggleManageLayout()
       page.toggleManageLayout()
 
-      // The remembered selection is cleared on that exit, so a later round trip
-      // restores what the user last chose rather than something older
-      expect(page.selectedBridges()).toEqual(['Homebridge'])
+      expect(page.filter().rooms).toEqual(['Office'])
+    })
+
+    it('cannot start selecting while rearranging', async () => {
+      const page = await open()
+
+      page.toggleManageLayout()
+      page.toggleSelectMode()
+
+      expect(page.selectMode()).toBe(false)
     })
 
     it('only allows dragging while in manage layout mode', async () => {
@@ -467,94 +521,258 @@ describe('accessoriesComponent', () => {
     })
   })
 
-  describe('the bridge filter', () => {
-    it('adds and removes a bridge', async () => {
+  describe('the toolbar filter', () => {
+    it('applies the filter the toolbar emits, and saves it', async () => {
       const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Homebridge'],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
       })
 
-      page.toggleBridge('Hue')
-      expect(page.selectedBridges()).toEqual(['Homebridge', 'Hue'])
-
-      page.toggleBridge('Homebridge')
-      expect(page.selectedBridges()).toEqual(['Hue'])
-    })
-
-    it('reports which bridges are selected', async () => {
-      const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
+      page.onFilterChange({
+        ...page.filter(),
+        search: 'kettle',
       })
 
-      expect(page.isBridgeSelected('Hue')).toBe(true)
-      expect(page.isBridgeSelected('Homebridge')).toBe(false)
+      expect(accessories.setFilterState).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'kettle' }))
+      expect(page.filter().search).toBe('kettle')
     })
 
-    it('knows when everything is shown', async () => {
+    it('locks the layout again when a filter is picked in manage mode', async () => {
       const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Homebridge', 'Hue'],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
       })
 
-      expect(page.isShowingAllBridges).toBe(true)
-    })
-
-    it('does not call an empty list of bridges "all"', async () => {
-      const page = await open({ availableBridges: [], selectedBridges: [] })
-
-      // With nothing to select, "all bridges" would light up on a page showing
-      // no filter at all
-      expect(page.isShowingAllBridges).toBe(false)
-    })
-
-    it('unselects everything when all are already selected', async () => {
-      const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Homebridge', 'Hue'],
+      page.toggleManageLayout()
+      page.onFilterChange({
+        ...page.filter(),
+        showHidden: true,
       })
 
-      page.clearBridgeFilter()
-
-      expect(page.selectedBridges()).toEqual([])
-    })
-
-    it('selects everything when only some are selected', async () => {
-      const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
-      })
-
-      page.clearBridgeFilter()
-
-      expect(page.selectedBridges()).toEqual(['Homebridge', 'Hue'])
-    })
-
-    it('locks the layout again whenever the filter changes', async () => {
-      const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
-      })
-      page.toggleLayoutLock()
-      expect(page.layoutLocked()).toBe(false)
-
-      page.toggleBridge('Homebridge')
-
-      // An unlocked layout plus an active filter is exactly the combination that
-      // reorders the wrong accessory
+      // An unlocked layout plus an active filter is the combination that reorders the wrong accessory
       expect(page.layoutLocked()).toBe(true)
     })
+  })
 
-    it('locks the layout again when the filter is cleared', async () => {
+  describe('collapsing groups', () => {
+    afterEach(() => {
+      localStorage.clear()
+    })
+
+    it('collapses a group and remembers it', async () => {
       const page = await open({
-        availableBridges: ['Homebridge', 'Hue'],
-        selectedBridges: ['Hue'],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
       })
-      page.toggleLayoutLock()
 
-      page.clearBridgeFilter()
+      page.toggleGroup(page.groups()[0])
 
-      expect(page.layoutLocked()).toBe(true)
+      expect(page.isCollapsed(page.groups()[0])).toBe(true)
+      expect(localStorage.getItem('accessories-collapsed-v1')).toContain('room:Kitchen')
+    })
+
+    it('opens with the groups collapsed last time', async () => {
+      localStorage.setItem('accessories-collapsed-v1', JSON.stringify(['room:Kitchen']))
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
+      })
+
+      expect(page.isCollapsed(page.groups()[0])).toBe(true)
+    })
+
+    it('ignores saved data it cannot read', async () => {
+      localStorage.setItem('accessories-collapsed-v1', '{not json')
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
+      })
+
+      expect(page.isCollapsed(page.groups()[0])).toBe(false)
+    })
+
+    it('collapses every group, then expands them all', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+          roomOf('Office', [
+            makeService({ uniqueId: 'b' }),
+          ]),
+        ],
+      })
+
+      page.toggleAllGroups()
+      expect(page.allCollapsed()).toBe(true)
+
+      page.toggleAllGroups()
+      expect(page.allCollapsed()).toBe(false)
+      expect(page.groups().some(group => page.isCollapsed(group))).toBe(false)
+    })
+  })
+
+  describe('room badges', () => {
+    it('hides the badges that are zero', async () => {
+      await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a', type: 'Switch' }),
+          ]),
+        ],
+      })
+      fixture.detectChanges()
+
+      expect(fixture.nativeElement.querySelectorAll('.badge-summary').length).toBe(0)
+    })
+
+    it('shows the average temperature of the room', async () => {
+      await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({
+              uniqueId: 'a',
+              type: 'TemperatureSensor',
+              values: { CurrentTemperature: 20 },
+            }),
+            makeService({
+              uniqueId: 'b',
+              type: 'TemperatureSensor',
+              values: { CurrentTemperature: 22 },
+            }),
+          ]),
+        ],
+      })
+      fixture.detectChanges()
+
+      const badges = fixture.nativeElement.querySelectorAll('.badge-summary')
+      expect(badges.length).toBe(1)
+      expect(badges[0].textContent).toContain('21')
+    })
+  })
+
+  describe('bulk select', () => {
+    it('selects only what the filter shows when selecting all matching', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+            makeService({ uniqueId: 'h', hidden: true }),
+          ]),
+        ],
+      })
+
+      page.toggleSelectMode()
+      page.selectAllMatching()
+
+      expect([
+        ...page.selectedIds(),
+      ]).toEqual(['a'])
+    })
+
+    it('moves every selected accessory with one call, then clears the selection', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+            makeService({ uniqueId: 'b' }),
+          ]),
+        ],
+      })
+
+      page.toggleSelectMode()
+      page.toggleSelected(makeService({ uniqueId: 'a' }))
+      page.toggleSelected(makeService({ uniqueId: 'b' }))
+      page.onBulkRoom({
+        target: { value: 'Office' },
+      } as unknown as Event)
+      page.moveSelectedToRoom()
+
+      expect(accessories.moveServicesToRoom).toHaveBeenCalledTimes(1)
+      expect(accessories.moveServicesToRoom).toHaveBeenCalledWith(['a', 'b'], 'Office')
+      expect(page.selectedIds().size).toBe(0)
+    })
+
+    it('does not move anything without a room picked', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
+      })
+
+      page.toggleSelectMode()
+      page.toggleSelected(makeService({ uniqueId: 'a' }))
+      page.moveSelectedToRoom()
+
+      expect(accessories.moveServicesToRoom).not.toHaveBeenCalled()
+    })
+
+    it('hides the selection in one save', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+            makeService({ uniqueId: 'b' }),
+          ]),
+        ],
+      })
+
+      page.toggleSelectMode()
+      page.toggleSelected(makeService({ uniqueId: 'a' }))
+      page.hideSelected()
+
+      expect(accessories.updateServicesFlags).toHaveBeenCalledWith(['a'], { hidden: true })
+      expect(page.selectedIds().size).toBe(0)
+    })
+
+    it('shows the selection on the dashboard in one save', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
+      })
+
+      page.toggleSelectMode()
+      page.toggleSelected(makeService({ uniqueId: 'a' }))
+      page.showSelectedOnDashboard()
+
+      expect(accessories.updateServicesFlags).toHaveBeenCalledWith(['a'], { onDashboard: true })
+    })
+
+    it('clears the selection when select mode ends', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
+      })
+
+      page.toggleSelectMode()
+      page.toggleSelected(makeService({ uniqueId: 'a' }))
+      page.toggleSelectMode()
+
+      expect(page.selectMode()).toBe(false)
+      expect(page.selectedIds().size).toBe(0)
     })
   })
 
@@ -629,24 +847,39 @@ describe('accessoriesComponent', () => {
         childBridges: [
           { username: '0E:11:11:11:11:11', name: 'Kitchen Bridge' },
         ],
+        rooms: [
+          roomOf('Kitchen', [
+            makeService(),
+          ]),
+        ],
         availableBridges: ['Kitchen Bridge'],
-        selectedBridges: ['Kitchen Bridge'],
+        filter: {
+          bridges: ['Kitchen Bridge'],
+        },
       })
 
       // The name the user gave the bridge only exists on this feed, and it is
       // what the filter matches against
-      expect(page.shouldDisplayService(makeService())).toBe(true)
+      expect(page.shownCount()).toBe(1)
     })
 
     it('picks up a bridge renamed while the page is open', async () => {
       const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService(),
+          ]),
+        ],
         availableBridges: ['Kitchen Bridge'],
-        selectedBridges: ['Kitchen Bridge'],
+        filter: {
+          bridges: ['Kitchen Bridge'],
+        },
       })
+      expect(page.shownCount()).toBe(0)
 
       childIo.socket.fire('child-bridge-status-update', { username: '0E:11:11:11:11:11', name: 'Kitchen Bridge' })
 
-      expect(page.shouldDisplayService(makeService())).toBe(true)
+      expect(page.shownCount()).toBe(1)
     })
 
     it('re-reads the available bridges when the accessories change', async () => {
@@ -1134,70 +1367,7 @@ describe('accessoriesComponent', () => {
       expect(accessories.availableBridges()).toEqual([])
     })
 
-    it('selects every bridge the first time the list is built', async () => {
-      // The filter starts as "show everything"
-      const page = await open({
-        rooms: [
-          room([
-            service('0E:11:11:11:11:11', 'Homebridge'),
-          ]),
-        ],
-        selectedBridges: null,
-      })
-
-      recompute(page)
-
-      expect(accessories.selectedBridges()).toEqual(['Homebridge'])
-    })
-
-    it('keeps showing everything when a new bridge appears', async () => {
-      const page = await open({
-        rooms: [
-          room([
-            service('0E:11:11:11:11:11', 'Homebridge'),
-          ]),
-        ],
-        availableBridges: ['Homebridge'],
-        selectedBridges: ['Homebridge'],
-      })
-      accessories.rooms.set([
-        room([
-          service('0E:11:11:11:11:11', 'Homebridge'),
-          service('0E:22:22:22:22:22', 'New Bridge'),
-        ]),
-      ])
-
-      recompute(page)
-
-      expect(accessories.selectedBridges()).toEqual(['Homebridge', 'New Bridge'])
-    })
-
-    it('leaves a narrowed filter narrowed when a new bridge appears', async () => {
-      // The user deliberately hid a bridge; a new one must not undo that
-      const page = await open({
-        rooms: [
-          room([
-            service('0E:11:11:11:11:11', 'Homebridge'),
-            service('0E:22:22:22:22:22', 'Kitchen Bridge'),
-          ]),
-        ],
-        availableBridges: ['Homebridge', 'Kitchen Bridge'],
-        selectedBridges: ['Homebridge'],
-      })
-      accessories.rooms.set([
-        room([
-          service('0E:11:11:11:11:11', 'Homebridge'),
-          service('0E:22:22:22:22:22', 'Kitchen Bridge'),
-          service('0E:33:33:33:33:33', 'New Bridge'),
-        ]),
-      ])
-
-      recompute(page)
-
-      expect(accessories.selectedBridges()).toEqual(['Homebridge'])
-    })
-
-    it('drops a selected bridge that has gone away', async () => {
+    it('lists the bridges now present, dropping one that has gone', async () => {
       // ⚠️ Only when the new list is not *shorter* than the old one — a shorter list
       // is treated as the names not having arrived yet (see the case below), so a
       // bridge that really has gone is dropped when another appears in its place
@@ -1209,13 +1379,11 @@ describe('accessoriesComponent', () => {
           ]),
         ],
         availableBridges: ['Apple Bridge', 'Gone Bridge'],
-        selectedBridges: ['Gone Bridge'],
       })
 
       recompute(page)
 
       expect(accessories.availableBridges()).toEqual(['Apple Bridge', 'New Bridge'])
-      expect(accessories.selectedBridges()).not.toContain('Gone Bridge')
     })
 
     it('keeps a bridge in the list when the new pass is shorter', async () => {
@@ -1228,12 +1396,11 @@ describe('accessoriesComponent', () => {
           ]),
         ],
         availableBridges: ['Apple Bridge', 'Kitchen Bridge'],
-        selectedBridges: ['Kitchen Bridge'],
       })
 
       recompute(page)
 
-      expect(accessories.selectedBridges()).toEqual(['Kitchen Bridge'])
+      expect(accessories.availableBridges()).toEqual(['Apple Bridge', 'Kitchen Bridge'])
     })
 
     it('ignores a pass that sees fewer bridges than the last one', async () => {
@@ -1247,7 +1414,6 @@ describe('accessoriesComponent', () => {
           ]),
         ],
         availableBridges: ['Homebridge', 'Kitchen Bridge'],
-        selectedBridges: ['Homebridge', 'Kitchen Bridge'],
       })
 
       recompute(page)
@@ -1263,12 +1429,11 @@ describe('accessoriesComponent', () => {
           ]),
         ],
         availableBridges: ['Homebridge'],
-        selectedBridges: ['Homebridge'],
       })
 
       recompute(page)
 
-      expect(accessories.selectedBridges()).toEqual(['Homebridge'])
+      expect(accessories.availableBridges()).toEqual(['Homebridge'])
     })
   })
 })
