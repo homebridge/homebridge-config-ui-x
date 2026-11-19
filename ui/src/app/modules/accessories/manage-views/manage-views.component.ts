@@ -4,6 +4,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryView } from '@/app/core/accessories/filters/accessory-views'
+import { KioskLinksService } from '@/app/modules/kiosk/kiosk-links.service'
 
 type ChipList = 'pinned' | 'excluded'
 
@@ -23,6 +24,7 @@ const CHIP_LISTS: ChipList[] = ['pinned', 'excluded']
 export class ManageViewsComponent {
   private $activeModal = inject(NgbActiveModal)
   protected readonly $accessories = inject(AccessoriesService)
+  private readonly $kiosk = inject(KioskLinksService)
 
   public readonly views = this.$accessories.views
 
@@ -121,6 +123,16 @@ export class ManageViewsComponent {
   /** Keep Enter in a box from doing anything more than commit its edit */
   public blur(event: Event): void {
     (event.target as HTMLElement).blur()
+  }
+
+  /** Open the view as a kiosk: the modal closes first, then the kiosk opens in this tab */
+  public openKiosk(view: AccessoryView): void {
+    this.close()
+    void this.$kiosk.open(view.id)
+  }
+
+  public copyKioskLink(view: AccessoryView): void {
+    void this.$kiosk.copy(view.id)
   }
 
   public close(): void {

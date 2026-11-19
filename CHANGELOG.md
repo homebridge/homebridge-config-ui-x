@@ -120,6 +120,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(accessories): choose an accessory's room from its info dialog
 - feat(accessories): search, filter, group and sort accessories, with built-in views (including batteries), room badges, collapsible groups and bulk move
 - feat(accessories): saved views, labels and floors, shareable with other users and readable by plugin custom UIs
+- feat(accessories): kiosk mode to show a view full screen on wall or room tablets
 
 ### Other Changes
 

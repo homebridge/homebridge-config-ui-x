@@ -8,6 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildBatteryIndex } from '@/app/core/accessories/filters/accessory-battery'
 import { DEFAULT_FILTER_STATE } from '@/app/core/accessories/filters/accessory-filters'
 import { BUILT_IN_VIEWS } from '@/app/core/accessories/filters/accessory-views'
+import { KioskLinksService } from '@/app/modules/kiosk/kiosk-links.service'
 import { provideTestTranslate } from '@/testing/providers'
 
 import { AccessoriesToolbarComponent } from './accessories-toolbar.component'
@@ -19,6 +20,7 @@ import { AccessoriesToolbarComponent } from './accessories-toolbar.component'
  * what it emits.
  */
 describe('accessoriesToolbarComponent', () => {
+  let kiosk: { open: ReturnType<typeof vi.fn>, copy: ReturnType<typeof vi.fn> }
   let fixture: ComponentFixture<AccessoriesToolbarComponent>
 
   /** A service the toolbar can count. Matches the shape the accessories page passes it. */
@@ -99,10 +101,15 @@ describe('accessoriesToolbarComponent', () => {
   }
 
   beforeEach(() => {
+    kiosk = {
+      open: vi.fn(async () => true),
+      copy: vi.fn(async () => {}),
+    }
     TestBed.configureTestingModule({
       imports: [AccessoriesToolbarComponent],
       providers: [
         provideTestTranslate(),
+        { provide: KioskLinksService, useValue: kiosk },
       ],
     })
 
@@ -560,6 +567,44 @@ describe('accessoriesToolbarComponent', () => {
       ;(fixture.nativeElement.querySelector('[aria-label="accessories.toolbar.select"]') as HTMLButtonElement).click()
 
       expect(spy).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('open as kiosk', () => {
+    function kioskItems(): HTMLButtonElement[] {
+      const toggle = fixture.nativeElement.querySelector('.accessories-kiosk-menu') as HTMLButtonElement
+      toggle.click()
+      fixture.detectChanges()
+      return [
+        ...toggle.parentElement!.querySelectorAll('[ngbDropdownItem]'),
+      ] as HTMLButtonElement[]
+    }
+
+    it('offers the menu on the active built-in view, and opens that view as a kiosk', () => {
+      setup({
+        categories: ['climate'],
+      })
+      const items = kioskItems()
+      expect(items.length).toBe(2)
+      items[0].click()
+      expect(kiosk.open).toHaveBeenCalledWith('climate')
+    })
+
+    it('copies the kiosk link of the active saved view', () => {
+      const toolbar = setup({}, {})
+      fixture.componentRef.setInput('customViews', [
+        { id: 'v9', name: 'Hall', state: {} },
+      ])
+      fixture.componentRef.setInput('activeViewId', 'v9')
+      fixture.detectChanges()
+      expect(toolbar.kioskViewId()).toBe('v9')
+      kioskItems()[1].click()
+      expect(kiosk.copy).toHaveBeenCalledWith('v9')
+    })
+
+    it('offers no kiosk menu when nothing matches a view', () => {
+      setup({ search: 'kettle' })
+      expect(fixture.nativeElement.querySelector('.accessories-kiosk-menu')).toBeNull()
     })
   })
 })

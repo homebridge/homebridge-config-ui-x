@@ -11,6 +11,19 @@
   <div class="modal-body">
     @for (view of views(); track view.id) {
       <div class="card card-body mb-3 accessories-manage-view">
+        <div class="d-flex flex-wrap justify-content-end gap-2 mb-2">
+          <button type="button" class="btn btn-sm btn-elegant my-0 accessories-kiosk-open" (click)="openKiosk(view)">
+            <i class="fas fa-tablet-screen-button me-1" aria-hidden="true"></i
+            >{{ 'accessories.kiosk.open' | translate }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-elegant my-0 accessories-kiosk-copy"
+            (click)="copyKioskLink(view)"
+          >
+            <i class="fas fa-link me-1" aria-hidden="true"></i>{{ 'accessories.kiosk.copy_link' | translate }}
+          </button>
+        </div>
         <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
           @if (isOwn(view)) {
             <input
