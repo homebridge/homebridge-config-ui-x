@@ -276,6 +276,113 @@ describe('PluginController (e2e)', () => {
     expect(res.json().filter(x => x.name === 'homebridge-config-ui-rdp')).toHaveLength(0)
   })
 
+  describe('GET /plugins/search/:query (matching)', () => {
+    const searchHit = (name: string, description: string, keywords: string[] = ['homebridge-plugin']) => ({
+      package: {
+        name,
+        description,
+        keywords,
+        version: '1.0.0',
+        date: '2026-01-01T00:00:00.000Z',
+        links: {},
+      },
+    })
+
+    const mockNpm = (hits: ReturnType<typeof searchHit>[], published: Record<string, object> = {}) => {
+      vi.spyOn(httpService, 'get').mockImplementation(((url: string) => {
+        if (url.startsWith('https://registry.npmjs.org/-/v1/search')) {
+          return of({
+            data: { objects: hits },
+          })
+        }
+        const name = decodeURIComponent(url.replace('https://registry.npmjs.org/', ''))
+        return name in published
+          ? of({ data: published[name] })
+          : throwError(() => Object.assign(new Error('Not found'), {
+              response: { status: 404 },
+            }))
+      }) as any)
+    }
+
+    const search = async (query: string): Promise<string[]> => {
+      const res = await app.inject({
+        method: 'GET',
+        path: `/plugins/search/${encodeURIComponent(query)}`,
+        headers: {
+          authorization,
+        },
+      })
+      expect(res.statusCode).toBe(200)
+      return res.json().map((x: HomebridgePlugin) => x.name)
+    }
+
+    let scopedPluginNames: string[]
+
+    beforeEach(() => {
+      vi.spyOn(pluginsService, 'getInstalledPlugins').mockImplementation(async () => {
+        ;(pluginsService as any).installedPlugins = []
+        return []
+      })
+      scopedPluginNames = (pluginsService as any).scopedPluginNames
+      ;(pluginsService as any).scopedPluginNames = []
+    })
+
+    afterEach(() => {
+      vi.mocked(httpService.get).mockRestore()
+      vi.mocked(pluginsService.getInstalledPlugins).mockRestore()
+      ;(pluginsService as any).installedPlugins = null
+      ;(pluginsService as any).scopedPluginNames = scopedPluginNames
+    })
+
+    it('does not match inside a word', async () => {
+      mockNpm([
+        searchHit('homebridge-appliance-monitor', 'Appliance monitoring and spring cleaning'),
+        searchHit('homebridge-ring', 'Ring doorbells and cameras'),
+      ])
+
+      expect(await search('ring')).toEqual(['homebridge-ring'])
+    })
+
+    it('matches the start of a word, so partial words still find their plugins', async () => {
+      mockNpm([
+        searchHit('homebridge-camera-ffmpeg', 'FFmpeg camera streaming'),
+        searchHit('homebridge-smart-lights', 'Smart bulbs', ['homebridge-plugin', 'lights']),
+        searchHit('homebridge-hue-lighting', 'Hue scenes', ['homebridge-plugin', 'lighting']),
+        searchHit('homebridge-philips-hue', 'Philips Hue bridge', ['homebridge-plugin', 'philips']),
+        searchHit('homebridge-appliance-monitor', 'Appliance monitoring and spring cleaning'),
+      ])
+
+      expect(await search('cam')).toEqual(['homebridge-camera-ffmpeg'])
+      expect((await search('light')).sort()).toEqual(['homebridge-hue-lighting', 'homebridge-smart-lights'])
+      expect(await search('philip')).toEqual(['homebridge-philips-hue'])
+      expect(await search('ring')).toEqual([])
+    })
+
+    it('requires every search word to match', async () => {
+      mockNpm([
+        searchHit('homebridge-philips-lights', 'Philips lights', ['homebridge-plugin', 'philips']),
+        searchHit('homebridge-hue', 'Hue bridge', ['homebridge-plugin', 'hue']),
+        searchHit('homebridge-hue-sync', 'Philips Hue sync box', ['homebridge-plugin', 'philips', 'hue']),
+      ])
+
+      expect(await search('philips hue')).toEqual(['homebridge-hue', 'homebridge-hue-sync'])
+    })
+
+    it('finds a package that npm search does not list by its name', async () => {
+      mockNpm([], {
+        'homebridge-newplug': {
+          'name': 'homebridge-newplug',
+          'description': 'A newly published plugin',
+          'keywords': ['homebridge-plugin'],
+          'dist-tags': { latest: '0.0.1' },
+          'time': { modified: '2026-01-02T00:00:00.000Z' },
+        },
+      })
+
+      expect(await search('newplug')).toEqual(['homebridge-newplug'])
+    })
+  })
+
   it('GET /plugins/lookup/:pluginName (non-scoped)', async () => {
     const res = await app.inject({
       method: 'GET',
