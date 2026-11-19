@@ -1,0 +1,42 @@
+<div class="modal-content modal-content-min-h">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'kiosk.tablets.pair_title' | translate: { name: device.name } }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="close()"
+    ></button>
+  </div>
+  <div class="modal-body text-center">
+    <p>{{ 'kiosk.tablets.pair_text' | translate }}</p>
+    @if (pairing(); as pairing) {
+      @if (!expired()) {
+        <div
+          class="kiosk-pair-code"
+          aria-live="off"
+          [attr.aria-label]="'kiosk.tablets.pair_code_label' | translate: { code: pairing.code }"
+        >
+          {{ pairing.code }}
+        </div>
+        <app-qrcode class="d-flex justify-content-center my-3" [data]="url()" />
+        <p class="small text-break mb-2">
+          <span class="grey-text">{{ 'kiosk.tablets.pair_link' | translate }}</span>
+          <br />
+          <code>{{ url() }}</code>
+        </p>
+        <p class="mb-0" role="timer">
+          {{ 'kiosk.tablets.pair_expires_in' | translate: { time: countdown() } }}
+        </p>
+      } @else {
+        <p class="kiosk-panel-error" role="alert">{{ 'kiosk.tablets.pair_expired' | translate }}</p>
+      }
+    }
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-elegant" [disabled]="loading()" (click)="newCode()">
+      <i class="fas fa-rotate me-1" aria-hidden="true"></i>{{ 'kiosk.tablets.pair_new_code' | translate }}
+    </button>
+    <button type="button" class="btn btn-primary" (click)="close()">{{ 'form.button_close' | translate }}</button>
+  </div>
+</div>

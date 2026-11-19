@@ -8,6 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildBatteryIndex } from '@/app/core/accessories/filters/accessory-battery'
 import { DEFAULT_FILTER_STATE } from '@/app/core/accessories/filters/accessory-filters'
 import { BUILT_IN_VIEWS } from '@/app/core/accessories/filters/accessory-views'
+import { AuthService } from '@/app/core/auth/auth.service'
 import { KioskLinksService } from '@/app/modules/kiosk/kiosk-links.service'
 import { provideTestTranslate } from '@/testing/providers'
 
@@ -108,6 +109,12 @@ describe('accessoriesToolbarComponent', () => {
     TestBed.configureTestingModule({
       imports: [AccessoriesToolbarComponent],
       providers: [
+        {
+          provide: AuthService,
+          useValue: {
+            user: { admin: false },
+          },
+        },
         provideTestTranslate(),
         { provide: KioskLinksService, useValue: kiosk },
       ],

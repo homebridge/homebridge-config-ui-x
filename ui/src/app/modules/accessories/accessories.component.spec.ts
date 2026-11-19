@@ -82,6 +82,7 @@ describe('accessoriesComponent', () => {
       rooms: signal(options.rooms ?? []),
       availableBridges: signal(options.availableBridges ?? []),
       views: signal<any[]>([]),
+      viewsSaved: new Subject<void>(),
       labels: signal<Record<string, string[]>>({}),
       floors: signal<any[]>([]),
       activeViewId: signal<string | null>(null),

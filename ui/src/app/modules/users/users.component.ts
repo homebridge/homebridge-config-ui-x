@@ -15,12 +15,14 @@ import { Users2faEnableComponent } from '@/app/modules/users/users-2fa-enable/us
 import { UsersAddComponent } from '@/app/modules/users/users-add/users-add.component'
 import { UsersEditComponent } from '@/app/modules/users/users-edit/users-edit.component'
 import { UsersSupportComponent } from '@/app/modules/users/users-support/users-support.component'
+import { UsersTabletsComponent } from '@/app/modules/users/users-tablets/users-tablets.component'
 import { User } from '@/app/modules/users/users.interface'
 
 @Component({
   selector: 'app-users',
   imports: [
     TranslatePipe,
+    UsersTabletsComponent,
   ],
   standalone: true,
   templateUrl: './users.component.html',
