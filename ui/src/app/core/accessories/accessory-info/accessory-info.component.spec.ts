@@ -2,11 +2,13 @@ import type { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces
 import type { FakeModalService } from '@/testing'
 
 import { KeyValuePipe } from '@angular/common'
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA, signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
+import { FormsModule } from '@angular/forms'
 import { TranslatePipe } from '@ngx-translate/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
 import { ACCESSORY_INFO_MODAL_DATA, REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
@@ -50,6 +52,29 @@ describe('accessoryInfoComponent', () => {
 
   let modal: FakeModalService
   let activeModal: { close: ReturnType<typeof vi.fn>, dismiss: ReturnType<typeof vi.fn> }
+  let accessories: ReturnType<typeof fakeAccessories>
+
+  interface FakeRoom {
+    name: string
+    services: Array<{ uniqueId?: string }>
+  }
+
+  /**
+   * A stand-in for AccessoriesService: the rooms signal plus the three methods the row calls.
+   * getRoomNameForService is the real lookup, so the row is driven by the rooms it is handed.
+   * @param rooms - the layout the modal sees
+   */
+  function fakeAccessories(rooms: FakeRoom[] = []) {
+    const roomsSignal = signal<FakeRoom[]>(rooms)
+    return {
+      rooms: roomsSignal,
+      getRoomNameForService: vi.fn((uniqueId: string) => {
+        return roomsSignal().find(room => room.services.some(entry => entry.uniqueId === uniqueId))?.name
+      }),
+      moveServiceToRoom: vi.fn(),
+      addRoom: vi.fn((): boolean => true),
+    }
+  }
 
   /** A pairing as the server reports it. */
   function pairing(overrides: Record<string, any> = {}) {
@@ -92,20 +117,23 @@ describe('accessoryInfoComponent', () => {
    * @param options - the caches the modal is handed
    * @param options.accessoryCache - the cached accessories from disk
    * @param options.pairingCache - the known pairings
+   * @param options.rooms - the room layout the modal sees
    */
-  function open(service: ServiceTypeX, options: { accessoryCache?: any[], pairingCache?: any[] } = {}) {
+  function open(service: ServiceTypeX, options: { accessoryCache?: any[], pairingCache?: any[], rooms?: FakeRoom[] } = {}) {
     TestBed.resetTestingModule()
     modal = modalServiceSpy()
     activeModal = {
       close: vi.fn(),
       dismiss: vi.fn(),
     }
+    accessories = fakeAccessories(options.rooms)
 
     TestBed.configureTestingModule({
       imports: [AccessoryInfoComponent],
       providers: [
         provideTestTranslate(),
         provideFakes({ modal, activeModal }),
+        { provide: AccessoriesService, useValue: accessories },
         {
           provide: ACCESSORY_INFO_MODAL_DATA,
           useValue: {
@@ -121,7 +149,7 @@ describe('accessoryInfoComponent', () => {
 
     TestBed.overrideComponent(AccessoryInfoComponent, {
       set: {
-        imports: PIPES,
+        imports: [...PIPES, FormsModule],
         schemas: [NO_ERRORS_SCHEMA],
       },
     })
@@ -882,6 +910,10 @@ describe('accessoryInfoComponent', () => {
             activeModal,
           }),
           {
+            provide: AccessoriesService,
+            useValue: fakeAccessories(),
+          },
+          {
             provide: ACCESSORY_INFO_MODAL_DATA,
             useValue: {
               service: hapService(),
@@ -906,6 +938,147 @@ describe('accessoryInfoComponent', () => {
 
       expect(activeModal.dismiss).toHaveBeenCalled()
       expect(console.error).toHaveBeenCalled()
+    })
+  })
+
+  describe('the room row', () => {
+    /**
+     * Open on a HAP accessory with uniqueId hap-1. By default it sits in Kitchen,
+     * with an empty Office beside it.
+     * @param rooms - the layout to hand the modal
+     */
+    async function openRoomRow(rooms?: FakeRoom[]) {
+      const service = hapService()
+      service.uniqueId = 'hap-1'
+      const fixture = open(service, {
+        rooms: rooms ?? [
+          {
+            name: 'Kitchen',
+            services: [service],
+          },
+          { name: 'Office', services: [] },
+        ],
+      })
+      await fixture.whenStable()
+      fixture.detectChanges()
+      const select = (): HTMLSelectElement | null => fixture.nativeElement.querySelector('#room-select')
+      return { fixture, select }
+    }
+
+    it('shows the room the accessory is in, selected, with New room last', async () => {
+      const { select } = await openRoomRow()
+
+      expect(select()).not.toBeNull()
+      expect(select()!.value).toBe('Kitchen')
+      expect(Array.from(select()!.options).map(option => option.value)).toEqual(['Kitchen', 'Office', ''])
+    })
+
+    it('stages another room and moves nothing until Save', async () => {
+      const { fixture, select } = await openRoomRow()
+
+      select()!.value = 'Office'
+      select()!.dispatchEvent(new Event('change'))
+      fixture.detectChanges()
+
+      expect(accessories.moveServiceToRoom).not.toHaveBeenCalled()
+      expect(select()!.value).toBe('Office')
+      expect(fixture.componentInstance.isFormUnchanged()).toBe(false)
+
+      fixture.componentInstance.saveModal()
+      expect(activeModal.close).toHaveBeenCalledWith(expect.objectContaining({ room: 'Office' }))
+    })
+
+    it('a room left unchanged is not sent with Save', async () => {
+      const { fixture } = await openRoomRow()
+
+      fixture.componentInstance.saveModal()
+
+      expect(activeModal.close.mock.calls[0][0]).not.toHaveProperty('room')
+    })
+
+    it('dismissing after staging a room moves nothing and creates nothing', async () => {
+      const { fixture, select } = await openRoomRow()
+
+      select()!.value = 'Office'
+      select()!.dispatchEvent(new Event('change'))
+      fixture.componentInstance.dismissModal()
+
+      expect(activeModal.dismiss).toHaveBeenCalled()
+      expect(activeModal.close).not.toHaveBeenCalled()
+      expect(accessories.moveServiceToRoom).not.toHaveBeenCalled()
+      expect(accessories.addRoom).not.toHaveBeenCalled()
+    })
+
+    it('stages a new room on Add, offers it in the list, and creates it only on Save', async () => {
+      const { fixture, select } = await openRoomRow()
+
+      select()!.value = ''
+      select()!.dispatchEvent(new Event('change'))
+      fixture.detectChanges()
+
+      const input = fixture.nativeElement.querySelector('#new-room-name') as HTMLInputElement
+      expect(input).not.toBeNull()
+      input.value = 'Garage'
+      input.dispatchEvent(new Event('input'))
+      const add = input.nextElementSibling!.querySelector('.btn-primary') as HTMLButtonElement
+      add.click()
+      await fixture.whenStable()
+      fixture.detectChanges()
+
+      expect(accessories.addRoom).not.toHaveBeenCalled()
+      expect(accessories.moveServiceToRoom).not.toHaveBeenCalled()
+      expect(fixture.nativeElement.querySelector('#new-room-name')).toBeNull()
+      expect(Array.from(select()!.options).map(option => option.value)).toContain('Garage')
+      expect(select()!.value).toBe('Garage')
+
+      fixture.componentInstance.saveModal()
+      expect(activeModal.close).toHaveBeenCalledWith(expect.objectContaining({ room: 'Garage' }))
+    })
+
+    it('shows an error and moves nothing when the new room name is rejected', async () => {
+      const { fixture, select } = await openRoomRow()
+
+      select()!.value = ''
+      select()!.dispatchEvent(new Event('change'))
+      fixture.detectChanges()
+      const input = fixture.nativeElement.querySelector('#new-room-name') as HTMLInputElement
+      input.value = 'Kitchen'
+      input.dispatchEvent(new Event('input'))
+      ;(input.nextElementSibling!.querySelector('.btn-primary') as HTMLButtonElement).click()
+      fixture.detectChanges()
+
+      expect(accessories.addRoom).not.toHaveBeenCalled()
+      expect(accessories.moveServiceToRoom).not.toHaveBeenCalled()
+      expect(fixture.nativeElement.querySelector('[role="alert"]')).not.toBeNull()
+    })
+
+    it('Cancel closes the inline input without moving anything', async () => {
+      const { fixture, select } = await openRoomRow()
+
+      select()!.value = ''
+      select()!.dispatchEvent(new Event('change'))
+      fixture.detectChanges()
+      const input = fixture.nativeElement.querySelector('#new-room-name') as HTMLInputElement
+      ;(input.nextElementSibling!.querySelector('.btn-elegant') as HTMLButtonElement).click()
+      fixture.detectChanges()
+
+      expect(fixture.nativeElement.querySelector('#new-room-name')).toBeNull()
+      expect(accessories.addRoom).not.toHaveBeenCalled()
+      expect(accessories.moveServiceToRoom).not.toHaveBeenCalled()
+    })
+
+    it('is hidden when there are no rooms at all', async () => {
+      const { select } = await openRoomRow([])
+
+      expect(select()).toBeNull()
+    })
+
+    it('is hidden when the accessory is in no room of the layout', async () => {
+      const { select } = await openRoomRow([
+        { name: 'Office', services: [] },
+      ])
+
+      expect(select()).toBeNull()
     })
   })
 })
