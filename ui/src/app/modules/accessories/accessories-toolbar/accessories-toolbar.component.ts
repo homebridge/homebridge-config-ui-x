@@ -1,6 +1,6 @@
 import type { BatteryInfo } from '@/app/core/accessories/filters/accessory-battery'
-import type { AccessoryFilterState, AccessoryGroupBy, AccessorySortBy, RoomInput } from '@/app/core/accessories/filters/accessory-filters'
-import type { BuiltInView } from '@/app/core/accessories/filters/accessory-views'
+import type { AccessoryFilterState, AccessoryGroupBy, AccessorySortBy, FilterContext, RoomInput } from '@/app/core/accessories/filters/accessory-filters'
+import type { AccessoryView, BuiltInView } from '@/app/core/accessories/filters/accessory-views'
 
 import { ChangeDetectionStrategy, Component, computed, effect, input, model, output, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
@@ -15,7 +15,7 @@ import { BUILT_IN_VIEWS } from '@/app/core/accessories/filters/accessory-views'
 /** Width below which the filter chips collapse behind a Filters button */
 const NARROW_WIDTH = 576
 
-export type FacetKey = 'rooms' | 'categories' | 'bridges' | 'protocols' | 'states' | 'battery'
+export type FacetKey = 'rooms' | 'categories' | 'bridges' | 'protocols' | 'states' | 'battery' | 'labels'
 
 export interface FacetOption {
   value: string
@@ -43,6 +43,7 @@ function filterKey(state: AccessoryFilterState): string {
     [...state.protocols].sort(),
     [...state.states].sort(),
     [...state.battery].sort(),
+    [...state.labels].sort(),
     !!state.showHidden,
     !!state.onDashboardOnly,
     state.groupBy,
@@ -59,11 +60,16 @@ function clearedFilter(state: AccessoryFilterState): AccessoryFilterState {
   }
 }
 
-function countMatching(rooms: RoomInput[], state: AccessoryFilterState, batteryIndex: Map<string, BatteryInfo>): number {
+function countMatching(
+  rooms: RoomInput[],
+  state: AccessoryFilterState,
+  batteryIndex: Map<string, BatteryInfo>,
+  context: FilterContext,
+): number {
   let total = 0
   for (const room of rooms) {
     for (const service of room.services) {
-      if (matchesFilter(service, room.name, state, batteryIndex)) {
+      if (matchesFilter(service, room.name, state, batteryIndex, context)) {
         total++
       }
     }
@@ -103,15 +109,30 @@ export class AccessoriesToolbarComponent {
   public readonly total = input(0)
   public readonly manageLayoutActive = input(false)
   public readonly selectActive = input(false)
+  /** The saved views, the user's own and those shared with them */
+  public readonly customViews = input<AccessoryView[]>([])
+  /** uniqueId -> labels */
+  public readonly labels = input<Record<string, string[]>>({})
+  /** The signed-in user, to tell own views from shared ones */
+  public readonly username = input('')
+  /** The custom view applied, or null */
+  public readonly activeViewId = input<string | null>(null)
 
   public readonly manageLayoutToggle = output<void>()
   public readonly selectToggle = output<void>()
+  /** A custom view was picked (its id), or the built-in views were picked (null) */
+  public readonly viewSelect = output<string | null>()
+  /** Save the current filter as a view with this name */
+  public readonly saveView = output<string>()
+  /** Open the manage views modal */
+  public readonly manageViews = output<void>()
 
   public readonly views: readonly BuiltInView[] = BUILT_IN_VIEWS
   public readonly groupOptions: Array<{ value: AccessoryGroupBy, labelKey: string }> = [
     { value: 'room', labelKey: 'accessories.toolbar.group_room' },
     { value: 'category', labelKey: 'accessories.toolbar.group_category' },
     { value: 'bridge', labelKey: 'accessories.toolbar.group_bridge' },
+    { value: 'floor', labelKey: 'accessories.toolbar.group_floor' },
     { value: 'none', labelKey: 'accessories.toolbar.group_none' },
   ]
 
@@ -125,11 +146,27 @@ export class AccessoriesToolbarComponent {
   public readonly searchText = signal('')
   public readonly narrow = signal(typeof window !== 'undefined' && window.innerWidth < NARROW_WIDTH)
   public readonly chipsOpen = signal(false)
+  /** The inline form for naming a new view is open */
+  public readonly saveFormOpen = signal(false)
+  public readonly viewName = signal('')
 
   public readonly active = computed(() => isFilterActive(this.filter()))
 
+  /** The labels on the accessories, as the matching context needs them */
+  private readonly labelContext = computed<FilterContext>(() => ({
+    labels: new Map(Object.entries(this.labels())),
+  }))
+
+  /** Every label in use, sorted */
+  public readonly allLabels = computed(() => [
+    ...new Set(Object.values(this.labels()).flat()),
+  ].sort((a, b) => a.localeCompare(b)))
+
   /** The built-in view whose settings match the filter, 'all' when no filter is set, or null */
   public readonly activeView = computed<string | null>(() => {
+    if (this.activeViewId() !== null) {
+      return null
+    }
     const current = this.filter()
     const match = BUILT_IN_VIEWS.find(view => filterKey(current) === filterKey({
       ...clearedFilter(current),
@@ -148,6 +185,7 @@ export class AccessoriesToolbarComponent {
     const current = this.filter()
     const rooms = this.rooms()
     const batteryIndex = this.batteryIndex()
+    const context = this.labelContext()
 
     const build = (key: FacetKey, labelKey: string, base: Array<{ value: string, label: string, translate: boolean }>): Facet => {
       const selectedValues = current[key] as string[]
@@ -158,7 +196,7 @@ export class AccessoriesToolbarComponent {
             ...DEFAULT_FILTER_STATE,
             showHidden: current.showHidden,
             [key]: [option.value],
-          } as AccessoryFilterState, batteryIndex),
+          } as AccessoryFilterState, batteryIndex, context),
         }))
         .filter(option => option.count > 0 || selectedValues.includes(option.value))
       return {
@@ -191,6 +229,7 @@ export class AccessoriesToolbarComponent {
         { value: 'under20', label: 'accessories.toolbar.battery_under_20', translate: true },
         { value: 'charging', label: 'accessories.toolbar.battery_charging', translate: true },
       ]),
+      build('labels', 'accessories.toolbar.facet_label', this.allLabels().map(label => ({ value: label, label, translate: false }))),
     ]
   })
 
@@ -254,13 +293,53 @@ export class AccessoriesToolbarComponent {
 
   /** Apply a built-in view on top of a cleared filter, or clear everything for 'All' */
   public applyView(view: BuiltInView | null): void {
+    this.applyState(view?.state ?? null)
+    this.viewSelect.emit(null)
+  }
+
+  /** Apply a saved view on top of a cleared filter. Its pinned and excluded accessories follow via the page. */
+  public applyCustomView(view: AccessoryView): void {
+    this.applyState(view.state)
+    this.viewSelect.emit(view.id)
+  }
+
+  /** Whether a view was shared with the user by someone else */
+  public isSharedWithMe(view: AccessoryView): boolean {
+    return !!view.owner && view.owner !== this.username()
+  }
+
+  public openSaveView(): void {
+    this.viewName.set('')
+    this.saveFormOpen.set(true)
+  }
+
+  public onViewNameInput(event: Event): void {
+    this.viewName.set((event.target as HTMLInputElement).value)
+  }
+
+  public confirmSaveView(): void {
+    const name = this.viewName().trim()
+    if (!name) {
+      return
+    }
+    this.saveView.emit(name)
+    this.saveFormOpen.set(false)
+    this.viewName.set('')
+  }
+
+  public cancelSaveView(): void {
+    this.saveFormOpen.set(false)
+    this.viewName.set('')
+  }
+
+  private applyState(state: Partial<AccessoryFilterState> | null): void {
     const next = clearedFilter(this.filter())
     this.searchPending = false
     this.searchText.set('')
-    this.filter.set(view
+    this.filter.set(state
       ? {
           ...next,
-          ...view.state,
+          ...state,
         } as AccessoryFilterState
       : next)
   }

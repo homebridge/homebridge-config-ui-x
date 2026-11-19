@@ -50,6 +50,34 @@
             <label for="form-default" class="rendux-label ms-3"></label>
           </div>
         </li>
+        <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+          <label for="form-floor" class="mb-2 mb-md-0 w-100 w-md-50">{{ 'accessories.floor' | translate }}</label>
+          <div class="text-start text-md-end w-100 w-md-50">
+            <select id="form-floor" class="custom-select" [disabled]="deleteMode()" (change)="onFloorChange($event)">
+              <option [value]="NO_FLOOR" [selected]="floorChoice() === NO_FLOOR">
+                {{ 'accessories.floor_none' | translate }}
+              </option>
+              @for (floor of floors; track floor) {
+                <option [value]="floor" [selected]="floorChoice() === floor">{{ floor }}</option>
+              }
+              <option [value]="NEW_FLOOR" [selected]="floorChoice() === NEW_FLOOR">
+                {{ 'accessories.floor_new' | translate }}
+              </option>
+            </select>
+            @if (floorChoice() === NEW_FLOOR) {
+              <input
+                id="form-new-floor"
+                type="text"
+                autocomplete="off"
+                class="form-control custom-input mt-2"
+                [attr.aria-label]="'accessories.floor_name' | translate"
+                [placeholder]="'accessories.floor_name' | translate"
+                [value]="newFloorName()"
+                (input)="onNewFloorInput($event)"
+              />
+            }
+          </div>
+        </li>
       </ul>
       @if (deleteMode()) {
         <div class="alert alert-warning mb-0">
@@ -89,7 +117,7 @@
           type="submit"
           data-bs-dismiss="modal"
           [class]="`btn ${deleteMode() ? 'btn-danger' : 'btn-primary'}`"
-          [disabled]="!deleteMode() && (roomForm.invalid || isFormUnchanged())"
+          [disabled]="!deleteMode() && (roomForm.invalid || isFormUnchanged() || newFloorMissing())"
         >
           {{ (deleteMode() ? 'form.button_delete' : 'form.button_save') | translate }}
         </button>

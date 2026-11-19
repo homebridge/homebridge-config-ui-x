@@ -53,6 +53,8 @@ describe('AccessoriesService', () => {
     pairingCacheValue?: any[]
     hapCacheError?: unknown
     pairingCacheError?: unknown
+    /** The reply to `get-views`. Defaults to an empty set. null makes the load fail. */
+    views?: any
   }
 
   /** A raw HAP characteristic, as the socket delivers it - no `setValue` yet. */
@@ -148,6 +150,11 @@ describe('AccessoriesService', () => {
     const layout = options.layout ?? []
     io.socket.respondTo('get-layout', () => JSON.parse(JSON.stringify(layout)))
     io.socket.respondTo('save-layout', () => ({ ok: true }))
+    const views = options.views === undefined
+      ? { views: [], labels: {}, floors: [] }
+      : options.views
+    io.socket.respondTo('get-views', () => JSON.parse(JSON.stringify(views)))
+    io.socket.respondTo('save-views', () => ({ ok: true }))
 
     toastr = toastrStub()
     modal = modalServiceSpy()
@@ -2120,6 +2127,645 @@ describe('AccessoriesService', () => {
       await service.start()
 
       expect(io.socket.payloadsFor('get-accessories')).toHaveLength(2)
+    })
+  })
+
+  describe('saved views, labels and floors', () => {
+    const savedView = {
+      id: 'v1',
+      name: 'Downstairs',
+      state: {
+        groupBy: 'floor',
+        labels: ['Bedtime'],
+      },
+      pinned: ['a1'],
+      excluded: ['b2'],
+      shared: false,
+    }
+    const sharedByAlice = {
+      id: 'v2',
+      name: 'Alice lights',
+      state: {
+        categories: ['lights'],
+      },
+      shared: true,
+      owner: 'alice',
+    }
+
+    /** The payloads of every save-views request sent so far. */
+    function saves(): any[] {
+      return io.requests.filter(entry => entry.resource === 'save-views').map(entry => entry.payload)
+    }
+
+    /** Let the debounced save go out. */
+    function flushDebounce() {
+      vi.advanceTimersByTime(300)
+    }
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    describe('loading', () => {
+      it('loads the views, labels and floors on start', async () => {
+        await start({
+          views: {
+            views: [savedView, sharedByAlice],
+            labels: {
+              a1: ['Bedtime'],
+            },
+            floors: [
+              {
+                name: 'Ground',
+                rooms: ['Kitchen'],
+              },
+            ],
+          },
+        })
+
+        expect(io.requests.some(entry => entry.resource === 'get-views')).toBe(true)
+        expect(service.views()).toEqual([savedView, sharedByAlice])
+        expect(service.labels()).toEqual({
+          a1: ['Bedtime'],
+        })
+        expect(service.floors()).toEqual([
+          {
+            name: 'Ground',
+            rooms: ['Kitchen'],
+          },
+        ])
+      })
+
+      it('starts empty when the views cannot be read, and does not save over them', async () => {
+        await start({ views: null })
+
+        expect(service.views()).toEqual([])
+        expect(service.labels()).toEqual({})
+        expect(service.floors()).toEqual([])
+
+        service.createViewFromState('New', { groupBy: 'room' })
+        flushDebounce()
+
+        expect(saves()).toHaveLength(0)
+      })
+    })
+
+    describe('creating a view', () => {
+      it('adds the filter as a view of the user\'s own, and returns its id', async () => {
+        await start()
+
+        const id = service.createViewFromState('  Kitchen  ', {
+          categories: ['lights'],
+        })
+
+        expect(id).toEqual(expect.any(String))
+        expect(service.views()).toEqual([
+          expect.objectContaining({
+            id,
+            name: 'Kitchen',
+            state: {
+              categories: ['lights'],
+            },
+            pinned: [],
+            excluded: [],
+            shared: false,
+          }),
+        ])
+      })
+
+      it('refuses a blank name', async () => {
+        await start()
+
+        expect(service.createViewFromState('   ', { groupBy: 'room' })).toBeNull()
+        expect(service.views()).toEqual([])
+      })
+
+      it('copies the state, so later changes to the filter do not reach the view', async () => {
+        await start()
+        const state: any = {
+          categories: ['lights'],
+        }
+
+        service.createViewFromState('Lights', state)
+        state.categories.push('climate')
+
+        expect(service.views()[0].state).toEqual({
+          categories: ['lights'],
+        })
+      })
+    })
+
+    describe('saving', () => {
+      it('sends the own views, without owner, with the labels and floors, after a quiet spell', async () => {
+        await start({
+          views: {
+            views: [savedView, sharedByAlice],
+            labels: {
+              a1: ['Bedtime'],
+            },
+            floors: [
+              {
+                name: 'Ground',
+                rooms: ['Kitchen'],
+              },
+            ],
+          },
+        })
+
+        service.updateView('v1', { name: 'Ground floor' })
+        service.setLabels('a1', ['Bedtime', 'Guest'])
+        expect(saves()).toHaveLength(0)
+
+        flushDebounce()
+
+        expect(saves()).toHaveLength(1)
+        expect(saves()[0]).toEqual({
+          views: [
+            { ...savedView, name: 'Ground floor', owner: undefined },
+          ],
+          labels: {
+            a1: ['Bedtime', 'Guest'],
+          },
+          floors: [
+            {
+              name: 'Ground',
+              rooms: ['Kitchen'],
+            },
+          ],
+        })
+        expect(saves()[0].views.some((view: any) => view.id === 'v2')).toBe(false)
+      })
+
+      it('announces each successful save', async () => {
+        await start()
+        const announced = vi.fn()
+        service.viewsSaved.subscribe(announced)
+
+        service.createViewFromState('Lights', {
+          categories: ['lights'],
+        })
+        flushDebounce()
+
+        expect(announced).toHaveBeenCalledTimes(1)
+      })
+
+      it('sends a pending save when the session stops, rather than dropping it', async () => {
+        await start()
+
+        service.createViewFromState('Lights', {
+          categories: ['lights'],
+        })
+        service.stop()
+
+        expect(saves()).toHaveLength(1)
+        expect(saves()[0].views[0].name).toBe('Lights')
+      })
+
+      it('does not send anything after the session stops', async () => {
+        await start()
+        service.stop()
+
+        service.setLabels('a1', ['Late'])
+        flushDebounce()
+
+        expect(saves()).toHaveLength(0)
+      })
+    })
+
+    describe('changing a view', () => {
+      it('renames, re-filters and sets the pinned and excluded accessories of an own view', async () => {
+        await start({
+          views: {
+            views: [savedView],
+            labels: {},
+            floors: [],
+          },
+        })
+
+        const changed = service.updateView('v1', {
+          name: '  Upstairs  ',
+          state: { groupBy: 'none' },
+          pinned: ['c3'],
+          excluded: [],
+        })
+
+        expect(changed).toBe(true)
+        expect(service.views()[0]).toEqual(expect.objectContaining({
+          name: 'Upstairs',
+          state: { groupBy: 'none' },
+          pinned: ['c3'],
+          excluded: [],
+        }))
+      })
+
+      it('leaves a view shared by someone else alone', async () => {
+        await start({
+          views: {
+            views: [sharedByAlice],
+            labels: {},
+            floors: [],
+          },
+        })
+
+        expect(service.updateView('v2', { name: 'Mine now' })).toBe(false)
+        expect(service.deleteView('v2')).toBe(false)
+        expect(service.toggleShare('v2')).toBe(false)
+        expect(service.views()).toEqual([sharedByAlice])
+      })
+
+      it('deletes an own view, and clears it as the active one', async () => {
+        await start({
+          views: {
+            views: [savedView],
+            labels: {},
+            floors: [],
+          },
+        })
+        service.activeViewId.set('v1')
+
+        expect(service.deleteView('v1')).toBe(true)
+
+        expect(service.views()).toEqual([])
+        expect(service.activeViewId()).toBeNull()
+      })
+
+      it('moves a view up and down, and does nothing past either end', async () => {
+        const second = { ...savedView, id: 'v9', name: 'Second' }
+        await start({
+          views: {
+            views: [savedView, second],
+            labels: {},
+            floors: [],
+          },
+        })
+
+        expect(service.reorderViews('v1', -1)).toBe(false)
+        expect(service.reorderViews('v9', 1)).toBe(false)
+        expect(service.reorderViews('v9', -1)).toBe(true)
+
+        expect(service.views().map(view => view.id)).toEqual(['v9', 'v1'])
+      })
+
+      it('turns sharing on and off for an own view only', async () => {
+        await start({
+          views: {
+            views: [savedView, sharedByAlice],
+            labels: {},
+            floors: [],
+          },
+        })
+
+        expect(service.toggleShare('v1')).toBe(true)
+        expect(service.views()[0].shared).toBe(true)
+        expect(service.toggleShare('v1')).toBe(true)
+        expect(service.views()[0].shared).toBe(false)
+        expect(service.toggleShare('v2')).toBe(false)
+      })
+
+      it('tells whose a view is', async () => {
+        await start()
+
+        expect(service.isOwnView(savedView as any)).toBe(true)
+        expect(service.isOwnView(sharedByAlice as any)).toBe(false)
+      })
+    })
+
+    describe('the filter context for the active view', () => {
+      it('holds the pinned and excluded accessories of the active view, and the labels', async () => {
+        await start({
+          views: {
+            views: [savedView],
+            labels: {
+              a1: ['Bedtime'],
+            },
+            floors: [],
+          },
+        })
+        service.activeViewId.set('v1')
+
+        const context = service.filterContext()
+
+        expect([...context.pinned!]).toEqual(['a1'])
+        expect([...context.excluded!]).toEqual(['b2'])
+        expect(context.labels!.get('a1')).toEqual(['Bedtime'])
+      })
+
+      it('holds nothing extra when no view is active', async () => {
+        await start({
+          views: {
+            views: [savedView],
+            labels: {},
+            floors: [],
+          },
+        })
+
+        const context = service.filterContext()
+
+        expect([...context.pinned!]).toEqual([])
+        expect([...context.excluded!]).toEqual([])
+      })
+    })
+
+    describe('labels', () => {
+      it('sets the labels of an accessory, trimmed and without repeats or blanks', async () => {
+        await start()
+
+        service.setLabels('a1', [
+          ' Bedtime ',
+          'Bedtime',
+          '',
+          '  ',
+          'Guest',
+        ])
+
+        expect(service.labels()).toEqual({
+          a1: ['Bedtime', 'Guest'],
+        })
+      })
+
+      it('removes the entry when the labels are emptied', async () => {
+        await start({
+          views: {
+            views: [],
+            labels: {
+              a1: ['Bedtime'],
+            },
+            floors: [],
+          },
+        })
+
+        service.setLabels('a1', [])
+
+        expect(service.labels()).toEqual({})
+      })
+
+      it('sends nothing when the labels did not change', async () => {
+        await start({
+          views: {
+            views: [],
+            labels: {
+              a1: ['Bedtime'],
+            },
+            floors: [],
+          },
+        })
+
+        service.setLabels('a1', ['Bedtime'])
+        flushDebounce()
+
+        expect(saves()).toHaveLength(0)
+      })
+
+      it('ignores an accessory with no id', async () => {
+        await start()
+
+        service.setLabels('', ['Bedtime'])
+        flushDebounce()
+
+        expect(service.labels()).toEqual({})
+        expect(saves()).toHaveLength(0)
+      })
+
+      it('sets the labels from the accessory information modal on Save, with the rest of the changes', async () => {
+        await start({
+          layout: [
+            { name: 'Kitchen', isDefault: true, services: [] },
+          ],
+        })
+        await settle()
+        sendData(rawHap())
+        const target = service.rooms()[0].services[0]
+        void service.showAccessoryInformation(target)
+        await settle()
+
+        modal.lastOpened()!.ref.close({
+          customName: 'Kettle',
+          customType: undefined,
+          hidden: false,
+          onDashboard: false,
+          labels: ['Bedtime'],
+        })
+        await settle()
+
+        expect(service.labels()[target.uniqueId!]).toEqual(['Bedtime'])
+        flushDebounce()
+        expect(saves()[0].labels).toEqual({
+          [target.uniqueId!]: ['Bedtime'],
+        })
+      })
+    })
+
+    describe('floors', () => {
+      it('puts a room on a floor, taking it off the floor it was on', async () => {
+        await start({
+          views: {
+            views: [],
+            labels: {},
+            floors: [
+              {
+                name: 'Ground',
+                rooms: ['Kitchen'],
+              },
+              { name: 'Upstairs', rooms: [] },
+            ],
+          },
+        })
+
+        service.setRoomFloor('Kitchen', 'Upstairs')
+
+        expect(service.floors()).toEqual([
+          { name: 'Ground', rooms: [] },
+          {
+            name: 'Upstairs',
+            rooms: ['Kitchen'],
+          },
+        ])
+      })
+
+      it('takes a room off every floor with null', async () => {
+        await start({
+          views: {
+            views: [],
+            labels: {},
+            floors: [
+              {
+                name: 'Ground',
+                rooms: ['Kitchen'],
+              },
+            ],
+          },
+        })
+
+        service.setRoomFloor('Kitchen', null)
+
+        expect(service.floors()).toEqual([
+          { name: 'Ground', rooms: [] },
+        ])
+      })
+
+      it('creates a floor that does not exist yet, and reuses one that differs only in case', async () => {
+        await start({
+          views: {
+            views: [],
+            labels: {},
+            floors: [
+              { name: 'Ground', rooms: [] },
+            ],
+          },
+        })
+
+        service.setRoomFloor('Kitchen', 'Basement')
+        service.setRoomFloor('Hall', 'ground')
+
+        expect(service.floors()).toEqual([
+          {
+            name: 'Ground',
+            rooms: ['Hall'],
+          },
+          {
+            name: 'Basement',
+            rooms: ['Kitchen'],
+          },
+        ])
+      })
+
+      it('sends nothing when the room is already on that floor', async () => {
+        await start({
+          views: {
+            views: [],
+            labels: {},
+            floors: [
+              {
+                name: 'Ground',
+                rooms: ['Kitchen'],
+              },
+            ],
+          },
+        })
+
+        service.setRoomFloor('Kitchen', 'Ground')
+        flushDebounce()
+
+        expect(saves()).toHaveLength(0)
+      })
+
+      it('adds an empty floor, refusing blanks and duplicates', async () => {
+        await start({
+          views: {
+            views: [],
+            labels: {},
+            floors: [
+              { name: 'Ground', rooms: [] },
+            ],
+          },
+        })
+
+        expect(service.addFloor('  Upstairs ')).toBe(true)
+        expect(service.addFloor('ground')).toBe(false)
+        expect(service.addFloor('   ')).toBe(false)
+        expect(service.floors().map(floor => floor.name)).toEqual(['Ground', 'Upstairs'])
+      })
+
+      it('renames a floor, keeping its rooms, and refuses a name another floor has', async () => {
+        await start({
+          views: {
+            views: [],
+            labels: {},
+            floors: [
+              {
+                name: 'Ground',
+                rooms: ['Kitchen'],
+              },
+              { name: 'Upstairs', rooms: [] },
+            ],
+          },
+        })
+
+        expect(service.renameFloor('Ground', 'Upstairs')).toBe(false)
+        expect(service.renameFloor('Ground', '  Main  ')).toBe(true)
+        expect(service.renameFloor('Missing', 'Other')).toBe(false)
+
+        expect(service.floors()).toEqual([
+          {
+            name: 'Main',
+            rooms: ['Kitchen'],
+          },
+          { name: 'Upstairs', rooms: [] },
+        ])
+      })
+
+      it('deletes a floor and leaves its rooms on no floor', async () => {
+        await start({
+          views: {
+            views: [],
+            labels: {},
+            floors: [
+              {
+                name: 'Ground',
+                rooms: ['Kitchen'],
+              },
+            ],
+          },
+        })
+
+        expect(service.deleteFloor('Ground')).toBe(true)
+        expect(service.deleteFloor('Ground')).toBe(false)
+
+        expect(service.floors()).toEqual([])
+      })
+
+      it('follows a room rename into the floors', async () => {
+        await start({
+          views: {
+            views: [],
+            labels: {},
+            floors: [
+              {
+                name: 'Ground',
+                rooms: ['Kitchen'],
+              },
+            ],
+          },
+        })
+
+        service.renameRoomInFloors('Kitchen', 'Kitchenette')
+        service.renameRoomInFloors('Kitchen', 'Kitchenette')
+
+        expect(service.floors()).toEqual([
+          {
+            name: 'Ground',
+            rooms: ['Kitchenette'],
+          },
+        ])
+      })
+
+      it('follows a room delete into the floors', async () => {
+        await start({
+          views: {
+            views: [],
+            labels: {},
+            floors: [
+              {
+                name: 'Ground',
+                rooms: ['Kitchen', 'Hall'],
+              },
+            ],
+          },
+        })
+
+        service.removeRoomFromFloors('Kitchen')
+
+        expect(service.floors()).toEqual([
+          {
+            name: 'Ground',
+            rooms: ['Hall'],
+          },
+        ])
+      })
     })
   })
 })

@@ -1072,6 +1072,251 @@ describe('AccessoriesController (e2e)', () => {
     })
   })
 
+  describe('saved views', () => {
+    const adminClient = {
+      data: {
+        user: { username: 'admin', admin: true },
+      },
+    }
+    const guestClient = {
+      data: {
+        user: { username: 'guest', admin: false },
+      },
+    }
+    const adminView = {
+      id: 'v1',
+      name: 'Night',
+      state: { on: true },
+      pinned: ['a'],
+    }
+
+    beforeEach(async () => {
+      await remove(configService.accessoryViewsPath)
+    })
+
+    afterAll(async () => {
+      await remove(configService.accessoryViewsPath)
+    })
+
+    it('get-views returns an empty default when nothing is saved', async () => {
+      const gateway = app.get(AccessoriesGateway)
+      expect(await gateway.getAccessoryViews(adminClient)).toEqual({ views: [], labels: {}, floors: [] })
+    })
+
+    it('save-views saves for the verified user, strips owner, and reads back', async () => {
+      const gateway = app.get(AccessoriesGateway)
+      const payload = {
+        views: [
+          { ...adminView, owner: 'admin' },
+        ],
+        labels: {
+          uid1: ['Kitchen'],
+        },
+        floors: [
+          {
+            name: 'Ground',
+            rooms: ['Kitchen'],
+          },
+        ],
+      }
+      const saved = await gateway.saveAccessoryViews(adminClient, payload)
+      expect(saved).toEqual({
+        views: [adminView],
+        labels: {
+          uid1: ['Kitchen'],
+        },
+        floors: [
+          {
+            name: 'Ground',
+            rooms: ['Kitchen'],
+          },
+        ],
+      })
+
+      expect(await gateway.getAccessoryViews(adminClient)).toEqual({
+        views: [
+          { ...adminView, owner: 'admin' },
+        ],
+        labels: {
+          uid1: ['Kitchen'],
+        },
+        floors: [
+          {
+            name: 'Ground',
+            rooms: ['Kitchen'],
+          },
+        ],
+      })
+    })
+
+    it('shared views are visible to other users with owner set; private views are not', async () => {
+      const gateway = app.get(AccessoriesGateway)
+      await gateway.saveAccessoryViews(adminClient, {
+        views: [
+          { ...adminView, shared: true },
+          { id: 'v2', name: 'Private', state: {} },
+        ],
+        labels: {
+          uid1: ['Kitchen'],
+        },
+        floors: [],
+      })
+
+      expect(await gateway.getAccessoryViews(guestClient)).toEqual({
+        views: [
+          { ...adminView, shared: true, owner: 'admin' },
+        ],
+        labels: {},
+        floors: [],
+      })
+    })
+
+    it('cannot overwrite or add to another user\'s views', async () => {
+      const gateway = app.get(AccessoriesGateway)
+      await gateway.saveAccessoryViews(adminClient, {
+        views: [
+          { ...adminView, shared: true },
+        ],
+        labels: {},
+        floors: [],
+      })
+
+      // The guest tries to replace the admin's view, claiming ownership, and to add one as the admin
+      await gateway.saveAccessoryViews(guestClient, {
+        views: [
+          { ...adminView, name: 'Hijacked', owner: 'admin' },
+          { id: 'g1', name: 'Guest', state: {} },
+        ],
+        labels: {},
+        floors: [],
+      })
+
+      expect(await gateway.getAccessoryViews(adminClient)).toEqual({
+        views: [
+          { ...adminView, shared: true, owner: 'admin' },
+        ],
+        labels: {},
+        floors: [],
+      })
+      expect(await gateway.getAccessoryViews(guestClient)).toEqual({
+        views: [
+          { ...adminView, shared: true, owner: 'admin' },
+          {
+            id: 'g1',
+            name: 'Guest',
+            state: {},
+            owner: 'guest',
+          },
+        ],
+        labels: {},
+        floors: [],
+      })
+    })
+
+    it('save-views rejects invalid payloads without writing', async () => {
+      const gateway = app.get(AccessoriesGateway)
+      const valid = { views: [], labels: {}, floors: [] }
+      const invalid: any[] = [
+        { ...valid, views: 'nope' },
+        {
+          ...valid,
+          labels: ['x'],
+        },
+        {
+          ...valid,
+          floors: [
+            { name: 'x', rooms: 'kitchen' },
+          ],
+        },
+        {
+          ...valid,
+          views: [
+            {
+              id: 'v1',
+              name: 'x'.repeat(101),
+              state: {},
+            },
+          ],
+        },
+        {
+          ...valid,
+          views: [
+            { id: 'v1', name: 'ok', state: 'nope' },
+          ],
+        },
+        {
+          ...valid,
+          views: [
+            {
+              id: 'v1',
+              name: 'ok',
+              state: {},
+              shared: 'yes',
+            },
+          ],
+        },
+        {
+          ...valid,
+          labels: {
+            uid1: Array.from({ length: 51 }).fill('a'),
+          },
+        },
+        {
+          ...valid,
+          labels: {
+            uid1: [
+              'x'.repeat(51),
+            ],
+          },
+        },
+        {
+          ...valid,
+          floors: Array.from({ length: 51 }, () => ({ name: 'f', rooms: [] })),
+        },
+        {
+          ...valid,
+          views: Array.from({ length: 201 }, (_, i) => ({ id: `v${i}`, name: 'n', state: {} })),
+        },
+        undefined,
+      ]
+
+      for (const payload of invalid) {
+        expect(await gateway.saveAccessoryViews(adminClient, payload)).toBeInstanceOf(WsException)
+      }
+      expect(await gateway.getAccessoryViews(adminClient)).toEqual({ views: [], labels: {}, floors: [] })
+      expect(await gateway.saveAccessoryViews({}, valid)).toBeInstanceOf(WsException)
+    })
+
+    it('GET /accessories/views returns the authenticated user\'s views', async () => {
+      const gateway = app.get(AccessoriesGateway)
+      await gateway.saveAccessoryViews(adminClient, {
+        views: [
+          { ...adminView, shared: true },
+        ],
+        labels: {
+          uid1: ['Kitchen'],
+        },
+        floors: [],
+      })
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/accessories/views',
+        headers: { authorization },
+      })
+      expect(res.statusCode).toBe(200)
+      expect(res.json()).toEqual({
+        views: [
+          { ...adminView, shared: true, owner: 'admin' },
+        ],
+        labels: {
+          uid1: ['Kitchen'],
+        },
+        floors: [],
+      })
+    })
+  })
+
   afterAll(async () => {
     await app.close()
   })

@@ -52,6 +52,7 @@ describe('the room modals', () => {
   async function openEdit(
     existingRooms: Array<{ name: string, isDefault?: boolean }>,
     currentRoomIndex: number,
+    floors: { floors?: string[], currentFloor?: string | null } = {},
   ) {
     TestBed.resetTestingModule()
     activeModal = activeModalStub()
@@ -68,6 +69,8 @@ describe('the room modals', () => {
             isDefault: !!room.isDefault,
             existingRooms,
             currentRoomIndex,
+            floors: floors.floors ?? [],
+            currentFloor: floors.currentFloor ?? null,
           },
         },
       ],
@@ -91,6 +94,95 @@ describe('the room modals', () => {
     { name: 'Kitchen' },
     { name: 'Hall' },
   ]
+
+  describe('the floor of a room', () => {
+    const rooms = [
+      { name: 'Default Room', isDefault: true },
+      { name: 'Kitchen' },
+    ]
+
+    it('offers None, the floors that exist, and New floor, and shows the current floor', async () => {
+      const modal = await openEdit(rooms, 1, {
+        floors: ['Ground', 'Upstairs'],
+        currentFloor: 'Ground',
+      })
+
+      expect(modal.floors).toEqual(['Ground', 'Upstairs'])
+      expect(modal.floorChoice()).toBe('Ground')
+    })
+
+    it('closes with the floor picked', async () => {
+      const modal = await openEdit(rooms, 1, {
+        floors: ['Ground', 'Upstairs'],
+        currentFloor: 'Ground',
+      })
+
+      modal.onFloorChange({
+        target: { value: 'Upstairs' },
+      } as unknown as Event)
+      modal.closeModal()
+
+      expect(activeModal.close).toHaveBeenCalledWith({ name: 'Kitchen', isDefault: false, floor: 'Upstairs' })
+    })
+
+    it('closes with no floor when None is picked', async () => {
+      const modal = await openEdit(rooms, 1, {
+        floors: ['Ground'],
+        currentFloor: 'Ground',
+      })
+
+      modal.onFloorChange({
+        target: { value: '' },
+      } as unknown as Event)
+      modal.closeModal()
+
+      expect(activeModal.close).toHaveBeenCalledWith({ name: 'Kitchen', isDefault: false, floor: null })
+    })
+
+    it('takes the name of a new floor', async () => {
+      const modal = await openEdit(rooms, 1, {
+        floors: ['Ground'],
+      })
+
+      modal.onFloorChange({
+        target: { value: modal.NEW_FLOOR },
+      } as unknown as Event)
+      modal.onNewFloorInput({
+        target: { value: '  Basement ' },
+      } as unknown as Event)
+      modal.closeModal()
+
+      expect(activeModal.close).toHaveBeenCalledWith({ name: 'Kitchen', isDefault: false, floor: 'Basement' })
+    })
+
+    it('will not close on New floor with no name', async () => {
+      const modal = await openEdit(rooms, 1, {
+        floors: ['Ground'],
+      })
+
+      modal.onFloorChange({
+        target: { value: modal.NEW_FLOOR },
+      } as unknown as Event)
+      modal.closeModal()
+
+      expect(modal.newFloorMissing()).toBe(true)
+      expect(activeModal.close).not.toHaveBeenCalled()
+    })
+
+    it('counts a floor change as a change to save', async () => {
+      const modal = await openEdit(rooms, 1, {
+        floors: ['Ground'],
+        currentFloor: null,
+      })
+      expect(modal.isFormUnchanged()).toBe(true)
+
+      modal.onFloorChange({
+        target: { value: 'Ground' },
+      } as unknown as Event)
+
+      expect(modal.isFormUnchanged()).toBe(false)
+    })
+  })
 
   describe('adding a room', () => {
     it('needs a name', async () => {
@@ -268,7 +360,7 @@ describe('the room modals', () => {
 
       modal.closeModal()
 
-      expect(activeModal.close).toHaveBeenCalledWith({ name: 'Kitchenette', isDefault: true })
+      expect(activeModal.close).toHaveBeenCalledWith({ name: 'Kitchenette', isDefault: true, floor: null })
     })
 
     it('will not close on an invalid name', async () => {
@@ -323,7 +415,7 @@ describe('the room modals', () => {
 
       // Read with getRawValue, because a disabled control is missing from the
       // ordinary form value - the room would silently stop being the default
-      expect(activeModal.close).toHaveBeenCalledWith({ name: 'Renamed Default', isDefault: true })
+      expect(activeModal.close).toHaveBeenCalledWith({ name: 'Renamed Default', isDefault: true, floor: null })
     })
   })
 

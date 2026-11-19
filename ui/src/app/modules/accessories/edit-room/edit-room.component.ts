@@ -26,6 +26,14 @@ export class EditRoomComponent implements OnInit {
   public readonly deleteMode = signal(false)
   public readonly formWasInvalid = signal(false)
 
+  /** Floor select values: '' is "None", NEW_FLOOR is "New floor…", anything else is a floor name */
+  public readonly NO_FLOOR = ''
+  public readonly NEW_FLOOR = '__new_floor__'
+  public readonly floors: string[] = this.data.floors ?? []
+  public readonly floorChoice = signal<string>(this.data.currentFloor ?? this.NO_FLOOR)
+  public readonly newFloorName = signal('')
+  private readonly initialFloorChoice = this.floorChoice()
+
   private initialFormValue: { roomName: string | null, isDefault: boolean | null } = { roomName: null, isDefault: null }
 
   public roomForm = new FormGroup({
@@ -124,6 +132,28 @@ export class EditRoomComponent implements OnInit {
 
   public isFormUnchanged(): boolean {
     return JSON.stringify(this.roomForm.getRawValue()) === JSON.stringify(this.initialFormValue)
+      && this.floorChoice() === this.initialFloorChoice
+  }
+
+  /** Whether "New floor…" is chosen without a name for it */
+  public newFloorMissing(): boolean {
+    return this.floorChoice() === this.NEW_FLOOR && this.newFloorName().trim() === ''
+  }
+
+  public onFloorChange(event: Event): void {
+    this.floorChoice.set((event.target as HTMLSelectElement).value)
+  }
+
+  public onNewFloorInput(event: Event): void {
+    this.newFloorName.set((event.target as HTMLInputElement).value)
+  }
+
+  /** The floor to put the room on: a name, or null for none */
+  private floorValue(): string | null {
+    if (this.floorChoice() === this.NEW_FLOOR) {
+      return this.newFloorName().trim() || null
+    }
+    return this.floorChoice() || null
   }
 
   public dismissModal() {
@@ -132,7 +162,7 @@ export class EditRoomComponent implements OnInit {
 
   public closeModal() {
     // In delete mode, we don't need form to be valid
-    if (!this.deleteMode() && this.roomForm.invalid) {
+    if (!this.deleteMode() && (this.roomForm.invalid || this.newFloorMissing())) {
       return
     }
 
@@ -148,6 +178,7 @@ export class EditRoomComponent implements OnInit {
       this.$activeModal.close({
         name: formValue.roomName?.trim() || '',
         isDefault: formValue.isDefault || false,
+        floor: this.floorValue(),
       })
     }
   }

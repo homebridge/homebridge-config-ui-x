@@ -92,6 +92,12 @@ describe('accessoriesToolbarComponent', () => {
       .find((button: any) => button.textContent.trim() === label) as HTMLButtonElement
   }
 
+  function findButton(text: string): HTMLButtonElement | undefined {
+    return [
+      ...fixture.nativeElement.querySelectorAll('button'),
+    ].find((button: any) => button.textContent.trim() === text) as HTMLButtonElement | undefined
+  }
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [AccessoriesToolbarComponent],
@@ -289,6 +295,195 @@ describe('accessoriesToolbarComponent', () => {
 
       expect(viewButton('Lights')?.getAttribute('aria-pressed')).toBe('true')
       expect(viewButton('All')?.getAttribute('aria-pressed')).toBe('false')
+    })
+  })
+
+  describe('saved views', () => {
+    const ownView = {
+      id: 'v1',
+      name: 'Downstairs',
+      state: {
+        groupBy: 'floor' as const,
+        rooms: ['Kitchen'],
+      },
+      pinned: [],
+      excluded: [],
+      shared: true,
+    }
+    const aliceView = {
+      id: 'v2',
+      name: 'Alice lights',
+      state: {
+        categories: ['lights' as const],
+      },
+      shared: true,
+      owner: 'alice',
+    }
+
+    beforeEach(() => {
+      TestBed.inject(TranslateService).setTranslation('en', {
+        'accessories.views.shared_by': 'Shared by {{owner}}',
+        'accessories.views.save': 'Save as view',
+        'accessories.views.manage': 'Manage views',
+      }, true)
+    })
+
+    function pill(label: string): HTMLButtonElement | undefined {
+      return [
+        ...fixture.nativeElement.querySelectorAll('.accessories-custom-view'),
+      ].find((button: any) => button.textContent.includes(label)) as HTMLButtonElement | undefined
+    }
+
+    it('lists the custom views after the built-in ones', () => {
+      setup()
+      fixture.componentRef.setInput('customViews', [ownView, aliceView])
+      fixture.detectChanges()
+
+      const labels = [
+        ...fixture.nativeElement.querySelectorAll('.btn-group button'),
+      ].map((button: any) => button.textContent.replace(/\s+/g, ' ').trim())
+      expect(labels.slice(-2)).toEqual(['Downstairs', 'Alice lights Shared by alice'])
+    })
+
+    it('names the owner of a view shared with the user', () => {
+      setup()
+      fixture.componentRef.setInput('username', 'bob')
+      fixture.componentRef.setInput('customViews', [ownView, aliceView])
+      fixture.detectChanges()
+
+      expect(pill('Alice lights')!.textContent).toContain('Shared by alice')
+      expect(pill('Alice lights')!.querySelector('.fa-share-nodes')).not.toBeNull()
+      expect(pill('Downstairs')!.textContent).not.toContain('Shared by')
+    })
+
+    it('marks the active custom view, and no built-in view', () => {
+      setup()
+      fixture.componentRef.setInput('customViews', [ownView])
+      fixture.componentRef.setInput('activeViewId', 'v1')
+      fixture.detectChanges()
+
+      expect(pill('Downstairs')!.classList).toContain('active')
+      expect(viewButton('All')!.classList).not.toContain('active')
+    })
+
+    it('applies a custom view on top of a cleared filter, and reports which view', () => {
+      const toolbar = setup({
+        search: 'x',
+        rooms: ['Office'],
+      })
+      fixture.componentRef.setInput('customViews', [ownView])
+      fixture.detectChanges()
+      const selected = vi.fn()
+      toolbar.viewSelect.subscribe(selected)
+
+      pill('Downstairs')!.click()
+
+      expect(toolbar.filter()).toEqual(expect.objectContaining({
+        groupBy: 'floor',
+        rooms: ['Kitchen'],
+        search: '',
+      }))
+      expect(selected).toHaveBeenCalledWith('v1')
+    })
+
+    it('reports a built-in view as no custom view', () => {
+      const toolbar = setup()
+      const selected = vi.fn()
+      toolbar.viewSelect.subscribe(selected)
+
+      toolbar.applyView(null)
+
+      expect(selected).toHaveBeenCalledWith(null)
+    })
+
+    it('offers Save as view only when a filter is active', () => {
+      setup()
+      expect(findButton('Save as view')).toBeUndefined()
+
+      setup({ search: 'kettle' })
+      expect(findButton('Save as view')).toBeDefined()
+    })
+
+    it('names and saves a view from the inline form, and closes the form', () => {
+      const toolbar = setup({ search: 'kettle' })
+      const saved = vi.fn()
+      toolbar.saveView.subscribe(saved)
+
+      toolbar.openSaveView()
+      fixture.detectChanges()
+      expect(fixture.nativeElement.querySelector('.accessories-view-name')).not.toBeNull()
+
+      toolbar.onViewNameInput({
+        target: { value: '  Kettles ' },
+      } as unknown as Event)
+      toolbar.confirmSaveView()
+      fixture.detectChanges()
+
+      expect(saved).toHaveBeenCalledWith('Kettles')
+      expect(fixture.nativeElement.querySelector('.accessories-view-name')).toBeNull()
+    })
+
+    it('does not save a blank name', () => {
+      const toolbar = setup({ search: 'kettle' })
+      const saved = vi.fn()
+      toolbar.saveView.subscribe(saved)
+
+      toolbar.openSaveView()
+      toolbar.onViewNameInput({
+        target: { value: '   ' },
+      } as unknown as Event)
+      toolbar.confirmSaveView()
+
+      expect(saved).not.toHaveBeenCalled()
+      expect(toolbar.saveFormOpen()).toBe(true)
+    })
+
+    it('opens the manage views modal from its button', () => {
+      const toolbar = setup()
+      const opened = vi.fn()
+      toolbar.manageViews.subscribe(opened)
+
+      findButton('Manage views')!.click()
+
+      expect(opened).toHaveBeenCalledTimes(1)
+    })
+
+    it('offers a label facet, counting the accessories with each label', () => {
+      const toolbar = setup()
+      fixture.componentRef.setInput('labels', {
+        kettle: ['Bedtime'],
+        ceiling: ['Bedtime', 'Guest'],
+      })
+      fixture.detectChanges()
+
+      const facet = toolbar.facets().find(entry => entry.key === 'labels')!
+      expect(facet.options.map(option => [option.value, option.count])).toEqual([
+        ['Bedtime', 2],
+        ['Guest', 1],
+      ])
+    })
+
+    it('filters by a label', () => {
+      const toolbar = setup()
+      fixture.componentRef.setInput('labels', {
+        kettle: ['Bedtime'],
+      })
+      fixture.detectChanges()
+
+      toolbar.toggleValue('labels', 'Bedtime')
+
+      expect(toolbar.filter()).toEqual(expect.objectContaining({
+        labels: ['Bedtime'],
+      }))
+    })
+
+    it('offers Floor as a group-by option', () => {
+      setup()
+
+      const values = [
+        ...fixture.nativeElement.querySelectorAll('#accessories-group-by option'),
+      ].map((option: any) => option.value)
+      expect(values).toContain('floor')
     })
   })
 
