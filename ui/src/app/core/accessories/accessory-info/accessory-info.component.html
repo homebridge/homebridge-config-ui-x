@@ -49,6 +49,49 @@
           </div>
         </li>
       }
+      @if (showRoomRow) {
+        <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+          <label for="room-select" class="mb-2 mb-md-0 w-100 w-md-50">{{ 'accessories.room' | translate }}</label>
+          <div class="text-start text-md-end w-100 w-md-50">
+            <select
+              id="room-select"
+              class="custom-select"
+              [ngModel]="addingRoom ? '' : pendingRoom"
+              (ngModelChange)="onRoomSelect($event)"
+            >
+              @for (name of roomNames; track name) {
+                <option [value]="name">{{ name }}</option>
+              }
+              <option value="">{{ 'accessories.new_room' | translate }}</option>
+            </select>
+            @if (addingRoom) {
+              <div class="d-flex flex-column flex-sm-row gap-2 mt-2">
+                <input
+                  id="new-room-name"
+                  type="text"
+                  autocomplete="off"
+                  class="form-control custom-input"
+                  [class.is-invalid]="newRoomError"
+                  [attr.aria-label]="'accessories.room_name' | translate"
+                  [(ngModel)]="newRoomName"
+                  (keyup.enter)="addNewRoom()"
+                />
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-primary" (click)="addNewRoom()">
+                    {{ 'accessories.button_add_room' | translate }}
+                  </button>
+                  <button type="button" class="btn btn-elegant" (click)="cancelNewRoom()">
+                    {{ 'form.button_cancel' | translate }}
+                  </button>
+                </div>
+              </div>
+              @if (newRoomError) {
+                <div class="text-danger small text-start mt-1" role="alert">{{ newRoomError | translate }}</div>
+              }
+            }
+          </div>
+        </li>
+      }
       <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
         <span class="text-start" aria-hidden="true">{{ 'accessories.hide_this_accessory' | translate }}</span>
         <div class="text-end grey-text d-flex align-items-center">
