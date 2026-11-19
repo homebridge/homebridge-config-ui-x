@@ -51,6 +51,27 @@
         </button>
       }
     </div>
+    @if (kioskViewId(); as kioskId) {
+      <div ngbDropdown class="d-inline-block">
+        <button
+          type="button"
+          class="btn btn-sm btn-elegant my-0 accessories-kiosk-menu"
+          ngbDropdownToggle
+          [attr.aria-label]="'accessories.kiosk.menu' | translate"
+        >
+          <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
+        </button>
+        <div ngbDropdownMenu>
+          <button type="button" ngbDropdownItem (click)="openKiosk(kioskId)">
+            <i class="fas fa-tablet-screen-button me-2" aria-hidden="true"></i
+            >{{ 'accessories.kiosk.open' | translate }}
+          </button>
+          <button type="button" ngbDropdownItem (click)="copyKioskLink(kioskId)">
+            <i class="fas fa-link me-2" aria-hidden="true"></i>{{ 'accessories.kiosk.copy_link' | translate }}
+          </button>
+        </div>
+      </div>
+    }
     <div class="ms-auto d-flex align-items-center gap-2">
       <button
         type="button"
