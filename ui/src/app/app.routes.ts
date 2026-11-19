@@ -25,6 +25,12 @@ export const routes: Routes = [
     canActivate: [setupWizardGuard],
   },
   {
+    // Full-screen accessory View for a wall or room tablet. Outside the main layout, so no sidebar or navbar.
+    path: 'kiosk/:viewId',
+    loadComponent: () => import('@/app/modules/kiosk/kiosk.component').then(m => m.KioskComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: '',
     loadComponent: () => import('@/app/shared/layout/layout.component').then(m => m.LayoutComponent),
     canActivate: [authGuard],

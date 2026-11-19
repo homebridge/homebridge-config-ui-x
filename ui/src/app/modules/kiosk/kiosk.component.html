@@ -1,0 +1,232 @@
+<div class="kiosk">
+  <header
+    class="kiosk-strip"
+    role="button"
+    tabindex="0"
+    [attr.aria-label]="'kiosk.hold_hint' | translate"
+    (pointerdown)="pressStart()"
+    (pointerup)="pressCancel()"
+    (pointerleave)="pressCancel()"
+    (pointercancel)="pressCancel()"
+    (contextmenu)="$event.preventDefault()"
+    (keydown.enter)="openPanel()"
+  >
+    <span class="kiosk-view-name">
+      @if (builtIn) {
+        {{ builtIn.labelKey | translate }}
+      } @else {
+        {{ customView()?.name ?? ('kiosk.title' | translate) }}
+      }
+    </span>
+    <time class="kiosk-clock" aria-live="off" [attr.datetime]="clock()">{{ clock() }}</time>
+    <span
+      class="kiosk-connection"
+      role="img"
+      [class.kiosk-connection-up]="connected()"
+      [attr.aria-label]="(connected() ? 'kiosk.connected' : 'kiosk.disconnected') | translate"
+    ></span>
+  </header>
+
+  @if (reconnecting()) {
+    <div class="kiosk-banner" role="status">{{ 'kiosk.reconnecting' | translate }}</div>
+  }
+
+  @if (loading()) {
+    <div class="kiosk-message">
+      <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
+      <span>{{ 'kiosk.loading' | translate }}</span>
+    </div>
+  } @else if (!known()) {
+    <div class="kiosk-message">
+      <h1 class="kiosk-message-title">{{ 'kiosk.not_found.title' | translate }}</h1>
+      <p>{{ 'kiosk.not_found.text' | translate }}</p>
+      <a class="btn btn-elegant" routerLink="/accessories">{{ 'kiosk.not_found.back' | translate }}</a>
+    </div>
+  } @else if (groups().length === 0) {
+    <div class="kiosk-message">
+      <p>{{ 'kiosk.empty' | translate }}</p>
+    </div>
+  } @else {
+    <main class="kiosk-content">
+      @for (group of groups(); track group.key) {
+        <section class="kiosk-group">
+          @if (group.label) {
+            <h2 class="kiosk-group-title">{{ group.label | translate }}</h2>
+          }
+          <div class="kiosk-grid">
+            @for (service of group.services; track service.uniqueId) {
+              <div
+                class="kiosk-tile"
+                [class.kiosk-tile-on]="hasToggle(service) && isOn(service)"
+                [class.kiosk-tile-locked]="isLocked(service)"
+                [class.kiosk-tile-not-responding]="notResponding(service)"
+              >
+                <button
+                  type="button"
+                  class="kiosk-tile-icon"
+                  [disabled]="isLocked(service)"
+                  [attr.aria-pressed]="hasToggle(service) ? isOn(service) : null"
+                  [attr.aria-label]="
+                    (hasToggle(service) ? 'kiosk.tile.toggle' : 'kiosk.tile.details')
+                      | translate: { name: nameOf(service) }
+                  "
+                  (click)="onIconTap(service)"
+                >
+                  <i aria-hidden="true" [class]="`fas ${iconClass(service)}`"></i>
+                  @if (isSensitive(service)) {
+                    <span class="kiosk-lock-badge" [attr.title]="'kiosk.tile.read_only' | translate">
+                      <i class="fas fa-lock" aria-hidden="true"></i>
+                    </span>
+                  }
+                </button>
+                <button
+                  type="button"
+                  class="kiosk-tile-body"
+                  [disabled]="isLocked(service)"
+                  [attr.aria-label]="'kiosk.tile.details' | translate: { name: nameOf(service) }"
+                  (click)="openDetails(service)"
+                >
+                  <span class="kiosk-tile-name">{{ nameOf(service) }}</span>
+                  <span class="kiosk-tile-state">
+                    {{ stateKey(service) | translate }}
+                    @if (isLocked(service)) {
+                      <span class="kiosk-tile-readonly">{{ 'kiosk.tile.read_only' | translate }}</span>
+                    }
+                  </span>
+                </button>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </main>
+  }
+
+  @if (panel() !== 'closed') {
+    <div class="kiosk-panel-layer">
+      <button
+        type="button"
+        class="kiosk-panel-scrim"
+        [attr.aria-label]="'form.button_close' | translate"
+        (click)="closePanel()"
+      ></button>
+      <div
+        class="kiosk-panel"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-label]="(panel() === 'pin' ? 'kiosk.panel.pin_title' : 'kiosk.panel.title') | translate"
+      >
+        @if (panel() === 'pin') {
+          <h2 class="kiosk-panel-title">{{ 'kiosk.panel.pin_title' | translate }}</h2>
+          <label class="form-label" for="kiosk-pin-entry">{{ 'kiosk.panel.pin_label' | translate }}</label>
+          <input
+            id="kiosk-pin-entry"
+            class="form-control kiosk-pin-input"
+            type="password"
+            inputmode="numeric"
+            autocomplete="off"
+            maxlength="8"
+            [value]="pinEntry()"
+            (input)="onPinEntryInput($event)"
+            (keydown.enter)="unlock()"
+          />
+          @if (pinWrong()) {
+            <p class="kiosk-panel-error" role="alert">{{ 'kiosk.panel.pin_wrong' | translate }}</p>
+          }
+          <div class="d-flex gap-2 mt-3">
+            <button type="button" class="btn btn-elegant" (click)="closePanel()">
+              {{ 'form.button_cancel' | translate }}
+            </button>
+            <button type="button" class="btn btn-primary" [disabled]="pinEntry().length < 4" (click)="unlock()">
+              {{ 'kiosk.panel.unlock' | translate }}
+            </button>
+          </div>
+        } @else {
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h2 class="kiosk-panel-title mb-0">{{ 'kiosk.panel.title' | translate }}</h2>
+            <button
+              type="button"
+              class="btn-close"
+              [attr.aria-label]="'form.button_close' | translate"
+              (click)="closePanel()"
+            ></button>
+          </div>
+
+          <fieldset class="mb-3">
+            <legend class="form-label">{{ 'kiosk.panel.theme' | translate }}</legend>
+            <div class="btn-group btn-group-sm" role="group" [attr.aria-label]="'kiosk.panel.theme' | translate">
+              <button
+                type="button"
+                class="btn btn-elegant"
+                [class.active]="settings().theme === 'dark'"
+                [attr.aria-pressed]="settings().theme === 'dark'"
+                (click)="setTheme('dark')"
+              >
+                {{ 'kiosk.panel.theme_dark' | translate }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-elegant"
+                [class.active]="settings().theme === 'light'"
+                [attr.aria-pressed]="settings().theme === 'light'"
+                (click)="setTheme('light')"
+              >
+                {{ 'kiosk.panel.theme_light' | translate }}
+              </button>
+            </div>
+          </fieldset>
+
+          <div class="form-check form-switch mb-1">
+            <input
+              id="kiosk-allow-sensitive"
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              [checked]="settings().allowSensitive"
+              (change)="setAllowSensitive($event)"
+            />
+            <label class="form-check-label" for="kiosk-allow-sensitive">{{
+              'kiosk.panel.allow_sensitive' | translate
+            }}</label>
+          </div>
+          <p class="small text-secondary mb-3">{{ 'kiosk.panel.allow_sensitive_note' | translate }}</p>
+
+          <div class="mb-3">
+            <label class="form-label" for="kiosk-new-pin">{{ 'kiosk.panel.pin_new' | translate }}</label>
+            <div class="d-flex gap-2">
+              <input
+                id="kiosk-new-pin"
+                class="form-control"
+                type="password"
+                inputmode="numeric"
+                autocomplete="off"
+                maxlength="8"
+                [value]="newPin()"
+                (input)="onNewPinInput($event)"
+                (keydown.enter)="savePin()"
+              />
+              <button type="button" class="btn btn-elegant" [disabled]="!newPin()" (click)="savePin()">
+                {{ 'kiosk.panel.pin_save' | translate }}
+              </button>
+              @if (settings().pin) {
+                <button type="button" class="btn btn-elegant" (click)="removePin()">
+                  {{ 'kiosk.panel.pin_clear' | translate }}
+                </button>
+              }
+            </div>
+            @if (newPinInvalid()) {
+              <p class="kiosk-panel-error" role="alert">{{ 'kiosk.panel.pin_invalid' | translate }}</p>
+            }
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-danger" (click)="exit()">
+              <i class="fas fa-right-from-bracket me-1" aria-hidden="true"></i>
+              {{ 'kiosk.panel.exit' | translate }}
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

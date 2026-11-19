@@ -1,0 +1,232 @@
+// The kiosk page is its own full-screen layout: it sets its own colours, so it reads the same in either theme.
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.kiosk {
+  min-height: 100vh;
+  background: var(--bs-body-bg, #111);
+  color: var(--bs-body-color, #eee);
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.kiosk-strip {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(127, 127, 127, 0.12);
+  cursor: pointer;
+}
+
+.kiosk-view-name {
+  flex: 1 1 auto;
+  font-size: 1.25rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kiosk-clock {
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.kiosk-connection {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: #888;
+  flex: 0 0 auto;
+
+  &.kiosk-connection-up {
+    background: #2ecc71;
+  }
+}
+
+.kiosk-banner {
+  padding: 0.5rem 1rem;
+  background: #f39c12;
+  color: #111;
+  text-align: center;
+  font-weight: 600;
+}
+
+.kiosk-message {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 1rem;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.kiosk-message-title {
+  font-size: 1.75rem;
+}
+
+.kiosk-content {
+  padding: 1rem;
+  flex: 1 1 auto;
+}
+
+.kiosk-group + .kiosk-group {
+  margin-top: 1.5rem;
+}
+
+.kiosk-group-title {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+  margin-bottom: 0.75rem;
+}
+
+.kiosk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.875rem;
+}
+
+.kiosk-tile {
+  display: flex;
+  min-height: 7.5rem;
+  border-radius: 1rem;
+  background: rgba(127, 127, 127, 0.14);
+  overflow: hidden;
+
+  &.kiosk-tile-on {
+    background: rgba(255, 193, 7, 0.22);
+  }
+
+  &.kiosk-tile-not-responding {
+    box-shadow: inset 0 0 0 2px #e74c3c;
+  }
+
+  &.kiosk-tile-locked {
+    opacity: 0.85;
+  }
+}
+
+.kiosk-tile-icon,
+.kiosk-tile-body {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 3.5rem;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.kiosk-tile-icon {
+  flex: 0 0 5.5rem;
+  font-size: 2rem;
+  position: relative;
+  border-right: 1px solid rgba(127, 127, 127, 0.2);
+}
+
+.kiosk-tile-body {
+  flex: 1 1 auto;
+  align-items: flex-start;
+  text-align: left;
+  justify-content: space-between;
+}
+
+.kiosk-tile-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.kiosk-tile-state {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.kiosk-tile-readonly {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.kiosk-lock-badge {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.3rem;
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.kiosk-panel-layer {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1080;
+}
+
+.kiosk-panel-scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.kiosk-panel {
+  position: relative;
+  width: min(28rem, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: var(--bs-body-bg, #222);
+  color: var(--bs-body-color, #eee);
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.5);
+  user-select: auto;
+}
+
+.kiosk-panel-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.kiosk-pin-input {
+  font-size: 1.5rem;
+  letter-spacing: 0.4em;
+  text-align: center;
+}
+
+.kiosk-panel-error {
+  color: #e74c3c;
+  margin: 0.5rem 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kiosk-tile {
+    transition: none;
+  }
+}

@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { KioskLinksService } from '@/app/modules/kiosk/kiosk-links.service'
 import { activeModalStub } from '@/testing'
 import { provideTestTranslate } from '@/testing/providers'
 
@@ -18,6 +19,7 @@ import { ManageViewsComponent } from './manage-views.component'
 describe('manageViewsComponent', () => {
   let fixture: ComponentFixture<ManageViewsComponent>
   let activeModal: ReturnType<typeof activeModalStub>
+  let kiosk: { open: ReturnType<typeof vi.fn>, copy: ReturnType<typeof vi.fn> }
   let service: {
     views: ReturnType<typeof signal<any[]>>
     rooms: ReturnType<typeof signal<any[]>>
@@ -47,6 +49,10 @@ describe('manageViewsComponent', () => {
   }
 
   function create(views: any[] = [mine, theirs]) {
+    kiosk = {
+      open: vi.fn(async () => true),
+      copy: vi.fn(async () => {}),
+    }
     service = {
       views: signal(views),
       rooms: signal([
@@ -78,6 +84,7 @@ describe('manageViewsComponent', () => {
         provideTestTranslate(),
         { provide: AccessoriesService, useValue: service },
         { provide: NgbActiveModal, useValue: activeModal },
+        { provide: KioskLinksService, useValue: kiosk },
       ],
     })
 
@@ -221,5 +228,25 @@ describe('manageViewsComponent', () => {
     fixture.componentInstance.close()
 
     expect(activeModal.close).toHaveBeenCalled()
+  })
+
+  describe('open as kiosk', () => {
+    it('opens the view as a kiosk, closing the modal first', () => {
+      create()
+      const button = fixture.nativeElement.querySelector('.accessories-kiosk-open') as HTMLButtonElement
+      button.click()
+      expect(activeModal.close).toHaveBeenCalled()
+      expect(kiosk.open).toHaveBeenCalledWith('v1')
+    })
+
+    it('copies the kiosk link of a view shared with the user too', () => {
+      create()
+      const copies = [
+        ...fixture.nativeElement.querySelectorAll('.accessories-kiosk-copy'),
+      ] as HTMLButtonElement[]
+      expect(copies.length).toBe(2)
+      copies[1].click()
+      expect(kiosk.copy).toHaveBeenCalledWith('v2')
+    })
   })
 })

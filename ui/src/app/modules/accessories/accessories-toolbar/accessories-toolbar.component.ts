@@ -2,7 +2,7 @@ import type { BatteryInfo } from '@/app/core/accessories/filters/accessory-batte
 import type { AccessoryFilterState, AccessoryGroupBy, AccessorySortBy, FilterContext, RoomInput } from '@/app/core/accessories/filters/accessory-filters'
 import type { AccessoryView, BuiltInView } from '@/app/core/accessories/filters/accessory-views'
 
-import { ChangeDetectionStrategy, Component, computed, effect, input, model, output, signal, untracked } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model, output, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -11,6 +11,7 @@ import { debounceTime, Subject } from 'rxjs'
 import { ACCESSORY_CATEGORIES } from '@/app/core/accessories/filters/accessory-categories'
 import { DEFAULT_FILTER_STATE, isFilterActive, matchesFilter } from '@/app/core/accessories/filters/accessory-filters'
 import { BUILT_IN_VIEWS } from '@/app/core/accessories/filters/accessory-views'
+import { KioskLinksService } from '@/app/modules/kiosk/kiosk-links.service'
 
 /** Width below which the filter chips collapse behind a Filters button */
 const NARROW_WIDTH = 576
@@ -162,6 +163,20 @@ export class AccessoriesToolbarComponent {
     ...new Set(Object.values(this.labels()).flat()),
   ].sort((a, b) => a.localeCompare(b)))
 
+  private readonly $kiosk = inject(KioskLinksService)
+
+  /** The view the kiosk opens for: the custom view applied, or the built-in one matching the filter */
+  public readonly kioskViewId = computed<string | null>(() => {
+    const custom = this.activeViewId()
+    if (custom !== null) {
+      return custom
+    }
+    const builtIn = this.activeView()
+    return builtIn && builtIn !== 'all'
+      ? builtIn
+      : null
+  })
+
   /** The built-in view whose settings match the filter, 'all' when no filter is set, or null */
   public readonly activeView = computed<string | null>(() => {
     if (this.activeViewId() !== null) {
@@ -292,6 +307,16 @@ export class AccessoriesToolbarComponent {
   }
 
   /** Apply a built-in view on top of a cleared filter, or clear everything for 'All' */
+  /** Open a view as a kiosk, in this tab */
+  public openKiosk(viewId: string): void {
+    void this.$kiosk.open(viewId)
+  }
+
+  /** Copy the kiosk link for a view */
+  public copyKioskLink(viewId: string): void {
+    void this.$kiosk.copy(viewId)
+  }
+
   public applyView(view: BuiltInView | null): void {
     this.applyState(view?.state ?? null)
     this.viewSelect.emit(null)
