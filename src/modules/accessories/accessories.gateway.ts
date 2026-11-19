@@ -5,6 +5,7 @@ import { getWsUser } from '../../core/auth/guards/ws-token.js'
 import { WsGuard } from '../../core/auth/guards/ws.guard.js'
 import { devServerCorsConfig } from '../../core/cors.config.js'
 import { AccessoriesService } from './accessories.service.js'
+import { parseSaveAccessoryViews } from './accessory-views.dto.js'
 
 @UseGuards(WsGuard)
 @WebSocketGateway({
@@ -48,6 +49,31 @@ export class AccessoriesGateway {
       return await this.accessoriesService.saveAccessoryLayout(user.username, payload?.layout)
     } catch (e) {
       return new WsException(e)
+    }
+  }
+
+  // Views are per user, identified by the verified socket user; the payload's owner fields are only used to drop
+  // views that belong to someone else.
+  @SubscribeMessage('get-views')
+  async getAccessoryViews(client: any) {
+    const user = getWsUser(client)
+    if (!user) {
+      return new WsException('Unauthorized')
+    }
+    return await this.accessoriesService.getAccessoryViews(user.username)
+  }
+
+  @SubscribeMessage('save-views')
+  async saveAccessoryViews(client: any, payload: any) {
+    const user = getWsUser(client)
+    if (!user) {
+      return new WsException('Unauthorized')
+    }
+    try {
+      const data = await parseSaveAccessoryViews(payload)
+      return await this.accessoriesService.saveAccessoryViews(user.username, data)
+    } catch (e) {
+      return new WsException(e?.message ?? 'Invalid accessory views')
     }
   }
 }

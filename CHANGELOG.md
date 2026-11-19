@@ -119,6 +119,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(settings): bind homebridge to a network interface by its ip address, not only its name (#3126) (@stalinCCCP415)
 - feat(accessories): choose an accessory's room from its info dialog
 - feat(accessories): search, filter, group and sort accessories, with built-in views (including batteries), room badges, collapsible groups and bulk move
+- feat(accessories): saved views, labels and floors, shareable with other users and readable by plugin custom UIs
 
 ### Other Changes
 

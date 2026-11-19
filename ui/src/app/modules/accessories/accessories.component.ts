@@ -10,7 +10,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
 import { buildBatteryIndex } from '@/app/core/accessories/filters/accessory-battery'
-import { AccessoryFilterState, AccessoryGroup, DEFAULT_FILTER_STATE, groupAndSort } from '@/app/core/accessories/filters/accessory-filters'
+import { AccessoryFilterState, AccessoryGroup, DEFAULT_FILTER_STATE, FLOOR_OTHER_KEY, groupAndSort } from '@/app/core/accessories/filters/accessory-filters'
 import { RoomSummary, summarizeRoom } from '@/app/core/accessories/filters/room-summary'
 import { serviceBridgeName } from '@/app/core/accessories/filters/service-helpers'
 import { AuthService } from '@/app/core/auth/auth.service'
@@ -24,6 +24,7 @@ import { AccessorySupportComponent } from '@/app/modules/accessories/accessory-s
 import { AddRoomComponent } from '@/app/modules/accessories/add-room/add-room.component'
 import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-here-placeholder/drag-here-placeholder.component'
 import { EditRoomComponent } from '@/app/modules/accessories/edit-room/edit-room.component'
+import { ManageViewsComponent } from '@/app/modules/accessories/manage-views/manage-views.component'
 import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accessories/modal-data-tokens'
 
 /** localStorage key for the collapsed group ids */
@@ -105,8 +106,17 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   /** The accessories to show, filtered, grouped and sorted */
   public readonly groups = computed<AccessoryGroup[]>(() =>
-    groupAndSort(this.labelledRooms(), this.filter(), this.batteryIndex()),
+    groupAndSort(this.labelledRooms(), this.filter(), this.batteryIndex(), this.$accessories.filterContext()),
   )
+
+  /** Group key of the rooms on no floor, shown with its translated label */
+  protected readonly floorOtherKey = FLOOR_OTHER_KEY
+
+  /** The saved views, with the active one's id */
+  public readonly views = this.$accessories.views
+  public readonly labels = this.$accessories.labels
+  public readonly activeViewId = this.$accessories.activeViewId
+  public readonly username = this.$auth.user.username ?? ''
 
   public readonly totalCount = computed(() =>
     this.labelledRooms().reduce((count, room) => count + room.services.length, 0),
@@ -264,6 +274,8 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
           isDefault: room.isDefault || false,
           existingRooms: this.$accessories.rooms(),
           currentRoomIndex: roomIndex,
+          floors: this.$accessories.floors().map(floor => floor.name),
+          currentFloor: this.$accessories.floors().find(floor => floor.rooms.includes(room.name))?.name ?? null,
         },
       },
     ], this.injector)
@@ -275,7 +287,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     })
 
     try {
-      const result: { name?: string, isDefault?: boolean, delete?: boolean } = await ref.result
+      const result: { name?: string, isDefault?: boolean, floor?: string | null, delete?: boolean } = await ref.result
 
       // Handle delete mode
       if (result?.delete) {
@@ -326,6 +338,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
         // Remove the room
         this.$accessories.rooms.update(current => current.filter((_, idx) => idx !== roomIndex))
+        this.$accessories.removeRoomFromFloors(roomToDelete.name)
 
         // Save the layout to persist the changes
         this.$accessories.saveLayout()
@@ -352,6 +365,12 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
           ? { ...r, name: result.name!, isDefault: result.isDefault ?? false }
           : r,
       ))
+
+      // Keep the floors pointing at the room under its new name, then apply the floor picked
+      this.$accessories.renameRoomInFloors(room.name, result.name)
+      if (result.floor !== undefined) {
+        this.$accessories.setRoomFloor(result.name, result.floor)
+      }
 
       // Save the layout to persist the changes
       this.$accessories.saveLayout()
@@ -496,7 +515,33 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
         this.toggleLayoutLock()
       }
     }
+    // Changing the filter by hand leaves any view it came from, with its pinned and excluded accessories
+    this.$accessories.activeViewId.set(null)
     this.$accessories.setFilterState(next)
+  }
+
+  /**
+   * A saved view was picked. The toolbar has already set its filter, so this only
+   * records which view is active, for its pinned and excluded accessories.
+   */
+  public onViewSelect(viewId: string | null): void {
+    this.$accessories.activeViewId.set(viewId)
+  }
+
+  /** Save the current filter as a named view, and make it the active one */
+  public onSaveView(name: string): void {
+    const id = this.$accessories.createViewFromState(name, this.filter())
+    if (id) {
+      this.$accessories.activeViewId.set(id)
+    }
+  }
+
+  /** Open the modal to rename, reorder, share, delete and edit the pinned and excluded accessories of views */
+  public openManageViews(): void {
+    this.$modal.open(ManageViewsComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
   }
 
   /**

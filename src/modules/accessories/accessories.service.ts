@@ -3,6 +3,7 @@ import type { Socket } from 'socket.io'
 
 import type { MatterAccessoriesResponse, MatterAccessory, MatterAccessoryInfo, MatterAccessoryPart, MatterControlResponse, MatterEvent, MatterService, MatterStateUpdate } from '../../core/matter/matter.interfaces.js'
 import type { AccessoryControlMessage } from './accessories.interfaces.js'
+import type { AccessoryView, AccessoryViewsData } from './accessory-views.dto.js'
 
 import { join } from 'node:path'
 
@@ -659,6 +660,63 @@ export class AccessoriesService {
     )
     this.logger.log(`Accessory layout changes saved for ${user}.`)
     return layout
+  }
+
+  /**
+   * Get the saved views visible to a user: their own views (owner set to them), plus other users' views
+   * marked shared. Labels and floors are always the user's own.
+   */
+  public async getAccessoryViews(username: string): Promise<AccessoryViewsData> {
+    let all: Record<string, Partial<AccessoryViewsData>> = {}
+    try {
+      all = await readJson(this.configService.accessoryViewsPath)
+    } catch {
+      all = {}
+    }
+
+    const views: AccessoryView[] = []
+    for (const [owner, data] of Object.entries(all)) {
+      for (const view of data?.views ?? []) {
+        if (owner === username || view.shared === true) {
+          views.push({ ...view, owner })
+        }
+      }
+    }
+
+    const own = Object.hasOwn(all, username)
+      ? all[username]
+      : undefined
+    return {
+      views,
+      labels: own?.labels ?? {},
+      floors: own?.floors ?? [],
+    }
+  }
+
+  /**
+   * Save a user's views, labels and floors. Views owned by someone else are dropped, and `owner` is not stored.
+   * @param username - the verified user, never a value from the client message
+   * @param data - validated payload
+   */
+  public async saveAccessoryViews(username: string, data: AccessoryViewsData): Promise<AccessoryViewsData> {
+    const saved: AccessoryViewsData = {
+      views: data.views
+        .filter(view => !view.owner || view.owner === username)
+        .map(({ owner: _owner, ...view }) => view),
+      labels: data.labels,
+      floors: data.floors,
+    }
+
+    // Per-path mutex, as for the layout, so two saves cannot drop each other's update
+    await this.jsonStore.mutate<Record<string, AccessoryViewsData>>(
+      this.configService.accessoryViewsPath,
+      current => ({
+        ...(current ?? {}),
+        [username]: saved,
+      }),
+    )
+    this.logger.log(`Accessory views saved for ${username}.`)
+    return saved
   }
 
   /**

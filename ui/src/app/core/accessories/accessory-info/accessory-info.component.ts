@@ -163,6 +163,10 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   /** The room chosen in this modal. Only the service applies it, when Save is pressed. */
   public pendingRoom: string | undefined
   private originalRoom: string | undefined
+  // Labels row state: staged here, applied by the service when Save is pressed
+  public pendingLabels: string[] = []
+  public labelDraft = ''
+  private originalLabels: string[] = []
 
   public getEnumLabel(type: string, value: string | number | boolean | null | undefined): string | undefined {
     return this.enums[type]?.[String(value)]
@@ -267,6 +271,10 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
     this.originalOnDashboard = this.localService.onDashboard
     this.originalRoom = this.currentRoomName
     this.pendingRoom = this.originalRoom
+    this.originalLabels = [
+      ...(this.$accessories.labels()[this.localService.uniqueId ?? ''] ?? []),
+    ]
+    this.pendingLabels = [...this.originalLabels]
   }
 
   // Public methods
@@ -333,6 +341,8 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   }
 
   public saveModal() {
+    // A label typed but not yet added goes out with the rest
+    this.addLabel()
     this.saved = true
     this.$activeModal.close({
       customName: this.localService.customName,
@@ -343,11 +353,34 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
       ...(this.pendingRoom !== this.originalRoom
         ? { room: this.pendingRoom }
         : {}),
+      labels: [...this.pendingLabels],
     })
   }
 
+  /** Labels already in use on other accessories, not yet on this one */
+  public get labelSuggestions(): string[] {
+    const used = new Set(Object.values(this.$accessories.labels()).flat())
+    return [...used]
+      .filter(label => !this.pendingLabels.includes(label))
+      .sort((a, b) => a.localeCompare(b))
+  }
+
+  /** Stage the typed label. Blank and repeated labels are ignored. */
+  public addLabel(): void {
+    const label = this.labelDraft.trim()
+    this.labelDraft = ''
+    if (label && !this.pendingLabels.includes(label)) {
+      this.pendingLabels = [...this.pendingLabels, label]
+    }
+  }
+
+  public removeLabel(label: string): void {
+    this.pendingLabels = this.pendingLabels.filter(entry => entry !== label)
+  }
+
   public isFormUnchanged(): boolean {
-    return this.localService.customName === this.originalCustomName
+    return JSON.stringify(this.pendingLabels) === JSON.stringify(this.originalLabels)
+      && this.localService.customName === this.originalCustomName
       && this.localService.customType === this.originalCustomType
       && this.localService.hidden === this.originalHidden
       && this.localService.onDashboard === this.originalOnDashboard

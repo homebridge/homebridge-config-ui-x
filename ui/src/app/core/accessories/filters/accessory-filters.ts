@@ -2,6 +2,7 @@ import type { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces
 
 import type { BatteryInfo } from './accessory-battery'
 import type { AccessoryCategory } from './accessory-categories'
+import type { AccessoryFloor } from './accessory-views'
 
 import { ACCESSORY_CATEGORIES, getAccessoryCategory } from './accessory-categories'
 import { isMatterService, isServiceNotResponding, isServiceOn, serviceBridgeKey, serviceBridgeName, serviceDisplayName } from './service-helpers'
@@ -9,7 +10,7 @@ import { isMatterService, isServiceNotResponding, isServiceOn, serviceBridgeKey,
 export type AccessoryProtocol = 'hap' | 'matter'
 export type AccessoryStateFilter = 'on' | 'notResponding'
 export type AccessoryBatteryFilter = 'any' | 'low' | 'under20' | 'charging'
-export type AccessoryGroupBy = 'room' | 'category' | 'bridge' | 'none'
+export type AccessoryGroupBy = 'room' | 'category' | 'bridge' | 'floor' | 'none'
 export type AccessorySortBy = 'manual' | 'name' | 'category' | 'battery'
 
 export interface AccessoryFilterState {
@@ -20,6 +21,8 @@ export interface AccessoryFilterState {
   protocols: AccessoryProtocol[]
   states: AccessoryStateFilter[]
   battery: AccessoryBatteryFilter[]
+  /** Label names. A service matches when it has any of them. */
+  labels: string[]
   showHidden: boolean
   onDashboardOnly?: boolean
   groupBy: AccessoryGroupBy
@@ -38,6 +41,22 @@ export interface RoomInput {
   services: ServiceTypeX[]
 }
 
+/** Data besides the filter itself that matching and grouping need */
+export interface FilterContext {
+  /** uniqueId -> labels */
+  labels?: ReadonlyMap<string, string[]>
+  /** uniqueIds that always show, whatever the filter (from the active view) */
+  pinned?: ReadonlySet<string>
+  /** uniqueIds that never show (from the active view) */
+  excluded?: ReadonlySet<string>
+  /** Floors, for groupBy 'floor' */
+  floors?: AccessoryFloor[]
+}
+
+/** Group key and translation key of the group for rooms that are on no floor */
+export const FLOOR_OTHER_KEY = '__other__'
+export const FLOOR_OTHER_LABEL_KEY = 'accessories.floors.other'
+
 export const DEFAULT_FILTER_STATE: AccessoryFilterState = {
   search: '',
   rooms: [],
@@ -46,6 +65,7 @@ export const DEFAULT_FILTER_STATE: AccessoryFilterState = {
   protocols: [],
   states: [],
   battery: [],
+  labels: [],
   showHidden: false,
   onDashboardOnly: false,
   groupBy: 'room',
@@ -64,6 +84,7 @@ export function isFilterActive(state: AccessoryFilterState): boolean {
     || state.protocols.length > 0
     || state.states.length > 0
     || state.battery.length > 0
+    || state.labels.length > 0
     || state.showHidden !== DEFAULT_FILTER_STATE.showHidden
     || (state.onDashboardOnly ?? false) !== (DEFAULT_FILTER_STATE.onDashboardOnly ?? false)
 }
@@ -110,7 +131,16 @@ export function matchesFilter(
   roomName: string,
   state: AccessoryFilterState,
   batteryIndex: Map<string, BatteryInfo>,
+  context: FilterContext = {},
 ): boolean {
+  const uniqueId = service.uniqueId ?? ''
+  // An excluded accessory never shows; a pinned one always does, whatever the filter says
+  if (context.excluded?.has(uniqueId)) {
+    return false
+  }
+  if (context.pinned?.has(uniqueId)) {
+    return true
+  }
   if (!state.showHidden && service.hidden) {
     return false
   }
@@ -142,8 +172,14 @@ export function matchesFilter(
       return false
     }
   }
-  if (state.battery.length && !matchesBattery(state.battery, batteryIndex.get(service.uniqueId ?? ''))) {
+  if (state.battery.length && !matchesBattery(state.battery, batteryIndex.get(uniqueId))) {
     return false
+  }
+  if (state.labels.length) {
+    const own = context.labels?.get(uniqueId) ?? []
+    if (!state.labels.some(label => own.includes(label))) {
+      return false
+    }
   }
   return true
 }
@@ -194,6 +230,7 @@ function sortServices(services: ServiceTypeX[], sortBy: AccessorySortBy, battery
  *   is active; with no filter, every room is kept so the layout stays recognisable.
  * - groupBy 'category' and 'bridge' build one group per value, in first-seen order
  *   (category order for categories).
+ * - groupBy 'floor' builds one group per floor in saved order, then 'Other' for rooms on no floor.
  * - groupBy 'none' returns a single group.
  * - sortBy 'manual' keeps layout order (room order, then layout order within a room).
  */
@@ -201,13 +238,14 @@ export function groupAndSort(
   rooms: RoomInput[],
   state: AccessoryFilterState,
   batteryIndex: Map<string, BatteryInfo>,
+  context: FilterContext = {},
 ): AccessoryGroup[] {
   const filterActive = isFilterActive(state)
 
   // Filtered services per room, in layout order
   const perRoom = rooms.map(room => ({
     name: room.name,
-    services: room.services.filter(service => matchesFilter(service, room.name, state, batteryIndex)),
+    services: room.services.filter(service => matchesFilter(service, room.name, state, batteryIndex, context)),
   }))
 
   if (state.groupBy === 'room') {
@@ -235,6 +273,35 @@ export function groupAndSort(
   }
 
   const buckets = new Map<string, { label: string, services: ServiceTypeX[] }>()
+
+  if (state.groupBy === 'floor') {
+    // One group per floor, in saved order. The rooms on no floor go last, under 'Other'.
+    const roomFloor = new Map<string, string>()
+    for (const floor of context.floors ?? []) {
+      for (const room of floor.rooms) {
+        if (!roomFloor.has(room)) {
+          roomFloor.set(room, `floor:${floor.name}`)
+        }
+      }
+    }
+    for (const floor of context.floors ?? []) {
+      buckets.set(`floor:${floor.name}`, { label: floor.name, services: [] })
+    }
+    buckets.set(FLOOR_OTHER_KEY, { label: FLOOR_OTHER_LABEL_KEY, services: [] })
+    for (const room of perRoom) {
+      const key = roomFloor.get(room.name) ?? FLOOR_OTHER_KEY
+      buckets.get(key)!.services.push(...room.services)
+    }
+    return [
+      ...buckets.entries(),
+    ]
+      .filter(([, bucket]) => bucket.services.length > 0)
+      .map(([key, bucket]) => ({
+        key,
+        label: bucket.label,
+        services: sortServices(bucket.services, state.sortBy, batteryIndex),
+      }))
+  }
 
   if (state.groupBy === 'category') {
     for (const category of ACCESSORY_CATEGORIES) {

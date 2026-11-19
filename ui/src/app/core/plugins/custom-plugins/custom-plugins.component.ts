@@ -5,10 +5,13 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { Bootstrap5FrameworkModule } from '@ng-formworks/bootstrap5'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { Subject } from 'rxjs'
+import { merge, Subject } from 'rxjs'
 import { debounceTime, skip } from 'rxjs/operators'
 
-import { AccessoryLayout } from '@/app/core/accessories/accessories.interfaces'
+import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { BatteryInfo, buildBatteryIndex } from '@/app/core/accessories/filters/accessory-battery'
+import { getAccessoryCategory } from '@/app/core/accessories/filters/accessory-categories'
 import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
@@ -35,6 +38,7 @@ import { environment } from '@/environments/environment'
 })
 export class CustomPluginsComponent implements OnInit, OnDestroy {
   // 1. Injected Dependencies
+  private $accessories = inject(AccessoriesService)
   private $activeModal = inject(NgbActiveModal)
   private $accessoryCache = inject(CachedAccessoriesCacheService)
   private $api = inject(ApiService)
@@ -128,6 +132,16 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.formActionSubject
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(this.formActionEvent.bind(this))
+
+    // Tell the plugin when its accessory layout or views change, so it can re-read them
+    merge(this.$accessories.layoutSaved, this.$accessories.viewsSaved)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.iframe?.contentWindow?.postMessage({
+          action: 'stream',
+          event: 'accessoryLayout.changed',
+        }, environment.api.origin)
+      })
 
     window.addEventListener('message', this.handleMessage, false)
   }
@@ -337,6 +351,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         }
         case 'accessoryLayout.get': {
           void this.handleGetAccessoryLayout(e)
+          break
+        }
+        case 'accessoryViews.get': {
+          void this.handleGetAccessoryViews(e)
           break
         }
         case 'cachedMatterAccessories.get': {
@@ -706,21 +724,105 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   /**
    * Handle the event to get the accessory room layout.
-   * Only room names, the default flag and service unique ids are passed on.
+   * Room names, the default flag and, per service, its id, custom name and type, category,
+   * hidden flag, labels and battery (when known) are passed on.
    */
   private async handleGetAccessoryLayout(event: MessageEvent): Promise<void> {
     try {
-      const layout = await this.$api.get<AccessoryLayout>('/accessories/layout')
+      const [layout, views] = await Promise.all([
+        this.$api.get<AccessoryLayout>('/accessories/layout'),
+        this.getSavedViews(),
+      ])
+
+      // The live services, when the accessories page has them, give the category and battery
+      const live = new Map<string, ServiceTypeX>()
+      for (const service of this.$accessories.rooms().flatMap(room => room.services)) {
+        if (service.uniqueId) {
+          live.set(service.uniqueId, service)
+        }
+      }
+      const batteries = buildBatteryIndex([
+        ...live.values(),
+      ])
+      const labels = views?.labels ?? this.$accessories.labels()
+
       return this.requestResponse(event, (layout || []).map(room => ({
         name: room.name,
         ...(room.isDefault
           ? { isDefault: true }
           : {}),
-        services: (room.services || []).map(service => ({ uniqueId: service.uniqueId })),
+        services: (room.services || []).map(service => this.describeLayoutService(service, live, batteries, labels)),
       })))
     } catch (error) {
       console.error('Failed to get accessory layout:', error)
       return this.requestResponse(event, { message: (error as any)?.error?.message || (error as Error)?.message || 'Failed to get accessory layout' }, false)
+    }
+  }
+
+  /**
+   * Handle the event to get the saved accessory views, as the server returns them
+   */
+  private async handleGetAccessoryViews(event: MessageEvent): Promise<void> {
+    try {
+      const views = await this.$api.get('/accessories/views')
+      return this.requestResponse(event, views)
+    } catch (error) {
+      console.error('Failed to get accessory views:', error)
+      return this.requestResponse(event, { message: (error as any)?.error?.message || (error as Error)?.message || 'Failed to get accessory views' }, false)
+    }
+  }
+
+  /** The saved views, labels and floors, or undefined when they cannot be read. Labels then fall back to the page's. */
+  private async getSavedViews(): Promise<{ labels?: Record<string, string[]> } | undefined> {
+    try {
+      return await this.$api.get<{ labels?: Record<string, string[]> }>('/accessories/views')
+    } catch {
+      return undefined
+    }
+  }
+
+  /** One service of the layout as the plugin gets it */
+  private describeLayoutService(
+    service: AccessoryLayoutService,
+    live: Map<string, ServiceTypeX>,
+    batteries: Map<string, BatteryInfo>,
+    labels: Record<string, string[]>,
+  ): Record<string, unknown> {
+    const uniqueId = service.uniqueId
+    const liveService = uniqueId
+      ? live.get(uniqueId)
+      : undefined
+    const battery = uniqueId
+      ? batteries.get(uniqueId)
+      : undefined
+    // Without the live service, the category can only come from the saved custom type
+    const category = getAccessoryCategory(liveService ?? ({
+      customType: service.customType,
+      serviceName: service.name,
+    } as ServiceTypeX))
+
+    return {
+      uniqueId,
+      ...(service.customName
+        ? { customName: service.customName }
+        : {}),
+      ...(service.customType
+        ? { customType: service.customType }
+        : {}),
+      category,
+      hidden: !!service.hidden,
+      labels: (uniqueId && labels[uniqueId]) || [],
+      ...(battery
+        ? {
+            battery: {
+              ...(battery.level !== undefined
+                ? { level: battery.level }
+                : {}),
+              low: battery.low,
+              charging: battery.charging,
+            },
+          }
+        : {}),
     }
   }
 }
