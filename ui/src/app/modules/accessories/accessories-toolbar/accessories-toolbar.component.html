@@ -69,6 +69,11 @@
           <button type="button" ngbDropdownItem (click)="copyKioskLink(kioskId)">
             <i class="fas fa-link me-2" aria-hidden="true"></i>{{ 'accessories.kiosk.copy_link' | translate }}
           </button>
+          @if (canPairTablets()) {
+            <button type="button" ngbDropdownItem (click)="pairTablet(kioskId)">
+              <i class="fas fa-qrcode me-2" aria-hidden="true"></i>{{ 'kiosk.tablets.pair_a_tablet' | translate }}
+            </button>
+          }
         </div>
       </div>
     }

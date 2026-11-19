@@ -9,6 +9,7 @@ import { firstValueFrom, Subject } from 'rxjs'
 import { takeUntil, timeout } from 'rxjs/operators'
 
 import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { attachControlHelpers } from '@/app/core/accessories/accessory-control'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
 import { AccessoryFilterState, DEFAULT_FILTER_STATE, FilterContext } from '@/app/core/accessories/filters/accessory-filters'
 import { AccessoryFloor, AccessoryView } from '@/app/core/accessories/filters/accessory-views'
@@ -215,6 +216,11 @@ export class AccessoriesService {
   /**
    * Stop the accessory control session
    */
+  /** Whether a session is running on this page (between start() and stop()) */
+  public get sessionRunning(): boolean {
+    return this.sessionActive
+  }
+
   public stop() {
     // Complete all subscriptions
     this.stop$.next()
@@ -1308,79 +1314,11 @@ export class AccessoriesService {
    */
   private generateHelpers() {
     this.accessories.services.forEach((service) => {
-      const serviceX = service as ServiceTypeX
-
-      // Matter accessories use cluster-based control
-      if (serviceX.protocol === 'matter') {
-        if (!serviceX.getCluster) {
-          serviceX.getCluster = (clusterName: string) => {
-            const clusters = serviceX.clusters || {}
-
-            if (!clusters[clusterName]) {
-              return null
-            }
-
-            return {
-              attributes: clusters[clusterName],
-              /**
-               * Fire-and-forget: emits a WebSocket message and resolves immediately.
-               * The promise never rejects; errors are not surfaced to callers.
-               * Try/catch blocks around setAttributes calls are therefore no-ops for
-               * transport errors but kept for documentation and future-proofing.
-               */
-              setAttributes: (attributes: Record<string, unknown>) => new Promise<void>((resolve) => {
-                if (!this.matterReadyForControl) {
-                  console.warn('Matter control attempted but not ready for control:', {
-                    matterReadyForControl: this.matterReadyForControl,
-                    uniqueId: service.uniqueId,
-                    cluster: clusterName,
-                  })
-                  return resolve(undefined)
-                }
-
-                this.io.socket.emit('accessory-control', {
-                  set: {
-                    uniqueId: service.uniqueId,
-                    cluster: clusterName,
-                    attributes,
-                  },
-                })
-                return resolve(undefined)
-              }),
-            }
-          }
-        }
-      } else {
-        // HAP accessories use characteristic-based control
-        if (!service.getCharacteristic) {
-          service.getCharacteristic = ((type: string) => {
-            const characteristic = service.serviceCharacteristics.find(x => x.type === type)
-
-            if (!characteristic) {
-              return null
-            }
-
-            characteristic.setValue = ((value: number | string | boolean) => new Promise<void>((resolve) => {
-              if (!this.hapReadyForControl) {
-                return resolve(undefined)
-              }
-
-              this.io.socket.emit('accessory-control', {
-                set: {
-                  uniqueId: service.uniqueId,
-                  aid: service.aid,
-                  siid: service.iid,
-                  iid: characteristic.iid,
-                  value,
-                },
-              })
-              return resolve(undefined)
-            })) as any
-
-            return characteristic
-          }) as any
-        }
-      }
+      attachControlHelpers(service as ServiceTypeX, {
+        send: payload => this.io.socket.emit('accessory-control', payload),
+        hapReady: () => this.hapReadyForControl,
+        matterReady: () => this.matterReadyForControl,
+      })
     })
   }
 

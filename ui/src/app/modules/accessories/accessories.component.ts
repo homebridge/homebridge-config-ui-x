@@ -26,6 +26,7 @@ import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-her
 import { EditRoomComponent } from '@/app/modules/accessories/edit-room/edit-room.component'
 import { ManageViewsComponent } from '@/app/modules/accessories/manage-views/manage-views.component'
 import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accessories/modal-data-tokens'
+import { KioskDevicesService } from '@/app/modules/kiosk/kiosk-devices.service'
 
 /** localStorage key for the collapsed group ids */
 const COLLAPSED_STORAGE_KEY = 'accessories-collapsed-v1'
@@ -49,6 +50,8 @@ const COLLAPSED_STORAGE_KEY = 'accessories-collapsed-v1'
 })
 export class AccessoriesComponent implements OnInit, OnDestroy {
   protected $accessories = inject(AccessoriesService)
+  /** Injected so the tablets' accessories follow saved views while this page is open */
+  public readonly $kioskDevices = inject(KioskDevicesService)
 
   private destroyRef = inject(DestroyRef)
   private $auth = inject(AuthService)

@@ -1,0 +1,71 @@
+<div class="modal-content modal-content-min-h">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ (device ? 'kiosk.tablets.edit_title' : 'kiosk.tablets.add_title') | translate }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="dismiss()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    @if (loading()) {
+      <div class="text-center"><i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i></div>
+    } @else {
+      <ul class="list-group list-group-box mb-3">
+        <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+          <label for="tablet-name" class="mb-2 mb-md-0 w-100 w-md-50">
+            {{ 'kiosk.tablets.name' | translate }}<app-required-indicator />
+          </label>
+          <div class="text-start text-md-end w-100 w-md-50">
+            <input
+              id="tablet-name"
+              class="form-control custom-input"
+              type="text"
+              maxlength="64"
+              [class.is-invalid]="nameControl.touched && nameControl.invalid"
+              [formControl]="nameControl"
+              [placeholder]="'kiosk.tablets.name_placeholder' | translate"
+            />
+          </div>
+        </li>
+        <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+          <label for="tablet-view" class="mb-2 mb-md-0 w-100 w-md-50">
+            {{ 'kiosk.tablets.view' | translate }}<app-required-indicator />
+          </label>
+          <div class="text-start text-md-end w-100 w-md-50">
+            <select id="tablet-view" class="form-select custom-input" [formControl]="viewControl">
+              @for (option of options(); track option.id) {
+                <option [value]="option.id">{{ option.label }}</option>
+              }
+            </select>
+          </div>
+        </li>
+        <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+          <div class="form-check form-switch mb-0">
+            <input
+              id="tablet-allow-sensitive"
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              [formControl]="allowControl"
+            />
+            <label class="form-check-label" for="tablet-allow-sensitive">{{
+              'kiosk.tablets.allow_sensitive' | translate
+            }}</label>
+          </div>
+        </li>
+      </ul>
+      <p class="small text-secondary mb-0">{{ 'kiosk.tablets.allow_sensitive_note' | translate }}</p>
+      @if (count() !== null) {
+        <p class="small mt-2 mb-0" role="status">{{ 'kiosk.tablets.count' | translate: { count: count() } }}</p>
+      }
+    }
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-elegant" (click)="dismiss()">{{ 'form.button_cancel' | translate }}</button>
+    <button type="button" class="btn btn-primary" [disabled]="loading() || saving()" (click)="save()">
+      {{ 'form.button_save' | translate }}
+    </button>
+  </div>
+</div>

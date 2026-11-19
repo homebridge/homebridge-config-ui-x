@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { AuthService } from '@/app/core/auth/auth.service'
 import { KioskLinksService } from '@/app/modules/kiosk/kiosk-links.service'
 import { activeModalStub } from '@/testing'
 import { provideTestTranslate } from '@/testing/providers'
@@ -81,6 +82,12 @@ describe('manageViewsComponent', () => {
     TestBed.configureTestingModule({
       imports: [ManageViewsComponent],
       providers: [
+        {
+          provide: AuthService,
+          useValue: {
+            user: { admin: true },
+          },
+        },
         provideTestTranslate(),
         { provide: AccessoriesService, useValue: service },
         { provide: NgbActiveModal, useValue: activeModal },

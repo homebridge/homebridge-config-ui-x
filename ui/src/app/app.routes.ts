@@ -25,6 +25,17 @@ export const routes: Routes = [
     canActivate: [setupWizardGuard],
   },
   {
+    // Pairing a tablet: public, the code (typed or from the QR link) is exchanged for the tablet's token
+    path: 'kiosk/pair',
+    loadComponent: () => import('@/app/modules/kiosk/kiosk-pair.component').then(m => m.KioskPairComponent),
+  },
+  {
+    // A paired tablet. Public: it signs in with its own token, never with a user session.
+    path: 'kiosk/device',
+    loadComponent: () => import('@/app/modules/kiosk/kiosk.component').then(m => m.KioskComponent),
+    data: { kioskDevice: true },
+  },
+  {
     // Full-screen accessory View for a wall or room tablet. Outside the main layout, so no sidebar or navbar.
     path: 'kiosk/:viewId',
     loadComponent: () => import('@/app/modules/kiosk/kiosk.component').then(m => m.KioskComponent),

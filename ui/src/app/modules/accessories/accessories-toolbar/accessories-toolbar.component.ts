@@ -5,13 +5,16 @@ import type { AccessoryView, BuiltInView } from '@/app/core/accessories/filters/
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model, output, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 import { debounceTime, Subject } from 'rxjs'
 
 import { ACCESSORY_CATEGORIES } from '@/app/core/accessories/filters/accessory-categories'
 import { DEFAULT_FILTER_STATE, isFilterActive, matchesFilter } from '@/app/core/accessories/filters/accessory-filters'
 import { BUILT_IN_VIEWS } from '@/app/core/accessories/filters/accessory-views'
+import { AuthService } from '@/app/core/auth/auth.service'
 import { KioskLinksService } from '@/app/modules/kiosk/kiosk-links.service'
+import { openAddTablet } from '@/app/modules/users/users-tablets/open-tablet-editor'
 
 /** Width below which the filter chips collapse behind a Filters button */
 const NARROW_WIDTH = 576
@@ -164,6 +167,8 @@ export class AccessoriesToolbarComponent {
   ].sort((a, b) => a.localeCompare(b)))
 
   private readonly $kiosk = inject(KioskLinksService)
+  private readonly $auth = inject(AuthService)
+  private readonly $modal = inject(NgbModal)
 
   /** The view the kiosk opens for: the custom view applied, or the built-in one matching the filter */
   public readonly kioskViewId = computed<string | null>(() => {
@@ -315,6 +320,16 @@ export class AccessoriesToolbarComponent {
   /** Copy the kiosk link for a view */
   public copyKioskLink(viewId: string): void {
     void this.$kiosk.copy(viewId)
+  }
+
+  /** Only admins pair tablets */
+  public canPairTablets(): boolean {
+    return !!this.$auth.user.admin
+  }
+
+  /** Add a tablet to this view, then show its pairing code */
+  public pairTablet(viewId: string): void {
+    void openAddTablet(this.$modal, viewId)
   }
 
   public applyView(view: BuiltInView | null): void {
