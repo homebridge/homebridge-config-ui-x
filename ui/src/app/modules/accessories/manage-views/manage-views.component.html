@@ -23,6 +23,11 @@
           >
             <i class="fas fa-link me-1" aria-hidden="true"></i>{{ 'accessories.kiosk.copy_link' | translate }}
           </button>
+          @if (canPairTablets()) {
+            <button type="button" class="btn btn-sm btn-elegant my-0 accessories-kiosk-pair" (click)="pairTablet(view)">
+              <i class="fas fa-qrcode me-1" aria-hidden="true"></i>{{ 'kiosk.tablets.pair_a_tablet' | translate }}
+            </button>
+          }
         </div>
         <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
           @if (isOwn(view)) {

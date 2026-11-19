@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryView } from '@/app/core/accessories/filters/accessory-views'
+import { AuthService } from '@/app/core/auth/auth.service'
 import { KioskLinksService } from '@/app/modules/kiosk/kiosk-links.service'
+import { openAddTablet } from '@/app/modules/users/users-tablets/open-tablet-editor'
 
 type ChipList = 'pinned' | 'excluded'
 
@@ -25,6 +27,8 @@ export class ManageViewsComponent {
   private $activeModal = inject(NgbActiveModal)
   protected readonly $accessories = inject(AccessoriesService)
   private readonly $kiosk = inject(KioskLinksService)
+  private readonly $auth = inject(AuthService)
+  private readonly $modal = inject(NgbModal)
 
   public readonly views = this.$accessories.views
 
@@ -133,6 +137,17 @@ export class ManageViewsComponent {
 
   public copyKioskLink(view: AccessoryView): void {
     void this.$kiosk.copy(view.id)
+  }
+
+  /** Only admins pair tablets */
+  public canPairTablets(): boolean {
+    return !!this.$auth.user.admin
+  }
+
+  /** Close this modal, then add a tablet to the view and show its pairing code */
+  public pairTablet(view: AccessoryView): void {
+    this.close()
+    void openAddTablet(this.$modal, view.id)
   }
 
   public close(): void {

@@ -4,6 +4,7 @@ import type { AccessoryView, BuiltInView } from '@/app/core/accessories/filters/
 
 import type { KioskSettings, KioskTheme } from './kiosk-settings'
 
+import { HttpErrorResponse } from '@angular/common/http'
 import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -23,10 +24,17 @@ import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 import { isSensitiveService, kioskIconClass, kioskIsOn, kioskStateKey, kioskToggle } from './kiosk-controls'
+import { clearStoredDevice, KioskDeviceService, loadStoredDevice } from './kiosk-device.service'
 import { isValidKioskPin, loadKioskSettings, saveKioskSettings } from './kiosk-settings'
 
 /** How long the top bar must be held to open the settings panel */
 const LONG_PRESS_MS = 1500
+
+/** Settings key for a paired tablet, which has no view id of its own */
+const DEVICE_SETTINGS_ID = 'device'
+
+/** How long a paired tablet waits before trying to load again after a network failure */
+const DEVICE_RETRY_MS = 15_000
 
 type Panel = 'closed' | 'pin' | 'settings'
 
@@ -72,7 +80,15 @@ export class KioskComponent implements OnInit, OnDestroy {
   private $translate = inject(TranslateService)
   private $destroyRef = inject(DestroyRef)
 
-  protected readonly viewId = this.$route.snapshot.paramMap.get('viewId') ?? ''
+  private readonly $kioskDevice = inject(KioskDeviceService)
+
+  /** Device mode: a paired tablet at kiosk/device, with no signed-in session */
+  protected readonly device = this.$route.snapshot.data?.kioskDevice === true
+
+  protected readonly viewId = this.device
+    ? DEVICE_SETTINGS_ID
+    : (this.$route.snapshot.paramMap.get('viewId') ?? '')
+
   protected readonly builtIn: BuiltInView | undefined = BUILT_IN_VIEWS.find(view => view.id === this.viewId)
 
   protected readonly loading = signal(true)
@@ -87,11 +103,26 @@ export class KioskComponent implements OnInit, OnDestroy {
   protected readonly newPin = signal('')
   protected readonly newPinInvalid = signal(false)
 
+  protected readonly unpaired = this.$kioskDevice.unpaired
+  protected readonly deviceViewName = computed(() => this.$kioskDevice.session()?.device.viewName ?? '')
+  protected readonly isConnected = computed(() => this.device
+    ? this.$kioskDevice.connected()
+    : this.connected())
+
+  protected readonly isReconnecting = computed(() => this.device
+    ? !this.unpaired() && !this.loading() && !this.$kioskDevice.connected()
+    : this.reconnecting())
+
+  /** Whether sensitive accessories can be changed here: the session's setting on a paired tablet, else this browser's */
+  protected readonly allowSensitive = computed(() => this.device
+    ? this.$kioskDevice.session()?.device.allowSensitive === true
+    : this.settings().allowSensitive)
+
   /** The saved view this page shows, once the views have loaded */
   protected readonly customView = computed<AccessoryView | undefined>(() => this.$accessories.views().find(view => view.id === this.viewId))
 
   /** Whether the id names a built-in view or one of the user's (or one shared with them) */
-  protected readonly known = computed(() => !!this.builtIn || !!this.customView())
+  protected readonly known = computed(() => this.device || !!this.builtIn || !!this.customView())
 
   protected readonly clock = computed(() => `${twoDigits(this.now().getHours())}:${twoDigits(this.now().getMinutes())}`)
 
@@ -99,6 +130,9 @@ export class KioskComponent implements OnInit, OnDestroy {
 
   /** The view's services, filtered, grouped and sorted as the accessories page would show them */
   protected readonly groups = computed<AccessoryGroup[]>(() => {
+    if (this.device) {
+      return this.$kioskDevice.groups()
+    }
     const state = {
       ...DEFAULT_FILTER_STATE,
       ...(this.builtIn?.state ?? this.customView()?.state ?? {}),
@@ -113,6 +147,7 @@ export class KioskComponent implements OnInit, OnDestroy {
   private clockTimer: ReturnType<typeof setTimeout> | undefined
   private pressTimer: ReturnType<typeof setTimeout> | undefined
   private redirecting = false
+  private retryTimer: ReturnType<typeof setTimeout> | undefined
 
   private readonly onVisibilityChange = (): void => {
     if (document.visibilityState === 'visible') {
@@ -138,13 +173,21 @@ export class KioskComponent implements OnInit, OnDestroy {
     clearTimeout(this.pressTimer)
     void this.releaseWakeLock()
 
-    this.$accessories.stop()
-    this.$accessories.activeViewId.set(this.previousActiveViewId)
+    clearTimeout(this.retryTimer)
+    if (this.device) {
+      this.$kioskDevice.disconnect()
+    } else {
+      this.$accessories.stop()
+      this.$accessories.activeViewId.set(this.previousActiveViewId)
+    }
     this.$settingsService.setLightingMode(this.previousLightingMode, 'user')
   }
 
   /** Start the accessories session. The socket is created synchronously, so it can be watched straight away. */
   private async load(): Promise<void> {
+    if (this.device) {
+      return this.loadDevice()
+    }
     const started = this.$accessories.start()
     this.watchSocket()
     try {
@@ -156,6 +199,28 @@ export class KioskComponent implements OnInit, OnDestroy {
     }
     if (this.customView()) {
       this.$accessories.activeViewId.set(this.viewId)
+    }
+  }
+
+  /** Device mode: the stored token opens the session and the device socket. A refused token shows the unpaired state. */
+  private async loadDevice(): Promise<void> {
+    const stored = loadStoredDevice()
+    if (!stored) {
+      void this.$router.navigateByUrl('/kiosk/pair')
+      return
+    }
+    try {
+      await this.$kioskDevice.connect(stored.token)
+      this.loading.set(false)
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        this.$kioskDevice.markUnpaired()
+        return
+      }
+      // Offline, or the server is down (a tablet can boot before the network is up): try again shortly
+      console.error(error)
+      clearTimeout(this.retryTimer)
+      this.retryTimer = setTimeout(() => void this.loadDevice(), DEVICE_RETRY_MS)
     }
   }
 
@@ -249,6 +314,9 @@ export class KioskComponent implements OnInit, OnDestroy {
   }
 
   protected isReady(service: ServiceTypeX): boolean {
+    if (this.device) {
+      return this.$kioskDevice.isReady(service)
+    }
     return isMatterService(service)
       ? this.$accessories.matterReadyForControl
       : this.$accessories.hapReadyForControl
@@ -264,7 +332,7 @@ export class KioskComponent implements OnInit, OnDestroy {
 
   /** Sensitive and not allowed on this tablet: shown, but cannot be changed or opened */
   protected isLocked(service: ServiceTypeX): boolean {
-    return isSensitiveService(service) && !this.settings().allowSensitive
+    return isSensitiveService(service) && !this.allowSensitive()
   }
 
   protected hasToggle(service: ServiceTypeX): boolean {
@@ -310,7 +378,8 @@ export class KioskComponent implements OnInit, OnDestroy {
 
   /** The body opens the details and controls modal */
   protected openDetails(service: ServiceTypeX): void {
-    if (this.isLocked(service)) {
+    // Details need the signed-in session, which a paired tablet does not have
+    if (this.device || this.isLocked(service)) {
       return
     }
     void this.$accessories.showAccessoryInformation(service)
@@ -390,7 +459,14 @@ export class KioskComponent implements OnInit, OnDestroy {
 
   protected exit(): void {
     this.closePanel()
-    void this.$router.navigateByUrl('/accessories')
+    void this.$router.navigateByUrl(this.device ? '/kiosk/pair' : '/accessories')
+  }
+
+  /** The tablet was unpaired: forget it here and pair again */
+  protected pairAgain(): void {
+    clearStoredDevice()
+    this.$kioskDevice.unpaired.set(false)
+    void this.$router.navigateByUrl('/kiosk/pair')
   }
 
   protected setTheme(theme: KioskTheme): void {

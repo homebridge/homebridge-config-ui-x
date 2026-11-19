@@ -1,0 +1,93 @@
+<div class="row mb-3 mt-4">
+  <div class="col-6">
+    <h3 class="primary-text m-0">{{ 'kiosk.tablets.title' | translate }}</h3>
+  </div>
+  <div class="col-6 text-end">
+    <button type="button" class="btn btn-elegant my-0 me-0" (click)="addTablet()">
+      <i class="fas fa-tablet-screen-button me-1" aria-hidden="true"></i>{{ 'kiosk.tablets.add' | translate }}
+    </button>
+  </div>
+</div>
+<p class="small text-secondary">{{ 'kiosk.tablets.intro' | translate }}</p>
+
+@if (loading()) {
+  <div class="text-center"><i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i></div>
+} @else if (devices().length === 0) {
+  <p class="grey-text">{{ 'kiosk.tablets.empty' | translate }}</p>
+} @else {
+  <div class="row">
+    @for (device of devices(); track device.id) {
+      <div class="col-md-6 mb-4">
+        <div class="card card-body h-100">
+          <div class="d-flex flex-row mb-2">
+            <span class="me-auto my-0 text-truncate">
+              <h4 class="text-truncate">{{ device.name }}</h4>
+              <h5 class="small grey-text mb-0"><i class="fas fa-user" aria-hidden="true"></i> {{ device.owner }}</h5>
+            </span>
+            @if (device.paired) {
+              <span class="badge text-bg-success align-self-start">{{ 'kiosk.tablets.paired' | translate }}</span>
+            } @else {
+              <span class="badge text-bg-secondary align-self-start">{{ 'kiosk.tablets.not_paired' | translate }}</span>
+            }
+          </div>
+          <dl class="small mb-2">
+            <dt class="d-inline">{{ 'kiosk.tablets.view' | translate }}:</dt>
+            <dd class="d-inline ms-1">{{ device.viewName }}</dd>
+            <br />
+            <dt class="d-inline">{{ 'kiosk.tablets.last_seen' | translate }}:</dt>
+            <dd class="d-inline ms-1">
+              {{ lastSeen(device) }}
+              @if (device.lastSeenIp) {
+                <span class="grey-text">({{ device.lastSeenIp }})</span>
+              }
+            </dd>
+            <br />
+            <dt class="d-inline">{{ 'kiosk.tablets.accessories' | translate }}:</dt>
+            <dd class="d-inline ms-1">{{ device.allowedUniqueIds.length }}</dd>
+          </dl>
+          <div class="form-check form-switch mb-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              [id]="`tablet-sensitive-${device.id}`"
+              [checked]="device.allowSensitive"
+              (change)="setAllowSensitive(device, $event)"
+            />
+            <label class="form-check-label" [for]="`tablet-sensitive-${device.id}`">{{
+              'kiosk.tablets.allow_sensitive' | translate
+            }}</label>
+          </div>
+          <div class="d-flex flex-wrap gap-2 mt-auto">
+            <button type="button" class="btn btn-elegant m-0" (click)="editTablet(device)">
+              <i class="fas fa-pen" aria-hidden="true"></i> {{ 'kiosk.tablets.rename' | translate }}
+            </button>
+            <button type="button" class="btn btn-elegant m-0" (click)="editTablet(device)">
+              <i class="fas fa-right-left" aria-hidden="true"></i> {{ 'kiosk.tablets.change_view' | translate }}
+            </button>
+            <button type="button" class="btn btn-elegant m-0" (click)="pair(device)">
+              <i class="fas fa-qrcode" aria-hidden="true"></i> {{ 'kiosk.tablets.pair' | translate }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-elegant m-0"
+              [disabled]="refreshing() === device.id"
+              [attr.aria-label]="'kiosk.tablets.refresh_aria' | translate: { name: device.name }"
+              (click)="refreshAccessories(device)"
+            >
+              <i class="fas fa-arrows-rotate" aria-hidden="true"></i> {{ 'kiosk.tablets.refresh' | translate }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger m-0 ms-auto"
+              [attr.aria-label]="'kiosk.tablets.revoke_aria' | translate: { name: device.name }"
+              (click)="revoke(device)"
+            >
+              <i class="fas fa-ban" aria-hidden="true"></i> {{ 'kiosk.tablets.revoke' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

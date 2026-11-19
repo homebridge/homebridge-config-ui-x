@@ -1,0 +1,34 @@
+<div class="kiosk">
+  <main class="kiosk-message">
+    <h1 class="kiosk-message-title">{{ 'kiosk.pair.title' | translate }}</h1>
+    <p>{{ 'kiosk.pair.text' | translate }}</p>
+    <form class="kiosk-pair-form" (submit)="$event.preventDefault(); submit()">
+      <label class="form-label" for="kiosk-pair-code">{{ 'kiosk.pair.code_label' | translate }}</label>
+      <input
+        id="kiosk-pair-code"
+        class="form-control kiosk-pair-input"
+        type="text"
+        inputmode="text"
+        autocomplete="off"
+        autocapitalize="characters"
+        spellcheck="false"
+        maxlength="8"
+        aria-describedby="kiosk-pair-error"
+        [attr.aria-invalid]="!!error()"
+        [value]="code()"
+        (input)="onCodeInput($event)"
+      />
+      <p id="kiosk-pair-error" class="kiosk-panel-error" role="alert">
+        @if (error()) {
+          {{ error() | translate }}
+        }
+      </p>
+      <button type="submit" class="btn btn-primary" [disabled]="!code() || busy()">
+        @if (busy()) {
+          <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
+        }
+        {{ 'kiosk.pair.button' | translate }}
+      </button>
+    </form>
+  </main>
+</div>

@@ -12,7 +12,9 @@
     (keydown.enter)="openPanel()"
   >
     <span class="kiosk-view-name">
-      @if (builtIn) {
+      @if (device) {
+        {{ deviceViewName() || ('kiosk.title' | translate) }}
+      } @else if (builtIn) {
         {{ builtIn.labelKey | translate }}
       } @else {
         {{ customView()?.name ?? ('kiosk.title' | translate) }}
@@ -22,16 +24,24 @@
     <span
       class="kiosk-connection"
       role="img"
-      [class.kiosk-connection-up]="connected()"
-      [attr.aria-label]="(connected() ? 'kiosk.connected' : 'kiosk.disconnected') | translate"
+      [class.kiosk-connection-up]="isConnected()"
+      [attr.aria-label]="(isConnected() ? 'kiosk.connected' : 'kiosk.disconnected') | translate"
     ></span>
   </header>
 
-  @if (reconnecting()) {
+  @if (isReconnecting()) {
     <div class="kiosk-banner" role="status">{{ 'kiosk.reconnecting' | translate }}</div>
   }
 
-  @if (loading()) {
+  @if (unpaired()) {
+    <div class="kiosk-message" role="alert">
+      <h1 class="kiosk-message-title">{{ 'kiosk.unpaired.title' | translate }}</h1>
+      <p>{{ 'kiosk.unpaired.text' | translate }}</p>
+      <button type="button" class="btn btn-primary" (click)="pairAgain()">
+        {{ 'kiosk.unpaired.button' | translate }}
+      </button>
+    </div>
+  } @else if (loading()) {
     <div class="kiosk-message">
       <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
       <span>{{ 'kiosk.loading' | translate }}</span>
@@ -176,20 +186,22 @@
             </div>
           </fieldset>
 
-          <div class="form-check form-switch mb-1">
-            <input
-              id="kiosk-allow-sensitive"
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              [checked]="settings().allowSensitive"
-              (change)="setAllowSensitive($event)"
-            />
-            <label class="form-check-label" for="kiosk-allow-sensitive">{{
-              'kiosk.panel.allow_sensitive' | translate
-            }}</label>
-          </div>
-          <p class="small text-secondary mb-3">{{ 'kiosk.panel.allow_sensitive_note' | translate }}</p>
+          @if (!device) {
+            <div class="form-check form-switch mb-1">
+              <input
+                id="kiosk-allow-sensitive"
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                [checked]="allowSensitive()"
+                (change)="setAllowSensitive($event)"
+              />
+              <label class="form-check-label" for="kiosk-allow-sensitive">{{
+                'kiosk.panel.allow_sensitive' | translate
+              }}</label>
+            </div>
+            <p class="small text-secondary mb-3">{{ 'kiosk.panel.allow_sensitive_note' | translate }}</p>
+          }
 
           <div class="mb-3">
             <label class="form-label" for="kiosk-new-pin">{{ 'kiosk.panel.pin_new' | translate }}</label>
