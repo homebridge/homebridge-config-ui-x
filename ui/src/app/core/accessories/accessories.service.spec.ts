@@ -3,10 +3,11 @@ import type { FakeCache, FakeIoNamespace, FakeModalService, FakeToastr, FakeWs }
 import type { ServiceType } from '@homebridge/hap-client'
 
 import { TestBed } from '@angular/core/testing'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
+import { DEFAULT_FILTER_STATE } from '@/app/core/accessories/filters/accessory-filters'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
 import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
@@ -1675,6 +1676,130 @@ describe('AccessoriesService', () => {
       expect(service.rooms()).toBe(before)
       expect(idsIn('Kitchen')).toEqual(['a', 'b'])
       expect(save).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('moving and flagging several services at once', () => {
+    afterEach(() => {
+      localStorage.clear()
+    })
+
+    /** A service in a room, with only the fields these tests read. */
+    function item(uniqueId: string, extra: Record<string, unknown> = {}): ServiceTypeX {
+      return {
+        uniqueId,
+        serviceName: uniqueId,
+        hidden: false,
+        onDashboard: false,
+        ...extra,
+      } as unknown as ServiceTypeX
+    }
+
+    function idsIn(roomName: string): string[] {
+      return service.rooms().find(room => room.name === roomName)!.services.map(entry => entry.uniqueId!)
+    }
+
+    beforeEach(() => {
+      service.rooms.set([
+        {
+          name: 'Kitchen',
+          services: [
+            item('a'),
+            item('b'),
+          ],
+        },
+        {
+          name: 'Office',
+          services: [
+            item('z'),
+          ],
+        },
+      ])
+    })
+
+    it('moves each service to the room and saves the layout once', () => {
+      const save = vi.spyOn(service, 'saveLayout')
+
+      service.moveServicesToRoom(['a', 'b'], 'Office')
+
+      expect(idsIn('Office')).toEqual(['z', 'a', 'b'])
+      expect(idsIn('Kitchen')).toEqual([])
+      expect(save).toHaveBeenCalledTimes(1)
+    })
+
+    it('moves the services it can and skips the rest', () => {
+      const save = vi.spyOn(service, 'saveLayout')
+
+      service.moveServicesToRoom(['a', 'z', 'missing'], 'Office')
+
+      expect(idsIn('Office')).toEqual(['z', 'a'])
+      expect(save).toHaveBeenCalledTimes(1)
+    })
+
+    it('saves nothing when no service moves', () => {
+      const save = vi.spyOn(service, 'saveLayout')
+
+      service.moveServicesToRoom(['z', 'missing'], 'Office')
+      service.moveServicesToRoom(['a'], 'Nowhere')
+
+      expect(save).not.toHaveBeenCalled()
+    })
+
+    it('sets the flags on each service and saves the layout once', () => {
+      const save = vi.spyOn(service, 'saveLayout')
+
+      service.updateServicesFlags(['a', 'z'], { hidden: true })
+
+      const flagged = service.rooms().flatMap(room => room.services).filter(entry => entry.hidden)
+      expect(flagged.map(entry => entry.uniqueId)).toEqual(['a', 'z'])
+      expect(idsIn('Kitchen')).toEqual(['a', 'b'])
+      expect(save).toHaveBeenCalledTimes(1)
+    })
+
+    it('leaves the other flag alone', () => {
+      service.updateServicesFlags(['a'], { onDashboard: true })
+
+      const a = service.rooms().find(room => room.name === 'Kitchen')!.services[0]
+      expect(a.onDashboard).toBe(true)
+      expect(a.hidden).toBe(false)
+    })
+
+    it('does nothing for services it cannot find', () => {
+      const save = vi.spyOn(service, 'saveLayout')
+
+      service.updateServicesFlags(['missing'], { hidden: true })
+
+      expect(save).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('the page filter', () => {
+    afterEach(() => {
+      localStorage.clear()
+      vi.restoreAllMocks()
+    })
+
+    it('remembers the filter in localStorage under its key', () => {
+      service.setFilterState({ ...DEFAULT_FILTER_STATE, search: 'kettle' })
+
+      expect(JSON.parse(localStorage.getItem('accessories-filter-v1')!).search).toBe('kettle')
+      expect(service.filterState().search).toBe('kettle')
+    })
+
+    it('changes the filter for this visit only when asked not to remember it', () => {
+      service.setFilterState({ ...DEFAULT_FILTER_STATE, search: 'kettle' }, false)
+
+      expect(service.filterState().search).toBe('kettle')
+      expect(localStorage.getItem('accessories-filter-v1')).toBeNull()
+    })
+
+    it('still works when storage refuses to save', () => {
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        throw new Error('quota')
+      })
+
+      expect(() => service.setFilterState({ ...DEFAULT_FILTER_STATE, search: 'kettle' })).not.toThrow()
+      expect(service.filterState().search).toBe('kettle')
     })
   })
 

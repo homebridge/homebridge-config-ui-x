@@ -10,12 +10,16 @@ import { takeUntil } from 'rxjs/operators'
 
 import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
+import { AccessoryFilterState, DEFAULT_FILTER_STATE } from '@/app/core/accessories/filters/accessory-filters'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
 import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ACCESSORY_INFO_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { HttpErrorService } from '@/app/core/utilities/http-error.service'
+
+/** localStorage key for the accessories page filter, grouping and sort */
+const FILTER_STORAGE_KEY = 'accessories-filter-v1'
 
 @Injectable({
   providedIn: 'root',
@@ -65,7 +69,8 @@ export class AccessoriesService {
   public accessoryLayout!: AccessoryLayout
   private originalLayout!: AccessoryLayout
   public readonly availableBridges = signal<string[]>([])
-  public readonly selectedBridges = signal<string[] | null>(null)
+  /** Filter, grouping and sort for the accessories page. Lives here so it survives navigation. */
+  public readonly filterState = signal<AccessoryFilterState>(this.loadFilterState())
   public bridgeUsernameToNameMap: Map<string, string> = new Map()
   public readonly rooms = signal<Array<{
     name: string
@@ -325,6 +330,37 @@ export class AccessoriesService {
   }
 
   /**
+   * Set the page filter. Pass persist = false to change it for this visit only,
+   * for example while manage-layout mode forces the default filter.
+   */
+  public setFilterState(state: AccessoryFilterState, persist = true): void {
+    this.filterState.set(state)
+    if (!persist) {
+      return
+    }
+    try {
+      localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(state))
+    } catch {
+      // Storage unavailable (private window or blocked): the filter still works for this visit
+    }
+  }
+
+  private loadFilterState(): AccessoryFilterState {
+    try {
+      const raw = localStorage.getItem(FILTER_STORAGE_KEY)
+      if (raw) {
+        return {
+          ...DEFAULT_FILTER_STATE,
+          ...JSON.parse(raw),
+        }
+      }
+    } catch {
+      // Corrupt or unavailable storage: start from the defaults
+    }
+    return { ...DEFAULT_FILTER_STATE }
+  }
+
+  /**
    * Move a service to the end of another room, then save the layout.
    * The service object itself is moved, so its custom fields come with it.
    * Does nothing if the service or room is unknown, or it is already in that room.
@@ -333,6 +369,42 @@ export class AccessoriesService {
     if (this.moveServiceInLayout(uniqueId, roomName)) {
       this.saveLayout()
     }
+  }
+
+  /**
+   * Move several services to another room, then save the layout once.
+   * Services that are unknown or already in that room are skipped.
+   */
+  public moveServicesToRoom(uniqueIds: string[], roomName: string): void {
+    let moved = false
+    for (const uniqueId of uniqueIds) {
+      moved = this.moveServiceInLayout(uniqueId, roomName) || moved
+    }
+    if (moved) {
+      this.saveLayout()
+    }
+  }
+
+  /**
+   * Set hidden and/or onDashboard on several services, then save the layout once.
+   * Services are replaced with copies so the tiles re-render.
+   */
+  public updateServicesFlags(uniqueIds: string[], flags: { hidden?: boolean, onDashboard?: boolean }): void {
+    const ids = new Set(uniqueIds)
+    const found = this.rooms().some(room => room.services.some(service => ids.has(service.uniqueId ?? '')))
+    if (!found) {
+      return
+    }
+    this.rooms.update(current => current.map(room => ({
+      ...room,
+      services: room.services.map(service => ids.has(service.uniqueId ?? '')
+        ? {
+            ...service,
+            ...flags,
+          }
+        : service),
+    })))
+    this.saveLayout()
   }
 
   /**
