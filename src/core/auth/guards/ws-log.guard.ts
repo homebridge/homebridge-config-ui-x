@@ -51,6 +51,9 @@ export class WsLogGuard implements CanActivate {
         throw new Error('User no longer valid')
       }
 
+      // so the log stops for this socket if its user is deleted or revoked while it only listens
+      this.authService.trackSocket(client, payload)
+
       return this.configService.restrictLogsToAdmins
         ? Boolean(payload.admin)
         : true

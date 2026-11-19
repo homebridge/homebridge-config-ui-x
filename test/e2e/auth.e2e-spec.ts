@@ -3,6 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
+import { EventEmitter } from 'node:events'
 import { chmod, readdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
@@ -1659,6 +1660,100 @@ describe('AuthController (e2e)', () => {
       }
     },
   )
+
+  describe('sockets of a session which has ended', () => {
+    // The guards only run when a socket sends a message. What the server pushes afterwards (status updates,
+    // the log) passes no guard, so a deleted user's open tab kept receiving until it closed.
+    function socketFor(token: string) {
+      const client: any = new EventEmitter()
+      client.handshake = {
+        auth: { token },
+      }
+      client.disconnect = vi.fn()
+      const context: any = {
+        switchToWs: () => ({
+          getClient: () => client,
+        }),
+      }
+      return { client, context }
+    }
+
+    async function addMember(username: string, admin = false) {
+      const created: any = await authService.addUser({
+        name: username,
+        username,
+        password: `${username}-pw`,
+        admin,
+      } as any)
+      const { access_token } = await authService.signIn(username, `${username}-pw`)
+      return { id: created.id as number, token: access_token as string }
+    }
+
+    it('closes the listening sockets of a deleted user, and no others', async () => {
+      const member = await addMember('socket-member')
+      const status = socketFor(member.token)
+      const log = socketFor(member.token)
+      const admin = socketFor((await authService.signIn('admin', 'admin')).access_token)
+
+      configService.restrictLogsToAdmins = false
+      expect(await app.get(WsGuard).canActivate(status.context)).toBe(true)
+      expect(await app.get(WsLogGuard).canActivate(log.context)).toBe(true)
+      expect(await app.get(WsGuard).canActivate(admin.context)).toBe(true)
+
+      await authService.deleteUser(member.id)
+
+      // the connection itself is closed (true), and with it every namespace the browser opened over it
+      expect(status.client.disconnect).toHaveBeenCalledExactlyOnceWith(true)
+      expect(log.client.disconnect).toHaveBeenCalledExactlyOnceWith(true)
+      expect(admin.client.disconnect).not.toHaveBeenCalled()
+
+      // a closed socket is forgotten: the next change to the users does not touch it again
+      await addMember('socket-bystander')
+      expect(status.client.disconnect).toHaveBeenCalledTimes(1)
+      expect(admin.client.disconnect).not.toHaveBeenCalled()
+    })
+
+    it('closes the sockets of a user whose password an admin changed', async () => {
+      const member = await addMember('socket-password')
+      const socket = socketFor(member.token)
+      expect(await app.get(WsGuard).canActivate(socket.context)).toBe(true)
+
+      await authService.updateUser(member.id, { name: 'socket-password', username: 'socket-password', password: 'another-pw-123' } as any)
+
+      expect(socket.client.disconnect).toHaveBeenCalledExactlyOnceWith(true)
+    })
+
+    it('closes the sockets of an administrator who was demoted', async () => {
+      const member = await addMember('socket-admin', true)
+      const socket = socketFor(member.token)
+      expect(await app.get(WsAdminGuard).canActivate(socket.context)).toBe(true)
+
+      await authService.updateUser(member.id, { name: 'socket-admin', username: 'socket-admin', admin: false } as any)
+
+      expect(socket.client.disconnect).toHaveBeenCalledExactlyOnceWith(true)
+    })
+
+    it('closes the sockets of a user who logged out everywhere', async () => {
+      const member = await addMember('socket-logout')
+      const socket = socketFor(member.token)
+      expect(await app.get(WsGuard).canActivate(socket.context)).toBe(true)
+
+      await authService.revokeUserSessions('socket-logout')
+
+      expect(socket.client.disconnect).toHaveBeenCalledExactlyOnceWith(true)
+    })
+
+    it('leaves a socket alone which has already closed by itself', async () => {
+      const member = await addMember('socket-closed')
+      const socket = socketFor(member.token)
+      expect(await app.get(WsGuard).canActivate(socket.context)).toBe(true)
+
+      socket.client.emit('disconnect')
+      await authService.deleteUser(member.id)
+
+      expect(socket.client.disconnect).not.toHaveBeenCalled()
+    })
+  })
 
   afterAll(async () => {
     await app.close()

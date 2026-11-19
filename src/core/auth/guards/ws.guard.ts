@@ -52,6 +52,8 @@ export class WsGuard implements CanActivate {
         throw new Error('User no longer valid')
       }
       setWsUser(client, payload)
+      // so the socket is closed if this user is deleted or revoked while it only listens
+      this.authService.trackSocket(client, payload)
       return true
     } catch (e) {
       client.disconnect()

@@ -86,6 +86,10 @@ export class AuthService {
   // is not a file read each time. Cleared by invalidateUserCache() on writes.
   private userCache = new NodeCache({ stdTTL: USER_CACHE_TTL_SECONDS })
 
+  // Every socket a websocket guard has let through, with the token payload it was checked with.
+  // See trackSocket() and disconnectRevokedSockets().
+  private trackedSockets = new Map<any, any>()
+
   // Synchronous reservation flag for first-user setup, so two concurrent
   // onboarding requests cannot both create an administrator. See setupFirstUser.
   private firstUserSetupInProgress = false
@@ -740,7 +744,56 @@ export class AuthService {
     // that has to drop the token-validation cache. Without it a deletion or
     // demotion would not take effect until the cache expired.
     this.invalidateUserCache()
+    // ... and the one place that has to close the sockets the write made invalid.
+    await this.disconnectRevokedSockets()
     return result as R
+  }
+
+  /**
+   * Remember a socket that a websocket guard has just let through.
+   *
+   * The guards run when a socket SENDS a message. What the server pushes to a
+   * socket afterwards (status updates, the log) passes no guard, so a socket
+   * that only listens was never checked again: a deleted user's open tab kept
+   * receiving until it closed. Keeping the sockets here lets a change to the
+   * auth file close the ones it made invalid (see disconnectRevokedSockets).
+   *
+   * @param client - the socket.io socket
+   * @param payload - the verified token payload the guard checked it with
+   */
+  trackSocket(client: any, payload: any): void {
+    if (!client || this.trackedSockets.has(client)) {
+      return
+    }
+    this.trackedSockets.set(client, payload)
+    client.once?.('disconnect', () => this.trackedSockets.delete(client))
+  }
+
+  /**
+   * Close every tracked socket whose token is no longer valid: its user was
+   * deleted, renamed or demoted, or its sessions were revoked (password
+   * change, 2fa, logout everywhere). Sockets with a token that still passes
+   * are left alone, so this can run after every write to the auth file.
+   */
+  private async disconnectRevokedSockets(): Promise<void> {
+    for (const [client, payload] of this.trackedSockets) {
+      let valid = false
+      try {
+        valid = !!await this.validateUser(payload)
+      } catch {
+        // a socket that cannot be checked is treated as invalid
+      }
+      if (valid) {
+        continue
+      }
+      this.trackedSockets.delete(client)
+      try {
+        // true: close the connection itself, and with it every namespace the browser opened over it
+        client.disconnect(true)
+      } catch (e) {
+        this.logger.warn(`Failed to close a socket of '${payload?.username}' after its session ended: ${e.message}`)
+      }
+    }
   }
 
   /**
