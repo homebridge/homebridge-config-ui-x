@@ -45,6 +45,7 @@ export class ConfigService {
   public secretPath = resolve(this.storagePath, '.uix-secrets')
   public authPath = resolve(this.storagePath, 'auth.json')
   public accessoryLayoutPath = resolve(this.storagePath, 'accessories', 'uiAccessoriesLayout.json')
+  public accessoryViewsPath = resolve(this.storagePath, 'accessory-views.json')
   public configBackupPath = resolve(this.storagePath, 'backups/config-backups')
   public instanceBackupPath = resolve(this.storagePath, 'backups/instance-backups')
   public homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1')

@@ -6,7 +6,7 @@ import { buildBatteryIndex } from '@/app/core/accessories/filters/accessory-batt
 import { characteristic } from '@/testing'
 
 import { batteryService, hap, matter } from './accessory-filter.fixture'
-import { DEFAULT_FILTER_STATE, groupAndSort, isFilterActive, matchesFilter } from './accessory-filters'
+import { DEFAULT_FILTER_STATE, FLOOR_OTHER_KEY, groupAndSort, isFilterActive, matchesFilter } from './accessory-filters'
 
 function state(overrides: Partial<AccessoryFilterState> = {}): AccessoryFilterState {
   return {
@@ -469,5 +469,184 @@ describe('groupAndSort', () => {
     const elapsed = performance.now() - started
     expect(groups.length).toBe(10)
     expect(elapsed).toBeLessThan(50)
+  })
+})
+
+describe('labels', () => {
+  const lamp = hap({ type: 'Lightbulb', customName: 'Lamp', uniqueId: 'lamp' })
+  const fan = hap({ type: 'Fan', customName: 'Fan', uniqueId: 'fan' })
+  const labels = new Map([
+    [
+      'lamp',
+      ['Bedtime', 'Guest'],
+    ],
+    [
+      'fan',
+      ['Guest'],
+    ],
+  ])
+
+  it('counts a label as an active filter', () => {
+    expect(isFilterActive(state({
+      labels: ['Guest'],
+    }))).toBe(true)
+    expect(isFilterActive(state())).toBe(false)
+  })
+
+  it('matches a service carrying any selected label', () => {
+    expect(matchesFilter(lamp, 'Kitchen', state({
+      labels: ['Bedtime'],
+    }), emptyIndex, { labels })).toBe(true)
+    expect(matchesFilter(fan, 'Kitchen', state({
+      labels: ['Bedtime'],
+    }), emptyIndex, { labels })).toBe(false)
+    expect(matchesFilter(fan, 'Kitchen', state({
+      labels: ['Bedtime', 'Guest'],
+    }), emptyIndex, { labels })).toBe(true)
+  })
+
+  it('matches nothing with a label filter and no label index', () => {
+    expect(matchesFilter(lamp, 'Kitchen', state({
+      labels: ['Guest'],
+    }), emptyIndex)).toBe(false)
+  })
+})
+
+describe('pinned and excluded accessories', () => {
+  const lamp = hap({ type: 'Lightbulb', customName: 'Lamp', uniqueId: 'lamp' })
+  const fan = hap({ type: 'Fan', customName: 'Fan', uniqueId: 'fan' })
+  const hidden = hap({
+    type: 'Switch',
+    customName: 'Hidden',
+    uniqueId: 'sw',
+    hidden: true,
+  })
+
+  it('shows a pinned accessory even when the filter excludes it', () => {
+    const context = {
+      pinned: new Set(['fan']),
+    }
+    expect(matchesFilter(fan, 'Kitchen', state({
+      categories: ['lights'],
+    }), emptyIndex, context)).toBe(true)
+    expect(matchesFilter(lamp, 'Kitchen', state({
+      categories: ['lights'],
+    }), emptyIndex, context)).toBe(true)
+  })
+
+  it('never shows an excluded accessory, even when the filter allows it', () => {
+    const context = {
+      excluded: new Set(['lamp']),
+    }
+    expect(matchesFilter(lamp, 'Kitchen', state(), emptyIndex, context)).toBe(false)
+  })
+
+  it('shows a pinned hidden accessory without showing hidden ones', () => {
+    expect(matchesFilter(hidden, 'Kitchen', state(), emptyIndex)).toBe(false)
+    expect(matchesFilter(hidden, 'Kitchen', state(), emptyIndex, {
+      pinned: new Set(['sw']),
+    })).toBe(true)
+  })
+
+  it('applies to grouped output', () => {
+    const groups = groupAndSort(
+      [
+        {
+          name: 'Kitchen',
+          services: [lamp, fan],
+        },
+      ],
+      state({
+        categories: ['lights'],
+      }),
+      emptyIndex,
+      {
+        pinned: new Set(['fan']),
+        excluded: new Set(['lamp']),
+      },
+    )
+    expect(ids(groups)).toEqual([
+      ['fan'],
+    ])
+  })
+})
+
+describe('groupBy floor', () => {
+  const kitchenLamp = hap({ type: 'Lightbulb', customName: 'Kitchen Lamp', uniqueId: 'kl' })
+  const hallSwitch = hap({ type: 'Switch', customName: 'Hall Switch', uniqueId: 'hs' })
+  const shedFan = hap({ type: 'Fan', customName: 'Shed Fan', uniqueId: 'sf' })
+  const rooms = [
+    {
+      name: 'Kitchen',
+      services: [kitchenLamp],
+    },
+    {
+      name: 'Hall',
+      services: [hallSwitch],
+    },
+    {
+      name: 'Shed',
+      services: [shedFan],
+    },
+  ]
+
+  it('builds one group per floor in saved order, with the rooms on no floor last under Other', () => {
+    const groups = groupAndSort(rooms, state({ groupBy: 'floor' }), emptyIndex, {
+      floors: [
+        {
+          name: 'Upstairs',
+          rooms: ['Hall'],
+        },
+        {
+          name: 'Ground',
+          rooms: ['Kitchen'],
+        },
+      ],
+    })
+    expect(groups.map(group => group.label)).toEqual(['Upstairs', 'Ground', 'accessories.floors.other'])
+    expect(groups.map(group => group.key)).toEqual(['floor:Upstairs', 'floor:Ground', FLOOR_OTHER_KEY])
+    expect(ids(groups)).toEqual([
+      ['hs'],
+      ['kl'],
+      ['sf'],
+    ])
+  })
+
+  it('drops empty floors and the Other group when it has nothing in it', () => {
+    const groups = groupAndSort(rooms, state({ groupBy: 'floor' }), emptyIndex, {
+      floors: [
+        { name: 'Empty', rooms: [] },
+        {
+          name: 'Ground',
+          rooms: ['Kitchen', 'Hall', 'Shed'],
+        },
+      ],
+    })
+    expect(groups.map(group => group.label)).toEqual(['Ground'])
+  })
+
+  it('puts every room under Other when there are no floors', () => {
+    const groups = groupAndSort(rooms, state({ groupBy: 'floor' }), emptyIndex)
+    expect(groups).toHaveLength(1)
+    expect(groups[0].key).toBe(FLOOR_OTHER_KEY)
+    expect(ids(groups)).toEqual([
+      ['kl', 'hs', 'sf'],
+    ])
+  })
+
+  it('keeps a room on its first floor when it is listed twice', () => {
+    const groups = groupAndSort(rooms, state({ groupBy: 'floor' }), emptyIndex, {
+      floors: [
+        {
+          name: 'A',
+          rooms: ['Kitchen'],
+        },
+        {
+          name: 'B',
+          rooms: ['Kitchen'],
+        },
+      ],
+    })
+    expect(groups.map(group => group.label)).toEqual(['A', 'accessories.floors.other'])
   })
 })

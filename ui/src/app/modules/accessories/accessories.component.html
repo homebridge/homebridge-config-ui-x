@@ -44,9 +44,16 @@
       [total]="totalCount()"
       [manageLayoutActive]="manageLayoutMode"
       [selectActive]="selectMode()"
+      [customViews]="views()"
+      [labels]="labels()"
+      [username]="username"
+      [activeViewId]="activeViewId()"
       (filterChange)="onFilterChange($event)"
       (manageLayoutToggle)="toggleManageLayout()"
       (selectToggle)="toggleSelectMode()"
+      (viewSelect)="onViewSelect($event)"
+      (saveView)="onSaveView($event)"
+      (manageViews)="openManageViews()"
     />
 
     @if (selectMode()) {
@@ -191,7 +198,7 @@
                   ></i>
                 </button>
                 <h5 class="primary-text room-title m-0 mb-1 mb-sm-0 d-flex align-items-baseline flex-wrap">
-                  @if (filter().groupBy === 'category') {
+                  @if (filter().groupBy === 'category' || group.key === floorOtherKey) {
                     {{ group.label | translate }}
                   } @else {
                     {{ group.label }}

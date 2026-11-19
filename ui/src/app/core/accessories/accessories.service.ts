@@ -6,11 +6,12 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subject } from 'rxjs'
-import { takeUntil } from 'rxjs/operators'
+import { takeUntil, timeout } from 'rxjs/operators'
 
 import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
-import { AccessoryFilterState, DEFAULT_FILTER_STATE } from '@/app/core/accessories/filters/accessory-filters'
+import { AccessoryFilterState, DEFAULT_FILTER_STATE, FilterContext } from '@/app/core/accessories/filters/accessory-filters'
+import { AccessoryFloor, AccessoryView } from '@/app/core/accessories/filters/accessory-views'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
 import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
@@ -20,6 +21,10 @@ import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 
 /** localStorage key for the accessories page filter, grouping and sort */
 const FILTER_STORAGE_KEY = 'accessories-filter-v1'
+/** Quiet time after the last views, labels or floors change before they are sent */
+const VIEWS_SAVE_DELAY = 300
+/** How long to wait for `get-views` before giving up on the saved views */
+const VIEWS_LOAD_TIMEOUT = 10000
 
 @Injectable({
   providedIn: 'root',
@@ -61,7 +66,13 @@ export class AccessoriesService {
     'History', // Eve History
   ])
 
+  private viewsSaveTimer: ReturnType<typeof setTimeout> | null = null
+  // Saves are held back until the saved views have loaded, so a failed load can never
+  // overwrite what the server holds with an empty list
+  private viewsLoaded = false
+
   public layoutSaved = new Subject()
+  public viewsSaved = new Subject<void>()
   public accessoryData = new Subject()
   public hapReadyForControl = false
   public matterReadyForControl = false
@@ -77,6 +88,15 @@ export class AccessoriesService {
     isDefault?: boolean
     services: ServiceTypeX[]
   }>>([])
+
+  /** The user's saved views, plus the views shared with them by others */
+  public readonly views = signal<AccessoryView[]>([])
+  /** uniqueId -> labels for each accessory that has any */
+  public readonly labels = signal<Record<string, string[]>>({})
+  /** Floors, each with the rooms on it */
+  public readonly floors = signal<AccessoryFloor[]>([])
+  /** The view applied on the accessories page, or null. Holds its pinned and excluded accessories. */
+  public readonly activeViewId = signal<string | null>(null)
 
   constructor() {
     if (this.$auth.user.admin) {
@@ -180,6 +200,11 @@ export class AccessoriesService {
       }
 
       this.saveLayout()
+
+      // Labels are staged in the modal too, and go out with the same Save
+      if (Array.isArray(result.labels)) {
+        this.setLabels(updated.uniqueId ?? '', result.labels)
+      }
     } catch {
       // Modal dismissed - do not save
     }
@@ -194,6 +219,9 @@ export class AccessoriesService {
     // Complete all subscriptions
     this.stop$.next()
     this.stop$.complete()
+
+    // Send any views, labels or floors still waiting out their debounce while the socket is open
+    this.flushViewsSave()
 
     // Mark the session inactive so any in-flight `accessories-data` event that
     // lands between `io.end()` and the socket actually closing is dropped
@@ -225,6 +253,10 @@ export class AccessoriesService {
     this.ambiguousNameIds.clear()
     this.accessoryLayout = undefined as any
     this.originalLayout = undefined as any
+    this.views.set([])
+    this.labels.set({})
+    this.floors.set([])
+    this.viewsLoaded = false
 
     // Reset the internal unsubscribe channel for the next session. The public
     // Subjects persist for the lifetime of this singleton service.
@@ -320,6 +352,8 @@ export class AccessoriesService {
     this.listen('matter-accessories-ready-for-control', () => {
       this.matterReadyForControl = true
     })
+
+    await this.loadViews()
   }
 
   /**
@@ -458,6 +492,347 @@ export class AccessoriesService {
       { name: trimmed, isDefault: false, services: [] },
     ])
     return true
+  }
+
+  /**
+   * Load the saved views, labels and floors. A failure leaves them empty and blocks saving,
+   * so the page still works without them.
+   */
+  private async loadViews(): Promise<void> {
+    try {
+      const payload = await firstValueFrom(this.io.request('get-views').pipe(timeout(VIEWS_LOAD_TIMEOUT)))
+      if (!payload || typeof payload !== 'object') {
+        throw new Error('No saved views in the reply')
+      }
+      this.views.set(Array.isArray(payload.views)
+        ? payload.views
+        : [])
+      this.labels.set(payload.labels && typeof payload.labels === 'object'
+        ? payload.labels
+        : {})
+      this.floors.set(Array.isArray(payload.floors)
+        ? payload.floors
+        : [])
+      this.viewsLoaded = true
+    } catch (error) {
+      console.warn('Could not load saved accessory views:', error)
+      this.views.set([])
+      this.labels.set({})
+      this.floors.set([])
+      this.viewsLoaded = false
+    }
+  }
+
+  /** Whether the current user made a view, as opposed to having it shared with them */
+  public isOwnView(view: AccessoryView): boolean {
+    return !view.owner || view.owner === this.$auth.user.username
+  }
+
+  /**
+   * Save views, labels and floors after a short quiet time, so a burst of changes is one request
+   */
+  public saveViews(): void {
+    if (this.viewsSaveTimer !== null) {
+      clearTimeout(this.viewsSaveTimer)
+    }
+    this.viewsSaveTimer = setTimeout(() => {
+      this.viewsSaveTimer = null
+      this.saveViewsNow()
+    }, VIEWS_SAVE_DELAY)
+  }
+
+  /** Send any save still waiting out its quiet time, now */
+  private flushViewsSave(): void {
+    if (this.viewsSaveTimer !== null) {
+      clearTimeout(this.viewsSaveTimer)
+      this.viewsSaveTimer = null
+      this.saveViewsNow()
+    }
+  }
+
+  /**
+   * Send the user's own views (owner stripped, the server sets it), with the labels and floors
+   */
+  private saveViewsNow(): void {
+    if (!this.sessionActive || !this.viewsLoaded) {
+      return
+    }
+
+    const views = this.views()
+      .filter(view => this.isOwnView(view))
+      .map(view => ({
+        ...view,
+        owner: undefined,
+      }))
+
+    this.io.request('save-views', {
+      views,
+      labels: this.labels(),
+      floors: this.floors(),
+    })
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe({
+        next: () => this.viewsSaved.next(),
+        error: (error) => {
+          console.error(error)
+          this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+        },
+      })
+  }
+
+  /**
+   * The views, labels and floors as a filter context, for matching and grouping
+   */
+  public filterContext(): FilterContext {
+    const view = this.views().find(entry => entry.id === this.activeViewId())
+    return {
+      labels: new Map(Object.entries(this.labels())),
+      floors: this.floors(),
+      pinned: new Set(view?.pinned ?? []),
+      excluded: new Set(view?.excluded ?? []),
+    }
+  }
+
+  /**
+   * Save the current filter as a new view of the user's own. Returns its id, or null for a blank name.
+   */
+  public createViewFromState(name: string, state: Partial<AccessoryFilterState>): string | null {
+    const trimmed = name.trim()
+    if (!trimmed) {
+      return null
+    }
+
+    const id = `view-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
+    this.views.update(current => [
+      ...current,
+      {
+        id,
+        name: trimmed,
+        state: JSON.parse(JSON.stringify(state)),
+        pinned: [],
+        excluded: [],
+        shared: false,
+      },
+    ])
+    this.saveViews()
+    return id
+  }
+
+  /**
+   * Change a view's name, state, pinned or excluded accessories. Only the user's own views change.
+   */
+  public updateView(id: string, patch: Partial<Pick<AccessoryView, 'name' | 'state' | 'pinned' | 'excluded'>>): boolean {
+    const view = this.views().find(entry => entry.id === id)
+    if (!view || !this.isOwnView(view)) {
+      return false
+    }
+
+    const trimmed = patch.name?.trim()
+    this.views.update(current => current.map(entry => entry.id === id
+      ? {
+          ...entry,
+          ...patch,
+          ...(trimmed
+            ? { name: trimmed }
+            : {}),
+        }
+      : entry))
+    this.saveViews()
+    return true
+  }
+
+  /** Delete one of the user's own views. Clears it as the active view if it was. */
+  public deleteView(id: string): boolean {
+    const view = this.views().find(entry => entry.id === id)
+    if (!view || !this.isOwnView(view)) {
+      return false
+    }
+
+    this.views.update(current => current.filter(entry => entry.id !== id))
+    if (this.activeViewId() === id) {
+      this.activeViewId.set(null)
+    }
+    this.saveViews()
+    return true
+  }
+
+  /** Move a view one place up (-1) or down (1) in the list. Does nothing at either end. */
+  public reorderViews(id: string, direction: -1 | 1): boolean {
+    const current = this.views()
+    const index = current.findIndex(entry => entry.id === id)
+    const target = index + direction
+    if (index === -1 || target < 0 || target >= current.length) {
+      return false
+    }
+
+    const next = [...current]
+    ;[next[index], next[target]] = [next[target], next[index]]
+    this.views.set(next)
+    this.saveViews()
+    return true
+  }
+
+  /** Share one of the user's own views with others, or stop sharing it */
+  public toggleShare(id: string): boolean {
+    const view = this.views().find(entry => entry.id === id)
+    if (!view || !this.isOwnView(view)) {
+      return false
+    }
+
+    this.views.update(current => current.map(entry => entry.id === id
+      ? {
+          ...entry,
+          shared: !entry.shared,
+        }
+      : entry))
+    this.saveViews()
+    return true
+  }
+
+  /**
+   * Set an accessory's labels. Blank and repeated labels are dropped. Nothing is sent if nothing changed.
+   */
+  public setLabels(uniqueId: string, labels: string[]): void {
+    if (!uniqueId) {
+      return
+    }
+
+    const cleaned = [
+      ...new Set(labels.map(label => label.trim()).filter(label => label !== '')),
+    ]
+    const current = this.labels()
+    if (JSON.stringify(current[uniqueId] ?? []) === JSON.stringify(cleaned)) {
+      return
+    }
+
+    const next = { ...current }
+    if (cleaned.length) {
+      next[uniqueId] = cleaned
+    } else {
+      delete next[uniqueId]
+    }
+    this.labels.set(next)
+    this.saveViews()
+  }
+
+  /**
+   * Put a room on a floor, or on none (null). It leaves any other floor it was on.
+   * A floor name that does not exist yet is created.
+   */
+  public setRoomFloor(room: string, floor: string | null): void {
+    const name = floor?.trim() ?? ''
+    const before = JSON.stringify(this.floors())
+
+    let floors = this.floors().map(entry => ({
+      ...entry,
+      rooms: entry.rooms.filter(existing => existing !== room),
+    }))
+
+    if (name) {
+      const lowered = name.toLowerCase()
+      const existing = floors.find(entry => entry.name.toLowerCase() === lowered)
+      if (existing) {
+        floors = floors.map(entry => entry === existing
+          ? {
+              ...entry,
+              rooms: [...entry.rooms, room],
+            }
+          : entry)
+      } else {
+        floors = [
+          ...floors,
+          {
+            name,
+            rooms: [room],
+          },
+        ]
+      }
+    }
+
+    if (JSON.stringify(floors) === before) {
+      return
+    }
+    this.floors.set(floors)
+    this.saveViews()
+  }
+
+  /** Add an empty floor. Returns false for a blank or a duplicate name. */
+  public addFloor(name: string): boolean {
+    const trimmed = name.trim()
+    const lowered = trimmed.toLowerCase()
+    if (!trimmed || this.floors().some(entry => entry.name.toLowerCase() === lowered)) {
+      return false
+    }
+
+    this.floors.update(current => [
+      ...current,
+      {
+        name: trimmed,
+        rooms: [],
+      },
+    ])
+    this.saveViews()
+    return true
+  }
+
+  /** Rename a floor. Returns false for a blank name, an unknown floor, or a name another floor has. */
+  public renameFloor(from: string, to: string): boolean {
+    const trimmed = to.trim()
+    const lowered = trimmed.toLowerCase()
+    if (!trimmed || !this.floors().some(entry => entry.name === from)) {
+      return false
+    }
+    if (trimmed !== from && this.floors().some(entry => entry.name.toLowerCase() === lowered)) {
+      return false
+    }
+
+    this.floors.update(current => current.map(entry => entry.name === from
+      ? {
+          ...entry,
+          name: trimmed,
+        }
+      : entry))
+    this.saveViews()
+    return true
+  }
+
+  /** Delete a floor. Its rooms stay where they are, on no floor. */
+  public deleteFloor(name: string): boolean {
+    if (!this.floors().some(entry => entry.name === name)) {
+      return false
+    }
+    this.floors.update(current => current.filter(entry => entry.name !== name))
+    this.saveViews()
+    return true
+  }
+
+  /** Follow a room rename into the floors */
+  public renameRoomInFloors(from: string, to: string): void {
+    if (from === to) {
+      return
+    }
+    const before = JSON.stringify(this.floors())
+    this.floors.update(current => current.map(entry => ({
+      ...entry,
+      rooms: entry.rooms.map(room => room === from
+        ? to
+        : room),
+    })))
+    if (JSON.stringify(this.floors()) !== before) {
+      this.saveViews()
+    }
+  }
+
+  /** Follow a room delete into the floors */
+  public removeRoomFromFloors(room: string): void {
+    const before = JSON.stringify(this.floors())
+    this.floors.update(current => current.map(entry => ({
+      ...entry,
+      rooms: entry.rooms.filter(existing => existing !== room),
+    })))
+    if (JSON.stringify(this.floors()) !== before) {
+      this.saveViews()
+    }
   }
 
   /**

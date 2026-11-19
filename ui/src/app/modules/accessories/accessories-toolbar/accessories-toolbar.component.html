@@ -25,8 +25,42 @@
           {{ view.labelKey | translate }}
         </button>
       }
+      @for (view of customViews(); track view.id) {
+        <button
+          type="button"
+          class="btn btn-elegant accessories-custom-view"
+          [class.active]="activeViewId() === view.id"
+          [attr.aria-pressed]="activeViewId() === view.id"
+          (click)="applyCustomView(view)"
+        >
+          @if (isSharedWithMe(view)) {
+            <i class="fas fa-share-nodes me-1" aria-hidden="true"></i>
+          }
+          {{ view.name }}
+          @if (isSharedWithMe(view)) {
+            <span class="small text-secondary ms-1">{{
+              'accessories.views.shared_by' | translate: { owner: view.owner }
+            }}</span>
+          } @else if (view.shared) {
+            <i
+              class="fas fa-share-nodes ms-1"
+              role="img"
+              [attr.aria-label]="'accessories.views.shared' | translate"
+            ></i>
+          }
+        </button>
+      }
     </div>
     <div class="ms-auto d-flex align-items-center gap-2">
+      <button
+        type="button"
+        class="btn btn-sm btn-elegant my-0"
+        [attr.aria-label]="'accessories.views.manage' | translate"
+        (click)="manageViews.emit()"
+      >
+        <i class="fas fa-layer-group" aria-hidden="true"></i>
+        <span class="ms-1 d-none d-md-inline">{{ 'accessories.views.manage' | translate }}</span>
+      </button>
       <button
         type="button"
         class="btn btn-sm btn-elegant my-0"
@@ -82,6 +116,14 @@
       <button
         type="button"
         class="btn btn-sm btn-link p-0"
+        [attr.aria-label]="'accessories.views.save' | translate"
+        (click)="openSaveView()"
+      >
+        {{ 'accessories.views.save' | translate }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-link p-0"
         [attr.aria-label]="'accessories.toolbar.clear' | translate"
         (click)="clear()"
       >
@@ -89,6 +131,37 @@
       </button>
     }
   </div>
+
+  @if (saveFormOpen()) {
+    <div
+      class="d-flex flex-wrap align-items-center gap-2 mb-2"
+      role="group"
+      [attr.aria-label]="'accessories.views.save' | translate"
+    >
+      <input
+        type="text"
+        class="form-control form-control-sm accessories-view-name"
+        autocomplete="off"
+        [value]="viewName()"
+        [placeholder]="'accessories.views.name_placeholder' | translate"
+        [attr.aria-label]="'accessories.views.name_placeholder' | translate"
+        (input)="onViewNameInput($event)"
+        (keyup.enter)="confirmSaveView()"
+        (keyup.escape)="cancelSaveView()"
+      />
+      <button
+        type="button"
+        class="btn btn-sm btn-primary my-0"
+        [disabled]="!viewName().trim()"
+        (click)="confirmSaveView()"
+      >
+        {{ 'accessories.views.save_button' | translate }}
+      </button>
+      <button type="button" class="btn btn-sm btn-elegant my-0" (click)="cancelSaveView()">
+        {{ 'form.button_cancel' | translate }}
+      </button>
+    </div>
+  }
 
   <div
     id="accessories-toolbar-chips"

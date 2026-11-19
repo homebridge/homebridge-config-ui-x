@@ -92,6 +92,41 @@
           </div>
         </li>
       }
+      <li class="list-group-item d-flex flex-column flex-md-row align-items-start">
+        <label for="label-input" class="mb-2 mb-md-0 w-100 w-md-50">{{ 'accessories.labels' | translate }}</label>
+        <div class="text-start text-md-end w-100 w-md-50">
+          @if (pendingLabels.length) {
+            <div class="d-flex flex-wrap gap-1 mb-2 justify-content-start justify-content-md-end">
+              @for (label of pendingLabels; track label) {
+                <span class="badge text-bg-secondary d-inline-flex align-items-center gap-1 accessory-label-chip">
+                  {{ label }}
+                  <button
+                    type="button"
+                    class="btn-close btn-close-white accessory-label-remove"
+                    [attr.aria-label]="'accessories.labels_remove' | translate: { label }"
+                    (click)="removeLabel(label)"
+                  ></button>
+                </span>
+              }
+            </div>
+          }
+          <input
+            id="label-input"
+            type="text"
+            autocomplete="off"
+            class="form-control custom-input"
+            list="label-suggestions"
+            [placeholder]="'accessories.labels_placeholder' | translate"
+            [(ngModel)]="labelDraft"
+            (keydown.enter)="$event.preventDefault(); addLabel()"
+          />
+          <datalist id="label-suggestions">
+            @for (suggestion of labelSuggestions; track suggestion) {
+              <option [value]="suggestion"></option>
+            }
+          </datalist>
+        </div>
+      </li>
       <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
         <span class="text-start" aria-hidden="true">{{ 'accessories.hide_this_accessory' | translate }}</span>
         <div class="text-end grey-text d-flex align-items-center">

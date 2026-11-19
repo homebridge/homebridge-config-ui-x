@@ -9,6 +9,10 @@ export interface EditRoomModalData {
   isDefault: boolean
   existingRooms: Array<{ name: string, isDefault?: boolean }>
   currentRoomIndex: number
+  /** Existing floor names, to choose from */
+  floors?: string[]
+  /** The floor this room is on, or null for none */
+  currentFloor?: string | null
 }
 
 export const ADD_ROOM_MODAL_DATA = new InjectionToken<AddRoomModalData>('ADD_ROOM_MODAL_DATA')

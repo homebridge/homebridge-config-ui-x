@@ -1,12 +1,15 @@
 import type { FakeApi, FakeIoNamespace, FakeModalService, FakeSettings, FakeToastr, FakeWs } from '@/testing'
 import type { ComponentFixture } from '@angular/core/testing'
 
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA, signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { Subject } from 'rxjs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { hap } from '@/app/core/accessories/filters/accessory-filter.fixture'
 import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
 import { CUSTOM_PLUGINS_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { CustomPluginsComponent } from '@/app/core/plugins/custom-plugins/custom-plugins.component'
@@ -14,7 +17,7 @@ import { CustomPluginsService } from '@/app/core/plugins/custom-plugins/custom-p
 import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
 import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 import { environment } from '@/environments/environment'
-import { activeModalStub, cachedAccessoriesStub, fakeApi, fakeWs, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
+import { activeModalStub, cachedAccessoriesStub, characteristic, fakeApi, fakeWs, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
 /**
@@ -40,6 +43,7 @@ describe('the custom plugin ui', () => {
   let modal: FakeModalService
   let activeModal: NgbActiveModal
   let accessoryCache: ReturnType<typeof cachedAccessoriesStub>
+  let accessories: { rooms: ReturnType<typeof signal<any[]>>, labels: ReturnType<typeof signal<Record<string, string[]>>>, layoutSaved: Subject<void>, viewsSaved: Subject<void> }
   let childBridges: { openCorrectRestartModalWithBridges: ReturnType<typeof vi.fn> }
   let managePlugins: { bridgeSettings: ReturnType<typeof vi.fn> }
 
@@ -86,6 +90,12 @@ describe('the custom plugin ui', () => {
       modal = modalServiceSpy()
       activeModal = activeModalStub()
       accessoryCache = cachedAccessoriesStub(options.hapCache ?? [], options.matterCache ?? [])
+      accessories = {
+        rooms: signal<any[]>([]),
+        labels: signal<Record<string, string[]>>({}),
+        layoutSaved: new Subject<void>(),
+        viewsSaved: new Subject<void>(),
+      }
       childBridges = {
         openCorrectRestartModalWithBridges: vi.fn(),
       }
@@ -100,6 +110,7 @@ describe('the custom plugin ui', () => {
           provideFakes({ api, ws, toastr, settings, modal }),
           { provide: NgbActiveModal, useValue: activeModal },
           { provide: CachedAccessoriesCacheService, useValue: accessoryCache },
+          { provide: AccessoriesService, useValue: accessories },
           { provide: ChildBridgesService, useValue: childBridges },
           { provide: ManagePluginsService, useValue: managePlugins },
           {
@@ -842,16 +853,118 @@ describe('the custom plugin ui', () => {
             name: 'Default Room',
             isDefault: true,
             services: [
-              { uniqueId: 'a1' },
+              {
+                uniqueId: 'a1',
+                customName: 'My Lamp',
+                category: 'other',
+                hidden: true,
+                labels: [],
+              },
             ],
           },
           {
             name: 'Kitchen',
             services: [
-              { uniqueId: 'b2' },
+              {
+                uniqueId: 'b2',
+                customName: 'Kettle',
+                category: 'other',
+                hidden: false,
+                labels: [],
+              },
             ],
           },
         ])
+      })
+
+      it('adds the category, custom type, labels and battery of each service, where known', async () => {
+        await open({
+          arrange: () => {
+            accessories.rooms.set([
+              {
+                name: 'Kitchen',
+                services: [
+                  hap({
+                    type: 'Lightbulb',
+                    customName: 'My Lamp',
+                    uniqueId: 'a1',
+                    characteristics: [
+                      characteristic('BatteryLevel', 15),
+                      characteristic('StatusLowBattery', 1),
+                      characteristic('ChargingState', 2),
+                    ],
+                  }),
+                ],
+              },
+            ])
+            api.respond('get', '/accessories/layout', [
+              {
+                name: 'Kitchen',
+                services: [
+                  {
+                    uniqueId: 'a1',
+                    name: 'Lamp',
+                    customName: 'My Lamp',
+                    customType: 'Lightbulb',
+                  },
+                  { uniqueId: 'b2', name: 'Heater', customType: 'Thermostat' },
+                ],
+              },
+            ])
+            api.respond('get', '/accessories/views', {
+              views: [],
+              labels: {
+                a1: ['Bedtime'],
+              },
+              floors: [],
+            })
+          },
+        })
+        await ready()
+
+        await post({ action: 'accessoryLayout.get', requestId: 'r1' })
+
+        const [first, second] = lastReply()?.data[0].services
+        expect(first).toEqual({
+          uniqueId: 'a1',
+          customName: 'My Lamp',
+          customType: 'Lightbulb',
+          category: 'lights',
+          hidden: false,
+          labels: ['Bedtime'],
+          battery: { level: 15, low: true, charging: false },
+        })
+        expect(second).toEqual({
+          uniqueId: 'b2',
+          customType: 'Thermostat',
+          category: 'climate',
+          hidden: false,
+          labels: [],
+        })
+      })
+
+      it('still answers when the views cannot be read, using the page labels', async () => {
+        await open({
+          arrange: () => {
+            accessories.labels.set({
+              b2: ['Guest'],
+            })
+            api.respond('get', '/accessories/layout', [
+              {
+                name: 'Kitchen',
+                services: [
+                  { uniqueId: 'b2', name: 'Kettle' },
+                ],
+              },
+            ])
+          },
+        })
+        await ready()
+
+        await post({ action: 'accessoryLayout.get', requestId: 'r1' })
+
+        expect(lastReply()).toMatchObject({ success: true })
+        expect(lastReply()?.data[0].services[0].labels).toEqual(['Guest'])
       })
 
       it('answers with an error rather than leaving the request hanging', async () => {
@@ -869,6 +982,84 @@ describe('the custom plugin ui', () => {
           success: false,
           data: { message: 'layout down' },
         })
+      })
+    })
+
+    describe('the accessory views', () => {
+      it('returns the saved views as the server gives them', async () => {
+        const payload = {
+          views: [
+            {
+              id: 'v1',
+              name: 'Downstairs',
+              state: { groupBy: 'floor' },
+              pinned: ['a1'],
+              excluded: [],
+              shared: true,
+            },
+          ],
+          labels: {
+            a1: ['Bedtime'],
+          },
+          floors: [
+            {
+              name: 'Ground',
+              rooms: ['Kitchen'],
+            },
+          ],
+        }
+        await open({
+          arrange: () => api.respond('get', '/accessories/views', payload),
+        })
+        await ready()
+
+        await post({ action: 'accessoryViews.get', requestId: 'r1' })
+
+        expect(lastReply()).toMatchObject({ requestId: 'r1', success: true })
+        expect(lastReply()?.data).toEqual(payload)
+      })
+
+      it('answers with an error when the views cannot be read', async () => {
+        await open({
+          arrange: () => api.fail('get', '/accessories/views', {
+            error: { message: 'views down' },
+          }),
+        })
+        await ready()
+
+        await post({ action: 'accessoryViews.get', requestId: 'r1' })
+
+        expect(lastReply()).toMatchObject({
+          requestId: 'r1',
+          success: false,
+          data: { message: 'views down' },
+        })
+      })
+
+      it('tells the plugin when the layout is saved', async () => {
+        await open()
+        await ready()
+        pluginWindow.postMessage.mockClear()
+
+        accessories.layoutSaved.next()
+
+        expect(pluginWindow.postMessage).toHaveBeenCalledWith(
+          expect.objectContaining({ action: 'stream', event: 'accessoryLayout.changed' }),
+          expect.anything(),
+        )
+      })
+
+      it('tells the plugin when the views are saved', async () => {
+        await open()
+        await ready()
+        pluginWindow.postMessage.mockClear()
+
+        accessories.viewsSaved.next()
+
+        expect(pluginWindow.postMessage).toHaveBeenCalledWith(
+          expect.objectContaining({ action: 'stream', event: 'accessoryLayout.changed' }),
+          expect.anything(),
+        )
       })
     })
 
@@ -1400,6 +1591,13 @@ describe('the custom plugin ui', () => {
         providers: [
           provideTestTranslate(),
           provideFakes({ api, modal }),
+          {
+            provide: AccessoriesService,
+            useValue: {
+              rooms: signal([]),
+              labels: signal({}),
+            },
+          },
         ],
       })
 

@@ -41,6 +41,15 @@ export class AccessoriesController {
   }
 
   @ApiOperation({
+    summary: 'Get the saved accessory views visible to the authenticating user.',
+    description: 'Returns the user\'s own views plus other users\' views marked `shared`, with the user\'s labels and floors.',
+  })
+  @Get('/views')
+  getAccessoryViews(@Request() req) {
+    return this.accessoriesService.getAccessoryViews(req.user.username)
+  }
+
+  @ApiOperation({
     summary: 'Get a single accessory and refresh its characteristics.',
     description: 'Get the `uniqueId` from `GET /api/accessories`.',
   })

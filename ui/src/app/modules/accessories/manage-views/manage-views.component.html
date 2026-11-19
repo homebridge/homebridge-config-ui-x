@@ -1,0 +1,119 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'accessories.views.manage' | translate }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="close()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    @for (view of views(); track view.id) {
+      <div class="card card-body mb-3 accessories-manage-view">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+          @if (isOwn(view)) {
+            <input
+              type="text"
+              class="form-control form-control-sm w-auto flex-grow-1 accessories-view-rename"
+              [value]="view.name"
+              [attr.aria-label]="'accessories.views.name_placeholder' | translate"
+              (change)="rename(view, $event)"
+              (keyup.enter)="blur($event)"
+            />
+            <button
+              type="button"
+              class="btn btn-sm btn-elegant my-0"
+              [disabled]="isFirst(view)"
+              [attr.aria-label]="'accessories.views.move_up' | translate"
+              (click)="move(view, -1)"
+            >
+              <i class="fas fa-arrow-up" aria-hidden="true"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-elegant my-0"
+              [disabled]="isLast(view)"
+              [attr.aria-label]="'accessories.views.move_down' | translate"
+              (click)="move(view, 1)"
+            >
+              <i class="fas fa-arrow-down" aria-hidden="true"></i>
+            </button>
+            <div class="form-check form-switch mb-0">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                [id]="`share-${view.id}`"
+                [checked]="!!view.shared"
+                (change)="toggleShare(view)"
+              />
+              <label class="form-check-label small" [for]="`share-${view.id}`">{{
+                'accessories.views.share' | translate
+              }}</label>
+            </div>
+            <button
+              type="button"
+              class="btn btn-sm btn-elegant my-0"
+              [attr.aria-label]="'accessories.views.delete' | translate"
+              (click)="remove(view)"
+            >
+              <i class="fas fa-trash" aria-hidden="true"></i>
+            </button>
+          } @else {
+            <span class="fw-semibold">{{ view.name }}</span>
+            <span class="small text-secondary">{{
+              'accessories.views.shared_by' | translate: { owner: view.owner }
+            }}</span>
+          }
+        </div>
+
+        @for (list of chipLists; track list) {
+          <div class="mb-2">
+            <div class="small text-secondary mb-1">
+              {{ (list === 'pinned' ? 'accessories.views.pinned' : 'accessories.views.excluded') | translate }}
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+              @for (uniqueId of view[list] ?? []; track uniqueId) {
+                <span class="badge text-bg-secondary d-inline-flex align-items-center gap-1 accessories-view-chip">
+                  {{ nameOf(uniqueId) }}
+                  @if (isOwn(view)) {
+                    <button
+                      type="button"
+                      class="btn-close btn-close-white"
+                      [attr.aria-label]="'accessories.views.remove_chip' | translate: { name: nameOf(uniqueId) }"
+                      (click)="removeChip(view, list, uniqueId)"
+                    ></button>
+                  }
+                </span>
+              }
+              @if (isOwn(view) && optionsFor(view, list).length) {
+                <select
+                  class="form-select form-select-sm w-auto"
+                  [attr.aria-label]="
+                    (list === 'pinned' ? 'accessories.views.pin_add' : 'accessories.views.exclude_add') | translate
+                  "
+                  (change)="add(view, list, $event)"
+                >
+                  <option value="">
+                    {{
+                      (list === 'pinned' ? 'accessories.views.pin_add' : 'accessories.views.exclude_add') | translate
+                    }}
+                  </option>
+                  @for (option of optionsFor(view, list); track option.uniqueId) {
+                    <option [value]="option.uniqueId">{{ option.name }}</option>
+                  }
+                </select>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @empty {
+      <p class="text-secondary mb-0">{{ 'accessories.views.none' | translate }}</p>
+    }
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="close()">{{ 'form.button_close' | translate }}</button>
+  </div>
+</div>

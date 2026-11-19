@@ -68,6 +68,7 @@ describe('accessoryInfoComponent', () => {
     const roomsSignal = signal<FakeRoom[]>(rooms)
     return {
       rooms: roomsSignal,
+      labels: signal<Record<string, string[]>>({}),
       getRoomNameForService: vi.fn((uniqueId: string) => {
         return roomsSignal().find(room => room.services.some(entry => entry.uniqueId === uniqueId))?.name
       }),
@@ -598,6 +599,7 @@ describe('accessoryInfoComponent', () => {
         customType: 'Outlet',
         hidden: false,
         onDashboard: true,
+        labels: [],
       })
     })
 
@@ -876,6 +878,73 @@ describe('accessoryInfoComponent', () => {
       info.removeSingleCachedAccessories()
 
       expect(modal.lastOpened()!.options).toMatchObject({ size: 'lg', backdrop: 'static' })
+    })
+  })
+
+  describe('the labels row', () => {
+    it('stages a typed label, and sends it with Save', () => {
+      const fixture = open(hapService({ type: 'Switch' }))
+      const info = fixture.componentInstance
+
+      info.labelDraft = 'Bedtime'
+      info.addLabel()
+
+      expect(info.pendingLabels).toEqual(['Bedtime'])
+      expect(info.isFormUnchanged()).toBe(false)
+
+      info.saveModal()
+      expect(activeModal.close).toHaveBeenCalledWith(expect.objectContaining({
+        labels: ['Bedtime'],
+      }))
+    })
+
+    it('sends a label typed but not yet added when Save is pressed', () => {
+      const info = open(hapService({ type: 'Switch' })).componentInstance
+
+      info.labelDraft = 'Late'
+      info.saveModal()
+
+      expect(activeModal.close).toHaveBeenCalledWith(expect.objectContaining({
+        labels: ['Late'],
+      }))
+    })
+
+    it('ignores blank and repeated labels', () => {
+      const info = open(hapService({ type: 'Switch' })).componentInstance
+
+      info.labelDraft = '   '
+      info.addLabel()
+      info.labelDraft = 'Guest'
+      info.addLabel()
+      info.labelDraft = ' Guest '
+      info.addLabel()
+
+      expect(info.pendingLabels).toEqual(['Guest'])
+    })
+
+    it('removes a staged label, and is unchanged again once it is back to what it was', () => {
+      const info = open(hapService({ type: 'Switch' })).componentInstance
+
+      info.labelDraft = 'Guest'
+      info.addLabel()
+      info.removeLabel('Guest')
+
+      expect(info.pendingLabels).toEqual([])
+      expect(info.isFormUnchanged()).toBe(true)
+    })
+
+    it('suggests the labels in use on other accessories, not the ones already on this one', () => {
+      const info = open(hapService({ type: 'Switch' })).componentInstance
+      accessories.labels.set({
+        'other-accessory': ['Bedtime', 'Guest'],
+      })
+
+      expect(info.labelSuggestions).toEqual(['Bedtime', 'Guest'])
+
+      info.labelDraft = 'Bedtime'
+      info.addLabel()
+
+      expect(info.labelSuggestions).toEqual(['Guest'])
     })
   })
 
