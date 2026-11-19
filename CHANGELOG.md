@@ -157,6 +157,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(dev): run the dev server through swc, so nest checks api data in dev as a release does
 - ci: set release concurrency per job and branch, so a publish is never cancelled part-way (#3128)
 - fix(auth): close a user's open sockets when the user is deleted or the session is revoked
+- fix(terminal): leave a swipe past the first or last line to the phone, to scroll the page
 
 ### Homebridge Dependencies
 
