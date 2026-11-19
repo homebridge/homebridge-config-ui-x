@@ -167,6 +167,13 @@ export class AccessoriesService {
           : s)),
       })))
 
+      // A room picked in the modal is applied on Save, here, so the move and the
+      // field changes above go out in the same single save
+      if (result.room) {
+        this.addRoom(result.room)
+        this.moveServiceInLayout(updated.uniqueId ?? '', result.room)
+      }
+
       this.saveLayout()
     } catch {
       // Modal dismissed - do not save
@@ -308,6 +315,77 @@ export class AccessoriesService {
     this.listen('matter-accessories-ready-for-control', () => {
       this.matterReadyForControl = true
     })
+  }
+
+  /**
+   * The name of the room a service currently sits in, or undefined if it is in none
+   */
+  public getRoomNameForService(uniqueId: string): string | undefined {
+    return this.rooms().find(room => room.services.some(service => service.uniqueId === uniqueId))?.name
+  }
+
+  /**
+   * Move a service to the end of another room, then save the layout.
+   * The service object itself is moved, so its custom fields come with it.
+   * Does nothing if the service or room is unknown, or it is already in that room.
+   */
+  public moveServiceToRoom(uniqueId: string, roomName: string): void {
+    if (this.moveServiceInLayout(uniqueId, roomName)) {
+      this.saveLayout()
+    }
+  }
+
+  /**
+   * The move itself, without saving. Returns whether the service moved.
+   */
+  private moveServiceInLayout(uniqueId: string, roomName: string): boolean {
+    const current = this.rooms()
+    const source = current.find(room => room.services.some(service => service.uniqueId === uniqueId))
+    const target = current.find(room => room.name === roomName)
+    if (!source || !target || source.name === target.name) {
+      return false
+    }
+
+    const service = source.services.find(entry => entry.uniqueId === uniqueId)!
+    this.rooms.set(current.map((room) => {
+      if (room === source) {
+        return {
+          ...room,
+          services: room.services.filter(entry => entry.uniqueId !== uniqueId),
+        }
+      }
+      if (room === target) {
+        return {
+          ...room,
+          services: [...room.services, service],
+        }
+      }
+      return { ...room }
+    }))
+
+    return true
+  }
+
+  /**
+   * Add an empty room. Returns false, and adds nothing, if the trimmed name is blank
+   * or matches an existing room case-insensitively. The layout is saved by the next move.
+   */
+  public addRoom(name: string): boolean {
+    const trimmed = name.trim()
+    if (!trimmed) {
+      return false
+    }
+
+    const lowered = trimmed.toLowerCase()
+    if (this.rooms().some(room => room.name.trim().toLowerCase() === lowered)) {
+      return false
+    }
+
+    this.rooms.update(current => [
+      ...current,
+      { name: trimmed, isDefault: false, services: [] },
+    ])
+    return true
   }
 
   /**

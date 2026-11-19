@@ -1486,6 +1486,318 @@ describe('AccessoriesService', () => {
     })
   })
 
+  describe('moving a service to another room', () => {
+    /** A service as it sits in a room, with the custom fields the layout keeps. */
+    function tile(uniqueId: string, extra: Record<string, unknown> = {}): ServiceTypeX {
+      return {
+        uniqueId,
+        serviceName: uniqueId,
+        customName: `${uniqueId} name`,
+        customType: 'Switch',
+        hidden: false,
+        onDashboard: true,
+        ...extra,
+      } as unknown as ServiceTypeX
+    }
+
+    /** Set the rooms directly. No session is started, so saveLayout only records the call. */
+    function setRooms(...rooms: Array<{ name: string, isDefault?: boolean, services: ServiceTypeX[] }>) {
+      service.rooms.set(rooms)
+    }
+
+    it('reports the room a service is in, or nothing for an unknown service', () => {
+      setRooms(
+        {
+          name: 'Kitchen',
+          services: [
+            tile('a'),
+          ],
+        },
+        {
+          name: 'Office',
+          services: [
+            tile('b'),
+          ],
+        },
+      )
+
+      expect(service.getRoomNameForService('b')).toBe('Office')
+      expect(service.getRoomNameForService('missing')).toBeUndefined()
+    })
+
+    it('takes the same service object out of its room and appends it to the target room', () => {
+      const moving = tile('a', { customName: 'Kettle', hidden: true, customType: 'Outlet' })
+      setRooms(
+        {
+          name: 'Kitchen',
+          services: [
+            tile('x'),
+            moving,
+            tile('y'),
+          ],
+        },
+        {
+          name: 'Office',
+          services: [
+            tile('z'),
+          ],
+        },
+      )
+
+      service.moveServiceToRoom('a', 'Office')
+
+      expect(idsIn('Kitchen')).toEqual(['x', 'y'])
+      expect(idsIn('Office')).toEqual(['z', 'a'])
+      expect(room('Office')!.services[1]).toBe(moving)
+      expect(moving.customName).toBe('Kettle')
+      expect(moving.hidden).toBe(true)
+      expect(moving.customType).toBe('Outlet')
+      expect(roomsHolding('a')).toEqual(['Office'])
+    })
+
+    it('leaves the order of the other services and rooms alone', () => {
+      setRooms(
+        {
+          name: 'Kitchen',
+          isDefault: true,
+          services: [
+            tile('a'),
+            tile('b'),
+            tile('c'),
+          ],
+        },
+        {
+          name: 'Office',
+          services: [
+            tile('d'),
+            tile('e'),
+          ],
+        },
+        {
+          name: 'Garage',
+          services: [
+            tile('f'),
+          ],
+        },
+      )
+
+      service.moveServiceToRoom('b', 'Garage')
+
+      expect(service.rooms().map(entry => entry.name)).toEqual(['Kitchen', 'Office', 'Garage'])
+      expect(idsIn('Kitchen')).toEqual(['a', 'c'])
+      expect(idsIn('Office')).toEqual(['d', 'e'])
+      expect(idsIn('Garage')).toEqual(['f', 'b'])
+      expect(room('Kitchen')!.isDefault).toBe(true)
+    })
+
+    it('hands the rooms signal new room objects so OnPush views refresh', () => {
+      setRooms(
+        {
+          name: 'Kitchen',
+          services: [
+            tile('a'),
+          ],
+        },
+        { name: 'Office', services: [] },
+      )
+      const before = service.rooms()
+
+      service.moveServiceToRoom('a', 'Office')
+
+      expect(service.rooms()).not.toBe(before)
+      expect(service.rooms()[0]).not.toBe(before[0])
+      expect(service.rooms()[1]).not.toBe(before[1])
+    })
+
+    it('saves the layout once after a move', () => {
+      setRooms(
+        {
+          name: 'Kitchen',
+          services: [
+            tile('a'),
+          ],
+        },
+        { name: 'Office', services: [] },
+      )
+      const save = vi.spyOn(service, 'saveLayout')
+
+      service.moveServiceToRoom('a', 'Office')
+
+      expect(save).toHaveBeenCalledTimes(1)
+    })
+
+    it('does nothing when the service is in no room', () => {
+      setRooms({
+        name: 'Kitchen',
+        services: [
+          tile('a'),
+        ],
+      }, { name: 'Office', services: [] })
+      const before = service.rooms()
+      const save = vi.spyOn(service, 'saveLayout')
+
+      service.moveServiceToRoom('missing', 'Office')
+
+      expect(service.rooms()).toBe(before)
+      expect(save).not.toHaveBeenCalled()
+    })
+
+    it('does nothing when the target room does not exist', () => {
+      setRooms({
+        name: 'Kitchen',
+        services: [
+          tile('a'),
+        ],
+      })
+      const before = service.rooms()
+      const save = vi.spyOn(service, 'saveLayout')
+
+      service.moveServiceToRoom('a', 'Attic')
+
+      expect(service.rooms()).toBe(before)
+      expect(idsIn('Kitchen')).toEqual(['a'])
+      expect(save).not.toHaveBeenCalled()
+    })
+
+    it('does nothing when the service is already in that room', () => {
+      setRooms({
+        name: 'Kitchen',
+        services: [
+          tile('a'),
+          tile('b'),
+        ],
+      }, { name: 'Office', services: [] })
+      const before = service.rooms()
+      const save = vi.spyOn(service, 'saveLayout')
+
+      service.moveServiceToRoom('a', 'Kitchen')
+
+      expect(service.rooms()).toBe(before)
+      expect(idsIn('Kitchen')).toEqual(['a', 'b'])
+      expect(save).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('adding a room from the accessory information modal', () => {
+    beforeEach(() => {
+      setRooms()
+    })
+
+    function setRooms(...rooms: Array<{ name: string, isDefault?: boolean, services: ServiceTypeX[] }>) {
+      service.rooms.set(rooms)
+    }
+
+    it('appends a new, empty, non-default room and returns true', () => {
+      setRooms({ name: 'Kitchen', isDefault: true, services: [] })
+
+      expect(service.addRoom('Garage')).toBe(true)
+
+      expect(service.rooms().map(entry => entry.name)).toEqual(['Kitchen', 'Garage'])
+      expect(room('Garage')).toEqual({ name: 'Garage', isDefault: false, services: [] })
+    })
+
+    it('trims the name before storing it', () => {
+      expect(service.addRoom('  Garage  ')).toBe(true)
+
+      expect(room('Garage')).toBeDefined()
+      expect(service.rooms().map(entry => entry.name)).toEqual(['Garage'])
+    })
+
+    it('rejects a blank or whitespace-only name', () => {
+      expect(service.addRoom('')).toBe(false)
+      expect(service.addRoom('   ')).toBe(false)
+      expect(service.rooms()).toEqual([])
+    })
+
+    it('rejects a name that matches an existing room case-insensitively, ignoring surrounding spaces', () => {
+      setRooms({ name: 'Kitchen', services: [] })
+
+      expect(service.addRoom('kitchen')).toBe(false)
+      expect(service.addRoom(' KITCHEN ')).toBe(false)
+      expect(service.rooms().map(entry => entry.name)).toEqual(['Kitchen'])
+    })
+  })
+
+  describe('the room picked in the information modal, applied on save', () => {
+    /** Open the modal on hap-1, which the layout puts in Kitchen, with an Office room beside it. */
+    async function openOnKitchen() {
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: [] },
+          { name: 'Office', services: [] },
+        ],
+      })
+      await settle()
+      sendData(rawHap())
+
+      const target = service.rooms()[0].services[0]
+      void service.showAccessoryInformation(target)
+      await settle()
+
+      return modal.lastOpened()!.ref
+    }
+
+    it('moves the accessory and saves once, with the field changes, when Save names another room', async () => {
+      const ref = await openOnKitchen()
+
+      ref.close({
+        customName: 'Kettle',
+        customType: undefined,
+        hidden: false,
+        onDashboard: false,
+        room: 'Office',
+      })
+      await settle()
+
+      expect(roomsHolding('hap-1')).toEqual(['Office'])
+      expect(room('Office')!.services[0].customName).toBe('Kettle')
+      expect(io.requests.filter(entry => entry.resource === 'save-layout')).toHaveLength(1)
+    })
+
+    it('creates a new room on save and moves the accessory into it', async () => {
+      const ref = await openOnKitchen()
+
+      ref.close({
+        customName: undefined,
+        customType: undefined,
+        hidden: false,
+        onDashboard: false,
+        room: 'Garage',
+      })
+      await settle()
+
+      expect(service.rooms().map(entry => entry.name)).toEqual(['Kitchen', 'Office', 'Garage'])
+      expect(roomsHolding('hap-1')).toEqual(['Garage'])
+      expect(io.requests.filter(entry => entry.resource === 'save-layout')).toHaveLength(1)
+    })
+
+    it('leaves the accessory where it is when Save does not name a room', async () => {
+      const ref = await openOnKitchen()
+
+      ref.close({
+        customName: 'Kettle',
+        customType: undefined,
+        hidden: false,
+        onDashboard: false,
+      })
+      await settle()
+
+      expect(roomsHolding('hap-1')).toEqual(['Kitchen'])
+      expect(io.requests.filter(entry => entry.resource === 'save-layout')).toHaveLength(1)
+    })
+
+    it('moves nothing and creates no room when the modal is dismissed', async () => {
+      const ref = await openOnKitchen()
+
+      ref.dismiss()
+      await settle()
+
+      expect(roomsHolding('hap-1')).toEqual(['Kitchen'])
+      expect(room('Garage')).toBeUndefined()
+      expect(io.requests.some(entry => entry.resource === 'save-layout')).toBe(false)
+    })
+  })
+
   describe('stopping a session', () => {
     it('ends the socket and clears the state', async () => {
       await start({

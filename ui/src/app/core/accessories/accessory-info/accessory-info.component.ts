@@ -23,6 +23,7 @@ import {
   PairingInfo,
   ServiceTypeX,
 } from '@/app/core/accessories/accessories.interfaces'
+import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { hapStatusKey, hasErrorStatus, isNotResponding, notRespondingCodes } from '@/app/core/accessories/not-responding'
 import { ACCESSORY_INFO_MODAL_DATA, REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
@@ -51,6 +52,7 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   private $activeModal = inject(NgbActiveModal)
   private $cdr = inject(ChangeDetectorRef)
   private $modal = inject(NgbModal)
+  private $accessories = inject(AccessoriesService)
 
   // Private properties
   private modalData = inject(ACCESSORY_INFO_MODAL_DATA)
@@ -154,6 +156,13 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   public clusterInfo: Array<{ name: string, attributes: Record<string, unknown> }> = []
   public readonly uniqueIdCopied = signal(false)
   public readonly uuidCopied = signal(false)
+  // Room row state: the inline "New room…" input
+  public addingRoom = false
+  public newRoomName = ''
+  public newRoomError = ''
+  /** The room chosen in this modal. Only the service applies it, when Save is pressed. */
+  public pendingRoom: string | undefined
+  private originalRoom: string | undefined
 
   public getEnumLabel(type: string, value: string | number | boolean | null | undefined): string | undefined {
     return this.enums[type]?.[String(value)]
@@ -256,6 +265,8 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
     this.originalCustomType = this.localService.customType
     this.originalHidden = this.localService.hidden
     this.originalOnDashboard = this.localService.onDashboard
+    this.originalRoom = this.currentRoomName
+    this.pendingRoom = this.originalRoom
   }
 
   // Public methods
@@ -328,6 +339,10 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
       customType: this.localService.customType,
       hidden: this.localService.hidden,
       onDashboard: this.localService.onDashboard,
+      // Only sent when the user picked another room; the service moves the accessory on Save
+      ...(this.pendingRoom !== this.originalRoom
+        ? { room: this.pendingRoom }
+        : {}),
     })
   }
 
@@ -336,6 +351,7 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
       && this.localService.customType === this.originalCustomType
       && this.localService.hidden === this.originalHidden
       && this.localService.onDashboard === this.originalOnDashboard
+      && this.pendingRoom === this.originalRoom
   }
 
   public onHiddenChange(): void {
@@ -348,6 +364,59 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   public onDashboardChange(): void {
     // Mark for check to update the view when onDashboard state changes
     // This is necessary with OnPush change detection
+    this.$cdr.markForCheck()
+  }
+
+  /** The room the accessory is in, or undefined when the layout does not hold it */
+  public get currentRoomName(): string | undefined {
+    return this.$accessories.getRoomNameForService(this.localService?.uniqueId ?? '')
+  }
+
+  /** The room row is only shown when there is a layout and this accessory is in it */
+  public get showRoomRow(): boolean {
+    return this.$accessories.rooms().length > 0 && this.currentRoomName !== undefined
+  }
+
+  /** The room names to offer: every room, plus a room staged here that does not exist yet */
+  public get roomNames(): string[] {
+    const names = this.$accessories.rooms().map(room => room.name)
+    if (this.pendingRoom && !names.includes(this.pendingRoom)) {
+      names.push(this.pendingRoom)
+    }
+    return names
+  }
+
+  /** Room select change. The empty value is the "New room…" option, as no room can be blank. Only stages the room. */
+  public onRoomSelect(value: string): void {
+    if (value === '') {
+      this.addingRoom = true
+      this.newRoomName = ''
+      this.newRoomError = ''
+    } else {
+      this.pendingRoom = value
+      this.cancelNewRoom()
+    }
+    this.$cdr.markForCheck()
+  }
+
+  /** Stage a new room name. It is created only when Save is pressed. */
+  public addNewRoom(): void {
+    const name = this.newRoomName.trim()
+    const lowered = name.toLowerCase()
+    const taken = this.roomNames.some(existing => existing.trim().toLowerCase() === lowered)
+    if (!name || taken) {
+      this.newRoomError = 'accessories.room_name_invalid'
+      this.$cdr.markForCheck()
+      return
+    }
+    this.pendingRoom = name
+    this.cancelNewRoom()
+  }
+
+  public cancelNewRoom(): void {
+    this.addingRoom = false
+    this.newRoomName = ''
+    this.newRoomError = ''
     this.$cdr.markForCheck()
   }
 
