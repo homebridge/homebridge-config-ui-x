@@ -24,14 +24,18 @@
   min-width: 14rem;
 }
 
-// Filters dropdown: the same box as the Group/Sort menu, with its own scroll for the facets
+// Filters dropdown: the same box as the Group/Sort menu, with its own scroll for the facets.
+// Only lay it out while open: a display value here would override the dropdown's hidden state.
 .accessories-filters-menu {
-  display: flex;
-  flex-direction: column;
-  width: 420px;
-  max-width: calc(100vw - 1rem);
+  min-width: 16rem;
+  max-width: min(22rem, calc(100vw - 1rem));
   max-height: 70vh;
   overflow: hidden;
+
+  &.show {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .accessories-filters-header,

@@ -129,6 +129,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): name bridges in the filters as homebridge advertises them, and drop the dashed outline while dragging
 - feat(accessories): start kiosk mode from its own button, and manage paired tablets only in users
 - feat(accessories): keep the chosen grouping and sort in manage layout, and open the filters as a tick list below their button
+- fix(accessories): keep the filters dropdown hidden until it is opened, sized like the group and sort menu
 
 ### Other Changes
 
