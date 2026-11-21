@@ -125,6 +125,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(accessories): move the filters into a slide-out panel with views and subcategories, and drag accessories between rooms while filtered
 - feat(accessories): list smoke, carbon monoxide and leak sensors under sensors, and drop the active filter row under the search
 - feat(accessories): manage the room layout with a filter active, showing every room, and drop bulk select
+- feat(accessories): remove accessory views; kiosks and tablets are set up by rooms, categories, types and labels
 
 ### Other Changes
 

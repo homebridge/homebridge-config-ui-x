@@ -43,15 +43,9 @@
       [shown]="shownCount()"
       [total]="totalCount()"
       [manageLayoutActive]="manageLayoutMode"
-      [customViews]="views()"
       [labels]="labels()"
-      [username]="username"
-      [activeViewId]="activeViewId()"
       (filterChange)="onFilterChange($event)"
       (manageLayoutToggle)="toggleManageLayout()"
-      (viewSelect)="onViewSelect($event)"
-      (saveView)="onSaveView($event)"
-      (manageViews)="openManageViews()"
     />
 
     @if (usesDragula()) {

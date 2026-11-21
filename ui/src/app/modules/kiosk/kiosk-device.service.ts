@@ -23,11 +23,11 @@ export interface StoredKioskDevice {
 
 export interface PairedKioskDevice {
   token: string
-  device: { id: string, name: string, viewName: string }
+  device: { id: string, name: string, scopeLabel: string }
 }
 
 export interface KioskDeviceSession {
-  device: { id: string, name: string, viewName: string, allowSensitive: boolean }
+  device: { id: string, name: string, scopeLabel: string, allowSensitive: boolean }
   rooms: Array<{ name: string, services: Array<{ uniqueId: string, customName?: string }> }>
 }
 

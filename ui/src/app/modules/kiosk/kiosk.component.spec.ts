@@ -1,7 +1,7 @@
 import type { ComponentFixture } from '@angular/core/testing'
 
 import { TestBed } from '@angular/core/testing'
-import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
+import { ActivatedRoute, provideRouter, Router } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { ToastrService } from 'ngx-toastr'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -49,14 +49,6 @@ describe('kioskComponent', () => {
   let auth: { checkAndRefreshIfNeeded: ReturnType<typeof vi.fn> }
   let toastr: { success: ReturnType<typeof vi.fn>, error: ReturnType<typeof vi.fn> }
 
-  const view = {
-    id: 'v1',
-    name: 'Downstairs',
-    state: {},
-    pinned: [],
-    excluded: ['ceiling'],
-  }
-
   function services() {
     return {
       lamp: {
@@ -83,7 +75,7 @@ describe('kioskComponent', () => {
     }
   }
 
-  function setup(viewId = 'v1', options: { customViews?: any[] } = {}) {
+  function setup(query: Record<string, string | string[]> = {}) {
     const list = services()
     const rooms = [
       {
@@ -91,31 +83,17 @@ describe('kioskComponent', () => {
         services: [list.lamp, list.ceiling, list.lock],
       },
     ]
-    const views = options.customViews ?? [view]
-    // activeViewId is a signal in the app: the component both reads and sets it
-    const activeId = { value: null as string | null }
     accessories = {
       rooms: () => rooms,
-      views: () => views,
-      activeViewId: Object.assign(() => activeId.value, {
-        set: (value: string | null) => {
-          activeId.value = value
-        },
-      }),
       hapReadyForControl: true,
       matterReadyForControl: true,
       start: vi.fn(async () => {}),
       stop: vi.fn(),
       showAccessoryInformation: vi.fn(async () => true),
-      filterContext: vi.fn(() => {
-        const active = views.find(entry => entry.id === activeId.value)
-        return {
-          labels: new Map(),
-          floors: [],
-          pinned: new Set(active?.pinned ?? []),
-          excluded: new Set(active?.excluded ?? []),
-        }
-      }),
+      filterContext: vi.fn(() => ({
+        labels: new Map(),
+        floors: [],
+      })),
     }
 
     TestBed.configureTestingModule({
@@ -127,7 +105,7 @@ describe('kioskComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              paramMap: convertToParamMap({ viewId }),
+              queryParams: query,
             },
           },
         },
@@ -203,39 +181,41 @@ describe('kioskComponent', () => {
   })
 
   describe('rendering', () => {
-    it('renders the view services grouped by room, leaving out the excluded ones', async () => {
-      setup()
+    it('renders the scope services grouped by room, leaving out the ones outside it', async () => {
+      setup({ category: 'lights' })
       await settle()
 
       expect(accessories.start).toHaveBeenCalled()
       expect(text()).toContain('Kitchen')
       expect(text()).toContain('Desk lamp')
-      expect(text()).toContain('Front door')
-      expect(text()).not.toContain('Ceiling light')
+      expect(text()).toContain('Ceiling light')
+      expect(text()).not.toContain('Front door')
     })
 
-    it('shows the view name and a clock that is not announced', async () => {
-      setup()
+    it('shows the scope name and a clock that is not announced', async () => {
+      setup({ room: 'Kitchen', category: 'lights' })
       await settle()
 
-      expect(fixture.nativeElement.querySelector('.kiosk-view-name').textContent).toContain('Downstairs')
+      expect(fixture.nativeElement.querySelector('.kiosk-view-name').textContent).toContain('Kitchen')
       expect(fixture.nativeElement.querySelector('time.kiosk-clock').getAttribute('aria-live')).toBe('off')
     })
 
-    it('shows a friendly message and a link back to Accessories for an unknown view', async () => {
-      setup('no-such-view')
+    it('shows every accessory, under the all-accessories name, when the link names no scope', async () => {
+      setup()
       await settle()
 
-      expect(text()).toContain('kiosk.not_found.title')
-      expect(fixture.nativeElement.querySelector('a[href="/accessories"]')).not.toBeNull()
+      expect(fixture.nativeElement.querySelector('.kiosk-view-name').textContent).toContain('kiosk.scope_all')
+      expect(text()).toContain('Desk lamp')
+      expect(text()).toContain('Front door')
     })
 
-    it('shows a built-in view without any saved view', async () => {
-      setup('lights', { customViews: [] })
+    it('reads repeated scope params, so a room name may contain a comma', async () => {
+      setup({
+        room: ['Hall', 'Kitchen, Upper'],
+      })
       await settle()
 
-      expect(text()).toContain('Desk lamp')
-      expect(text()).not.toContain('kiosk.not_found.title')
+      expect(fixture.nativeElement.querySelector('.kiosk-view-name').textContent).toContain('Hall · Kitchen, Upper')
     })
 
     it('opens the details modal from the body of a tile', async () => {
@@ -274,7 +254,7 @@ describe('kioskComponent', () => {
 
     it('asks to confirm each change once the tablet allows sensitive devices, and changes on confirm', async () => {
       localStorage.setItem(KIOSK_SETTINGS_KEY, JSON.stringify({
-        v1: { allowSensitive: true },
+        '': { allowSensitive: true },
       }))
       setup()
       await settle()
@@ -289,7 +269,7 @@ describe('kioskComponent', () => {
 
     it('does not change a sensitive device when the confirm is cancelled', async () => {
       localStorage.setItem(KIOSK_SETTINGS_KEY, JSON.stringify({
-        v1: { allowSensitive: true },
+        '': { allowSensitive: true },
       }))
       modal.open.mockImplementation(() => ({
         result: Promise.reject(new Error('dismiss')),
@@ -343,7 +323,7 @@ describe('kioskComponent', () => {
     it('requires the exit PIN before the panel, and only opens it with the right PIN', async () => {
       vi.useFakeTimers()
       localStorage.setItem(KIOSK_SETTINGS_KEY, JSON.stringify({
-        v1: { pin: '1234' },
+        '': { pin: '1234' },
       }))
       setup()
       await settle()
@@ -368,14 +348,14 @@ describe('kioskComponent', () => {
       expect(fixture.nativeElement.querySelector('.kiosk-panel .btn-danger')).not.toBeNull()
     })
 
-    it('stores settings per view in local storage, and keeps working when storage throws', async () => {
-      setup()
+    it('stores settings per scope in local storage, and keeps working when storage throws', async () => {
+      setup({ category: 'lights' })
       await settle()
 
       const component = fixture.componentInstance as any
       component.setTheme('light')
       expect(JSON.parse(localStorage.getItem(KIOSK_SETTINGS_KEY)!)).toEqual({
-        v1: { allowSensitive: false, theme: 'light' },
+        'category=lights': { allowSensitive: false, theme: 'light' },
       })
       expect(settings.setLightingMode).toHaveBeenLastCalledWith('light', 'user')
     })
@@ -459,14 +439,14 @@ describe('kioskComponent', () => {
     })
 
     it('sends an expired session to login, with a return to this kiosk', async () => {
-      setup('v1')
+      setup({ room: 'Kitchen' })
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true)
       await settle()
 
       authHelper.isAuthenticated.mockResolvedValue(false)
       socket.fire('connect_error')
       await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith('/login'))
-      expect(sessionStorage.getItem('target_route')).toBe('/kiosk/v1')
+      expect(sessionStorage.getItem('target_route')).toBe('/kiosk?room=Kitchen')
     })
 
     it('keeps the session when the socket drops but the token is still good', async () => {

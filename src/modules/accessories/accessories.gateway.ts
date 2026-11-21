@@ -5,7 +5,7 @@ import { getWsUser } from '../../core/auth/guards/ws-token.js'
 import { WsGuard } from '../../core/auth/guards/ws.guard.js'
 import { devServerCorsConfig } from '../../core/cors.config.js'
 import { AccessoriesService } from './accessories.service.js'
-import { parseSaveAccessoryViews } from './accessory-views.dto.js'
+import { parseSaveAccessoryMetadata } from './accessory-metadata.dto.js'
 
 @UseGuards(WsGuard)
 @WebSocketGateway({
@@ -52,28 +52,27 @@ export class AccessoriesGateway {
     }
   }
 
-  // Views are per user, identified by the verified socket user; the payload's owner fields are only used to drop
-  // views that belong to someone else.
-  @SubscribeMessage('get-views')
-  async getAccessoryViews(client: any) {
+  // Labels and floors are per user, identified by the verified socket user; the client cannot name another user.
+  @SubscribeMessage('get-metadata')
+  async getAccessoryMetadata(client: any) {
     const user = getWsUser(client)
     if (!user) {
       return new WsException('Unauthorized')
     }
-    return await this.accessoriesService.getAccessoryViews(user.username)
+    return await this.accessoriesService.getAccessoryMetadata(user.username)
   }
 
-  @SubscribeMessage('save-views')
-  async saveAccessoryViews(client: any, payload: any) {
+  @SubscribeMessage('save-metadata')
+  async saveAccessoryMetadata(client: any, payload: any) {
     const user = getWsUser(client)
     if (!user) {
       return new WsException('Unauthorized')
     }
     try {
-      const data = await parseSaveAccessoryViews(payload)
-      return await this.accessoriesService.saveAccessoryViews(user.username, data)
+      const data = await parseSaveAccessoryMetadata(payload)
+      return await this.accessoriesService.saveAccessoryMetadata(user.username, data)
     } catch (e) {
-      return new WsException(e?.message ?? 'Invalid accessory views')
+      return new WsException(e?.message ?? 'Invalid accessory metadata')
     }
   }
 }

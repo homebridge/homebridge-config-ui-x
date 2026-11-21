@@ -53,8 +53,8 @@ describe('AccessoriesService', () => {
     pairingCacheValue?: any[]
     hapCacheError?: unknown
     pairingCacheError?: unknown
-    /** The reply to `get-views`. Defaults to an empty set. null makes the load fail. */
-    views?: any
+    /** The reply to `get-metadata`. Defaults to an empty set. null makes the load fail. */
+    metadata?: any
   }
 
   /** A raw HAP characteristic, as the socket delivers it - no `setValue` yet. */
@@ -150,11 +150,11 @@ describe('AccessoriesService', () => {
     const layout = options.layout ?? []
     io.socket.respondTo('get-layout', () => JSON.parse(JSON.stringify(layout)))
     io.socket.respondTo('save-layout', () => ({ ok: true }))
-    const views = options.views === undefined
-      ? { views: [], labels: {}, floors: [] }
-      : options.views
-    io.socket.respondTo('get-views', () => JSON.parse(JSON.stringify(views)))
-    io.socket.respondTo('save-views', () => ({ ok: true }))
+    const metadata = options.metadata === undefined
+      ? { labels: {}, floors: [] }
+      : options.metadata
+    io.socket.respondTo('get-metadata', () => JSON.parse(JSON.stringify(metadata)))
+    io.socket.respondTo('save-metadata', () => ({ ok: true }))
 
     toastr = toastrStub()
     modal = modalServiceSpy()
@@ -2154,31 +2154,10 @@ describe('AccessoriesService', () => {
     })
   })
 
-  describe('saved views, labels and floors', () => {
-    const savedView = {
-      id: 'v1',
-      name: 'Downstairs',
-      state: {
-        groupBy: 'floor',
-        labels: ['Bedtime'],
-      },
-      pinned: ['a1'],
-      excluded: ['b2'],
-      shared: false,
-    }
-    const sharedByAlice = {
-      id: 'v2',
-      name: 'Alice lights',
-      state: {
-        categories: ['lights'],
-      },
-      shared: true,
-      owner: 'alice',
-    }
-
-    /** The payloads of every save-views request sent so far. */
+  describe('labels and floors', () => {
+    /** The payloads of every save-metadata request sent so far. */
     function saves(): any[] {
-      return io.requests.filter(entry => entry.resource === 'save-views').map(entry => entry.payload)
+      return io.requests.filter(entry => entry.resource === 'save-metadata').map(entry => entry.payload)
     }
 
     /** Let the debounced save go out. */
@@ -2195,10 +2174,9 @@ describe('AccessoriesService', () => {
     })
 
     describe('loading', () => {
-      it('loads the views, labels and floors on start', async () => {
+      it('loads the labels and floors on start', async () => {
         await start({
-          views: {
-            views: [savedView, sharedByAlice],
+          metadata: {
             labels: {
               a1: ['Bedtime'],
             },
@@ -2211,8 +2189,7 @@ describe('AccessoriesService', () => {
           },
         })
 
-        expect(io.requests.some(entry => entry.resource === 'get-views')).toBe(true)
-        expect(service.views()).toEqual([savedView, sharedByAlice])
+        expect(io.requests.some(entry => entry.resource === 'get-metadata')).toBe(true)
         expect(service.labels()).toEqual({
           a1: ['Bedtime'],
         })
@@ -2224,70 +2201,57 @@ describe('AccessoriesService', () => {
         ])
       })
 
-      it('starts empty when the views cannot be read, and does not save over them', async () => {
-        await start({ views: null })
+      it('starts empty when the metadata cannot be read, and does not save over it', async () => {
+        await start({ metadata: null })
 
-        expect(service.views()).toEqual([])
         expect(service.labels()).toEqual({})
         expect(service.floors()).toEqual([])
 
-        service.createViewFromState('New', { groupBy: 'room' })
+        service.setLabels('a1', ['Bedtime'])
         flushDebounce()
 
         expect(saves()).toHaveLength(0)
       })
     })
 
-    describe('creating a view', () => {
-      it('adds the filter as a view of the user\'s own, and returns its id', async () => {
+    describe('saving', () => {
+      it('sends the labels and floors together, once after a burst of changes', async () => {
         await start()
 
-        const id = service.createViewFromState('  Kitchen  ', {
-          categories: ['lights'],
-        })
+        service.setLabels('a1', ['Bedtime'])
+        service.setLabels('a1', ['Bedtime', 'Guest'])
+        service.addFloor('Ground')
+        flushDebounce()
 
-        expect(id).toEqual(expect.any(String))
-        expect(service.views()).toEqual([
-          expect.objectContaining({
-            id,
-            name: 'Kitchen',
-            state: {
-              categories: ['lights'],
+        expect(saves()).toEqual([
+          {
+            labels: {
+              a1: ['Bedtime', 'Guest'],
             },
-            pinned: [],
-            excluded: [],
-            shared: false,
-          }),
+            floors: [
+              {
+                name: 'Ground',
+                rooms: [],
+              },
+            ],
+          },
         ])
       })
 
-      it('refuses a blank name', async () => {
+      it('emits metadataSaved once the save is acknowledged', async () => {
         await start()
+        const saved = vi.fn()
+        service.metadataSaved.subscribe(saved)
 
-        expect(service.createViewFromState('   ', { groupBy: 'room' })).toBeNull()
-        expect(service.views()).toEqual([])
+        service.setLabels('a1', ['Bedtime'])
+        flushDebounce()
+
+        expect(saved).toHaveBeenCalledTimes(1)
       })
 
-      it('copies the state, so later changes to the filter do not reach the view', async () => {
-        await start()
-        const state: any = {
-          categories: ['lights'],
-        }
-
-        service.createViewFromState('Lights', state)
-        state.categories.push('climate')
-
-        expect(service.views()[0].state).toEqual({
-          categories: ['lights'],
-        })
-      })
-    })
-
-    describe('saving', () => {
-      it('sends the own views, without owner, with the labels and floors, after a quiet spell', async () => {
+      it('gives the filter the labels and floors, with no pinned or excluded lists', async () => {
         await start({
-          views: {
-            views: [savedView, sharedByAlice],
+          metadata: {
             labels: {
               a1: ['Bedtime'],
             },
@@ -2300,197 +2264,17 @@ describe('AccessoriesService', () => {
           },
         })
 
-        service.updateView('v1', { name: 'Ground floor' })
-        service.setLabels('a1', ['Bedtime', 'Guest'])
-        expect(saves()).toHaveLength(0)
-
-        flushDebounce()
-
-        expect(saves()).toHaveLength(1)
-        expect(saves()[0]).toEqual({
-          views: [
-            { ...savedView, name: 'Ground floor', owner: undefined },
-          ],
-          labels: {
-            a1: ['Bedtime', 'Guest'],
-          },
-          floors: [
-            {
-              name: 'Ground',
-              rooms: ['Kitchen'],
-            },
-          ],
-        })
-        expect(saves()[0].views.some((view: any) => view.id === 'v2')).toBe(false)
-      })
-
-      it('announces each successful save', async () => {
-        await start()
-        const announced = vi.fn()
-        service.viewsSaved.subscribe(announced)
-
-        service.createViewFromState('Lights', {
-          categories: ['lights'],
-        })
-        flushDebounce()
-
-        expect(announced).toHaveBeenCalledTimes(1)
-      })
-
-      it('sends a pending save when the session stops, rather than dropping it', async () => {
-        await start()
-
-        service.createViewFromState('Lights', {
-          categories: ['lights'],
-        })
-        service.stop()
-
-        expect(saves()).toHaveLength(1)
-        expect(saves()[0].views[0].name).toBe('Lights')
-      })
-
-      it('does not send anything after the session stops', async () => {
-        await start()
-        service.stop()
-
-        service.setLabels('a1', ['Late'])
-        flushDebounce()
-
-        expect(saves()).toHaveLength(0)
-      })
-    })
-
-    describe('changing a view', () => {
-      it('renames, re-filters and sets the pinned and excluded accessories of an own view', async () => {
-        await start({
-          views: {
-            views: [savedView],
-            labels: {},
-            floors: [],
-          },
-        })
-
-        const changed = service.updateView('v1', {
-          name: '  Upstairs  ',
-          state: { groupBy: 'none' },
-          pinned: ['c3'],
-          excluded: [],
-        })
-
-        expect(changed).toBe(true)
-        expect(service.views()[0]).toEqual(expect.objectContaining({
-          name: 'Upstairs',
-          state: { groupBy: 'none' },
-          pinned: ['c3'],
-          excluded: [],
-        }))
-      })
-
-      it('leaves a view shared by someone else alone', async () => {
-        await start({
-          views: {
-            views: [sharedByAlice],
-            labels: {},
-            floors: [],
-          },
-        })
-
-        expect(service.updateView('v2', { name: 'Mine now' })).toBe(false)
-        expect(service.deleteView('v2')).toBe(false)
-        expect(service.toggleShare('v2')).toBe(false)
-        expect(service.views()).toEqual([sharedByAlice])
-      })
-
-      it('deletes an own view, and clears it as the active one', async () => {
-        await start({
-          views: {
-            views: [savedView],
-            labels: {},
-            floors: [],
-          },
-        })
-        service.activeViewId.set('v1')
-
-        expect(service.deleteView('v1')).toBe(true)
-
-        expect(service.views()).toEqual([])
-        expect(service.activeViewId()).toBeNull()
-      })
-
-      it('moves a view up and down, and does nothing past either end', async () => {
-        const second = { ...savedView, id: 'v9', name: 'Second' }
-        await start({
-          views: {
-            views: [savedView, second],
-            labels: {},
-            floors: [],
-          },
-        })
-
-        expect(service.reorderViews('v1', -1)).toBe(false)
-        expect(service.reorderViews('v9', 1)).toBe(false)
-        expect(service.reorderViews('v9', -1)).toBe(true)
-
-        expect(service.views().map(view => view.id)).toEqual(['v9', 'v1'])
-      })
-
-      it('turns sharing on and off for an own view only', async () => {
-        await start({
-          views: {
-            views: [savedView, sharedByAlice],
-            labels: {},
-            floors: [],
-          },
-        })
-
-        expect(service.toggleShare('v1')).toBe(true)
-        expect(service.views()[0].shared).toBe(true)
-        expect(service.toggleShare('v1')).toBe(true)
-        expect(service.views()[0].shared).toBe(false)
-        expect(service.toggleShare('v2')).toBe(false)
-      })
-
-      it('tells whose a view is', async () => {
-        await start()
-
-        expect(service.isOwnView(savedView as any)).toBe(true)
-        expect(service.isOwnView(sharedByAlice as any)).toBe(false)
-      })
-    })
-
-    describe('the filter context for the active view', () => {
-      it('holds the pinned and excluded accessories of the active view, and the labels', async () => {
-        await start({
-          views: {
-            views: [savedView],
-            labels: {
-              a1: ['Bedtime'],
-            },
-            floors: [],
-          },
-        })
-        service.activeViewId.set('v1')
-
         const context = service.filterContext()
 
-        expect([...context.pinned!]).toEqual(['a1'])
-        expect([...context.excluded!]).toEqual(['b2'])
-        expect(context.labels!.get('a1')).toEqual(['Bedtime'])
-      })
-
-      it('holds nothing extra when no view is active', async () => {
-        await start({
-          views: {
-            views: [savedView],
-            labels: {},
-            floors: [],
+        expect(context.labels?.get('a1')).toEqual(['Bedtime'])
+        expect(context.floors).toEqual([
+          {
+            name: 'Ground',
+            rooms: ['Kitchen'],
           },
-        })
-
-        const context = service.filterContext()
-
-        expect([...context.pinned!]).toEqual([])
-        expect([...context.excluded!]).toEqual([])
+        ])
+        expect(context).not.toHaveProperty('pinned')
+        expect(context).not.toHaveProperty('excluded')
       })
     })
 
@@ -2513,8 +2297,7 @@ describe('AccessoriesService', () => {
 
       it('removes the entry when the labels are emptied', async () => {
         await start({
-          views: {
-            views: [],
+          metadata: {
             labels: {
               a1: ['Bedtime'],
             },
@@ -2529,8 +2312,7 @@ describe('AccessoriesService', () => {
 
       it('sends nothing when the labels did not change', async () => {
         await start({
-          views: {
-            views: [],
+          metadata: {
             labels: {
               a1: ['Bedtime'],
             },
@@ -2586,8 +2368,7 @@ describe('AccessoriesService', () => {
     describe('floors', () => {
       it('puts a room on a floor, taking it off the floor it was on', async () => {
         await start({
-          views: {
-            views: [],
+          metadata: {
             labels: {},
             floors: [
               {
@@ -2612,8 +2393,7 @@ describe('AccessoriesService', () => {
 
       it('takes a room off every floor with null', async () => {
         await start({
-          views: {
-            views: [],
+          metadata: {
             labels: {},
             floors: [
               {
@@ -2633,8 +2413,7 @@ describe('AccessoriesService', () => {
 
       it('creates a floor that does not exist yet, and reuses one that differs only in case', async () => {
         await start({
-          views: {
-            views: [],
+          metadata: {
             labels: {},
             floors: [
               { name: 'Ground', rooms: [] },
@@ -2659,8 +2438,7 @@ describe('AccessoriesService', () => {
 
       it('sends nothing when the room is already on that floor', async () => {
         await start({
-          views: {
-            views: [],
+          metadata: {
             labels: {},
             floors: [
               {
@@ -2679,8 +2457,7 @@ describe('AccessoriesService', () => {
 
       it('adds an empty floor, refusing blanks and duplicates', async () => {
         await start({
-          views: {
-            views: [],
+          metadata: {
             labels: {},
             floors: [
               { name: 'Ground', rooms: [] },
@@ -2696,8 +2473,7 @@ describe('AccessoriesService', () => {
 
       it('renames a floor, keeping its rooms, and refuses a name another floor has', async () => {
         await start({
-          views: {
-            views: [],
+          metadata: {
             labels: {},
             floors: [
               {
@@ -2724,8 +2500,7 @@ describe('AccessoriesService', () => {
 
       it('deletes a floor and leaves its rooms on no floor', async () => {
         await start({
-          views: {
-            views: [],
+          metadata: {
             labels: {},
             floors: [
               {
@@ -2744,8 +2519,7 @@ describe('AccessoriesService', () => {
 
       it('follows a room rename into the floors', async () => {
         await start({
-          views: {
-            views: [],
+          metadata: {
             labels: {},
             floors: [
               {
@@ -2769,8 +2543,7 @@ describe('AccessoriesService', () => {
 
       it('follows a room delete into the floors', async () => {
         await start({
-          views: {
-            views: [],
+          metadata: {
             labels: {},
             floors: [
               {

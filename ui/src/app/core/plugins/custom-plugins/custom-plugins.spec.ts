@@ -43,7 +43,7 @@ describe('the custom plugin ui', () => {
   let modal: FakeModalService
   let activeModal: NgbActiveModal
   let accessoryCache: ReturnType<typeof cachedAccessoriesStub>
-  let accessories: { rooms: ReturnType<typeof signal<any[]>>, labels: ReturnType<typeof signal<Record<string, string[]>>>, layoutSaved: Subject<void>, viewsSaved: Subject<void> }
+  let accessories: { rooms: ReturnType<typeof signal<any[]>>, labels: ReturnType<typeof signal<Record<string, string[]>>>, layoutSaved: Subject<void>, metadataSaved: Subject<void> }
   let childBridges: { openCorrectRestartModalWithBridges: ReturnType<typeof vi.fn> }
   let managePlugins: { bridgeSettings: ReturnType<typeof vi.fn> }
 
@@ -94,7 +94,7 @@ describe('the custom plugin ui', () => {
         rooms: signal<any[]>([]),
         labels: signal<Record<string, string[]>>({}),
         layoutSaved: new Subject<void>(),
-        viewsSaved: new Subject<void>(),
+        metadataSaved: new Subject<void>(),
       }
       childBridges = {
         openCorrectRestartModalWithBridges: vi.fn(),
@@ -851,6 +851,7 @@ describe('the custom plugin ui', () => {
         expect(lastReply()?.data).toEqual([
           {
             name: 'Default Room',
+            floor: null,
             isDefault: true,
             services: [
               {
@@ -864,6 +865,7 @@ describe('the custom plugin ui', () => {
           },
           {
             name: 'Kitchen',
+            floor: null,
             services: [
               {
                 uniqueId: 'b2',
@@ -911,8 +913,7 @@ describe('the custom plugin ui', () => {
                 ],
               },
             ])
-            api.respond('get', '/accessories/views', {
-              views: [],
+            api.respond('get', '/accessories/metadata', {
               labels: {
                 a1: ['Bedtime'],
               },
@@ -943,7 +944,7 @@ describe('the custom plugin ui', () => {
         })
       })
 
-      it('still answers when the views cannot be read, using the page labels', async () => {
+      it('still answers when the metadata cannot be read, using the page labels', async () => {
         await open({
           arrange: () => {
             accessories.labels.set({
@@ -985,55 +986,33 @@ describe('the custom plugin ui', () => {
       })
     })
 
-    describe('the accessory views', () => {
-      it('returns the saved views as the server gives them', async () => {
-        const payload = {
-          views: [
-            {
-              id: 'v1',
-              name: 'Downstairs',
-              state: { groupBy: 'floor' },
-              pinned: ['a1'],
-              excluded: [],
-              shared: true,
-            },
-          ],
-          labels: {
-            a1: ['Bedtime'],
+    describe('the accessory layout changes and floors', () => {
+      it('gives each room its floor, or null for a room on no floor', async () => {
+        await open({
+          arrange: () => {
+            api.respond('get', '/accessories/layout', [
+              { name: 'Kitchen', services: [] },
+              { name: 'Loft', services: [] },
+            ])
+            api.respond('get', '/accessories/metadata', {
+              labels: {},
+              floors: [
+                {
+                  name: 'Ground',
+                  rooms: ['Kitchen'],
+                },
+              ],
+            })
           },
-          floors: [
-            {
-              name: 'Ground',
-              rooms: ['Kitchen'],
-            },
-          ],
-        }
-        await open({
-          arrange: () => api.respond('get', '/accessories/views', payload),
         })
         await ready()
 
-        await post({ action: 'accessoryViews.get', requestId: 'r1' })
+        await post({ action: 'accessoryLayout.get', requestId: 'r1' })
 
-        expect(lastReply()).toMatchObject({ requestId: 'r1', success: true })
-        expect(lastReply()?.data).toEqual(payload)
-      })
-
-      it('answers with an error when the views cannot be read', async () => {
-        await open({
-          arrange: () => api.fail('get', '/accessories/views', {
-            error: { message: 'views down' },
-          }),
-        })
-        await ready()
-
-        await post({ action: 'accessoryViews.get', requestId: 'r1' })
-
-        expect(lastReply()).toMatchObject({
-          requestId: 'r1',
-          success: false,
-          data: { message: 'views down' },
-        })
+        expect(lastReply()?.data.map((room: any) => [room.name, room.floor])).toEqual([
+          ['Kitchen', 'Ground'],
+          ['Loft', null],
+        ])
       })
 
       it('tells the plugin when the layout is saved', async () => {
@@ -1049,17 +1028,26 @@ describe('the custom plugin ui', () => {
         )
       })
 
-      it('tells the plugin when the views are saved', async () => {
+      it('tells the plugin when the labels and floors are saved', async () => {
         await open()
         await ready()
         pluginWindow.postMessage.mockClear()
 
-        accessories.viewsSaved.next()
+        accessories.metadataSaved.next()
 
         expect(pluginWindow.postMessage).toHaveBeenCalledWith(
           expect.objectContaining({ action: 'stream', event: 'accessoryLayout.changed' }),
           expect.anything(),
         )
+      })
+
+      it('no longer answers the retired accessoryViews.get message', async () => {
+        await open()
+        await ready()
+
+        await post({ action: 'accessoryViews.get', requestId: 'r1' })
+
+        expect(lastReply()).toBeUndefined()
       })
     })
 

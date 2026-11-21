@@ -2,7 +2,6 @@ import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, CdkDropListGroup, mov
 import { NgTemplateOutlet } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -27,7 +26,6 @@ import { AccessorySupportComponent } from '@/app/modules/accessories/accessory-s
 import { AddRoomComponent } from '@/app/modules/accessories/add-room/add-room.component'
 import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-here-placeholder/drag-here-placeholder.component'
 import { EditRoomComponent } from '@/app/modules/accessories/edit-room/edit-room.component'
-import { ManageViewsComponent } from '@/app/modules/accessories/manage-views/manage-views.component'
 import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accessories/modal-data-tokens'
 import { KioskDevicesService } from '@/app/modules/kiosk/kiosk-devices.service'
 
@@ -49,10 +47,6 @@ const COLLAPSED_STORAGE_KEY = 'accessories-collapsed-v1'
     CdkDragHandle,
     CdkDropList,
     CdkDropListGroup,
-    NgbDropdown,
-    NgbDropdownToggle,
-    NgbDropdownMenu,
-    NgbDropdownItem,
   ],
   standalone: true,
   templateUrl: './accessories.component.html',
@@ -61,14 +55,14 @@ const COLLAPSED_STORAGE_KEY = 'accessories-collapsed-v1'
 })
 export class AccessoriesComponent implements OnInit, OnDestroy {
   protected $accessories = inject(AccessoriesService)
-  /** Injected so the tablets' accessories follow saved views while this page is open */
+  private $modal = inject(NgbModal)
+  /** Injected so the tablets' accessories follow the layout and labels while this page is open */
   public readonly $kioskDevices = inject(KioskDevicesService)
 
   private destroyRef = inject(DestroyRef)
   private $auth = inject(AuthService)
   private dragulaService = inject(DragulaService)
   private injector = inject(EnvironmentInjector)
-  private $modal = inject(NgbModal)
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
@@ -129,11 +123,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   /** Group key of the rooms on no floor, shown with its translated label */
   protected readonly floorOtherKey = FLOOR_OTHER_KEY
 
-  /** The saved views, with the active one's id */
-  public readonly views = this.$accessories.views
   public readonly labels = this.$accessories.labels
-  public readonly activeViewId = this.$accessories.activeViewId
-  public readonly username = this.$auth.user.username ?? ''
 
   /** Whether any filter is set, so manage-layout mode uses the filtered drag-and-drop */
   public readonly filterActive = computed(() => isFilterActive(this.filter()))
@@ -544,8 +534,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
    * visit only, and the groupBy and sortBy it asks for are remembered for when manage-layout ends.
    */
   public onFilterChange(next: AccessoryFilterState): void {
-    // Changing the filter by hand leaves any view it came from, with its pinned and excluded accessories
-    this.$accessories.activeViewId.set(null)
     if (this.manageLayoutMode) {
       this.manageRestore = this.overridesFor(next)
       this.$accessories.setFilterState({
@@ -555,30 +543,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       return
     }
     this.$accessories.setFilterState(next)
-  }
-
-  /**
-   * A saved view was picked. The toolbar has already set its filter, so this only
-   * records which view is active, for its pinned and excluded accessories.
-   */
-  public onViewSelect(viewId: string | null): void {
-    this.$accessories.activeViewId.set(viewId)
-  }
-
-  /** Save the current filter as a named view, and make it the active one */
-  public onSaveView(name: string): void {
-    const id = this.$accessories.createViewFromState(name, this.filter())
-    if (id) {
-      this.$accessories.activeViewId.set(id)
-    }
-  }
-
-  /** Open the modal to rename, reorder, share, delete and edit the pinned and excluded accessories of views */
-  public openManageViews(): void {
-    this.$modal.open(ManageViewsComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    })
   }
 
   /**

@@ -17,7 +17,7 @@ export function isValidKioskPin(pin: string): boolean {
   return PIN_PATTERN.test(pin)
 }
 
-/** Settings for a view, with defaults for anything missing or malformed */
+/** Settings for a scope, with defaults for anything missing or malformed */
 export function normaliseKioskSettings(entry: unknown): KioskSettings {
   const value = (entry && typeof entry === 'object'
     ? entry
@@ -43,20 +43,20 @@ function readStore(): Record<string, unknown> {
       ? parsed
       : {}
   } catch {
-    // Storage unavailable or corrupt: every view starts from the defaults
+    // Storage unavailable or corrupt: every scope starts from the defaults
     return {}
   }
 }
 
-export function loadKioskSettings(viewId: string): KioskSettings {
-  return normaliseKioskSettings(readStore()[viewId])
+export function loadKioskSettings(scopeKey: string): KioskSettings {
+  return normaliseKioskSettings(readStore()[scopeKey])
 }
 
-/** Save one view's settings. Returns false when storage is unavailable; the page keeps working for this visit. */
-export function saveKioskSettings(viewId: string, settings: KioskSettings): boolean {
+/** Save one scope's settings. Returns false when storage is unavailable; the page keeps working for this visit. */
+export function saveKioskSettings(scopeKey: string, settings: KioskSettings): boolean {
   try {
     const store = readStore()
-    store[viewId] = settings
+    store[scopeKey] = settings
     window.localStorage.setItem(KIOSK_SETTINGS_KEY, JSON.stringify(store))
     return true
   } catch {

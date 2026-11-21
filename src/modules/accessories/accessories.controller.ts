@@ -41,12 +41,11 @@ export class AccessoriesController {
   }
 
   @ApiOperation({
-    summary: 'Get the saved accessory views visible to the authenticating user.',
-    description: 'Returns the user\'s own views plus other users\' views marked `shared`, with the user\'s labels and floors.',
+    summary: 'Get the accessory labels and floors for the authenticating user.',
   })
-  @Get('/views')
-  getAccessoryViews(@Request() req) {
-    return this.accessoriesService.getAccessoryViews(req.user.username)
+  @Get('/metadata')
+  getAccessoryMetadata(@Request() req) {
+    return this.accessoriesService.getAccessoryMetadata(req.user.username)
   }
 
   @ApiOperation({

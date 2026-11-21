@@ -1,12 +1,12 @@
 import type { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import type { AccessoryGroup } from '@/app/core/accessories/filters/accessory-filters'
-import type { AccessoryView, BuiltInView } from '@/app/core/accessories/filters/accessory-views'
 
+import type { KioskScope } from './kiosk-scope'
 import type { KioskSettings, KioskTheme } from './kiosk-settings'
 
 import { HttpErrorResponse } from '@angular/common/http'
 import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
@@ -14,7 +14,6 @@ import { ToastrService } from 'ngx-toastr'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { buildBatteryIndex } from '@/app/core/accessories/filters/accessory-battery'
 import { DEFAULT_FILTER_STATE, groupAndSort } from '@/app/core/accessories/filters/accessory-filters'
-import { BUILT_IN_VIEWS } from '@/app/core/accessories/filters/accessory-views'
 import { isMatterService, isServiceNotResponding } from '@/app/core/accessories/filters/service-helpers'
 import { AuthHelperService } from '@/app/core/auth/auth-helper.service'
 import { AuthService } from '@/app/core/auth/auth.service'
@@ -25,12 +24,13 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 
 import { isSensitiveService, kioskIconClass, kioskIsOn, kioskStateKey, kioskToggle } from './kiosk-controls'
 import { clearStoredDevice, KioskDeviceService, loadStoredDevice } from './kiosk-device.service'
+import { describeScope, EMPTY_KIOSK_SCOPE, scopeFilterState, scopeFromQuery, scopeKey, scopeToQuery } from './kiosk-scope'
 import { isValidKioskPin, loadKioskSettings, saveKioskSettings } from './kiosk-settings'
 
 /** How long the top bar must be held to open the settings panel */
 const LONG_PRESS_MS = 1500
 
-/** Settings key for a paired tablet, which has no view id of its own */
+/** Settings key for a paired tablet, which has no scope in the link */
 const DEVICE_SETTINGS_ID = 'device'
 
 /** How long a paired tablet waits before trying to load again after a network failure */
@@ -52,13 +52,12 @@ function twoDigits(value: number): string {
 }
 
 /**
- * One accessory View on a wall or room tablet: full screen, no navigation, dark by default.
- * Each tablet keeps its own settings in this browser (see kiosk-settings.ts).
+ * The accessories of one scope on a wall or room tablet: full screen, no navigation, dark by default.
+ * Each scope keeps its own settings in this browser (see kiosk-settings.ts).
  */
 @Component({
   selector: 'app-kiosk',
   imports: [
-    RouterLink,
     TranslatePipe,
   ],
   standalone: true,
@@ -85,17 +84,21 @@ export class KioskComponent implements OnInit, OnDestroy {
   /** Device mode: a paired tablet at kiosk/device, with no signed-in session */
   protected readonly device = this.$route.snapshot.data?.kioskDevice === true
 
-  protected readonly viewId = this.device
-    ? DEVICE_SETTINGS_ID
-    : (this.$route.snapshot.paramMap.get('viewId') ?? '')
+  /** The scope named by the link's query params. A paired tablet takes its scope from the server instead. */
+  protected readonly scope: KioskScope = this.device
+    ? { ...EMPTY_KIOSK_SCOPE }
+    : scopeFromQuery(this.$route.snapshot.queryParams)
 
-  protected readonly builtIn: BuiltInView | undefined = BUILT_IN_VIEWS.find(view => view.id === this.viewId)
+  /** The key this scope's settings are kept under in this browser */
+  protected readonly settingsKey = this.device
+    ? DEVICE_SETTINGS_ID
+    : scopeKey(this.scope)
 
   protected readonly loading = signal(true)
   protected readonly connected = signal(false)
   protected readonly reconnecting = signal(false)
   protected readonly now = signal(new Date())
-  protected readonly settings = signal<KioskSettings>(loadKioskSettings(this.viewId))
+  protected readonly settings = signal<KioskSettings>(loadKioskSettings(this.settingsKey))
 
   protected readonly panel = signal<Panel>('closed')
   protected readonly pinEntry = signal('')
@@ -104,7 +107,7 @@ export class KioskComponent implements OnInit, OnDestroy {
   protected readonly newPinInvalid = signal(false)
 
   protected readonly unpaired = this.$kioskDevice.unpaired
-  protected readonly deviceViewName = computed(() => this.$kioskDevice.session()?.device.viewName ?? '')
+  protected readonly deviceScopeLabel = computed(() => this.$kioskDevice.session()?.device.scopeLabel ?? '')
   protected readonly isConnected = computed(() => this.device
     ? this.$kioskDevice.connected()
     : this.connected())
@@ -118,31 +121,29 @@ export class KioskComponent implements OnInit, OnDestroy {
     ? this.$kioskDevice.session()?.device.allowSensitive === true
     : this.settings().allowSensitive)
 
-  /** The saved view this page shows, once the views have loaded */
-  protected readonly customView = computed<AccessoryView | undefined>(() => this.$accessories.views().find(view => view.id === this.viewId))
-
-  /** Whether the id names a built-in view or one of the user's (or one shared with them) */
-  protected readonly known = computed(() => this.device || !!this.builtIn || !!this.customView())
+  /** The title: the tablet's scope label on a paired tablet, else the scope's generated name */
+  protected readonly title = computed(() => this.device
+    ? (this.deviceScopeLabel() || this.$translate.instant('kiosk.title'))
+    : describeScope(this.scope, key => this.$translate.instant(key)))
 
   protected readonly clock = computed(() => `${twoDigits(this.now().getHours())}:${twoDigits(this.now().getMinutes())}`)
 
   protected readonly batteryIndex = computed(() => buildBatteryIndex(this.$accessories.rooms().flatMap(room => room.services)))
 
-  /** The view's services, filtered, grouped and sorted as the accessories page would show them */
+  /** The scope's services, filtered, grouped and sorted as the accessories page would show them */
   protected readonly groups = computed<AccessoryGroup[]>(() => {
     if (this.device) {
       return this.$kioskDevice.groups()
     }
     const state = {
       ...DEFAULT_FILTER_STATE,
-      ...(this.builtIn?.state ?? this.customView()?.state ?? {}),
+      ...scopeFilterState(this.scope),
     }
     return groupAndSort(this.$accessories.rooms(), state, this.batteryIndex(), this.$accessories.filterContext())
       .filter(group => group.services.length > 0)
   })
 
   private previousLightingMode!: 'auto' | 'light' | 'dark'
-  private previousActiveViewId: string | null = null
   private wakeLock: WakeLockSentinelLike | null = null
   private clockTimer: ReturnType<typeof setTimeout> | undefined
   private pressTimer: ReturnType<typeof setTimeout> | undefined
@@ -158,7 +159,6 @@ export class KioskComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.previousLightingMode = this.$settingsService.lightingMode
-    this.previousActiveViewId = this.$accessories.activeViewId()
     this.applyTheme(this.settings().theme)
 
     document.addEventListener('visibilitychange', this.onVisibilityChange)
@@ -178,7 +178,6 @@ export class KioskComponent implements OnInit, OnDestroy {
       this.$kioskDevice.disconnect()
     } else {
       this.$accessories.stop()
-      this.$accessories.activeViewId.set(this.previousActiveViewId)
     }
     this.$settingsService.setLightingMode(this.previousLightingMode, 'user')
   }
@@ -196,9 +195,6 @@ export class KioskComponent implements OnInit, OnDestroy {
       console.error(error)
     } finally {
       this.loading.set(false)
-    }
-    if (this.customView()) {
-      this.$accessories.activeViewId.set(this.viewId)
     }
   }
 
@@ -270,7 +266,10 @@ export class KioskComponent implements OnInit, OnDestroy {
     }
     this.redirecting = true
     try {
-      window.sessionStorage.setItem('target_route', `/kiosk/${encodeURIComponent(this.viewId)}`)
+      const target = this.$router.createUrlTree(['/kiosk'], {
+        queryParams: scopeToQuery(this.scope),
+      })
+      window.sessionStorage.setItem('target_route', this.$router.serializeUrl(target))
     } catch {
       // Without storage the user lands on the default page after login
     }
@@ -504,6 +503,6 @@ export class KioskComponent implements OnInit, OnDestroy {
       ...patch,
     }
     this.settings.set(next)
-    saveKioskSettings(this.viewId, next)
+    saveKioskSettings(this.settingsKey, next)
   }
 }

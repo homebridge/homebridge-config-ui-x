@@ -1,38 +1,31 @@
 import type { FilterContext, RoomInput } from '@/app/core/accessories/filters/accessory-filters'
-import type { AccessoryView } from '@/app/core/accessories/filters/accessory-views'
+import type { KioskScope } from '@/app/modules/kiosk/kiosk-scope'
 
 import { buildBatteryIndex } from '@/app/core/accessories/filters/accessory-battery'
-import { DEFAULT_FILTER_STATE, groupAndSort } from '@/app/core/accessories/filters/accessory-filters'
-import { BUILT_IN_VIEWS } from '@/app/core/accessories/filters/accessory-views'
-
-/** The view a kiosk id names: a built-in view, or one of the user's (or one shared with them) */
-export function findKioskView(viewId: string, views: AccessoryView[]): AccessoryView | undefined {
-  const builtIn = BUILT_IN_VIEWS.find(entry => entry.id === viewId)
-  if (builtIn) {
-    return { id: builtIn.id, name: builtIn.labelKey, state: builtIn.state }
-  }
-  return views.find(entry => entry.id === viewId)
-}
+import { DEFAULT_FILTER_STATE, matchesFilter } from '@/app/core/accessories/filters/accessory-filters'
+import { scopeFilterState } from '@/app/modules/kiosk/kiosk-scope'
 
 /**
- * The uniqueIds a view resolves to right now, filtered, grouped and sorted the way the accessories page shows it.
- * The view's own pinned and excluded lists are applied; `ctx` supplies labels and floors.
+ * The uniqueIds a scope resolves to right now: every accessory on the given rooms that matches the scope's
+ * rooms, categories, subcategories and labels, the way the accessories page filters. Hidden accessories are left out.
+ * `labels` maps each uniqueId to its labels.
  */
-export function resolveViewUniqueIds(view: AccessoryView, rooms: RoomInput[], ctx: FilterContext = {}): string[] {
+export function resolveScopeUniqueIds(
+  scope: KioskScope,
+  rooms: RoomInput[],
+  labels: ReadonlyMap<string, string[]> = new Map(),
+): string[] {
   const state = {
     ...DEFAULT_FILTER_STATE,
-    ...view.state,
+    ...scopeFilterState(scope),
   }
-  const groups = groupAndSort(rooms, state, buildBatteryIndex(rooms.flatMap(room => room.services)), {
-    ...ctx,
-    pinned: new Set(view.pinned ?? []),
-    excluded: new Set(view.excluded ?? []),
-  })
+  const batteryIndex = buildBatteryIndex(rooms.flatMap(room => room.services))
+  const context: FilterContext = { labels }
 
   const uniqueIds = new Set<string>()
-  for (const group of groups) {
-    for (const service of group.services) {
-      if (service.uniqueId) {
+  for (const room of rooms) {
+    for (const service of room.services) {
+      if (service.uniqueId && matchesFilter(service, room.name, state, batteryIndex, context)) {
         uniqueIds.add(service.uniqueId)
       }
     }

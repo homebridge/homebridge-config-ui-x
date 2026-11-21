@@ -9,7 +9,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { WsException } from '@nestjs/websockets'
-import { copy, remove } from 'fs-extra'
+import { copy, pathExists, remove, writeJson } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -1017,7 +1017,7 @@ describe('AccessoriesController (e2e)', () => {
     })
   })
 
-  describe('saved views', () => {
+  describe('accessory metadata', () => {
     const adminClient = {
       data: {
         user: { username: 'admin', admin: true },
@@ -1028,186 +1028,95 @@ describe('AccessoriesController (e2e)', () => {
         user: { username: 'guest', admin: false },
       },
     }
-    const adminView = {
-      id: 'v1',
-      name: 'Night',
-      state: { on: true },
-      pinned: ['a'],
+    const empty = { labels: {}, floors: [] }
+    const sample = {
+      labels: {
+        uid1: ['Kitchen'],
+      },
+      floors: [
+        {
+          name: 'Ground',
+          rooms: ['Kitchen'],
+        },
+      ],
     }
 
     beforeEach(async () => {
-      await remove(configService.accessoryViewsPath)
+      await remove(configService.accessoryMetadataPath)
+      await remove(configService.legacyAccessoryViewsPath)
     })
 
     afterAll(async () => {
-      await remove(configService.accessoryViewsPath)
+      await remove(configService.accessoryMetadataPath)
+      await remove(configService.legacyAccessoryViewsPath)
     })
 
-    it('get-views returns an empty default when nothing is saved', async () => {
+    it('get-metadata returns an empty default when nothing is saved', async () => {
       const gateway = app.get(AccessoriesGateway)
-      expect(await gateway.getAccessoryViews(adminClient)).toEqual({ views: [], labels: {}, floors: [] })
+      expect(await gateway.getAccessoryMetadata(adminClient)).toEqual(empty)
     })
 
-    it('save-views saves for the verified user, strips owner, and reads back', async () => {
+    it('save-metadata saves for the verified user and reads back, dropping unknown properties', async () => {
       const gateway = app.get(AccessoriesGateway)
-      const payload = {
+      expect(await gateway.saveAccessoryMetadata(adminClient, {
+        ...sample,
         views: [
-          { ...adminView, owner: 'admin' },
+          { id: 'v' },
         ],
+      })).toEqual(sample)
+      expect(await gateway.getAccessoryMetadata(adminClient)).toEqual(sample)
+    })
+
+    it('is isolated per user: another user cannot read or overwrite it', async () => {
+      const gateway = app.get(AccessoriesGateway)
+      await gateway.saveAccessoryMetadata(adminClient, sample)
+      expect(await gateway.getAccessoryMetadata(guestClient)).toEqual(empty)
+
+      // A client-supplied user/owner is ignored: the save lands on the verified user
+      const guestData = {
         labels: {
-          uid1: ['Kitchen'],
+          g1: ['Mine'],
         },
-        floors: [
-          {
-            name: 'Ground',
-            rooms: ['Kitchen'],
-          },
-        ],
+        floors: [],
       }
-      const saved = await gateway.saveAccessoryViews(adminClient, payload)
-      expect(saved).toEqual({
-        views: [adminView],
-        labels: {
-          uid1: ['Kitchen'],
-        },
-        floors: [
-          {
-            name: 'Ground',
-            rooms: ['Kitchen'],
-          },
-        ],
-      })
-
-      expect(await gateway.getAccessoryViews(adminClient)).toEqual({
-        views: [
-          { ...adminView, owner: 'admin' },
-        ],
-        labels: {
-          uid1: ['Kitchen'],
-        },
-        floors: [
-          {
-            name: 'Ground',
-            rooms: ['Kitchen'],
-          },
-        ],
-      })
+      await gateway.saveAccessoryMetadata(guestClient, { ...guestData, user: 'admin', owner: 'admin' })
+      expect(await gateway.getAccessoryMetadata(adminClient)).toEqual(sample)
+      expect(await gateway.getAccessoryMetadata(guestClient)).toEqual(guestData)
     })
 
-    it('shared views are visible to other users with owner set; private views are not', async () => {
+    it('save-metadata rejects invalid payloads without writing', async () => {
       const gateway = app.get(AccessoriesGateway)
-      await gateway.saveAccessoryViews(adminClient, {
-        views: [
-          { ...adminView, shared: true },
-          { id: 'v2', name: 'Private', state: {} },
-        ],
-        labels: {
-          uid1: ['Kitchen'],
-        },
-        floors: [],
-      })
-
-      expect(await gateway.getAccessoryViews(guestClient)).toEqual({
-        views: [
-          { ...adminView, shared: true, owner: 'admin' },
-        ],
-        labels: {},
-        floors: [],
-      })
-    })
-
-    it('cannot overwrite or add to another user\'s views', async () => {
-      const gateway = app.get(AccessoriesGateway)
-      await gateway.saveAccessoryViews(adminClient, {
-        views: [
-          { ...adminView, shared: true },
-        ],
-        labels: {},
-        floors: [],
-      })
-
-      // The guest tries to replace the admin's view, claiming ownership, and to add one as the admin
-      await gateway.saveAccessoryViews(guestClient, {
-        views: [
-          { ...adminView, name: 'Hijacked', owner: 'admin' },
-          { id: 'g1', name: 'Guest', state: {} },
-        ],
-        labels: {},
-        floors: [],
-      })
-
-      expect(await gateway.getAccessoryViews(adminClient)).toEqual({
-        views: [
-          { ...adminView, shared: true, owner: 'admin' },
-        ],
-        labels: {},
-        floors: [],
-      })
-      expect(await gateway.getAccessoryViews(guestClient)).toEqual({
-        views: [
-          { ...adminView, shared: true, owner: 'admin' },
-          {
-            id: 'g1',
-            name: 'Guest',
-            state: {},
-            owner: 'guest',
-          },
-        ],
-        labels: {},
-        floors: [],
-      })
-    })
-
-    it('save-views rejects invalid payloads without writing', async () => {
-      const gateway = app.get(AccessoriesGateway)
-      const valid = { views: [], labels: {}, floors: [] }
       const invalid: any[] = [
-        { ...valid, views: 'nope' },
         {
-          ...valid,
+          ...empty,
           labels: ['x'],
         },
+        { ...empty, labels: 'x' },
+        { labels: {} },
+        { floors: [] },
         {
-          ...valid,
+          ...empty,
           floors: [
             { name: 'x', rooms: 'kitchen' },
           ],
         },
         {
-          ...valid,
-          views: [
+          ...empty,
+          floors: [
             {
-              id: 'v1',
               name: 'x'.repeat(101),
-              state: {},
+              rooms: [],
             },
           ],
         },
         {
-          ...valid,
-          views: [
-            { id: 'v1', name: 'ok', state: 'nope' },
-          ],
-        },
-        {
-          ...valid,
-          views: [
-            {
-              id: 'v1',
-              name: 'ok',
-              state: {},
-              shared: 'yes',
-            },
-          ],
-        },
-        {
-          ...valid,
+          ...empty,
           labels: {
             uid1: Array.from({ length: 51 }).fill('a'),
           },
         },
         {
-          ...valid,
+          ...empty,
           labels: {
             uid1: [
               'x'.repeat(51),
@@ -1215,47 +1124,68 @@ describe('AccessoriesController (e2e)', () => {
           },
         },
         {
-          ...valid,
-          floors: Array.from({ length: 51 }, () => ({ name: 'f', rooms: [] })),
+          ...empty,
+          labels: {
+            uid1: [1],
+          },
         },
         {
-          ...valid,
-          views: Array.from({ length: 201 }, (_, i) => ({ id: `v${i}`, name: 'n', state: {} })),
+          ...empty,
+          floors: Array.from({ length: 51 }, () => ({ name: 'f', rooms: [] })),
         },
         undefined,
       ]
-
       for (const payload of invalid) {
-        expect(await gateway.saveAccessoryViews(adminClient, payload)).toBeInstanceOf(WsException)
+        expect(await gateway.saveAccessoryMetadata(adminClient, payload)).toBeInstanceOf(WsException)
       }
-      expect(await gateway.getAccessoryViews(adminClient)).toEqual({ views: [], labels: {}, floors: [] })
-      expect(await gateway.saveAccessoryViews({}, valid)).toBeInstanceOf(WsException)
+      expect(await gateway.getAccessoryMetadata(adminClient)).toEqual(empty)
+      expect(await gateway.saveAccessoryMetadata({}, empty)).toBeInstanceOf(WsException)
+      expect(await gateway.getAccessoryMetadata({})).toBeInstanceOf(WsException)
     })
 
-    it('GET /accessories/views returns the authenticated user\'s views', async () => {
+    it('GET /accessories/metadata returns the authenticated user\'s metadata', async () => {
       const gateway = app.get(AccessoriesGateway)
-      await gateway.saveAccessoryViews(adminClient, {
-        views: [
-          { ...adminView, shared: true },
-        ],
-        labels: {
-          uid1: ['Kitchen'],
-        },
-        floors: [],
-      })
+      await gateway.saveAccessoryMetadata(adminClient, sample)
 
       const res = await app.inject({
         method: 'GET',
-        path: '/accessories/views',
+        path: '/accessories/metadata',
         headers: { authorization },
       })
       expect(res.statusCode).toBe(200)
-      expect(res.json()).toEqual({
-        views: [
-          { ...adminView, shared: true, owner: 'admin' },
-        ],
+      expect(res.json()).toEqual(sample)
+
+      const anon = await app.inject({ method: 'GET', path: '/accessories/metadata' })
+      expect(anon.statusCode).toBe(401)
+    })
+
+    it('reads labels and floors from a legacy accessory-views.json until the user saves', async () => {
+      const gateway = app.get(AccessoriesGateway)
+      await writeJson(configService.legacyAccessoryViewsPath, {
+        admin: {
+          views: [
+            { id: 'v1', name: 'Night', state: {} },
+          ],
+          ...sample,
+        },
+        guest: {
+          views: [],
+          labels: {
+            g1: ['Guest'],
+          },
+          floors: [],
+        },
+      })
+
+      expect(await gateway.getAccessoryMetadata(adminClient)).toEqual(sample)
+      expect(await pathExists(configService.accessoryMetadataPath)).toBe(false)
+
+      // Once the user has an entry in the new file, the legacy one is no longer consulted for them
+      await gateway.saveAccessoryMetadata(adminClient, empty)
+      expect(await gateway.getAccessoryMetadata(adminClient)).toEqual(empty)
+      expect(await gateway.getAccessoryMetadata(guestClient)).toEqual({
         labels: {
-          uid1: ['Kitchen'],
+          g1: ['Guest'],
         },
         floors: [],
       })

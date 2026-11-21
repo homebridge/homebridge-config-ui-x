@@ -36,8 +36,9 @@ export const routes: Routes = [
     data: { kioskDevice: true },
   },
   {
-    // Full-screen accessory View for a wall or room tablet. Outside the main layout, so no sidebar or navbar.
-    path: 'kiosk/:viewId',
+    // Full-screen accessories for a wall or room tablet, scoped by the query params (rooms, categories, subcategories, labels).
+    // Outside the main layout, so no sidebar or navbar.
+    path: 'kiosk',
     loadComponent: () => import('@/app/modules/kiosk/kiosk.component').then(m => m.KioskComponent),
     canActivate: [authGuard],
   },

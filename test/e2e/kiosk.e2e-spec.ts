@@ -36,8 +36,13 @@ describe('Kiosk (e2e)', () => {
 
   const body = {
     name: 'Hall tablet',
-    viewId: 'view-1',
-    viewName: 'Hall',
+    scope: {
+      rooms: ['Hall'],
+      categories: [],
+      subcategories: [],
+      labels: ['night'],
+    },
+    scopeLabel: 'Hall',
     allowSensitive: false,
     allowedUniqueIds: ['a', 'lock', 'b'],
   }
@@ -185,7 +190,8 @@ describe('Kiosk (e2e)', () => {
         name: 'Kitchen',
         allowSensitive: true,
         allowedUniqueIds: ['a'],
-        viewId: 'view-1',
+        scope: body.scope,
+        scopeLabel: 'Hall',
       })
 
       const del = await app.inject({
@@ -225,6 +231,31 @@ describe('Kiosk (e2e)', () => {
         },
         { ...body, allowedUniqueIds: 'nope' },
         { name: 'only a name' },
+        { ...body, scope: undefined },
+        {
+          ...body,
+          scope: { ...body.scope, rooms: 'Hall' },
+        },
+        {
+          ...body,
+          scope: {
+            ...body.scope,
+            labels: Array.from({ length: 201 }, (_, i) => String(i)),
+          },
+        },
+        {
+          ...body,
+          scope: {
+            ...body.scope,
+            categories: [
+              'x'.repeat(101),
+            ],
+          },
+        },
+        {
+          ...body,
+          scopeLabel: 'x'.repeat(101),
+        },
       ]
       for (const payload of bad) {
         const res = await app.inject({
@@ -235,6 +266,63 @@ describe('Kiosk (e2e)', () => {
         })
         expect(res.statusCode).toBe(400)
       }
+    })
+
+    it('patches the scope and migrates a stored device that still has viewId/viewName', async () => {
+      const { writeFile } = await import('node:fs/promises')
+      await writeFile(kioskFile, JSON.stringify([
+        {
+          id: 'old-1',
+          name: 'Old tablet',
+          owner: 'admin',
+          viewId: 'view-1',
+          viewName: 'Hall',
+          allowSensitive: false,
+          allowedUniqueIds: ['a'],
+          createdAt: 1,
+        },
+      ]), { mode: 0o600 })
+      const list = (await app.inject({
+        method: 'GET',
+        path: '/kiosk/devices',
+        headers: { authorization: admin },
+      })).json()
+      expect(list).toHaveLength(1)
+      expect(list[0].scope).toEqual({
+        rooms: [],
+        categories: [],
+        subcategories: [],
+        labels: [],
+      })
+      expect(list[0].scopeLabel).toBe('Hall')
+      expect(list[0]).not.toHaveProperty('viewId')
+      expect(list[0]).not.toHaveProperty('viewName')
+
+      const patched = await app.inject({
+        method: 'PATCH',
+        path: '/kiosk/devices/old-1',
+        headers: { authorization: admin },
+        payload: {
+          scope: {
+            rooms: ['Den'],
+            categories: ['lights'],
+            subcategories: [],
+            labels: [],
+          },
+          scopeLabel: 'Den lights',
+        },
+      })
+      expect(patched.statusCode).toBe(200)
+      expect(patched.json()).toMatchObject({
+        scope: {
+          rooms: ['Den'],
+          categories: ['lights'],
+          subcategories: [],
+          labels: [],
+        },
+        scopeLabel: 'Den lights',
+        allowedUniqueIds: ['a'],
+      })
     })
 
     it('rejects a non-admin and an anonymous caller', async () => {
@@ -290,7 +378,7 @@ describe('Kiosk (e2e)', () => {
       const { code, res, token } = await pairDevice(created.id)
       expect(res.statusCode).toBe(200)
       expect(token).toMatch(/^[\w-]{43}$/)
-      expect(res.json().device).toEqual({ id: created.id, name: 'Hall tablet', viewName: 'Hall' })
+      expect(res.json().device).toEqual({ id: created.id, name: 'Hall tablet', scopeLabel: 'Hall' })
 
       const again = await app.inject({
         method: 'POST',
@@ -416,7 +504,7 @@ describe('Kiosk (e2e)', () => {
         device: {
           id: created.id,
           name: 'Hall tablet',
-          viewName: 'Hall',
+          scopeLabel: 'Hall',
           allowSensitive: false,
         },
         rooms: [

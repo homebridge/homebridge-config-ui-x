@@ -1,7 +1,6 @@
 import type { BatteryInfo } from '@/app/core/accessories/filters/accessory-battery'
 import type { AccessoryCategory } from '@/app/core/accessories/filters/accessory-categories'
 import type { AccessoryFilterState, AccessoryGroupBy, AccessorySortBy, FilterContext, RoomInput } from '@/app/core/accessories/filters/accessory-filters'
-import type { AccessoryView, BuiltInView } from '@/app/core/accessories/filters/accessory-views'
 
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model, OnDestroy, output, signal, TemplateRef, untracked, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
@@ -14,9 +13,9 @@ import { debounceTime, Subject } from 'rxjs'
 
 import { ACCESSORY_CATEGORIES, ACCESSORY_SUBCATEGORIES, getAccessorySubcategory } from '@/app/core/accessories/filters/accessory-categories'
 import { DEFAULT_FILTER_STATE, isFilterActive, matchesFilter } from '@/app/core/accessories/filters/accessory-filters'
-import { BUILT_IN_VIEWS } from '@/app/core/accessories/filters/accessory-views'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { KioskLinksService } from '@/app/modules/kiosk/kiosk-links.service'
+import { scopeFromFilter } from '@/app/modules/kiosk/kiosk-scope'
 import { openAddTablet } from '@/app/modules/users/users-tablets/open-tablet-editor'
 
 export type FacetKey = 'rooms' | 'categories' | 'bridges' | 'protocols' | 'states' | 'battery' | 'labels'
@@ -57,25 +56,6 @@ export interface SubcategoryGroup {
   category: AccessoryCategory
   labelKey: string
   options: FacetOption[]
-}
-
-/** Key that changes whenever the filter changes, used to tell which view is active */
-function filterKey(state: AccessoryFilterState): string {
-  return JSON.stringify([
-    state.search.trim(),
-    [...state.rooms].sort(),
-    [...state.categories].sort(),
-    [...state.subcategories].sort(),
-    [...state.bridges].sort(),
-    [...state.protocols].sort(),
-    [...state.states].sort(),
-    [...state.battery].sort(),
-    [...state.labels].sort(),
-    !!state.showHidden,
-    !!state.onDashboardOnly,
-    state.groupBy,
-    state.sortBy,
-  ])
 }
 
 /** The filter with every filter cleared (hidden included), keeping the grouping and sort the user picked */
@@ -134,24 +114,11 @@ export class AccessoriesToolbarComponent implements OnDestroy {
   /** Accessories on the page, before filtering */
   public readonly total = input(0)
   public readonly manageLayoutActive = input(false)
-  /** The saved views, the user's own and those shared with them */
-  public readonly customViews = input<AccessoryView[]>([])
   /** uniqueId -> labels */
   public readonly labels = input<Record<string, string[]>>({})
-  /** The signed-in user, to tell own views from shared ones */
-  public readonly username = input('')
-  /** The custom view applied, or null */
-  public readonly activeViewId = input<string | null>(null)
 
   public readonly manageLayoutToggle = output<void>()
-  /** A custom view was picked (its id), or the built-in views were picked (null) */
-  public readonly viewSelect = output<string | null>()
-  /** Save the current filter as a view with this name */
-  public readonly saveView = output<string>()
-  /** Open the manage views modal */
-  public readonly manageViews = output<void>()
 
-  public readonly views: readonly BuiltInView[] = BUILT_IN_VIEWS
   public readonly groupOptions: Array<{ value: AccessoryGroupBy, labelKey: string }> = [
     { value: 'room', labelKey: 'accessories.toolbar.group_room' },
     { value: 'category', labelKey: 'accessories.toolbar.group_category' },
@@ -168,9 +135,6 @@ export class AccessoriesToolbarComponent implements OnDestroy {
   ]
 
   public readonly searchText = signal('')
-  /** The inline form for naming a new view is open (in the Views section of the panel) */
-  public readonly saveFormOpen = signal(false)
-  public readonly viewName = signal('')
   /** Sections the user expanded past the first options */
   public readonly expandedFacets = signal<ReadonlySet<FacetKey>>(new Set())
 
@@ -193,36 +157,6 @@ export class AccessoriesToolbarComponent implements OnDestroy {
   private readonly $auth = inject(AuthService)
   private readonly $modal = inject(NgbModal)
   private readonly $offcanvas = inject(NgbOffcanvas)
-
-  /** The view the kiosk opens for: the custom view applied, or the built-in one matching the filter */
-  public readonly kioskViewId = computed<string | null>(() => {
-    const custom = this.activeViewId()
-    if (custom !== null) {
-      return custom
-    }
-    const builtIn = this.activeView()
-    return builtIn && builtIn !== 'all'
-      ? builtIn
-      : null
-  })
-
-  /** The built-in view whose settings match the filter, 'all' when no filter is set, or null */
-  public readonly activeView = computed<string | null>(() => {
-    if (this.activeViewId() !== null) {
-      return null
-    }
-    const current = this.filter()
-    const match = BUILT_IN_VIEWS.find(view => filterKey(current) === filterKey({
-      ...clearedFilter(current),
-      ...view.state,
-    } as AccessoryFilterState))
-    if (match) {
-      return match.id
-    }
-    return this.active()
-      ? null
-      : 'all'
-  })
 
   /** How many accessories each subcategory holds, ignoring the other filters (but not hidden ones unless shown) */
   private readonly subcategoryCounts = computed(() => {
@@ -346,7 +280,7 @@ export class AccessoriesToolbarComponent implements OnDestroy {
         this.emit({ search: text })
       })
 
-    // Keep the search box in step when the filter changes from elsewhere (a view, Clear, or the page)
+    // Keep the search box in step when the filter changes from elsewhere (Clear, or the page)
     effect(() => {
       const search = this.filter().search
       untracked(() => {
@@ -459,14 +393,17 @@ export class AccessoriesToolbarComponent implements OnDestroy {
     this.expandedFacets.set(next)
   }
 
-  /** Open a view as a kiosk, in this tab */
-  public openKiosk(viewId: string): void {
-    void this.$kiosk.open(viewId)
+  /** The rooms, categories, subcategories and labels of the filter, as the kiosk scope it opens with */
+  public readonly kioskScope = computed(() => scopeFromFilter(this.filter()))
+
+  /** Open the filter as a kiosk, in this tab */
+  public openKiosk(): void {
+    void this.$kiosk.open(this.kioskScope())
   }
 
-  /** Copy the kiosk link for a view */
-  public copyKioskLink(viewId: string): void {
-    void this.$kiosk.copy(viewId)
+  /** Copy the kiosk link for the filter */
+  public copyKioskLink(): void {
+    void this.$kiosk.copy(this.kioskScope())
   }
 
   /** Only admins pair tablets */
@@ -474,66 +411,15 @@ export class AccessoriesToolbarComponent implements OnDestroy {
     return !!this.$auth.user.admin
   }
 
-  /** Add a tablet to this view, then show its pairing code */
-  public pairTablet(viewId: string): void {
-    void openAddTablet(this.$modal, viewId)
-  }
-
-  /** Apply a built-in view on top of a cleared filter, or clear everything for 'All' */
-  public applyView(view: BuiltInView | null): void {
-    this.applyState(view?.state ?? null)
-    this.viewSelect.emit(null)
-  }
-
-  /** Apply a saved view on top of a cleared filter. Its pinned and excluded accessories follow via the page. */
-  public applyCustomView(view: AccessoryView): void {
-    this.applyState(view.state)
-    this.viewSelect.emit(view.id)
-  }
-
-  /** Whether a view was shared with the user by someone else */
-  public isSharedWithMe(view: AccessoryView): boolean {
-    return !!view.owner && view.owner !== this.username()
-  }
-
-  public openSaveView(): void {
-    this.viewName.set('')
-    this.saveFormOpen.set(true)
-  }
-
-  public onViewNameInput(event: Event): void {
-    this.viewName.set((event.target as HTMLInputElement).value)
-  }
-
-  public confirmSaveView(): void {
-    const name = this.viewName().trim()
-    if (!name) {
-      return
-    }
-    this.saveView.emit(name)
-    this.saveFormOpen.set(false)
-    this.viewName.set('')
-  }
-
-  public cancelSaveView(): void {
-    this.saveFormOpen.set(false)
-    this.viewName.set('')
-  }
-
-  private applyState(state: Partial<AccessoryFilterState> | null): void {
-    const next = clearedFilter(this.filter())
-    this.searchPending = false
-    this.searchText.set('')
-    this.filter.set(state
-      ? {
-          ...next,
-          ...state,
-        } as AccessoryFilterState
-      : next)
+  /** Add a tablet scoped to the filter, then show its pairing code */
+  public pairTablet(): void {
+    void openAddTablet(this.$modal, this.kioskScope())
   }
 
   public clear(): void {
-    this.applyView(null)
+    this.searchPending = false
+    this.searchText.set('')
+    this.filter.set(clearedFilter(this.filter()))
   }
 
   private emit(patch: Partial<AccessoryFilterState>): void {

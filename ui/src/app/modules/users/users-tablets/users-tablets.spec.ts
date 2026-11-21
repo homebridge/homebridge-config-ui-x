@@ -20,8 +20,13 @@ function device(overrides: Partial<KioskDevice> = {}): KioskDevice {
     id: 'dev-1',
     name: 'Hall',
     owner: 'admin',
-    viewId: 'favorites',
-    viewName: 'Favorites',
+    scope: {
+      rooms: [],
+      categories: ['lights'],
+      subcategories: [],
+      labels: [],
+    },
+    scopeLabel: 'Lights',
     allowSensitive: false,
     allowedUniqueIds: ['a', 'b'],
     createdAt: '2026-01-01T00:00:00.000Z',
@@ -32,7 +37,7 @@ function device(overrides: Partial<KioskDevice> = {}): KioskDevice {
 
 describe('usersTabletsComponent', () => {
   let fixture: ComponentFixture<UsersTabletsComponent>
-  let devices: { list: ReturnType<typeof vi.fn>, remove: ReturnType<typeof vi.fn>, update: ReturnType<typeof vi.fn>, pairingCode: ReturnType<typeof vi.fn>, refreshDevice: ReturnType<typeof vi.fn>, ensureSession: ReturnType<typeof vi.fn>, releaseSession: ReturnType<typeof vi.fn>, views: ReturnType<typeof vi.fn>, resolveAllowed: ReturnType<typeof vi.fn> }
+  let devices: { list: ReturnType<typeof vi.fn>, remove: ReturnType<typeof vi.fn>, update: ReturnType<typeof vi.fn>, pairingCode: ReturnType<typeof vi.fn>, refreshDevice: ReturnType<typeof vi.fn>, ensureSession: ReturnType<typeof vi.fn>, releaseSession: ReturnType<typeof vi.fn>, resolveAllowed: ReturnType<typeof vi.fn> }
   let modal: { open: ReturnType<typeof vi.fn> }
   let toastr: { success: ReturnType<typeof vi.fn>, error: ReturnType<typeof vi.fn> }
 
@@ -50,7 +55,6 @@ describe('usersTabletsComponent', () => {
       refreshDevice: vi.fn(async () => device()),
       ensureSession: vi.fn(async () => {}),
       releaseSession: vi.fn(),
-      views: vi.fn(() => []),
       resolveAllowed: vi.fn(() => []),
     }
     modal = {
@@ -93,12 +97,12 @@ describe('usersTabletsComponent', () => {
       .find((entry: any) => entry.textContent.includes(label)) as HTMLButtonElement
   }
 
-  it('lists each tablet with its view, pairing state and accessory count', async () => {
+  it('lists each tablet with its scope label and pairing state', async () => {
     await settle()
     const text = fixture.nativeElement.textContent as string
     expect(devices.list).toHaveBeenCalled()
     expect(text).toContain('Hall')
-    expect(text).toContain('Favorites')
+    expect(text).toContain('Lights')
     expect(text).toContain('kiosk.tablets.paired')
   })
 
@@ -176,7 +180,8 @@ describe('tabletPairComponent', () => {
         {
           provide: AccessoriesService,
           useValue: {
-            viewsSaved: new Subject<void>(),
+            layoutSaved: new Subject<void>(),
+            metadataSaved: new Subject<void>(),
           },
         },
         {
@@ -210,7 +215,8 @@ describe('tabletPairComponent', () => {
 
 describe('kioskDevicesService admin-only resync', () => {
   function setup(admin: boolean) {
-    const viewsSaved = new Subject<void>()
+    const layoutSaved = new Subject<void>()
+    const metadataSaved = new Subject<void>()
     TestBed.resetTestingModule()
     const list = vi.fn(async () => [])
     TestBed.configureTestingModule({
@@ -225,11 +231,11 @@ describe('kioskDevicesService admin-only resync', () => {
         {
           provide: AccessoriesService,
           useValue: {
-            viewsSaved,
+            layoutSaved,
+            metadataSaved,
             rooms: () => [
               { name: 'r', services: [] },
             ],
-            views: () => [],
           },
         },
         {
@@ -242,23 +248,31 @@ describe('kioskDevicesService admin-only resync', () => {
     })
     const service = TestBed.inject(KioskDevicesService)
     vi.spyOn(service, 'list').mockImplementation(list)
-    return { viewsSaved, list }
+    return { layoutSaved, metadataSaved, list }
   }
 
   afterEach(() => {
     vi.restoreAllMocks()
   })
 
-  it('re-sends tablets after views are saved, for an admin', async () => {
-    const { viewsSaved, list } = setup(true)
-    viewsSaved.next()
+  it('re-sends tablets after the layout is saved, for an admin', async () => {
+    const { layoutSaved, list } = setup(true)
+    layoutSaved.next()
     await Promise.resolve()
     expect(list).toHaveBeenCalled()
   })
 
-  it('does nothing after views are saved, for a non-admin', async () => {
-    const { viewsSaved, list } = setup(false)
-    viewsSaved.next()
+  it('re-sends tablets after the labels and floors are saved, for an admin', async () => {
+    const { metadataSaved, list } = setup(true)
+    metadataSaved.next()
+    await Promise.resolve()
+    expect(list).toHaveBeenCalled()
+  })
+
+  it('does nothing after the layout or labels are saved, for a non-admin', async () => {
+    const { layoutSaved, metadataSaved, list } = setup(false)
+    layoutSaved.next()
+    metadataSaved.next()
     await Promise.resolve()
     expect(list).not.toHaveBeenCalled()
   })

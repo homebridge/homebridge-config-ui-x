@@ -1,26 +1,26 @@
-import type { AccessoryView } from '@/app/core/accessories/filters/accessory-views'
+import type { KioskScope } from '@/app/modules/kiosk/kiosk-scope'
 
 import { DestroyRef, inject, Injectable } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom, timeout } from 'rxjs'
+import { firstValueFrom, merge, timeout } from 'rxjs'
 
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { HttpErrorService } from '@/app/core/utilities/http-error.service'
-import { findKioskView, resolveViewUniqueIds } from '@/app/modules/kiosk/kiosk-resolve'
+import { resolveScopeUniqueIds } from '@/app/modules/kiosk/kiosk-resolve'
 
-/** How long to wait for the accessories to arrive when a session is started just to resolve a view */
+/** How long to wait for the accessories to arrive when a session is started just to resolve a scope */
 const ROOMS_TIMEOUT = 15_000
 
 export interface KioskDevice {
   id: string
   name: string
   owner: string
-  viewId: string
-  viewName: string
+  scope: KioskScope
+  scopeLabel: string
   allowSensitive: boolean
   allowedUniqueIds: string[]
   createdAt: string
@@ -31,8 +31,8 @@ export interface KioskDevice {
 
 export interface KioskDeviceInput {
   name: string
-  viewId: string
-  viewName: string
+  scope: KioskScope
+  scopeLabel: string
   allowSensitive: boolean
   allowedUniqueIds: string[]
 }
@@ -43,7 +43,7 @@ export interface PairingCode {
 }
 
 /**
- * Admin side of the paired tablets: the device API, and keeping each device's accessories in step with its view.
+ * Admin side of the paired tablets: the device API, and keeping each device's accessories in step with its scope.
  */
 @Injectable({
   providedIn: 'root',
@@ -59,8 +59,8 @@ export class KioskDevicesService {
 
   constructor() {
     if (this.$auth.user.admin) {
-      // Views saved on the accessories page: re-send the accessories of each tablet whose view changed
-      this.$accessories.viewsSaved
+      // Layout or labels and floors saved on the accessories page: re-send the accessories of each tablet whose set changed
+      merge(this.$accessories.layoutSaved, this.$accessories.metadataSaved)
         .pipe(takeUntilDestroyed(inject(DestroyRef)))
         .subscribe(() => void this.resyncOwnedDevices())
     }
@@ -86,13 +86,8 @@ export class KioskDevicesService {
     return this.$api.post(`/kiosk/devices/${encodeURIComponent(id)}/pairing-code`, {})
   }
 
-  /** The views a tablet can show: built-in, the user's own, and those shared with them */
-  public views(): AccessoryView[] {
-    return this.$accessories.views()
-  }
-
   /**
-   * Make sure the accessories are loaded so views can be resolved. Starts a session only when none is running here,
+   * Make sure the accessories are loaded so scopes can be resolved. Starts a session only when none is running here,
    * and releaseSession() stops only what this service started.
    */
   public async ensureSession(): Promise<void> {
@@ -116,30 +111,26 @@ export class KioskDevicesService {
     }
   }
 
-  /** The uniqueIds a view resolves to now. Needs the accessories loaded (see ensureSession). */
-  public resolveAllowed(view: AccessoryView): string[] {
-    return resolveViewUniqueIds(view, this.$accessories.rooms(), this.$accessories.filterContext())
+  /** The uniqueIds a scope resolves to now. Needs the accessories loaded (see ensureSession). */
+  public resolveAllowed(scope: KioskScope): string[] {
+    return resolveScopeUniqueIds(scope, this.$accessories.rooms(), this.$accessories.filterContext().labels)
   }
 
-  /** Recompute a tablet's accessories from its view and save them */
+  /** Recompute a tablet's accessories from its stored scope and save them */
   public async refreshDevice(device: KioskDevice): Promise<KioskDevice> {
-    const view = findKioskView(device.viewId, this.views())
-    if (!view) {
-      throw new Error(`No view ${device.viewId}`)
-    }
     await this.ensureSession()
     try {
       return await this.update(device.id, {
-        allowedUniqueIds: this.resolveAllowed(view),
+        allowedUniqueIds: this.resolveAllowed(device.scope),
       })
     } finally {
       this.releaseSession()
     }
   }
 
-  /** After views are saved: re-send the accessories of this admin's tablets whose view has changed. Best effort. */
+  /** After the layout or labels and floors are saved: re-send the accessories of this admin's tablets whose set has changed. Best effort. */
   private async resyncOwnedDevices(): Promise<void> {
-    // Without loaded rooms the view would resolve to nothing, and that must never be saved to a tablet
+    // Without loaded rooms the scope would resolve to nothing, and that must never be saved to a tablet
     if (this.$accessories.rooms().length === 0) {
       return
     }
@@ -151,15 +142,11 @@ export class KioskDevicesService {
       return
     }
 
-    const views = this.views()
     for (const device of devices) {
-      const view = device.owner === this.$auth.user.username
-        ? findKioskView(device.viewId, views)
-        : undefined
-      if (!view) {
+      if (device.owner !== this.$auth.user.username) {
         continue
       }
-      const allowed = this.resolveAllowed(view)
+      const allowed = this.resolveAllowed(device.scope)
       if (sameIds(allowed, device.allowedUniqueIds)) {
         continue
       }
