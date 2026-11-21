@@ -11,6 +11,7 @@ export const RE_CHAR_PAIRS = /.{1,2}/g
 export const RE_HYPHEN = /-/
 export const RE_HYPHEN_GLOBAL = /-/g
 export const RE_WHITESPACE = /\s+/
+export const RE_NON_WORD = /[^\p{L}\p{N}]+/u
 
 // URL patterns
 export const RE_URL_WITH_OPTIONAL_PAREN = /\(?(?:https?|ftp):\/\/[\n\S]+/g

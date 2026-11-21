@@ -158,6 +158,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - ci: set release concurrency per job and branch, so a publish is never cancelled part-way (#3128)
 - fix(auth): close a user's open sockets when the user is deleted or the session is revoked
 - fix(terminal): leave a swipe past the first or last line to the phone, to scroll the page
+- fix(plugins): match the start of words in the plugin search (#3138) (@emreocell)
 
 ### Homebridge Dependencies
 

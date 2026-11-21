@@ -55,6 +55,7 @@ import {
   RE_GITHUB_REPO,
   RE_HYPHEN,
   RE_HYPHEN_GLOBAL,
+  RE_NON_WORD,
   RE_NPM_VERSION,
   RE_PLUGIN_NAME,
   RE_PRERELEASE_TYPE,
@@ -541,18 +542,26 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
     const nameTermsSet = new Set(nameTerms)
 
     // The search terms contain all the parts of the name
-    if (nameTerms.every(term => searchTermsSet.has(term))) {
+    if (nameTerms.length > 0 && nameTerms.every(term => searchTermsSet.has(term))) {
       return 'exactName'
     }
     // The keywords or name contain all the search terms
     if (searchTerms.every(term => keywordsSet.has(term)) || searchTerms.every(term => nameTermsSet.has(term))) {
       return 'exactKeyword'
     }
-    if (
-      searchTerms.some(term => pluginName.includes(term))
-      || searchTerms.some(term => pluginKeywords.some(k => k.includes(term)))
-      || searchTerms.some(term => pluginDescription.includes(term))
-    ) {
+
+    // Every search term starts a word of the name, a keyword or the description: "cam" finds "camera" and
+    // "light" finds "lights", but "ring" does not match "monitoring" because that word does not start with it
+    const words = [
+      ...nameTerms,
+      ...pluginKeywords,
+      ...pluginKeywords.flatMap(k => k.split(RE_NON_WORD)),
+      ...pluginDescription.split(RE_NON_WORD),
+    ]
+    if (searchTerms.every((term) => {
+      const termWords = term.split(RE_NON_WORD).filter(Boolean)
+      return termWords.length > 0 && termWords.every(termWord => words.some(word => word.startsWith(termWord)))
+    })) {
       return 'partial'
     }
     return null
@@ -639,7 +648,7 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
         }
       })
 
-    // Find scoped plugins from the plugin list that match search terms but weren't returned by npm
+    // Find plugins that match the search terms but weren't returned by npm
     const resultNames = new Set(plugins.map(p => p.name))
     const scopedLookups: Promise<HomebridgePlugin[]>[] = []
 
@@ -647,10 +656,18 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
       if (!resultNames.has(name) && !this.isHiddenPlugin(name)) {
         // Extract the unscoped part after the scope prefix for matching
         const unscopedName = name.substring(name.lastIndexOf('/') + 1).toLowerCase()
-        if (searchTerms.some(term => unscopedName.includes(term))) {
+        const unscopedNameTerms = this.extractTerms(unscopedName, RE_HYPHEN)
+        if (searchTerms.some(term => unscopedNameTerms.some(nameTerm => nameTerm.startsWith(term)))) {
           scopedLookups.push(this.searchNpmRegistrySingle(name).catch(() => []))
         }
       }
+    }
+
+    // npm search does not always list a recently published package, so also look up the package
+    // that the search words would spell out (e.g. "philips hue" -> homebridge-philips-hue)
+    const guessedName = `homebridge-${searchTerms.join('-')}`
+    if (searchTerms.length > 0 && RE_PLUGIN_NAME.test(guessedName) && !resultNames.has(guessedName) && !this.isHiddenPlugin(guessedName)) {
+      scopedLookups.push(this.searchNpmRegistrySingle(guessedName).catch(() => []))
     }
 
     if (scopedLookups.length > 0) {
