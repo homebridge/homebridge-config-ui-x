@@ -59,24 +59,13 @@ a:hover {
   width: 100%;
 }
 
-// Drop target while a tile is dragged between room groups (set by CDK on the receiving list)
-.group-tiles.cdk-drop-list-receiving {
-  outline: 2px dashed var(--bs-primary, #0d6efd);
-  outline-offset: 4px;
-  border-radius: 0.5rem;
-  transition: outline-color 0.15s ease;
-}
-
 .accessory-item.cdk-drag-placeholder {
   opacity: 0.3;
 }
 
-// A room being moved in filtered manage-layout mode: its slot shows a dashed outline while dragged
+// A room being moved in filtered manage-layout mode: its slot is faded while dragged
 .accessory-group.cdk-drag-placeholder {
   opacity: 0.35;
-  outline: 2px dashed var(--bs-primary, #0d6efd);
-  outline-offset: 4px;
-  border-radius: 0.5rem;
 }
 
 // The room headers are the drag handles, so the pointer shows a move cursor over them while filtered

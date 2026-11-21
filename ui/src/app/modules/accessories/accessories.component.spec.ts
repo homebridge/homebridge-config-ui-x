@@ -1,4 +1,4 @@
-import type { FakeIoNamespace, FakeModalService, FakeSettings, FakeWs } from '@/testing'
+import type { FakeModalService, FakeSettings, FakeWs } from '@/testing'
 
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
@@ -30,14 +30,12 @@ import { provideFakes, provideTestTranslate } from '@/testing/providers'
  * The fix is that the two never share a drag system. Manage-layout mode with no
  * filter uses dragula, where every tile is shown and the model stays 1-to-1 with
  * the DOM. With a filter on, manage-layout mode uses CDK drag-and-drop, which moves
- * accessories by uniqueId, so hidden tiles keep their places. The bridge names come
- * from the child-bridge socket rather than the accessory data and so can be missing.
+ * accessories by uniqueId, so hidden tiles keep their places. Each bridge is named by
+ * the name it advertises on its accessories.
  */
 describe('accessoriesComponent', () => {
   let settings: FakeSettings
   let ws: FakeWs
-  let statusIo: FakeIoNamespace
-  let childIo: FakeIoNamespace
   let modal: FakeModalService
   let accessories: Record<string, any>
   let accessoryData: Subject<any>
@@ -51,32 +49,22 @@ describe('accessoriesComponent', () => {
    * @param options.rooms - the room layout the service reports
    * @param options.availableBridges - the bridges the filter can offer
    * @param options.filter - the filter's starting state
-   * @param options.bridgeNames - the username-to-name map the service holds
    * @param options.env - settings env overrides
    * @param options.admin - whether the signed-in user is an admin
-   * @param options.childBridges - what the child-bridge socket reports
    */
   async function open(options: {
     rooms?: any[]
     availableBridges?: string[]
     filter?: Record<string, any>
-    bridgeNames?: Map<string, string>
     env?: Record<string, any>
     admin?: boolean
-    childBridges?: Array<{ username: string, name: string }>
   } = {}) {
     TestBed.resetTestingModule()
     settings = makeSettings({ env: options.env })
     ws = fakeWs()
-    statusIo = ws.namespace('status')
-    childIo = ws.namespace('child-bridges')
     modal = modalServiceSpy()
     accessoryData = new Subject()
     dropEvents = new Subject()
-
-    // The page calls `.forEach` on this straight away, so an unanswered request
-    // throws inside an rxjs subscriber rather than failing an assertion
-    childIo.socket.respondTo('get-homebridge-child-bridge-status', options.childBridges ?? [])
 
     accessories = {
       rooms: signal(options.rooms ?? []),
@@ -113,7 +101,6 @@ describe('accessoriesComponent', () => {
       }),
       placeService: vi.fn(),
       placeRoom: vi.fn(),
-      bridgeUsernameToNameMap: options.bridgeNames ?? new Map<string, string>(),
       accessoryData,
       start: vi.fn(async () => undefined),
       stop: vi.fn(),
@@ -314,13 +301,13 @@ describe('accessoriesComponent', () => {
       expect(page.groups()[0].services.map(service => service.uniqueId)).toEqual(['a'])
     })
 
-    it('filters by the bridge name from the config, not the name the bridge reports', async () => {
+    it('filters by the bridge name each accessory advertises', async () => {
       const page = await open({
         rooms: [
           roomOf('Kitchen', [
             makeService({
               uniqueId: 'a',
-              instance: { username: 'AA:11', name: 'Homebridge' },
+              instance: { username: 'AA:11', name: 'Kitchen Bridge' },
             }),
             makeService({
               uniqueId: 'b',
@@ -328,9 +315,6 @@ describe('accessoriesComponent', () => {
             }),
           ]),
         ],
-        bridgeNames: new Map([
-          ['AA:11', 'Kitchen Bridge'],
-        ]),
         availableBridges: ['Kitchen Bridge', 'Homebridge'],
         filter: {
           bridges: ['Kitchen Bridge'],
@@ -708,68 +692,36 @@ describe('accessoriesComponent', () => {
     })
   })
 
-  describe('bridge names from the socket', () => {
-    it('connects to both namespaces it needs', async () => {
+  describe('bridge names from the accessories', () => {
+    it('does not open a socket just to name bridges', async () => {
       await open()
 
-      // Bridge names come from the child-bridge feed, not from the accessory
-      // data, so the page needs its own subscription
-      expect(ws.connectToNamespace).toHaveBeenCalledWith('child-bridges')
-      expect(statusIo).toBeDefined()
-      expect(childIo).toBeDefined()
+      expect(ws.connectToNamespace).not.toHaveBeenCalledWith('child-bridges')
     })
 
-    it('learns the child bridge names from the socket', async () => {
-      const page = await open({
-        childBridges: [
-          { username: '0E:11:11:11:11:11', name: 'Kitchen Bridge' },
-        ],
+    it('picks up a bridge renamed in the accessory data', async () => {
+      await open({
         rooms: [
           roomOf('Kitchen', [
-            makeService(),
+            makeService({
+              instance: { username: '0E:11:11:11:11:11', name: 'Homebridge' },
+            }),
           ]),
         ],
-        availableBridges: ['Kitchen Bridge'],
-        filter: {
-          bridges: ['Kitchen Bridge'],
-        },
       })
+      accessoryData.next([])
+      expect(accessories.availableBridges()).toEqual(['Homebridge'])
 
-      // The name the user gave the bridge only exists on this feed, and it is
-      // what the filter matches against
-      expect(page.shownCount()).toBe(1)
-    })
-
-    it('picks up a bridge renamed while the page is open', async () => {
-      const page = await open({
-        rooms: [
-          roomOf('Kitchen', [
-            makeService(),
-          ]),
-        ],
-        availableBridges: ['Kitchen Bridge'],
-        filter: {
-          bridges: ['Kitchen Bridge'],
-        },
-      })
-      expect(page.shownCount()).toBe(0)
-
-      childIo.socket.fire('child-bridge-status-update', { username: '0E:11:11:11:11:11', name: 'Kitchen Bridge' })
-
-      expect(page.shownCount()).toBe(1)
-    })
-
-    it('re-reads the available bridges when the accessories change', async () => {
-      const page = await open({ availableBridges: [] })
-
-      accessoryData.next([
-        makeService(),
+      accessories.rooms.set([
+        roomOf('Kitchen', [
+          makeService({
+            instance: { username: '0E:11:11:11:11:11', name: 'Kitchen Bridge' },
+          }),
+        ]),
       ])
-      await Promise.resolve()
+      accessoryData.next([])
 
-      // A plugin restarting adds and removes bridges, so the filter list cannot
-      // be worked out once at startup
-      expect(page.availableBridges()).toBeDefined()
+      expect(accessories.availableBridges()).toEqual(['Kitchen Bridge'])
     })
   })
 
@@ -1198,21 +1150,18 @@ describe('accessoriesComponent', () => {
       expect(accessories.availableBridges()).toEqual(['Homebridge', 'Apple Bridge', 'Zebra Bridge'])
     })
 
-    it('prefers the name the user gave a bridge in the config', async () => {
+    it('names each bridge by the name it advertises', async () => {
       const page = await open({
         rooms: [
           room([
-            service('0E:22:22:22:22:22', 'homebridge-example'),
+            service('0E:22:22:22:22:22', 'Kitchen Bridge'),
           ]),
         ],
-        bridgeNames: new Map([
-          ['0E:22:22:22:22:22', 'My Own Name'],
-        ]),
       })
 
       recompute(page)
 
-      expect(accessories.availableBridges()).toEqual(['My Own Name'])
+      expect(accessories.availableBridges()).toEqual(['Kitchen Bridge'])
     })
 
     it('lists a bridge once however many accessories it has', async () => {
