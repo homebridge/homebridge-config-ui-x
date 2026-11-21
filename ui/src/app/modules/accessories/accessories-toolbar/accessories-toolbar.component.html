@@ -254,6 +254,13 @@
             }
           </section>
         </div>
+        @if (groupSortChanged()) {
+          <div class="accessories-filters-footer border-top px-3 py-2 d-flex align-items-center justify-content-end">
+            <button type="button" class="btn btn-link btn-sm p-0 text-nowrap" (click)="resetGroupSort()">
+              {{ 'form.button_reset' | translate }}
+            </button>
+          </div>
+        }
       </div>
     </div>
 
