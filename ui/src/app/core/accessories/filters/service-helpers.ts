@@ -19,13 +19,17 @@ export function serviceBridgeKey(service: ServiceTypeX): string {
     ?? ''
 }
 
-/** The bridge name for display, falling back to its username */
+/**
+ * The bridge name for display: the name the bridge advertises (main bridge or child bridge), from the
+ * HAP instance. Matter services may lack an instance, so their bridge name is used next, then the username.
+ */
 export function serviceBridgeName(service: ServiceTypeX): string {
   const bridge = service.bridge as unknown
-  if (typeof bridge === 'string') {
-    return bridge
-  }
-  return (bridge as { name?: string } | undefined)?.name || serviceBridgeKey(service)
+  return service.instance?.name
+    || (typeof bridge === 'string'
+      ? bridge
+      : (bridge as { name?: string } | undefined)?.name)
+    || serviceBridgeKey(service)
 }
 
 /** The name the user sees: the custom name when set, otherwise the service name */

@@ -104,7 +104,7 @@ describe('matchesFilter', () => {
 
   it('matches bridges by name or username', () => {
     const bridged = hap({ type: 'Switch', bridge: 'BRIDGE-USER' })
-    bridged.bridge = { name: 'Main Bridge', username: 'BRIDGE-USER' }
+    bridged.instance = { ...bridged.instance, name: 'Main Bridge' }
     expect(matchesFilter(bridged, 'Office', state({
       bridges: ['Main Bridge'],
     }), emptyIndex)).toBe(true)
@@ -113,6 +113,17 @@ describe('matchesFilter', () => {
     }), emptyIndex)).toBe(true)
     expect(matchesFilter(bridged, 'Office', state({
       bridges: ['Other'],
+    }), emptyIndex)).toBe(false)
+  })
+
+  it('matches a child bridge by the name it advertises', () => {
+    const child = hap({ type: 'Switch', bridge: 'CHILD-USER' })
+    child.instance = { ...child.instance, name: 'Kitchen Bridge' }
+    expect(matchesFilter(child, 'Office', state({
+      bridges: ['Kitchen Bridge'],
+    }), emptyIndex)).toBe(true)
+    expect(matchesFilter(child, 'Office', state({
+      bridges: ['Homebridge'],
     }), emptyIndex)).toBe(false)
   })
 
