@@ -85,7 +85,7 @@ describe('accessoriesToolbarComponent', () => {
   function rows(subcategory = false): HTMLInputElement[] {
     const row = subcategory ? '.accessories-suboption' : ':not(.accessories-suboption)'
     return [
-      ...document.querySelectorAll<HTMLInputElement>(`.accessories-filters-menu .accessories-option${row} input[type="checkbox"]`),
+      ...document.querySelectorAll<HTMLInputElement>(`.accessories-filters-menu .accessories-menu-option${row} input[type="checkbox"]`),
     ]
   }
 
@@ -124,8 +124,11 @@ describe('accessoriesToolbarComponent', () => {
       'accessories.toolbar.clear': 'Clear',
       'accessories.toolbar.clear_all': 'Clear all',
       'accessories.toolbar.active_filters': 'active filters',
-      'accessories.toolbar.show_count': 'Show {{count}} accessories',
       'accessories.toolbar.show_hidden_accessories': 'Show hidden accessories',
+      'accessories.control.close': 'Close',
+      'accessories.toolbar.group_sort': 'Group and sort',
+      'accessories.toolbar.group_by': 'Group by',
+      'accessories.toolbar.sort_by': 'Sort',
       'accessories.categories.lights': 'Lights',
       'accessories.subcategories.onoff': 'On/off',
       'accessories.subcategories.dimmable': 'Dimmable',
@@ -216,20 +219,20 @@ describe('accessoriesToolbarComponent', () => {
   })
 
   describe('clearing', () => {
-    it('disables Clear all in the panel footer when no filter is set', () => {
+    it('hides the panel footer when no filter is set', () => {
       setup()
       openPanel()
 
-      const clear = document.querySelector<HTMLButtonElement>('.accessories-filters-footer .btn-link')!
-      expect(clear.disabled).toBe(true)
+      expect(document.querySelector('.accessories-filters-footer')).toBeNull()
     })
 
-    it('enables Clear all in the panel footer when a filter is set', () => {
+    it('shows Clear all in the panel footer when a filter is set', () => {
       setup({ search: 'kettle' })
       openPanel()
 
       const clear = document.querySelector<HTMLButtonElement>('.accessories-filters-footer .btn-link')!
       expect(clear.disabled).toBe(false)
+      expect(clear.textContent!.trim()).toBe('Clear all')
     })
 
     it('clears every filter but keeps the grouping and sort the user picked', () => {
@@ -291,6 +294,75 @@ describe('accessoriesToolbarComponent', () => {
     })
   })
 
+  describe('group and sort menu', () => {
+    function sortMenu(): HTMLElement {
+      return fixture.nativeElement.querySelector('.accessories-sort-menu') as HTMLElement
+    }
+
+    function openSortMenu(): void {
+      ;(fixture.nativeElement.querySelector('.accessories-sort-button') as HTMLButtonElement).click()
+      fixture.detectChanges()
+    }
+
+    it('opens under its button with a titled header and a close button', () => {
+      setup()
+      openSortMenu()
+
+      expect(sortMenu().classList.contains('show')).toBe(true)
+      expect(sortMenu().querySelector('.accessories-menu-header h5')?.textContent).toContain('Group and sort')
+      expect(sortMenu().querySelector('.accessories-menu-header .btn-close')?.getAttribute('aria-label')).toBe('Close')
+    })
+
+    it('has no footer', () => {
+      setup()
+      openSortMenu()
+
+      expect(sortMenu().querySelector('.accessories-filters-footer')).toBeNull()
+    })
+
+    it('lists Group by and Sort as radio groups with uppercase section headings', () => {
+      setup()
+      openSortMenu()
+
+      const groups = [
+        ...sortMenu().querySelectorAll<HTMLElement>('.accessories-menu-section[role="radiogroup"]'),
+      ]
+      expect(groups.map(group => group.querySelector('.accessories-menu-section-title')?.textContent?.trim())).toEqual([
+        'Group by',
+        'Sort',
+      ])
+      for (const group of groups) {
+        expect(document.getElementById(group.getAttribute('aria-labelledby')!)).not.toBeNull()
+        const radios = group.querySelectorAll<HTMLInputElement>('input[type="radio"]')
+        expect(radios.length).toBeGreaterThan(0)
+        expect(group.querySelector('input[type="checkbox"]')).toBeNull()
+      }
+    })
+
+    it('sets groupBy and sortBy from the radio rows', () => {
+      const toolbar = setup()
+      openSortMenu()
+
+      const groupRow = sortMenu().querySelector<HTMLInputElement>('input[name="accessories-group-by"][value="floor"]')!
+      groupRow.click()
+      expect(toolbar.filter().groupBy).toBe('floor')
+
+      const sortRow = sortMenu().querySelector<HTMLInputElement>('input[name="accessories-sort-by"][value="battery"]')!
+      sortRow.click()
+      expect(toolbar.filter().sortBy).toBe('battery')
+    })
+
+    it('closes on the close button', () => {
+      setup()
+      openSortMenu()
+
+      ;(sortMenu().querySelector('.accessories-menu-header .btn-close') as HTMLButtonElement).click()
+      fixture.detectChanges()
+
+      expect(sortMenu().classList.contains('show')).toBe(false)
+    })
+  })
+
   describe('filter panel', () => {
     /** Whether the Filters dropdown is open */
     function isOpen(): boolean {
@@ -307,7 +379,7 @@ describe('accessoriesToolbarComponent', () => {
       const button = fixture.nativeElement.querySelector('.accessories-filters-button') as HTMLButtonElement
       expect(isOpen()).toBe(true)
       expect(button.getAttribute('aria-expanded')).toBe('true')
-      expect(fixture.nativeElement.querySelector('.accessories-filters-header h5')?.textContent).toContain('Filters')
+      expect(fixture.nativeElement.querySelector('.accessories-menu-header h5')?.textContent).toContain('Filters')
     })
 
     it('stays open while rows are ticked', () => {
@@ -320,11 +392,11 @@ describe('accessoriesToolbarComponent', () => {
       expect(isOpen()).toBe(true)
     })
 
-    it('closes on Show N accessories', () => {
+    it('closes on the close button', () => {
       setup()
       openPanel()
 
-      ;(fixture.nativeElement.querySelector('.accessories-filters-footer .btn-primary') as HTMLButtonElement).click()
+      ;(fixture.nativeElement.querySelector('.accessories-menu-header .btn-close') as HTMLButtonElement).click()
       fixture.detectChanges()
 
       expect(isOpen()).toBe(false)
@@ -378,7 +450,7 @@ describe('accessoriesToolbarComponent', () => {
       openPanel()
 
       const groups = [
-        ...document.querySelectorAll<HTMLElement>('.accessories-filters-menu .accessories-facet[role="group"]'),
+        ...document.querySelectorAll<HTMLElement>('.accessories-filters-menu .accessories-menu-section[role="group"]'),
       ]
       expect(groups.length).toBeGreaterThan(0)
       for (const group of groups) {

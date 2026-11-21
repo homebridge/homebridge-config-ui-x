@@ -57,13 +57,11 @@
       </button>
       <div
         ngbDropdownMenu
-        class="accessories-filters-menu p-0"
+        class="accessories-menu accessories-filters-menu p-0"
         role="dialog"
         [attr.aria-label]="'accessories.toolbar.filters' | translate"
       >
-        <div
-          class="accessories-filters-header d-flex align-items-center justify-content-between px-3 py-2 border-bottom"
-        >
+        <div class="accessories-menu-header d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
           <h5 class="m-0 primary-text">{{ 'accessories.toolbar.filters' | translate }}</h5>
           <button
             type="button"
@@ -72,17 +70,21 @@
             (click)="filtersDropdown.close()"
           ></button>
         </div>
-        <div class="accessories-filters-body px-3 pt-2 pb-2">
+        <div class="accessories-menu-body px-3 pt-2 pb-2">
           @for (facet of orderedFacets(); track facet.key) {
-            <section class="accessories-facet" role="group" [attr.aria-labelledby]="`accessories-facet-${facet.key}`">
+            <section
+              class="accessories-menu-section"
+              role="group"
+              [attr.aria-labelledby]="`accessories-menu-section-${facet.key}`"
+            >
               <h6
-                class="accessories-facet-title small text-uppercase fw-semibold text-secondary"
-                [attr.id]="`accessories-facet-${facet.key}`"
+                class="accessories-menu-section-title small text-uppercase fw-semibold text-secondary"
+                [attr.id]="`accessories-menu-section-${facet.key}`"
               >
                 {{ facet.labelKey | translate }}
               </h6>
               @for (option of visibleOptions(facet); track option.value; let i = $index) {
-                <div class="form-check accessories-option">
+                <div class="form-check accessories-menu-option">
                   <input
                     class="form-check-input"
                     type="checkbox"
@@ -91,7 +93,7 @@
                     (change)="toggleValue(facet.key, option.value)"
                   />
                   <label
-                    class="form-check-label accessories-option-label"
+                    class="form-check-label accessories-menu-label"
                     [attr.for]="`accessories-opt-${facet.key}-${i}`"
                   >
                     <span>{{ option.translate ? (option.label | translate) : option.label }}</span>
@@ -111,7 +113,7 @@
                       {{ group.labelKey | translate }}
                     </div>
                     @for (sub of group.options; track sub.value; let j = $index) {
-                      <div class="form-check accessories-option accessories-suboption">
+                      <div class="form-check accessories-menu-option accessories-suboption">
                         <input
                           class="form-check-input"
                           type="checkbox"
@@ -120,7 +122,7 @@
                           (change)="toggleSubcategory(sub.value)"
                         />
                         <label
-                          class="form-check-label accessories-option-label"
+                          class="form-check-label accessories-menu-label"
                           [attr.for]="`accessories-sub-${facet.key}-${i}-${j}`"
                         >
                           <span>{{ sub.label | translate }}</span>
@@ -145,8 +147,8 @@
               }
             </section>
           }
-          <section class="accessories-facet">
-            <div class="form-check accessories-option mb-0">
+          <section class="accessories-menu-section">
+            <div class="form-check accessories-menu-option mb-0">
               <input
                 id="accessories-show-hidden"
                 class="form-check-input"
@@ -154,24 +156,23 @@
                 [checked]="filter().showHidden"
                 (change)="onShowHidden($event)"
               />
-              <label class="form-check-label accessories-option-label" for="accessories-show-hidden">
+              <label class="form-check-label accessories-menu-label" for="accessories-show-hidden">
                 <span>{{ 'accessories.toolbar.show_hidden_accessories' | translate }}</span>
               </label>
             </div>
           </section>
         </div>
-        <div class="accessories-filters-footer border-top p-3 d-flex align-items-center justify-content-between gap-2">
-          <button type="button" class="btn btn-link p-0" [disabled]="!active()" (click)="clear()">
-            {{ 'accessories.toolbar.clear_all' | translate }}
-          </button>
-          <button type="button" class="btn btn-primary" (click)="filtersDropdown.close()">
-            {{ 'accessories.toolbar.show_count' | translate: { count: shown() } }}
-          </button>
-        </div>
+        @if (active()) {
+          <div class="accessories-filters-footer border-top px-3 py-2 d-flex align-items-center justify-content-end">
+            <button type="button" class="btn btn-link btn-sm p-0 text-nowrap" (click)="clear()">
+              {{ 'accessories.toolbar.clear_all' | translate }}
+            </button>
+          </div>
+        }
       </div>
     </div>
 
-    <div ngbDropdown autoClose="outside" class="d-inline-block flex-shrink-0">
+    <div #sortDropdown="ngbDropdown" ngbDropdown autoClose="outside" class="d-inline-block flex-shrink-0">
       <button
         type="button"
         class="btn btn-sm btn-elegant my-0 accessories-sort-button"
@@ -182,47 +183,77 @@
       >
         <i class="fas fa-arrow-down-wide-short" aria-hidden="true"></i>
       </button>
-      <div ngbDropdownMenu class="accessories-sort-menu p-3">
-        <fieldset class="mb-3">
-          <legend class="small fw-semibold text-secondary mb-1">
-            {{ 'accessories.toolbar.group_by' | translate }}
-          </legend>
-          @for (option of groupOptions; track option.value) {
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="accessories-group-by"
-                [id]="`accessories-group-by-${option.value}`"
-                [value]="option.value"
-                [checked]="filter().groupBy === option.value"
-                (change)="onGroupBy($event)"
-              />
-              <label class="form-check-label" [attr.for]="`accessories-group-by-${option.value}`">{{
-                option.labelKey | translate
-              }}</label>
-            </div>
-          }
-        </fieldset>
-        <fieldset>
-          <legend class="small fw-semibold text-secondary mb-1">{{ 'accessories.toolbar.sort_by' | translate }}</legend>
-          @for (option of sortOptions; track option.value) {
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="accessories-sort-by"
-                [id]="`accessories-sort-by-${option.value}`"
-                [value]="option.value"
-                [checked]="filter().sortBy === option.value"
-                (change)="onSortBy($event)"
-              />
-              <label class="form-check-label" [attr.for]="`accessories-sort-by-${option.value}`">{{
-                option.labelKey | translate
-              }}</label>
-            </div>
-          }
-        </fieldset>
+      <div
+        ngbDropdownMenu
+        class="accessories-menu accessories-sort-menu p-0"
+        role="dialog"
+        [attr.aria-label]="'accessories.toolbar.group_sort' | translate"
+      >
+        <div class="accessories-menu-header d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+          <h5 class="m-0 primary-text">{{ 'accessories.toolbar.group_sort' | translate }}</h5>
+          <button
+            type="button"
+            class="btn-close"
+            [attr.aria-label]="'accessories.control.close' | translate"
+            (click)="sortDropdown.close()"
+          ></button>
+        </div>
+        <div class="accessories-menu-body px-3 pt-2 pb-2">
+          <section class="accessories-menu-section" role="radiogroup" aria-labelledby="accessories-sort-title-group-by">
+            <h6
+              class="accessories-menu-section-title small text-uppercase fw-semibold text-secondary"
+              id="accessories-sort-title-group-by"
+            >
+              {{ 'accessories.toolbar.group_by' | translate }}
+            </h6>
+            @for (option of groupOptions; track option.value) {
+              <div class="form-check accessories-menu-option">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="accessories-group-by"
+                  [id]="`accessories-group-by-${option.value}`"
+                  [value]="option.value"
+                  [checked]="filter().groupBy === option.value"
+                  (change)="onGroupBy($event)"
+                />
+                <label
+                  class="form-check-label accessories-menu-label"
+                  [attr.for]="`accessories-group-by-${option.value}`"
+                >
+                  <span>{{ option.labelKey | translate }}</span>
+                </label>
+              </div>
+            }
+          </section>
+          <section class="accessories-menu-section" role="radiogroup" aria-labelledby="accessories-sort-title-sort-by">
+            <h6
+              class="accessories-menu-section-title small text-uppercase fw-semibold text-secondary"
+              id="accessories-sort-title-sort-by"
+            >
+              {{ 'accessories.toolbar.sort_by' | translate }}
+            </h6>
+            @for (option of sortOptions; track option.value) {
+              <div class="form-check accessories-menu-option">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="accessories-sort-by"
+                  [id]="`accessories-sort-by-${option.value}`"
+                  [value]="option.value"
+                  [checked]="filter().sortBy === option.value"
+                  (change)="onSortBy($event)"
+                />
+                <label
+                  class="form-check-label accessories-menu-label"
+                  [attr.for]="`accessories-sort-by-${option.value}`"
+                >
+                  <span>{{ option.labelKey | translate }}</span>
+                </label>
+              </div>
+            }
+          </section>
+        </div>
       </div>
     </div>
 
