@@ -81,11 +81,19 @@ describe('accessoriesToolbarComponent', () => {
     return fixture.componentInstance
   }
 
-  /** The pills in the open filter panel (the panel renders outside the fixture) */
-  function pills(): HTMLButtonElement[] {
+  /** The option rows in the Filters dropdown: the checkboxes of the top-level options, or of the subcategories */
+  function rows(subcategory = false): HTMLInputElement[] {
+    const row = subcategory ? '.accessories-suboption' : ':not(.accessories-suboption)'
     return [
-      ...document.querySelectorAll<HTMLButtonElement>('.accessories-filters-panel .accessories-pill'),
+      ...document.querySelectorAll<HTMLInputElement>(`.accessories-filters-menu .accessories-option${row} input[type="checkbox"]`),
     ]
+  }
+
+  /** The text of an option row, its label and count */
+  function rowText(input: HTMLInputElement): string {
+    return [
+      ...input.closest('.form-check')!.querySelectorAll('span'),
+    ].map(span => span.textContent!.trim()).join(' ')
   }
 
   function openPanel(): void {
@@ -126,12 +134,7 @@ describe('accessoriesToolbarComponent', () => {
     }, true)
   })
 
-  afterEach(async () => {
-    // Close a panel a test left open, and let its close animation finish before the TestBed is torn down
-    if (document.querySelector('.offcanvas')) {
-      fixture?.componentInstance.closeFilters()
-      await new Promise(resolve => setTimeout(resolve, 400))
-    }
+  afterEach(() => {
     vi.useRealTimers()
     vi.unstubAllGlobals()
   })
@@ -188,11 +191,11 @@ describe('accessoriesToolbarComponent', () => {
       openPanel()
 
       // Hidden accessories are not counted until the user asks for them
-      const pill = (label: string) => pills().find(entry => entry.textContent!.includes(label))
-      expect(pill('Lights')?.textContent).toContain('2')
-      expect(pill('Kitchen')?.textContent).toContain('3')
+      const row = (label: string) => rows().find(entry => rowText(entry).includes(label))
+      expect(rowText(row('Lights')!)).toContain('2')
+      expect(rowText(row('Kitchen')!)).toContain('3')
       // Office holds only a hidden accessory, so it has no option until hidden ones are shown
-      expect(pill('Office')).toBeUndefined()
+      expect(row('Office')).toBeUndefined()
     })
 
     it('puts how many accessories are on screen out of the total in the Filters button label', () => {
@@ -217,7 +220,7 @@ describe('accessoriesToolbarComponent', () => {
       setup()
       openPanel()
 
-      const clear = document.querySelector<HTMLButtonElement>('.offcanvas-footer .btn-link')!
+      const clear = document.querySelector<HTMLButtonElement>('.accessories-filters-footer .btn-link')!
       expect(clear.disabled).toBe(true)
     })
 
@@ -225,7 +228,7 @@ describe('accessoriesToolbarComponent', () => {
       setup({ search: 'kettle' })
       openPanel()
 
-      const clear = document.querySelector<HTMLButtonElement>('.offcanvas-footer .btn-link')!
+      const clear = document.querySelector<HTMLButtonElement>('.accessories-filters-footer .btn-link')!
       expect(clear.disabled).toBe(false)
     })
 
@@ -289,33 +292,98 @@ describe('accessoriesToolbarComponent', () => {
   })
 
   describe('filter panel', () => {
-    it('opens a slide-out Filters panel from its button', () => {
+    /** Whether the Filters dropdown is open */
+    function isOpen(): boolean {
+      return (fixture.nativeElement.querySelector('.accessories-filters-menu') as HTMLElement).classList.contains('show')
+    }
+
+    it('opens a Filters dropdown under its button, not a side panel', () => {
       setup()
-      expect(document.querySelector('.accessories-filters-panel')).toBeNull()
+      expect(isOpen()).toBe(false)
+      expect(document.querySelector('.offcanvas')).toBeNull()
 
       openPanel()
 
-      const panel = document.querySelector('.accessories-filters-panel') as HTMLElement
-      expect(panel).not.toBeNull()
-      expect(panel.querySelector('.offcanvas-title')?.textContent).toContain('Filters')
+      const button = fixture.nativeElement.querySelector('.accessories-filters-button') as HTMLButtonElement
+      expect(isOpen()).toBe(true)
+      expect(button.getAttribute('aria-expanded')).toBe('true')
+      expect(fixture.nativeElement.querySelector('.accessories-filters-header h5')?.textContent).toContain('Filters')
     })
 
-    it('toggles a pill on and off, and reports it with aria-pressed', () => {
+    it('stays open while rows are ticked', () => {
+      setup()
+      openPanel()
+
+      rows()[0].click()
+      fixture.detectChanges()
+
+      expect(isOpen()).toBe(true)
+    })
+
+    it('closes on Show N accessories', () => {
+      setup()
+      openPanel()
+
+      ;(fixture.nativeElement.querySelector('.accessories-filters-footer .btn-primary') as HTMLButtonElement).click()
+      fixture.detectChanges()
+
+      expect(isOpen()).toBe(false)
+    })
+
+    it('closes on Escape', () => {
+      setup()
+      openPanel()
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+      fixture.detectChanges()
+
+      expect(isOpen()).toBe(false)
+    })
+
+    it('closes on a click outside the dropdown', async () => {
+      setup()
+      openPanel()
+
+      // ng-bootstrap closes on a mouse press outside, released after a tick
+      document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+      document.body.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
+      await new Promise(resolve => setTimeout(resolve, 0))
+      fixture.detectChanges()
+
+      expect(isOpen()).toBe(false)
+    })
+
+    it('ticks a row on and off, multi-select, and labels it with its count', () => {
       const toolbar = setup()
       openPanel()
 
-      const kitchen = () => pills().find(entry => entry.textContent!.includes('Kitchen'))!
-      expect(kitchen().getAttribute('aria-pressed')).toBe('false')
+      const kitchen = () => rows().find(entry => rowText(entry).includes('Kitchen'))!
+      expect(kitchen().type).toBe('checkbox')
+      expect(kitchen().checked).toBe(false)
+      expect(kitchen().labels![0].textContent).toContain('3')
 
       kitchen().click()
       fixture.detectChanges()
       expect(toolbar.filter().rooms).toEqual(['Kitchen'])
-      expect(kitchen().getAttribute('aria-pressed')).toBe('true')
+      expect(kitchen().checked).toBe(true)
 
       kitchen().click()
       fixture.detectChanges()
       expect(toolbar.filter().rooms).toEqual([])
-      expect(kitchen().getAttribute('aria-pressed')).toBe('false')
+      expect(kitchen().checked).toBe(false)
+    })
+
+    it('groups each section, labelled by its heading', () => {
+      setup()
+      openPanel()
+
+      const groups = [
+        ...document.querySelectorAll<HTMLElement>('.accessories-filters-menu .accessories-facet[role="group"]'),
+      ]
+      expect(groups.length).toBeGreaterThan(0)
+      for (const group of groups) {
+        expect(document.getElementById(group.getAttribute('aria-labelledby')!)).not.toBeNull()
+      }
     })
 
     it('shows the number of active filters on the button, with visually hidden text', () => {
@@ -446,10 +514,8 @@ describe('accessoriesToolbarComponent', () => {
       return fixture.componentInstance
     }
 
-    function subPills(): HTMLButtonElement[] {
-      return [
-        ...document.querySelectorAll<HTMLButtonElement>('.accessories-filters-panel .accessories-subpill'),
-      ]
+    function subRows(): HTMLInputElement[] {
+      return rows(true)
     }
 
     beforeEach(() => {
@@ -460,31 +526,31 @@ describe('accessoriesToolbarComponent', () => {
       }, true)
     })
 
-    it('shows the subcategory pills beneath a selected category that has two or more kinds', () => {
+    it('shows the subcategory rows beneath a selected category that has two or more kinds', () => {
       setupSub({
         categories: ['lights'],
       })
       openPanel()
 
-      const labels = subPills().map(button => button.textContent!.replace(/\s+/g, ' ').trim())
+      const labels = subRows().map(rowText)
       expect(labels).toEqual(['On/off 1', 'Dimmable 1'])
       expect(document.querySelector('.accessories-subcategories')!.textContent).toContain('Light types')
     })
 
-    it('does not show subcategory pills for an unselected category', () => {
+    it('does not show subcategory rows for an unselected category', () => {
       setupSub({})
       openPanel()
 
-      expect(subPills()).toEqual([])
+      expect(subRows()).toEqual([])
     })
 
-    it('does not show subcategory pills when the category has only one kind in the data', () => {
+    it('does not show subcategory rows when the category has only one kind in the data', () => {
       setupSub({
         categories: ['climate'],
       })
       openPanel()
 
-      expect(subPills()).toEqual([])
+      expect(subRows()).toEqual([])
     })
 
     it('narrows the result to the picked subcategory', () => {
@@ -493,7 +559,7 @@ describe('accessoriesToolbarComponent', () => {
       })
       openPanel()
 
-      subPills().find(button => button.textContent!.includes('Dimmable'))!.click()
+      subRows().find(entry => rowText(entry).includes('Dimmable'))!.click()
       fixture.detectChanges()
 
       expect(toolbar.filter().subcategories).toEqual(['dimmable'])

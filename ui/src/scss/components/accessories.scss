@@ -270,13 +270,3 @@
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
-
-// Filter slide-out panel on the accessories page (the offcanvas is appended to body, so it is styled globally)
-.accessories-filters-panel {
-  width: 360px;
-  max-width: 100%;
-
-  .offcanvas-body {
-    overflow-y: auto;
-  }
-}

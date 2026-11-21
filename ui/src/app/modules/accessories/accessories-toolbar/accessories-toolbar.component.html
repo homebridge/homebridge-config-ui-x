@@ -25,29 +25,151 @@
       }
     </div>
 
-    <button
-      type="button"
-      class="btn btn-sm btn-elegant my-0 position-relative flex-shrink-0 accessories-filters-button"
-      aria-haspopup="dialog"
-      container="body"
-      [ngbTooltip]="
-        (filterCount() > 0 ? 'accessories.toolbar.filters_summary_active' : 'accessories.toolbar.filters_summary')
-          | translate: { count: filterCount(), shown: shown(), total: total() }
-      "
-      [attr.aria-label]="
-        (filterCount() > 0 ? 'accessories.toolbar.filters_summary_active' : 'accessories.toolbar.filters_summary')
-          | translate: { count: filterCount(), shown: shown(), total: total() }
-      "
-      (click)="openFilters()"
+    <div
+      #filtersDropdown="ngbDropdown"
+      ngbDropdown
+      autoClose="outside"
+      placement="bottom-start bottom-end top-start"
+      class="d-inline-block flex-shrink-0 accessories-filters"
+      (openChange)="onFiltersOpenChange($event)"
     >
-      <i class="fas fa-bars-staggered" aria-hidden="true"></i>
-      @if (filterCount() > 0) {
-        <span class="badge rounded-pill bg-primary accessories-filter-badge">
-          {{ filterCount()
-          }}<span class="visually-hidden"> {{ 'accessories.toolbar.active_filters' | translate }}</span>
-        </span>
-      }
-    </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-elegant my-0 position-relative flex-shrink-0 accessories-filters-button"
+        ngbDropdownToggle
+        container="body"
+        [ngbTooltip]="
+          (filterCount() > 0 ? 'accessories.toolbar.filters_summary_active' : 'accessories.toolbar.filters_summary')
+            | translate: { count: filterCount(), shown: shown(), total: total() }
+        "
+        [attr.aria-label]="
+          (filterCount() > 0 ? 'accessories.toolbar.filters_summary_active' : 'accessories.toolbar.filters_summary')
+            | translate: { count: filterCount(), shown: shown(), total: total() }
+        "
+      >
+        <i class="fas fa-bars-staggered" aria-hidden="true"></i>
+        @if (filterCount() > 0) {
+          <span class="badge rounded-pill bg-primary accessories-filter-badge">
+            {{ filterCount()
+            }}<span class="visually-hidden"> {{ 'accessories.toolbar.active_filters' | translate }}</span>
+          </span>
+        }
+      </button>
+      <div
+        ngbDropdownMenu
+        class="accessories-filters-menu p-0"
+        role="dialog"
+        [attr.aria-label]="'accessories.toolbar.filters' | translate"
+      >
+        <div
+          class="accessories-filters-header d-flex align-items-center justify-content-between px-3 py-2 border-bottom"
+        >
+          <h5 class="m-0 primary-text">{{ 'accessories.toolbar.filters' | translate }}</h5>
+          <button
+            type="button"
+            class="btn-close"
+            [attr.aria-label]="'accessories.toolbar.close_filters' | translate"
+            (click)="filtersDropdown.close()"
+          ></button>
+        </div>
+        <div class="accessories-filters-body px-3 pt-2 pb-2">
+          @for (facet of orderedFacets(); track facet.key) {
+            <section class="accessories-facet" role="group" [attr.aria-labelledby]="`accessories-facet-${facet.key}`">
+              <h6
+                class="accessories-facet-title small text-uppercase fw-semibold text-secondary"
+                [attr.id]="`accessories-facet-${facet.key}`"
+              >
+                {{ facet.labelKey | translate }}
+              </h6>
+              @for (option of visibleOptions(facet); track option.value; let i = $index) {
+                <div class="form-check accessories-option">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    [id]="`accessories-opt-${facet.key}-${i}`"
+                    [checked]="isSelected(facet, option)"
+                    (change)="toggleValue(facet.key, option.value)"
+                  />
+                  <label
+                    class="form-check-label accessories-option-label"
+                    [attr.for]="`accessories-opt-${facet.key}-${i}`"
+                  >
+                    <span>{{ option.translate ? (option.label | translate) : option.label }}</span>
+                    <span class="accessories-pill-count">{{ option.count }}</span>
+                  </label>
+                </div>
+                @if (subcategoryGroupFor(facet, option); as group) {
+                  <div
+                    class="accessories-subcategories"
+                    role="group"
+                    [attr.aria-labelledby]="`accessories-sub-title-${facet.key}-${i}`"
+                  >
+                    <div
+                      class="small text-secondary accessories-subcategories-title"
+                      [attr.id]="`accessories-sub-title-${facet.key}-${i}`"
+                    >
+                      {{ group.labelKey | translate }}
+                    </div>
+                    @for (sub of group.options; track sub.value; let j = $index) {
+                      <div class="form-check accessories-option accessories-suboption">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          [id]="`accessories-sub-${facet.key}-${i}-${j}`"
+                          [checked]="isSubcategorySelected(sub.value)"
+                          (change)="toggleSubcategory(sub.value)"
+                        />
+                        <label
+                          class="form-check-label accessories-option-label"
+                          [attr.for]="`accessories-sub-${facet.key}-${i}-${j}`"
+                        >
+                          <span>{{ sub.label | translate }}</span>
+                          <span class="accessories-pill-count">{{ sub.count }}</span>
+                        </label>
+                      </div>
+                    }
+                  </div>
+                }
+              } @empty {
+                <span class="small text-secondary">{{ 'accessories.toolbar.no_matches' | translate }}</span>
+              }
+              @if (facet.options.length > 8) {
+                <button type="button" class="btn btn-sm btn-link p-0 mt-1 small" (click)="toggleExpanded(facet.key)">
+                  {{
+                    (expandedFacets().has(facet.key)
+                      ? 'accessories.toolbar.show_fewer'
+                      : 'accessories.toolbar.show_all'
+                    ) | translate
+                  }}
+                </button>
+              }
+            </section>
+          }
+          <section class="accessories-facet">
+            <div class="form-check accessories-option mb-0">
+              <input
+                id="accessories-show-hidden"
+                class="form-check-input"
+                type="checkbox"
+                [checked]="filter().showHidden"
+                (change)="onShowHidden($event)"
+              />
+              <label class="form-check-label accessories-option-label" for="accessories-show-hidden">
+                <span>{{ 'accessories.toolbar.show_hidden_accessories' | translate }}</span>
+              </label>
+            </div>
+          </section>
+        </div>
+        <div class="accessories-filters-footer border-top p-3 d-flex align-items-center justify-content-between gap-2">
+          <button type="button" class="btn btn-link p-0" [disabled]="!active()" (click)="clear()">
+            {{ 'accessories.toolbar.clear_all' | translate }}
+          </button>
+          <button type="button" class="btn btn-primary" (click)="filtersDropdown.close()">
+            {{ 'accessories.toolbar.show_count' | translate: { count: shown() } }}
+          </button>
+        </div>
+      </div>
+    </div>
 
     <div ngbDropdown autoClose="outside" class="d-inline-block flex-shrink-0">
       <button
@@ -129,98 +251,3 @@
     </button>
   </div>
 </div>
-
-<ng-template #filtersPanel>
-  <div class="offcanvas-header border-bottom">
-    <h5 id="accessories-filters-title" class="offcanvas-title primary-text">
-      {{ 'accessories.toolbar.filters' | translate }}
-    </h5>
-    <div class="d-flex align-items-center gap-2">
-      <button
-        type="button"
-        class="btn-close"
-        [attr.aria-label]="'accessories.toolbar.close_filters' | translate"
-        (click)="closeFilters()"
-      ></button>
-    </div>
-  </div>
-  <div class="offcanvas-body accessories-filters-body">
-    @for (facet of orderedFacets(); track facet.key) {
-      <section class="accessories-facet mb-4" [attr.aria-labelledby]="`accessories-facet-${facet.key}`">
-        <h6 class="small text-uppercase fw-semibold text-secondary mb-2" [attr.id]="`accessories-facet-${facet.key}`">
-          {{ facet.labelKey | translate }}
-        </h6>
-        <div class="d-flex flex-wrap gap-2">
-          @for (option of visibleOptions(facet); track option.value) {
-            <button
-              type="button"
-              class="btn btn-sm rounded-pill accessories-pill"
-              [class.btn-primary]="isSelected(facet, option)"
-              [class.btn-outline-secondary]="!isSelected(facet, option)"
-              [attr.aria-pressed]="isSelected(facet, option)"
-              (click)="toggleValue(facet.key, option.value)"
-            >
-              {{ option.translate ? (option.label | translate) : option.label }}
-              <span class="accessories-pill-count">{{ option.count }}</span>
-            </button>
-            @if (subcategoryGroupFor(facet, option); as group) {
-              <div
-                class="accessories-subcategories w-100 ps-3"
-                role="group"
-                [attr.aria-label]="group.labelKey | translate"
-              >
-                <div class="small text-secondary mb-1">{{ group.labelKey | translate }}</div>
-                <div class="d-flex flex-wrap gap-2">
-                  @for (sub of group.options; track sub.value) {
-                    <button
-                      type="button"
-                      class="btn btn-sm rounded-pill accessories-subpill"
-                      [class.btn-primary]="isSubcategorySelected(sub.value)"
-                      [class.btn-outline-secondary]="!isSubcategorySelected(sub.value)"
-                      [attr.aria-pressed]="isSubcategorySelected(sub.value)"
-                      (click)="toggleSubcategory(sub.value)"
-                    >
-                      {{ sub.label | translate }}
-                      <span class="accessories-pill-count">{{ sub.count }}</span>
-                    </button>
-                  }
-                </div>
-              </div>
-            }
-          } @empty {
-            <span class="small text-secondary">{{ 'accessories.toolbar.no_matches' | translate }}</span>
-          }
-        </div>
-        @if (facet.options.length > 8) {
-          <button type="button" class="btn btn-sm btn-link p-0 mt-2 small" (click)="toggleExpanded(facet.key)">
-            {{
-              (expandedFacets().has(facet.key) ? 'accessories.toolbar.show_fewer' : 'accessories.toolbar.show_all')
-                | translate
-            }}
-          </button>
-        }
-      </section>
-    }
-    <div class="form-check form-switch mb-0">
-      <input
-        id="accessories-show-hidden"
-        class="form-check-input"
-        type="checkbox"
-        role="switch"
-        [checked]="filter().showHidden"
-        (change)="onShowHidden($event)"
-      />
-      <label class="form-check-label" for="accessories-show-hidden">{{
-        'accessories.toolbar.show_hidden_accessories' | translate
-      }}</label>
-    </div>
-  </div>
-  <div class="offcanvas-footer border-top p-3 d-flex align-items-center justify-content-between gap-2">
-    <button type="button" class="btn btn-link p-0" [disabled]="!active()" (click)="clear()">
-      {{ 'accessories.toolbar.clear_all' | translate }}
-    </button>
-    <button type="button" class="btn btn-primary" (click)="closeFilters()">
-      {{ 'accessories.toolbar.show_count' | translate: { count: shown() } }}
-    </button>
-  </div>
-</ng-template>

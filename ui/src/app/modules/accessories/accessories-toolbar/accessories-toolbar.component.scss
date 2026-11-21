@@ -24,8 +24,84 @@
   min-width: 14rem;
 }
 
+// Filters dropdown: the same box as the Group/Sort menu, with its own scroll for the facets
+.accessories-filters-menu {
+  display: flex;
+  flex-direction: column;
+  width: 420px;
+  max-width: calc(100vw - 1rem);
+  max-height: 70vh;
+  overflow: hidden;
+}
+
+.accessories-filters-header,
+.accessories-filters-footer {
+  flex: 0 0 auto;
+}
+
+.accessories-filters-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+// On phones the panel spans the viewport, starting under the top bar (set when it opens)
+@media (max-width: 575.98px) {
+  .accessories-filters-menu {
+    position: fixed !important;
+    top: var(--accessories-filters-top, 0px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw;
+    max-height: calc(100vh - var(--accessories-filters-top, 0px));
+    margin: 0 !important;
+    transform: none !important;
+    border-radius: 0;
+  }
+}
+
+.accessories-facet {
+  padding: 0.5rem 0;
+}
+
+.accessories-facet + .accessories-facet {
+  border-top: 1px solid var(--bs-border-color);
+}
+
+.accessories-facet-title {
+  margin-bottom: 0.25rem;
+}
+
+// One tick row per option, like the Group/Sort list: the count sits at the right
+.accessories-option {
+  padding: 0.125rem 0.25rem 0.125rem 1.75em;
+  border-radius: 0.25rem;
+}
+
+.accessories-option:hover {
+  background-color: var(--bs-tertiary-bg);
+}
+
+.accessories-option-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  width: 100%;
+  cursor: pointer;
+}
+
+.accessories-suboption {
+  padding-left: 2.75em;
+}
+
 .accessories-subcategories {
-  margin-top: 0.25rem;
+  margin-top: 0.125rem;
+}
+
+.accessories-subcategories-title {
+  padding-left: 1.75em;
 }
 
 .accessories-pill-count {
@@ -34,8 +110,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.accessories-pill,
-.accessories-subpill,
 .accessories-search-clear {
   transition:
     background-color 0.15s ease,

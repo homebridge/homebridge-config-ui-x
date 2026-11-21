@@ -48,6 +48,25 @@
       (manageLayoutToggle)="toggleManageLayout()"
     />
 
+    @if (manageLayoutMode) {
+      <p class="small text-secondary mb-2 manage-hint">
+        @switch (manageView()) {
+          @case ('dragula') {
+            {{ 'accessories.manage_layout_hint' | translate }}
+          }
+          @case ('filtered') {
+            {{ 'accessories.manage_filtered_hint' | translate }}
+          }
+          @case ('sorted') {
+            {{ 'accessories.manage_sorted_hint' | translate: { sort: sortLabel() } }}
+          }
+          @case ('ungrouped') {
+            {{ 'accessories.manage_ungrouped_hint' | translate }}
+          }
+        }
+      </p>
+    }
+
     @if (usesDragula()) {
       <div dragula="rooms-bag" [(dragulaModel)]="rooms">
         @for (room of rooms; track room.name) {
@@ -105,9 +124,6 @@
         }
       </div>
     } @else {
-      @if (manageFiltered()) {
-        <p class="small text-secondary mb-2">{{ 'accessories.manage_filtered_hint' | translate }}</p>
-      }
       @if (filter().groupBy !== 'none' && groups().length > 1) {
         <div class="text-end mb-2">
           <button
@@ -123,7 +139,7 @@
       <div cdkDropList [cdkDropListDisabled]="!manageFiltered()" (cdkDropListDropped)="onRoomReorder($event)">
         <div cdkDropListGroup>
           @for (group of displayGroups(); track groupId(group)) {
-            @if (group.services.length || manageFiltered()) {
+            @if (group.services.length || manageRoomRows()) {
               <section
                 class="accessory-group mb-4"
                 cdkDrag
@@ -189,7 +205,7 @@
                         }
                       </div>
                     }
-                    @if (manageFiltered()) {
+                    @if (manageRoomRows()) {
                       <button
                         type="button"
                         class="btn btn-elegant ms-2"
@@ -230,7 +246,7 @@
                           <app-accessory-tile [service]="service" />
                         </div>
                       }
-                      @if (!group.services.length && manageFiltered()) {
+                      @if (!group.services.length && manageRoomRows()) {
                         <app-drag-here-placeholder class="no-drag" />
                       } @else {
                         @for (placeholder of placeholders; track $index) {
