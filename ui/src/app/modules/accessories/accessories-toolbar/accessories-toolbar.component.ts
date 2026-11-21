@@ -136,6 +136,10 @@ export class AccessoriesToolbarComponent {
 
   public readonly active = computed(() => isFilterActive(this.filter()))
 
+  /** Whether grouping or sorting differ from the defaults, so the Group and sort menu offers a reset */
+  public readonly groupSortChanged = computed(() => this.filter().groupBy !== DEFAULT_FILTER_STATE.groupBy
+    || this.filter().sortBy !== DEFAULT_FILTER_STATE.sortBy)
+
   /** The labels on the accessories, as the matching context needs them */
   private readonly labelContext = computed<FilterContext>(() => ({
     labels: new Map(Object.entries(this.labels())),
@@ -294,6 +298,11 @@ export class AccessoriesToolbarComponent {
 
   public onSortBy(event: Event): void {
     this.emit({ sortBy: (event.target as HTMLInputElement).value as AccessorySortBy })
+  }
+
+  /** Put grouping and sort back to their defaults, leaving the filters as they are */
+  public resetGroupSort(): void {
+    this.emit({ groupBy: DEFAULT_FILTER_STATE.groupBy, sortBy: DEFAULT_FILTER_STATE.sortBy })
   }
 
   public onShowHidden(event: Event): void {

@@ -123,6 +123,7 @@ describe('accessoriesToolbarComponent', () => {
       'accessories.toolbar.filters': 'Filters',
       'accessories.toolbar.clear': 'Clear',
       'accessories.toolbar.clear_all': 'Clear all',
+      'form.button_reset': 'Reset',
       'accessories.toolbar.active_filters': 'active filters',
       'accessories.toolbar.show_hidden_accessories': 'Show hidden accessories',
       'accessories.control.close': 'Close',
@@ -313,10 +314,40 @@ describe('accessoriesToolbarComponent', () => {
       expect(sortMenu().querySelector('.accessories-menu-header .btn-close')?.getAttribute('aria-label')).toBe('Close')
     })
 
-    it('has no footer', () => {
+    it('has no reset footer while grouping and sort are at their defaults', () => {
       setup()
       openSortMenu()
 
+      expect(sortMenu().querySelector('.accessories-filters-footer')).toBeNull()
+    })
+
+    it('shows a Reset link in the footer once grouping or sort changes', () => {
+      setup()
+      openSortMenu()
+      sortMenu().querySelector<HTMLInputElement>('input[name="accessories-sort-by"][value="battery"]')!.click()
+      fixture.detectChanges()
+
+      const reset = sortMenu().querySelector<HTMLButtonElement>('.accessories-filters-footer .btn-link')!
+      expect(reset.textContent!.trim()).toBe('Reset')
+    })
+
+    it('resets grouping and sort to the defaults, leaving the filters unchanged', () => {
+      const toolbar = setup({
+        search: 'kettle',
+        categories: ['lights'],
+        groupBy: 'floor',
+        sortBy: 'battery',
+      })
+      openSortMenu()
+
+      sortMenu().querySelector<HTMLButtonElement>('.accessories-filters-footer .btn-link')!.click()
+      fixture.detectChanges()
+
+      expect(toolbar.filter()).toEqual({
+        ...DEFAULT_FILTER_STATE,
+        search: 'kettle',
+        categories: ['lights'],
+      })
       expect(sortMenu().querySelector('.accessories-filters-footer')).toBeNull()
     })
 
