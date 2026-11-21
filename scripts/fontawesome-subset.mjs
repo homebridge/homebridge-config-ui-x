@@ -8,12 +8,16 @@
  * the icon CSS, the v4 shim layer and dynamically-applied icon classes all keep
  * working — only the font binaries shrink.
  *
- * Runs automatically via the `prebuild` script in `ui/package.json`. It reads
- * the source fonts and writes the subset back to the same files; a fresh
- * `npm install` always restores the full fonts before this runs again.
+ * Runs automatically via the `prebuild` script in `ui/package.json`.
+ * fontawesome-subset reads its source glyphs from the package's own webfonts
+ * folder, which is also where the subset is written. So the first run keeps a
+ * copy of the full fonts in `webfonts/.full/` and every run restores them
+ * before subsetting; otherwise an icon added after the first local build could
+ * never be included again. A fresh `npm install` clears the copy with the rest
+ * of the package.
  */
 
-import { statSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync, statSync } from 'node:fs'
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { dirname, resolve } from 'node:path'
@@ -119,6 +123,19 @@ await collectIconNames(uiSrc, icons)
 const names = [...icons].sort()
 
 const fonts = ['fa-solid-900.woff2', 'fa-regular-400.woff2', 'fa-brands-400.woff2']
+
+// Subset from the full fonts every time, not from the previous run's subset
+const fullDir = resolve(faWebfontsDir, '.full')
+if (!existsSync(fullDir)) {
+  mkdirSync(fullDir)
+  for (const f of fonts) {
+    copyFileSync(resolve(faWebfontsDir, f), resolve(fullDir, f))
+  }
+}
+for (const f of fonts) {
+  copyFileSync(resolve(fullDir, f), resolve(faWebfontsDir, f))
+}
+
 const before = Object.fromEntries(
   fonts.map(f => [
     f,

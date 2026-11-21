@@ -174,6 +174,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(matter): show left-over matter storage as stale bridges, and remove it with its plugin
 - fix(server): return an empty list, not a 500, when the accessories or persist folder is missing
 - chore(deps): dependency updates
+- fix(build): subset the font awesome fonts from a full copy each time, so an icon added after the first local build is included
 
 ### Homebridge Dependencies
 
