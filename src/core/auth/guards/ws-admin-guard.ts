@@ -51,6 +51,8 @@ export class WsAdminGuard implements CanActivate {
       if (!await this.authService.validateUser(user)) {
         throw new Error('User no longer valid')
       }
+      // so the socket is closed if this user is deleted, demoted or revoked while it only listens
+      this.authService.trackSocket(client, user)
       return user.admin
     } catch (e) {
       client.disconnect()

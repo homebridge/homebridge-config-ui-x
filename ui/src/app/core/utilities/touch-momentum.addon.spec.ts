@@ -20,17 +20,20 @@ describe('TouchMomentumAddon', () => {
   let scrollLines: ReturnType<typeof vi.fn>
   let scrollBy: ReturnType<typeof vi.spyOn>
   // Where the terminal is scrolled to: line 50 of 100, so it has lines to show both ways
-  let buffer: { viewportY: number, baseY: number }
+  let buffer: { viewportY: number, baseY: number, type: string }
+  let modes: { mouseTrackingMode: string }
   let addon: TouchMomentumAddon
 
-  /** A touch event with only what the addon reads. */
-  function touch(type: string, target: Element, clientY?: number): void {
+  /** A touch event with only what the addon reads. Returns it, to see whether its default was prevented. */
+  function touch(type: string, target: Element, clientY?: number): Event {
     const touches = clientY === undefined
       ? []
       : [
           { clientY },
         ]
-    target.dispatchEvent(Object.assign(new Event(type, { bubbles: true }), { touches }))
+    const event = Object.assign(new Event(type, { bubbles: true, cancelable: true }), { touches })
+    target.dispatchEvent(event)
+    return event
   }
 
   /** Move the finger from `from` to `to` in steps of 16ms, then lift it. */
@@ -76,15 +79,22 @@ describe('TouchMomentumAddon', () => {
     // 30 rows of 20px
     Object.defineProperty(host, 'clientHeight', { value: 30 * LINE_HEIGHT })
 
-    scrollLines = vi.fn()
+    // The buffer follows the calls, as xterm's does, and stops at its first and last line
+    scrollLines = vi.fn((lines: number) => {
+      buffer.viewportY = Math.min(buffer.baseY, Math.max(0, buffer.viewportY + lines))
+    })
     scrollBy = vi.spyOn(window, 'scrollBy').mockImplementation(() => {})
-    buffer = { viewportY: 50, baseY: 100 }
+    buffer = { viewportY: 50, baseY: 100, type: 'normal' }
+    modes = { mouseTrackingMode: 'none' }
     addon = new TouchMomentumAddon(clock)
     addon.activate({
       element: host,
       rows: 30,
       scrollLines,
-      buffer: { active: buffer },
+      get buffer() {
+        return { active: buffer }
+      },
+      modes,
     } as unknown as Terminal)
   })
 
@@ -122,6 +132,8 @@ describe('TouchMomentumAddon', () => {
     touch('touchmove', text, 300)
     time += 200
     touch('touchend', text)
+    // The text followed the finger; only what comes after counts
+    scrollLines.mockClear()
 
     expect(runGlide()).toBe(0)
   })
@@ -145,58 +157,153 @@ describe('TouchMomentumAddon', () => {
     expect(runGlide()).toBe(0)
   })
 
-  /**
-   * ⚠️ xterm claims every touch on the text as the finger lands, so the phone
-   * never moves the page for a swipe on a terminal. Without the addon passing
-   * the swipe on, a page with a terminal filling the screen cannot be moved at
-   * all once the terminal is at its first or last line.
-   */
-  describe('when the terminal has no more lines to show', () => {
-    /** Move the finger in steps without lifting it, so no glide follows. */
-    function drag(target: Element, from: number, to: number, steps = 5): void {
-      touch('touchstart', target, from)
-      for (let step = 1; step <= steps; step++) {
-        time += 16
-        touch('touchmove', target, from + (to - from) * step / steps)
-      }
+  it('follows the finger with the text while the terminal has lines that way', () => {
+    // 200px of finger travel at 20px a line
+    const moves: Event[] = []
+    touch('touchstart', text, 500)
+    for (let step = 1; step <= 5; step++) {
+      time += 16
+      moves.push(touch('touchmove', text, 500 - 40 * step))
     }
 
-    it('moves the page down by the finger\'s travel on a swipe up at the last line', () => {
+    expect(scrollLines.mock.calls.reduce((total, [lines]) => total + (lines as number), 0)).toBe(10)
+    // The phone must not scroll the page as well
+    expect(moves.every(event => event.defaultPrevented)).toBe(true)
+  })
+
+  /**
+   * ⚠️ xterm claims every touch on the text as the finger lands, before it is
+   * known which way it will move, so the phone never scrolled the page for a
+   * swipe on a terminal (#3125). The addon takes those touches from xterm.
+   */
+  it('hides the touches on the text from xterm, which listens on the document', () => {
+    const xterm = vi.fn()
+    document.addEventListener('touchstart', xterm)
+    document.addEventListener('touchmove', xterm)
+    document.addEventListener('touchend', xterm)
+
+    flick(text, 500, 300)
+    expect(xterm).not.toHaveBeenCalled()
+
+    // A drag of the scrollbar is still xterm's
+    flick(scrollbar, 500, 300)
+    expect(xterm).toHaveBeenCalled()
+
+    document.removeEventListener('touchstart', xterm)
+    document.removeEventListener('touchmove', xterm)
+    document.removeEventListener('touchend', xterm)
+  })
+
+  /**
+   * In a program with a full-screen view, like nano or less, xterm turns a
+   * swipe into arrow keys, or into the mouse wheel for a program which asked
+   * for the mouse. Those swipes must stay with xterm.
+   */
+  it.each([
+    [
+      'a full-screen program like nano',
+      () => {
+        buffer.type = 'alternate'
+      },
+    ],
+    [
+      'a program which asked for the mouse',
+      () => {
+        modes.mouseTrackingMode = 'any'
+      },
+    ],
+  ])('leaves every swipe in %s to xterm', (_name, setUp) => {
+    setUp()
+    const xterm = vi.fn()
+    document.addEventListener('touchmove', xterm)
+
+    touch('touchstart', text, 500)
+    time += 16
+    const move = touch('touchmove', text, 300)
+    touch('touchend', text)
+    document.removeEventListener('touchmove', xterm)
+
+    expect(xterm).toHaveBeenCalled()
+    expect(move.defaultPrevented).toBe(false)
+    expect(scrollLines).not.toHaveBeenCalled()
+    expect(runGlide()).toBe(0)
+  })
+
+  describe('when the terminal has no more lines to show', () => {
+    /** Move the finger in steps without lifting it, so no glide follows. Returns the moves. */
+    function drag(target: Element, from: number, to: number, steps = 5): Event[] {
+      touch('touchstart', target, from)
+      const moves: Event[] = []
+      for (let step = 1; step <= steps; step++) {
+        time += 16
+        moves.push(touch('touchmove', target, from + (to - from) * step / steps))
+      }
+      return moves
+    }
+
+    it('leaves a swipe up at the last line to the phone, which scrolls the page itself', () => {
       buffer.viewportY = 100
 
-      drag(text, 500, 300)
+      const moves = drag(text, 500, 300)
+      touch('touchend', text)
 
-      expect(pageMoved()).toBe(200)
+      expect(moves.some(event => event.defaultPrevented)).toBe(false)
+      expect(scrollBy).not.toHaveBeenCalled()
+      expect(runGlide()).toBe(0)
     })
 
-    it('moves the page up by the finger\'s travel on a swipe down at the first line', () => {
+    it('leaves a swipe down at the first line to the phone', () => {
       buffer.viewportY = 0
 
-      drag(text, 300, 500)
+      const moves = drag(text, 300, 500)
 
-      expect(pageMoved()).toBe(-200)
-    })
-
-    it('leaves the page alone while the terminal still has lines that way', () => {
-      drag(text, 500, 300)
-      drag(text, 300, 500)
-
-      buffer.viewportY = 100
-      // At the last line, a swipe down shows earlier lines: the terminal's own job
-      drag(text, 300, 500)
-
+      expect(moves.some(event => event.defaultPrevented)).toBe(false)
+      expect(scrollLines).not.toHaveBeenCalled()
       expect(scrollBy).not.toHaveBeenCalled()
     })
 
-    it('moves the page both ways for a terminal with nothing to scroll', () => {
+    it('keeps a swipe the phone has for the whole swipe, even when it turns back', () => {
+      buffer.viewportY = 100
+
+      drag(text, 500, 300)
+      time += 16
+      const back = touch('touchmove', text, 450)
+
+      expect(back.defaultPrevented).toBe(false)
+      expect(scrollLines).not.toHaveBeenCalled()
+    })
+
+    it('scrolls the terminal for a swipe down at the last line, which shows earlier lines', () => {
+      buffer.viewportY = 100
+
+      const moves = drag(text, 300, 500)
+
+      expect(moves.every(event => event.defaultPrevented)).toBe(true)
+      expect(buffer.viewportY).toBe(90)
+      expect(scrollBy).not.toHaveBeenCalled()
+    })
+
+    it('leaves a terminal with nothing to scroll to the phone both ways', () => {
       buffer.viewportY = 0
       buffer.baseY = 0
 
-      drag(text, 500, 300)
-      expect(pageMoved()).toBe(200)
+      expect(drag(text, 500, 300).some(event => event.defaultPrevented)).toBe(false)
+      expect(drag(text, 300, 500).some(event => event.defaultPrevented)).toBe(false)
+    })
 
-      drag(text, 300, 500)
-      expect(pageMoved()).toBe(0)
+    /**
+     * A swipe which reaches the last line part-way has been blocked from the
+     * phone since its first move, and the phone cannot take it over then. The
+     * rest of it moves the page by script.
+     */
+    it('moves the page by script for the rest of a swipe which reaches the last line part-way', () => {
+      buffer.viewportY = 95
+
+      drag(text, 500, 300)
+
+      // 5 lines (100px) to the last line, the other 100px to the page
+      expect(buffer.viewportY).toBe(100)
+      expect(pageMoved()).toBe(100)
     })
 
     it('moves what holds the terminal and scrolls, like a modal, before the window', () => {
@@ -207,11 +314,11 @@ describe('TouchMomentumAddon', () => {
       Object.defineProperty(modal, 'clientHeight', { value: 400 })
       Object.defineProperty(modal, 'scrollHeight', { value: 1000 })
       modal.scrollTop = 0
-      buffer.viewportY = 100
+      buffer.viewportY = 95
 
       drag(text, 500, 300)
 
-      expect(modal.scrollTop).toBe(200)
+      expect(modal.scrollTop).toBe(100)
       expect(scrollBy).not.toHaveBeenCalled()
       modal.replaceWith(host)
     })
@@ -224,17 +331,17 @@ describe('TouchMomentumAddon', () => {
       Object.defineProperty(modal, 'clientHeight', { value: 400 })
       Object.defineProperty(modal, 'scrollHeight', { value: 1000 })
       modal.scrollTop = 600
-      buffer.viewportY = 100
+      buffer.viewportY = 95
 
       drag(text, 500, 300)
 
       expect(modal.scrollTop).toBe(600)
-      expect(pageMoved()).toBe(200)
+      expect(pageMoved()).toBe(100)
       modal.replaceWith(host)
     })
 
-    it('carries the glide of a flick on into the page', () => {
-      buffer.viewportY = 100
+    it('carries the glide of a flick on into the page once the terminal reaches its last line', () => {
+      buffer.viewportY = 90
       // The window follows the calls, so the glide has somewhere to go
       let scrollY = 0
       const scrollYSpy = vi.spyOn(window, 'scrollY', 'get').mockImplementation(() => scrollY)
@@ -243,17 +350,17 @@ describe('TouchMomentumAddon', () => {
       }) as typeof window.scrollBy)
 
       flick(text, 500, 300)
-      const lines = runGlide()
+      runGlide()
       scrollYSpy.mockRestore()
 
-      // The flick itself is 200px; a phone's slow-down carries a flick this fast about 1200px more
-      expect(lines).toBe(0)
+      expect(buffer.viewportY).toBe(100)
+      // The flick itself takes the terminal to its last line; a phone's slow-down carries a flick this fast about 1200px more
       expect(pageMoved()).toBeGreaterThan(1000)
       expect(pageMoved()).toBeLessThan(1800)
     })
 
     it('ends the glide when the page has nowhere left to go', () => {
-      buffer.viewportY = 100
+      buffer.viewportY = 95
 
       flick(text, 500, 300)
       time += 16

@@ -88,7 +88,7 @@
   "dependencies": {
     "@fastify/helmet": "13.2.0",
     "@fastify/multipart": "10.1.9",
-    "@fastify/static": "10.1.11",
+    "@fastify/static": "10.1.12",
     "@homebridge/hap-client": "5.4.1-beta.2",
     "@homebridge/node-pty-prebuilt-multiarch": "0.15.0",
     "@nestjs/axios": "12.0.2",
@@ -132,9 +132,9 @@
     "osx-temperature-sensor": "1.0.8"
   },
   "devDependencies": {
-    "@angular-eslint/eslint-plugin": "^22.7.0",
-    "@angular-eslint/eslint-plugin-template": "^22.7.0",
-    "@angular-eslint/template-parser": "^22.7.0",
+    "@angular-eslint/eslint-plugin": "^22.8.0",
+    "@angular-eslint/eslint-plugin-template": "^22.8.0",
+    "@angular-eslint/template-parser": "^22.8.0",
     "@antfu/eslint-config": "^10.0.0",
     "@nestjs/testing": "^12.5.1",
     "@prettier/plugin-xml": "^3.4.2",
@@ -148,7 +148,7 @@
     "@types/tail": "^2.2.3",
     "@types/tcp-port-used": "^1.0.4",
     "@types/unzipper": "^0.10.11",
-    "@vitest/coverage-v8": "^5.1.0",
+    "@vitest/coverage-v8": "^5.1.1",
     "ajv": "^8.20.0",
     "concurrently": "^10.0.7",
     "eslint-plugin-format": "^2.0.1",
@@ -159,13 +159,13 @@
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "unplugin-swc": "^2.0.0",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   },
   "overrides": {
     "@antfu/eslint-config": {
-      "@angular-eslint/eslint-plugin": "^22.7.0",
-      "@angular-eslint/eslint-plugin-template": "^22.7.0",
-      "@angular-eslint/template-parser": "^22.7.0"
+      "@angular-eslint/eslint-plugin": "^22.8.0",
+      "@angular-eslint/eslint-plugin-template": "^22.8.0",
+      "@angular-eslint/template-parser": "^22.8.0"
     },
     "micromark-extension-math": {
       "katex": "^0.19.1"
