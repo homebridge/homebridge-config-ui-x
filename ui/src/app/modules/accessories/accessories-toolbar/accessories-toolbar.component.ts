@@ -52,13 +52,6 @@ export interface Facet {
 }
 
 /** A removable chip for one active filter */
-export interface ActiveChip {
-  key: FacetKey | 'search' | 'showHidden' | 'subcategories' | 'view'
-  value: string
-  label: string
-  translate: boolean
-}
-
 /** A subcategory section shown beneath a selected category */
 export interface SubcategoryGroup {
   category: AccessoryCategory
@@ -114,7 +107,7 @@ function countMatching(
 /**
  * The search, filter, grouping and sort controls for the accessories page. It holds no state of
  * its own: it shows `filter` and emits the next filter whenever the user changes something.
- * The filters sit in a slide-out panel; the active ones show as removable chips under the top bar.
+ * The filters sit in a slide-out panel, opened from the Filters button.
  */
 @Component({
   selector: 'app-accessories-toolbar',
@@ -274,34 +267,6 @@ export class AccessoriesToolbarComponent implements OnDestroy {
     return groups
   })
 
-  /** The built-in or custom view applied, as a chip label, or null */
-  private readonly viewChip = computed<ActiveChip | null>(() => {
-    const custom = this.activeViewId()
-    if (custom !== null) {
-      const view = this.customViews().find(entry => entry.id === custom)
-      return view
-        ? {
-            key: 'view',
-            value: view.id,
-            label: view.name,
-            translate: false,
-          }
-        : null
-    }
-    const builtIn = this.activeView()
-    const view = builtIn && builtIn !== 'all'
-      ? BUILT_IN_VIEWS.find(entry => entry.id === builtIn)
-      : undefined
-    return view
-      ? {
-          key: 'view',
-          value: view.id,
-          label: view.labelKey,
-          translate: true,
-        }
-      : null
-  })
-
   /** One entry per filter section, with the count each option would show */
   public readonly facets = computed<Facet[]>(() => {
     const current = this.filter()
@@ -371,53 +336,6 @@ export class AccessoriesToolbarComponent implements OnDestroy {
       ? 1
       : 0),
   )
-
-  /** One removable chip per active filter, search included */
-  public readonly activeChips = computed<ActiveChip[]>(() => {
-    const chips: ActiveChip[] = []
-    const view = this.viewChip()
-    if (view) {
-      chips.push(view)
-    }
-    const search = this.filter().search.trim()
-    if (search) {
-      chips.push({
-        key: 'search',
-        value: search,
-        label: search,
-        translate: false,
-      })
-    }
-    for (const facet of this.orderedFacets()) {
-      for (const option of facet.selected) {
-        chips.push({
-          key: facet.key,
-          value: option.value,
-          label: option.label,
-          translate: option.translate,
-        })
-      }
-      if (facet.key === 'categories') {
-        for (const value of this.filter().subcategories) {
-          chips.push({
-            key: 'subcategories',
-            value,
-            label: `accessories.subcategories.${value}`,
-            translate: true,
-          })
-        }
-      }
-    }
-    if (this.filter().showHidden) {
-      chips.push({
-        key: 'showHidden',
-        value: '',
-        label: 'accessories.toolbar.show_hidden_accessories',
-        translate: true,
-      })
-    }
-    return chips
-  })
 
   private searchPending = false
   private search$ = new Subject<string>()
@@ -541,27 +459,6 @@ export class AccessoriesToolbarComponent implements OnDestroy {
       next.add(key)
     }
     this.expandedFacets.set(next)
-  }
-
-  /** Remove one active filter from its chip */
-  public removeChip(chip: ActiveChip): void {
-    if (chip.key === 'search') {
-      this.onSearch('')
-      return
-    }
-    if (chip.key === 'showHidden') {
-      this.emit({ showHidden: false })
-      return
-    }
-    if (chip.key === 'view') {
-      this.applyView(null)
-      return
-    }
-    if (chip.key === 'subcategories') {
-      this.toggleSubcategory(chip.value)
-      return
-    }
-    this.toggleValue(chip.key, chip.value)
   }
 
   /** Open a view as a kiosk, in this tab */

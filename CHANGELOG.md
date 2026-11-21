@@ -123,6 +123,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(accessories): kiosk mode to show a view full screen on wall or room tablets
 - feat(accessories): pair kiosk tablets with a one-time code, limited to one view's accessories and revocable from Users
 - feat(accessories): move the filters into a slide-out panel with views and subcategories, and drag accessories between rooms while filtered
+- feat(accessories): list smoke, carbon monoxide and leak sensors under sensors, and drop the active filter row under the search
 
 ### Other Changes
 

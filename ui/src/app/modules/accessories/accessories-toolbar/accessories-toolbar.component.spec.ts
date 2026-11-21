@@ -82,12 +82,6 @@ describe('accessoriesToolbarComponent', () => {
     return fixture.componentInstance
   }
 
-  function chips(): HTMLButtonElement[] {
-    return [
-      ...fixture.nativeElement.querySelectorAll('.accessories-active-chip'),
-    ]
-  }
-
   /** The pills in the open filter panel (the panel renders outside the fixture) */
   function pills(): HTMLButtonElement[] {
     return [
@@ -145,7 +139,8 @@ describe('accessoriesToolbarComponent', () => {
 
     // The page's own strings, so the assertions read like the screen
     TestBed.inject(TranslateService).setTranslation('en', {
-      'accessories.toolbar.showing': 'Showing {{shown}} of {{total}}',
+      'accessories.toolbar.filters_summary': 'Filters, showing {{shown}} of {{total}}',
+      'accessories.toolbar.filters_summary_active': 'Filters, {{count}} active, showing {{shown}} of {{total}}',
       'accessories.toolbar.filters': 'Filters',
       'accessories.toolbar.clear': 'Clear',
       'accessories.toolbar.clear_all': 'Clear all',
@@ -155,7 +150,6 @@ describe('accessoriesToolbarComponent', () => {
       'accessories.categories.lights': 'Lights',
       'accessories.views.lights': 'Lights',
       'accessories.views.all': 'All',
-      'accessories.views.chip': 'View: {{name}}',
       'accessories.views.manage': 'Manage views',
       'accessories.views.save': 'Save as view',
       'accessories.kiosk.open': 'Open as kiosk',
@@ -236,30 +230,38 @@ describe('accessoriesToolbarComponent', () => {
       expect(pill('Office')).toBeUndefined()
     })
 
-    it('shows the selected value as a removable chip', () => {
-      setup({
-        categories: ['lights'],
-      })
-
-      const found = chips().find(entry => entry.textContent!.includes('Lights'))
-      expect(found).toBeDefined()
-    })
-
-    it('shows how many accessories are on screen out of the total', () => {
+    it('puts how many accessories are on screen out of the total in the Filters button label', () => {
       setup({}, { shown: 2, total: 3 })
 
-      const status = fixture.nativeElement.querySelector('[role="status"]') as HTMLElement
-      expect(status.textContent!.replace(/\s+/g, ' ').trim()).toBe('Showing 2 of 3')
+      const button = fixture.nativeElement.querySelector('.accessories-filters-button') as HTMLButtonElement
+      expect(button.getAttribute('aria-label')).toBe('Filters, showing 2 of 3')
+    })
+
+    it('adds the active filter count to the Filters button label', () => {
+      setup({
+        categories: ['lights'],
+      }, { shown: 2, total: 3 })
+
+      const button = fixture.nativeElement.querySelector('.accessories-filters-button') as HTMLButtonElement
+      expect(button.getAttribute('aria-label')).toBe('Filters, 1 active, showing 2 of 3')
     })
   })
 
   describe('clearing', () => {
-    it('shows Clear only when a filter is set', () => {
+    it('disables Clear all in the panel footer when no filter is set', () => {
       setup()
-      expect(fixture.nativeElement.querySelector('button.btn-link')).toBeNull()
+      openPanel()
 
+      const clear = document.querySelector<HTMLButtonElement>('.offcanvas-footer .btn-link')!
+      expect(clear.disabled).toBe(true)
+    })
+
+    it('enables Clear all in the panel footer when a filter is set', () => {
       setup({ search: 'kettle' })
-      expect(fixture.nativeElement.querySelector('button.btn-link')).not.toBeNull()
+      openPanel()
+
+      const clear = document.querySelector<HTMLButtonElement>('.offcanvas-footer .btn-link')!
+      expect(clear.disabled).toBe(false)
     })
 
     it('clears every filter but keeps the grouping and sort the user picked', () => {
@@ -290,23 +292,6 @@ describe('accessoriesToolbarComponent', () => {
       expect(labels[0]).toBe('All')
       expect(labels.length).toBe(BUILT_IN_VIEWS.length + 1)
       expect(fixture.nativeElement.querySelector('.accessories-views')).toBeNull()
-    })
-
-    it('shows the active view as the first chip, and removes the view with its chip', () => {
-      const toolbar = setup()
-      toolbar.applyView(BUILT_IN_VIEWS.find(view => view.id === 'lights')!)
-      fixture.detectChanges()
-
-      expect(chips()[0].textContent!.replace(/\s+/g, ' ').trim()).toBe('View: Lights')
-      chips()[0].click()
-      fixture.detectChanges()
-      expect(toolbar.filter().categories).toEqual([])
-      expect(toolbar.activeView()).toBe('all')
-    })
-
-    it('shows no view chip for a filter that matches no view', () => {
-      setup({ search: 'kettle' })
-      expect(chips().some(chip => chip.textContent!.includes('View:'))).toBe(false)
     })
 
     it('applies a view on top of a cleared filter', () => {
@@ -440,15 +425,6 @@ describe('accessoriesToolbarComponent', () => {
 
       expect(pill('Downstairs')!.getAttribute('aria-pressed')).toBe('true')
       expect(viewButton('All')!.getAttribute('aria-pressed')).toBe('false')
-    })
-
-    it('shows the active custom view as the first chip', () => {
-      setup()
-      fixture.componentRef.setInput('customViews', [ownView])
-      fixture.componentRef.setInput('activeViewId', 'v1')
-      fixture.detectChanges()
-
-      expect(chips()[0].textContent!.replace(/\s+/g, ' ').trim()).toBe('View: Downstairs')
     })
 
     it('applies a custom view on top of a cleared filter, and reports which view', () => {
@@ -617,18 +593,6 @@ describe('accessoriesToolbarComponent', () => {
       const badge = fixture.nativeElement.querySelector('.accessories-filter-badge') as HTMLElement
       expect(badge.textContent!.replace(/\s+/g, ' ').trim()).toBe('2 active filters')
       expect(badge.querySelector('.visually-hidden')).not.toBeNull()
-    })
-
-    it('removes an active filter from its chip', () => {
-      const toolbar = setup({
-        categories: ['lights'],
-      })
-
-      const chip = chips().find(entry => entry.textContent!.includes('Lights'))!
-      chip.click()
-      fixture.detectChanges()
-
-      expect(toolbar.filter().categories).toEqual([])
     })
 
     it('clears every filter, search included, when Clear all is used', () => {
@@ -814,7 +778,7 @@ describe('accessoriesToolbarComponent', () => {
       expect(subPills()).toEqual([])
     })
 
-    it('narrows the result to the picked subcategory, and shows it as a chip', () => {
+    it('narrows the result to the picked subcategory', () => {
       const toolbar = setupSub({
         categories: ['lights'],
       })
@@ -824,7 +788,6 @@ describe('accessoriesToolbarComponent', () => {
       fixture.detectChanges()
 
       expect(toolbar.filter().subcategories).toEqual(['dimmable'])
-      expect(chips().map(chip => chip.textContent!.replace(/\s+/g, ' ').trim())).toContain('Dimmable')
       expect(toolbar.filterCount()).toBe(2)
     })
 
@@ -838,22 +801,6 @@ describe('accessoriesToolbarComponent', () => {
 
       expect(toolbar.filter().categories).toEqual(['climate'])
       expect(toolbar.filter().subcategories).toEqual(['thermostat'])
-    })
-
-    it('removes a subcategory from its chip', () => {
-      const toolbar = setupSub({
-        categories: ['lights'],
-        subcategories: ['dimmable'],
-      })
-
-      toolbar.removeChip({
-        key: 'subcategories',
-        value: 'dimmable',
-        label: 'accessories.subcategories.dimmable',
-        translate: true,
-      })
-
-      expect(toolbar.filter().subcategories).toEqual([])
     })
   })
 })
