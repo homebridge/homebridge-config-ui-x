@@ -179,103 +179,118 @@
           </button>
         </div>
       }
-      @for (group of groups(); track groupId(group)) {
-        @if (group.services.length) {
-          <section class="accessory-group mb-4">
-            @if (filter().groupBy !== 'none') {
-              <div class="d-flex align-items-center group-header mb-1">
-                <button
-                  type="button"
-                  class="btn btn-link p-0 me-2 group-toggle"
-                  [attr.aria-expanded]="!isCollapsed(group)"
-                  [attr.aria-label]="'accessories.group.toggle' | translate"
-                  (click)="toggleGroup(group)"
-                >
-                  <i
-                    class="fas fa-chevron-down group-chevron"
-                    aria-hidden="true"
-                    [class.collapsed]="isCollapsed(group)"
-                  ></i>
-                </button>
-                <h5 class="primary-text room-title m-0 mb-1 mb-sm-0 d-flex align-items-baseline flex-wrap">
-                  @if (filter().groupBy === 'category' || group.key === floorOtherKey) {
-                    {{ group.label | translate }}
-                  } @else {
-                    {{ group.label }}
-                  }
-                  <span class="group-count small text-secondary ms-2">· {{ group.services.length }}</span>
-                </h5>
-                @if (filter().groupBy === 'room') {
-                  <div class="room-badges d-flex align-items-center flex-wrap gap-2 ms-3 small text-secondary">
-                    @if (summaryFor(group).lightsOn > 0) {
-                      <span
-                        class="badge-summary"
-                        [attr.aria-label]="
-                          'accessories.group.badge_lights_on' | translate: { count: summaryFor(group).lightsOn }
-                        "
-                      >
-                        <i class="fas fa-lightbulb" aria-hidden="true"></i> {{ summaryFor(group).lightsOn }}
-                      </span>
+      <div cdkDropListGroup>
+        @for (group of groups(); track groupId(group)) {
+          @if (group.services.length) {
+            <section class="accessory-group mb-4">
+              @if (filter().groupBy !== 'none') {
+                <div class="d-flex align-items-center group-header mb-1">
+                  <button
+                    type="button"
+                    class="btn btn-link p-0 me-2 group-toggle"
+                    [attr.aria-expanded]="!isCollapsed(group)"
+                    [attr.aria-label]="'accessories.group.toggle' | translate"
+                    (click)="toggleGroup(group)"
+                  >
+                    <i
+                      class="fas fa-chevron-down group-chevron"
+                      aria-hidden="true"
+                      [class.collapsed]="isCollapsed(group)"
+                    ></i>
+                  </button>
+                  <h5 class="primary-text room-title m-0 mb-1 mb-sm-0 d-flex align-items-baseline flex-wrap">
+                    @if (filter().groupBy === 'category' || group.key === floorOtherKey) {
+                      {{ group.label | translate }}
+                    } @else {
+                      {{ group.label }}
                     }
-                    @if (summaryFor(group).avgTemperature !== undefined) {
-                      <span class="badge-summary" [attr.aria-label]="'accessories.group.badge_avg_temp' | translate">
-                        <i class="fas fa-temperature-half" aria-hidden="true"></i>
-                        {{ summaryFor(group).avgTemperature | convertTemp }}&deg;
-                      </span>
-                    }
-                    @if (summaryFor(group).lowBattery > 0) {
-                      <span
-                        class="badge-summary"
-                        [attr.aria-label]="
-                          'accessories.group.badge_low_battery' | translate: { count: summaryFor(group).lowBattery }
-                        "
-                      >
-                        <i class="fas fa-battery-quarter" aria-hidden="true"></i> {{ summaryFor(group).lowBattery }}
-                      </span>
-                    }
-                  </div>
-                }
-              </div>
-            }
-            @if (!isCollapsed(group)) {
-              @defer (on viewport) {
-                <div class="d-flex flex-wrap noselect group-tiles">
-                  @for (service of group.services; track service.uniqueId) {
-                    <div class="accessory-item accessory-tab" [class.select-active]="selectMode()">
-                      <app-accessory-tile [service]="service" />
-                      @if (selectMode()) {
-                        <button
-                          type="button"
-                          class="select-overlay"
-                          [class.selected]="isSelected(service)"
-                          [attr.aria-pressed]="isSelected(service)"
+                    <span class="group-count small text-secondary ms-2">· {{ group.services.length }}</span>
+                  </h5>
+                  @if (filter().groupBy === 'room') {
+                    <div class="room-badges d-flex align-items-center flex-wrap gap-2 ms-3 small text-secondary">
+                      @if (summaryFor(group).lightsOn > 0) {
+                        <span
+                          class="badge-summary"
                           [attr.aria-label]="
-                            'accessories.bulk.select_item'
-                              | translate: { name: service.customName || service.serviceName }
+                            'accessories.group.badge_lights_on' | translate: { count: summaryFor(group).lightsOn }
                           "
-                          (click)="toggleSelected(service)"
                         >
-                          <i
-                            class="fas"
-                            aria-hidden="true"
-                            [class.fa-square-check]="isSelected(service)"
-                            [class.fa-square]="!isSelected(service)"
-                          ></i>
-                        </button>
+                          <i class="fas fa-lightbulb" aria-hidden="true"></i> {{ summaryFor(group).lightsOn }}
+                        </span>
+                      }
+                      @if (summaryFor(group).avgTemperature !== undefined) {
+                        <span class="badge-summary" [attr.aria-label]="'accessories.group.badge_avg_temp' | translate">
+                          <i class="fas fa-temperature-half" aria-hidden="true"></i>
+                          {{ summaryFor(group).avgTemperature | convertTemp }}&deg;
+                        </span>
+                      }
+                      @if (summaryFor(group).lowBattery > 0) {
+                        <span
+                          class="badge-summary"
+                          [attr.aria-label]="
+                            'accessories.group.badge_low_battery' | translate: { count: summaryFor(group).lowBattery }
+                          "
+                        >
+                          <i class="fas fa-battery-quarter" aria-hidden="true"></i> {{ summaryFor(group).lowBattery }}
+                        </span>
                       }
                     </div>
                   }
-                  @for (placeholder of placeholders; track $index) {
-                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
-                  }
                 </div>
-              } @placeholder (minimum 0ms) {
-                <div class="group-placeholder" [style.min-height.px]="group.services.length ? 120 : 0"></div>
               }
-            }
-          </section>
+              @if (!isCollapsed(group)) {
+                @defer (on viewport) {
+                  <div
+                    class="d-flex flex-wrap noselect group-tiles"
+                    cdkDropList
+                    [cdkDropListData]="group.key"
+                    [cdkDropListDisabled]="!canDragBetweenRooms()"
+                    [cdkDropListSortingDisabled]="true"
+                    (cdkDropListDropped)="onRoomDrop($event)"
+                  >
+                    @for (service of group.services; track service.uniqueId) {
+                      <div
+                        class="accessory-item accessory-tab"
+                        cdkDrag
+                        [class.select-active]="selectMode()"
+                        [cdkDragData]="service.uniqueId"
+                        [cdkDragDisabled]="!canDragBetweenRooms()"
+                      >
+                        <app-accessory-tile [service]="service" />
+                        @if (selectMode()) {
+                          <button
+                            type="button"
+                            class="select-overlay"
+                            [class.selected]="isSelected(service)"
+                            [attr.aria-pressed]="isSelected(service)"
+                            [attr.aria-label]="
+                              'accessories.bulk.select_item'
+                                | translate: { name: service.customName || service.serviceName }
+                            "
+                            (click)="toggleSelected(service)"
+                          >
+                            <i
+                              class="fas"
+                              aria-hidden="true"
+                              [class.fa-square-check]="isSelected(service)"
+                              [class.fa-square]="!isSelected(service)"
+                            ></i>
+                          </button>
+                        }
+                      </div>
+                    }
+                    @for (placeholder of placeholders; track $index) {
+                      <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                    }
+                  </div>
+                } @placeholder (minimum 0ms) {
+                  <div class="group-placeholder" [style.min-height.px]="group.services.length ? 120 : 0"></div>
+                }
+              }
+            </section>
+          }
         }
-      }
+      </div>
       @if (shownCount() === 0 && totalCount() > 0) {
         <div class="text-center text-secondary small py-4">{{ 'accessories.toolbar.no_matches' | translate }}</div>
       }

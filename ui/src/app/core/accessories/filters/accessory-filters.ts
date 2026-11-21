@@ -4,7 +4,7 @@ import type { BatteryInfo } from './accessory-battery'
 import type { AccessoryCategory } from './accessory-categories'
 import type { AccessoryFloor } from './accessory-views'
 
-import { ACCESSORY_CATEGORIES, getAccessoryCategory } from './accessory-categories'
+import { ACCESSORY_CATEGORIES, getAccessoryCategory, getAccessorySubcategory } from './accessory-categories'
 import { isMatterService, isServiceNotResponding, isServiceOn, serviceBridgeKey, serviceBridgeName, serviceDisplayName } from './service-helpers'
 
 export type AccessoryProtocol = 'hap' | 'matter'
@@ -17,6 +17,8 @@ export interface AccessoryFilterState {
   search: string
   rooms: string[]
   categories: AccessoryCategory[]
+  /** Subcategory keys (see getAccessorySubcategory). Within the selected categories, a service must match one. */
+  subcategories: string[]
   bridges: string[]
   protocols: AccessoryProtocol[]
   states: AccessoryStateFilter[]
@@ -61,6 +63,7 @@ export const DEFAULT_FILTER_STATE: AccessoryFilterState = {
   search: '',
   rooms: [],
   categories: [],
+  subcategories: [],
   bridges: [],
   protocols: [],
   states: [],
@@ -80,6 +83,7 @@ export function isFilterActive(state: AccessoryFilterState): boolean {
   return state.search.trim() !== ''
     || state.rooms.length > 0
     || state.categories.length > 0
+    || state.subcategories.length > 0
     || state.bridges.length > 0
     || state.protocols.length > 0
     || state.states.length > 0
@@ -162,6 +166,9 @@ export function matchesFilter(
     return false
   }
   if (state.categories.length && !state.categories.includes(getAccessoryCategory(service))) {
+    return false
+  }
+  if (state.subcategories.length && !state.subcategories.includes(getAccessorySubcategory(service))) {
     return false
   }
   if (state.states.length) {

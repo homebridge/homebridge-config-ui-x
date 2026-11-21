@@ -1,266 +1,347 @@
 <div class="accessories-toolbar mb-3" role="toolbar" [attr.aria-label]="'accessories.toolbar.label' | translate">
-  <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-    <div
-      class="btn-group btn-group-sm flex-wrap"
-      role="group"
-      [attr.aria-label]="'accessories.views.label' | translate"
+  <div class="accessories-topbar d-flex align-items-center gap-2 mb-2">
+    <div class="input-group input-group-sm accessories-search">
+      <span class="input-group-text accessories-search-icon" aria-hidden="true">
+        <i class="fas fa-magnifying-glass"></i>
+      </span>
+      <input
+        #searchInput
+        type="search"
+        class="form-control"
+        [value]="searchText()"
+        [placeholder]="'accessories.toolbar.search' | translate"
+        [attr.aria-label]="'accessories.toolbar.search' | translate"
+        (input)="onSearch(searchInput.value)"
+      />
+      @if (searchText()) {
+        <button
+          type="button"
+          class="btn btn-elegant accessories-search-clear"
+          [attr.aria-label]="'accessories.toolbar.clear_search' | translate"
+          (click)="onSearch('')"
+        >
+          <i class="fas fa-xmark" aria-hidden="true"></i>
+        </button>
+      }
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-elegant my-0 position-relative flex-shrink-0 accessories-filters-button"
+      aria-haspopup="dialog"
+      container="body"
+      [ngbTooltip]="'accessories.toolbar.filters' | translate"
+      [attr.aria-label]="'accessories.toolbar.filters' | translate"
+      (click)="openFilters()"
     >
+      <i class="fas fa-bars-staggered" aria-hidden="true"></i>
+      @if (filterCount() > 0) {
+        <span class="badge rounded-pill bg-primary accessories-filter-badge">
+          {{ filterCount()
+          }}<span class="visually-hidden"> {{ 'accessories.toolbar.active_filters' | translate }}</span>
+        </span>
+      }
+    </button>
+
+    <div ngbDropdown autoClose="outside" class="d-inline-block flex-shrink-0">
       <button
         type="button"
-        class="btn btn-elegant"
-        [class.active]="activeView() === 'all'"
-        [attr.aria-pressed]="activeView() === 'all'"
-        (click)="applyView(null)"
+        class="btn btn-sm btn-elegant my-0 accessories-sort-button"
+        ngbDropdownToggle
+        container="body"
+        [ngbTooltip]="'accessories.toolbar.group_sort' | translate"
+        [attr.aria-label]="'accessories.toolbar.group_sort' | translate"
       >
-        {{ 'accessories.views.all' | translate }}
+        <i class="fas fa-arrow-down-wide-short" aria-hidden="true"></i>
       </button>
-      @for (view of views; track view.id) {
-        <button
-          type="button"
-          class="btn btn-elegant"
-          [class.active]="activeView() === view.id"
-          [attr.aria-pressed]="activeView() === view.id"
-          (click)="applyView(view)"
-        >
-          {{ view.labelKey | translate }}
-        </button>
-      }
-      @for (view of customViews(); track view.id) {
-        <button
-          type="button"
-          class="btn btn-elegant accessories-custom-view"
-          [class.active]="activeViewId() === view.id"
-          [attr.aria-pressed]="activeViewId() === view.id"
-          (click)="applyCustomView(view)"
-        >
-          @if (isSharedWithMe(view)) {
-            <i class="fas fa-share-nodes me-1" aria-hidden="true"></i>
+      <div ngbDropdownMenu class="accessories-sort-menu p-3">
+        <fieldset class="mb-3">
+          <legend class="small fw-semibold text-secondary mb-1">
+            {{ 'accessories.toolbar.group_by' | translate }}
+          </legend>
+          @for (option of groupOptions; track option.value) {
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="accessories-group-by"
+                [id]="`accessories-group-by-${option.value}`"
+                [value]="option.value"
+                [checked]="filter().groupBy === option.value"
+                (change)="onGroupBy($event)"
+              />
+              <label class="form-check-label" [attr.for]="`accessories-group-by-${option.value}`">{{
+                option.labelKey | translate
+              }}</label>
+            </div>
           }
-          {{ view.name }}
-          @if (isSharedWithMe(view)) {
-            <span class="small text-secondary ms-1">{{
-              'accessories.views.shared_by' | translate: { owner: view.owner }
-            }}</span>
-          } @else if (view.shared) {
-            <i
-              class="fas fa-share-nodes ms-1"
-              role="img"
-              [attr.aria-label]="'accessories.views.shared' | translate"
-            ></i>
+        </fieldset>
+        <fieldset>
+          <legend class="small fw-semibold text-secondary mb-1">{{ 'accessories.toolbar.sort_by' | translate }}</legend>
+          @for (option of sortOptions; track option.value) {
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="accessories-sort-by"
+                [id]="`accessories-sort-by-${option.value}`"
+                [value]="option.value"
+                [checked]="filter().sortBy === option.value"
+                (change)="onSortBy($event)"
+              />
+              <label class="form-check-label" [attr.for]="`accessories-sort-by-${option.value}`">{{
+                option.labelKey | translate
+              }}</label>
+            </div>
           }
-        </button>
-      }
-    </div>
-    @if (kioskViewId(); as kioskId) {
-      <div ngbDropdown class="d-inline-block">
-        <button
-          type="button"
-          class="btn btn-sm btn-elegant my-0 accessories-kiosk-menu"
-          ngbDropdownToggle
-          [attr.aria-label]="'accessories.kiosk.menu' | translate"
-        >
-          <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
-        </button>
-        <div ngbDropdownMenu>
-          <button type="button" ngbDropdownItem (click)="openKiosk(kioskId)">
-            <i class="fas fa-tablet-screen-button me-2" aria-hidden="true"></i
-            >{{ 'accessories.kiosk.open' | translate }}
-          </button>
-          <button type="button" ngbDropdownItem (click)="copyKioskLink(kioskId)">
-            <i class="fas fa-link me-2" aria-hidden="true"></i>{{ 'accessories.kiosk.copy_link' | translate }}
-          </button>
-          @if (canPairTablets()) {
-            <button type="button" ngbDropdownItem (click)="pairTablet(kioskId)">
-              <i class="fas fa-qrcode me-2" aria-hidden="true"></i>{{ 'kiosk.tablets.pair_a_tablet' | translate }}
-            </button>
-          }
-        </div>
+        </fieldset>
       </div>
-    }
-    <div class="ms-auto d-flex align-items-center gap-2">
-      <button
-        type="button"
-        class="btn btn-sm btn-elegant my-0"
-        [attr.aria-label]="'accessories.views.manage' | translate"
-        (click)="manageViews.emit()"
-      >
-        <i class="fas fa-layer-group" aria-hidden="true"></i>
-        <span class="ms-1 d-none d-md-inline">{{ 'accessories.views.manage' | translate }}</span>
-      </button>
-      <button
-        type="button"
-        class="btn btn-sm btn-elegant my-0"
-        [class.active]="manageLayoutActive()"
-        [attr.aria-pressed]="manageLayoutActive()"
-        [attr.aria-label]="'accessories.manage_layout' | translate"
-        (click)="manageLayoutToggle.emit()"
-      >
-        <i class="fas fa-up-down-left-right" aria-hidden="true"></i>
-        <span class="ms-1 d-none d-md-inline">{{ 'accessories.manage_layout' | translate }}</span>
-      </button>
-      <button
-        type="button"
-        class="btn btn-sm btn-elegant my-0"
-        [class.active]="selectActive()"
-        [attr.aria-pressed]="selectActive()"
-        [disabled]="manageLayoutActive()"
-        [attr.aria-label]="'accessories.toolbar.select' | translate"
-        (click)="selectToggle.emit()"
-      >
-        <i class="fas fa-square-check" aria-hidden="true"></i>
-        <span class="ms-1 d-none d-md-inline">{{ 'accessories.toolbar.select' | translate }}</span>
-      </button>
     </div>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-elegant my-0 flex-shrink-0"
+      container="body"
+      [class.active]="manageLayoutActive()"
+      [attr.aria-pressed]="manageLayoutActive()"
+      [ngbTooltip]="'accessories.manage_layout' | translate"
+      [attr.aria-label]="'accessories.manage_layout' | translate"
+      (click)="manageLayoutToggle.emit()"
+    >
+      <i class="fas fa-up-down-left-right" aria-hidden="true"></i>
+    </button>
+    <button
+      type="button"
+      class="btn btn-sm btn-elegant my-0 flex-shrink-0"
+      container="body"
+      [class.active]="selectActive()"
+      [attr.aria-pressed]="selectActive()"
+      [disabled]="manageLayoutActive()"
+      [ngbTooltip]="'accessories.toolbar.select' | translate"
+      [attr.aria-label]="'accessories.toolbar.select' | translate"
+      (click)="selectToggle.emit()"
+    >
+      <i class="fas fa-square-check" aria-hidden="true"></i>
+    </button>
   </div>
 
   <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-    <input
-      #searchInput
-      type="search"
-      class="form-control form-control-sm accessories-search"
-      [value]="searchText()"
-      [placeholder]="'accessories.toolbar.search' | translate"
-      [attr.aria-label]="'accessories.toolbar.search' | translate"
-      (input)="onSearch(searchInput.value)"
-    />
-    @if (narrow()) {
+    @for (chip of activeChips(); track `${chip.key}:${chip.value}`) {
       <button
         type="button"
-        class="btn btn-sm btn-elegant my-0"
-        aria-controls="accessories-toolbar-chips"
-        [attr.aria-expanded]="chipsOpen()"
-        (click)="toggleChips()"
+        class="btn btn-sm rounded-pill btn-outline-primary accessories-active-chip"
+        [class.accessories-view-chip]="chip.key === 'view'"
+        (click)="removeChip(chip)"
       >
-        <i class="fas fa-filter" aria-hidden="true"></i>
-        {{ 'accessories.toolbar.filters' | translate }}
+        @if (chip.key === 'view') {
+          {{ 'accessories.views.chip' | translate: { name: chip.translate ? (chip.label | translate) : chip.label } }}
+        } @else {
+          {{ chip.translate ? (chip.label | translate) : chip.label }}
+        }
+        <i class="fas fa-xmark ms-1" aria-hidden="true"></i>
       </button>
     }
-    <div class="small text-secondary ms-auto" role="status" aria-live="polite">
+    @if (active()) {
+      <button type="button" class="btn btn-sm btn-link p-0" (click)="clear()">
+        {{ 'accessories.toolbar.clear_all' | translate }}
+      </button>
+    }
+    <div class="small text-secondary ms-auto text-end" role="status" aria-live="polite">
       {{ 'accessories.toolbar.showing' | translate: { shown: shown(), total: total() } }}
     </div>
-    @if (active()) {
-      <button
-        type="button"
-        class="btn btn-sm btn-link p-0"
-        [attr.aria-label]="'accessories.views.save' | translate"
-        (click)="openSaveView()"
-      >
-        {{ 'accessories.views.save' | translate }}
-      </button>
-      <button
-        type="button"
-        class="btn btn-sm btn-link p-0"
-        [attr.aria-label]="'accessories.toolbar.clear' | translate"
-        (click)="clear()"
-      >
-        {{ 'accessories.toolbar.clear' | translate }}
-      </button>
-    }
   </div>
+</div>
 
-  @if (saveFormOpen()) {
-    <div
-      class="d-flex flex-wrap align-items-center gap-2 mb-2"
-      role="group"
-      [attr.aria-label]="'accessories.views.save' | translate"
-    >
-      <input
-        type="text"
-        class="form-control form-control-sm accessories-view-name"
-        autocomplete="off"
-        [value]="viewName()"
-        [placeholder]="'accessories.views.name_placeholder' | translate"
-        [attr.aria-label]="'accessories.views.name_placeholder' | translate"
-        (input)="onViewNameInput($event)"
-        (keyup.enter)="confirmSaveView()"
-        (keyup.escape)="cancelSaveView()"
-      />
-      <button
-        type="button"
-        class="btn btn-sm btn-primary my-0"
-        [disabled]="!viewName().trim()"
-        (click)="confirmSaveView()"
-      >
-        {{ 'accessories.views.save_button' | translate }}
-      </button>
-      <button type="button" class="btn btn-sm btn-elegant my-0" (click)="cancelSaveView()">
-        {{ 'form.button_cancel' | translate }}
-      </button>
-    </div>
-  }
-
-  <div
-    id="accessories-toolbar-chips"
-    class="d-flex flex-wrap align-items-center gap-2 mb-2"
-    [class.d-none]="narrow() && !chipsOpen()"
-  >
-    @for (facet of facets(); track facet.key) {
-      <div ngbDropdown autoClose="outside" class="d-inline-block">
+<ng-template #filtersPanel>
+  <div class="offcanvas-header border-bottom">
+    <h5 id="accessories-filters-title" class="offcanvas-title primary-text">
+      {{ 'accessories.toolbar.filters' | translate }}
+    </h5>
+    <button
+      type="button"
+      class="btn-close"
+      [attr.aria-label]="'accessories.toolbar.close_filters' | translate"
+      (click)="closeFilters()"
+    ></button>
+  </div>
+  <div class="offcanvas-body accessories-filters-body">
+    <section class="accessories-facet mb-4" aria-labelledby="accessories-facet-views">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h6 class="small text-uppercase fw-semibold text-secondary mb-0" id="accessories-facet-views">
+          {{ 'accessories.views.label' | translate }}
+        </h6>
+        <div ngbDropdown container="body" class="d-inline-block">
+          <button
+            type="button"
+            class="btn btn-sm btn-elegant my-0 accessories-views-menu"
+            ngbDropdownToggle
+            [attr.aria-label]="'accessories.views.menu' | translate"
+          >
+            <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
+          </button>
+          <div ngbDropdownMenu>
+            <button type="button" ngbDropdownItem (click)="openSaveView()">
+              <i class="fas fa-floppy-disk me-2" aria-hidden="true"></i>{{ 'accessories.views.save' | translate }}
+            </button>
+            <button type="button" ngbDropdownItem (click)="manageViews.emit()">
+              <i class="fas fa-layer-group me-2" aria-hidden="true"></i>{{ 'accessories.views.manage' | translate }}
+            </button>
+            @if (kioskViewId(); as kioskId) {
+              <div class="dropdown-divider"></div>
+              <button type="button" ngbDropdownItem (click)="openKiosk(kioskId)">
+                <i class="fas fa-tablet-screen-button me-2" aria-hidden="true"></i
+                >{{ 'accessories.kiosk.open' | translate }}
+              </button>
+              <button type="button" ngbDropdownItem (click)="copyKioskLink(kioskId)">
+                <i class="fas fa-link me-2" aria-hidden="true"></i>{{ 'accessories.kiosk.copy_link' | translate }}
+              </button>
+              @if (canPairTablets()) {
+                <button type="button" ngbDropdownItem (click)="pairTablet(kioskId)">
+                  <i class="fas fa-qrcode me-2" aria-hidden="true"></i>{{ 'kiosk.tablets.pair_a_tablet' | translate }}
+                </button>
+              }
+            }
+          </div>
+        </div>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
         <button
           type="button"
-          class="btn btn-sm btn-elegant my-0 accessories-chip"
-          ngbDropdownToggle
-          [class.active]="facet.selected.length > 0"
-          [attr.aria-label]="facet.labelKey | translate"
+          class="btn btn-sm rounded-pill accessories-view-pill"
+          [class.btn-primary]="activeView() === 'all'"
+          [class.btn-outline-secondary]="activeView() !== 'all'"
+          [attr.aria-pressed]="activeView() === 'all'"
+          (click)="applyView(null)"
         >
-          @if (facet.selected.length) {
-            {{ facet.selected[0].translate ? (facet.selected[0].label | translate) : facet.selected[0].label }}
-            ({{ facet.selected[0].count }})
-            @if (facet.selected.length > 1) {
-              <span>{{ 'accessories.toolbar.more' | translate: { count: facet.selected.length - 1 } }}</span>
-            }
-          } @else {
-            {{ facet.labelKey | translate }}
-          }
+          {{ 'accessories.views.all' | translate }}
         </button>
-        <div ngbDropdownMenu>
-          @for (option of facet.options; track option.value) {
+        @for (view of views; track view.id) {
+          <button
+            type="button"
+            class="btn btn-sm rounded-pill accessories-view-pill"
+            [class.btn-primary]="activeView() === view.id"
+            [class.btn-outline-secondary]="activeView() !== view.id"
+            [attr.aria-pressed]="activeView() === view.id"
+            (click)="applyView(view)"
+          >
+            {{ view.labelKey | translate }}
+          </button>
+        }
+        @for (view of customViews(); track view.id) {
+          <button
+            type="button"
+            class="btn btn-sm rounded-pill accessories-view-pill accessories-custom-view"
+            [class.btn-primary]="activeViewId() === view.id"
+            [class.btn-outline-secondary]="activeViewId() !== view.id"
+            [attr.aria-pressed]="activeViewId() === view.id"
+            (click)="applyCustomView(view)"
+          >
+            @if (isSharedWithMe(view)) {
+              <i class="fas fa-share-nodes me-1" aria-hidden="true"></i>
+            }
+            {{ view.name }}
+            @if (isSharedWithMe(view)) {
+              <span class="small ms-1 opacity-75">{{
+                'accessories.views.shared_by' | translate: { owner: view.owner }
+              }}</span>
+            } @else if (view.shared) {
+              <i
+                class="fas fa-share-nodes ms-1"
+                role="img"
+                [attr.aria-label]="'accessories.views.shared' | translate"
+              ></i>
+            }
+          </button>
+        }
+      </div>
+      @if (saveFormOpen()) {
+        <div
+          class="d-flex flex-wrap align-items-center gap-2 mt-2"
+          role="group"
+          [attr.aria-label]="'accessories.views.save' | translate"
+        >
+          <input
+            type="text"
+            class="form-control form-control-sm accessories-view-name"
+            autocomplete="off"
+            [value]="viewName()"
+            [placeholder]="'accessories.views.name_placeholder' | translate"
+            [attr.aria-label]="'accessories.views.name_placeholder' | translate"
+            (input)="onViewNameInput($event)"
+            (keyup.enter)="confirmSaveView()"
+            (keyup.escape)="cancelSaveView()"
+          />
+          <button
+            type="button"
+            class="btn btn-sm btn-primary my-0"
+            [disabled]="!viewName().trim()"
+            (click)="confirmSaveView()"
+          >
+            {{ 'accessories.views.save_button' | translate }}
+          </button>
+          <button type="button" class="btn btn-sm btn-elegant my-0" (click)="cancelSaveView()">
+            {{ 'form.button_cancel' | translate }}
+          </button>
+        </div>
+      }
+    </section>
+
+    @for (facet of orderedFacets(); track facet.key) {
+      <section class="accessories-facet mb-4" [attr.aria-labelledby]="`accessories-facet-${facet.key}`">
+        <h6 class="small text-uppercase fw-semibold text-secondary mb-2" [attr.id]="`accessories-facet-${facet.key}`">
+          {{ facet.labelKey | translate }}
+        </h6>
+        <div class="d-flex flex-wrap gap-2">
+          @for (option of visibleOptions(facet); track option.value) {
             <button
               type="button"
-              ngbDropdownItem
-              [class.active]="isSelected(facet, option)"
+              class="btn btn-sm rounded-pill accessories-pill"
+              [class.btn-primary]="isSelected(facet, option)"
+              [class.btn-outline-secondary]="!isSelected(facet, option)"
               [attr.aria-pressed]="isSelected(facet, option)"
               (click)="toggleValue(facet.key, option.value)"
             >
-              <span class="accessories-check">
-                @if (isSelected(facet, option)) {
-                  <i class="fas fa-check primary-text" aria-hidden="true"></i>
-                }
-              </span>
               {{ option.translate ? (option.label | translate) : option.label }}
-              ({{ option.count }})
+              <span class="accessories-pill-count">{{ option.count }}</span>
             </button>
+            @if (subcategoryGroupFor(facet, option); as group) {
+              <div
+                class="accessories-subcategories w-100 ps-3"
+                role="group"
+                [attr.aria-label]="group.labelKey | translate"
+              >
+                <div class="small text-secondary mb-1">{{ group.labelKey | translate }}</div>
+                <div class="d-flex flex-wrap gap-2">
+                  @for (sub of group.options; track sub.value) {
+                    <button
+                      type="button"
+                      class="btn btn-sm rounded-pill accessories-subpill"
+                      [class.btn-primary]="isSubcategorySelected(sub.value)"
+                      [class.btn-outline-secondary]="!isSubcategorySelected(sub.value)"
+                      [attr.aria-pressed]="isSubcategorySelected(sub.value)"
+                      (click)="toggleSubcategory(sub.value)"
+                    >
+                      {{ sub.label | translate }}
+                      <span class="accessories-pill-count">{{ sub.count }}</span>
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          } @empty {
+            <span class="small text-secondary">{{ 'accessories.toolbar.no_matches' | translate }}</span>
           }
         </div>
-      </div>
+        @if (facet.options.length > 8) {
+          <button type="button" class="btn btn-sm btn-link p-0 mt-2 small" (click)="toggleExpanded(facet.key)">
+            {{
+              (expandedFacets().has(facet.key) ? 'accessories.toolbar.show_fewer' : 'accessories.toolbar.show_all')
+                | translate
+            }}
+          </button>
+        }
+      </section>
     }
-  </div>
-
-  <div class="d-flex flex-wrap align-items-center gap-3">
-    <div class="d-flex align-items-center gap-2">
-      <label class="small text-secondary mb-0" for="accessories-group-by">{{
-        'accessories.toolbar.group_by' | translate
-      }}</label>
-      <select id="accessories-group-by" class="form-select form-select-sm w-auto" (change)="onGroupBy($event)">
-        @for (option of groupOptions; track option.value) {
-          <option [value]="option.value" [selected]="filter().groupBy === option.value">
-            {{ option.labelKey | translate }}
-          </option>
-        }
-      </select>
-    </div>
-    <div class="d-flex align-items-center gap-2">
-      <label class="small text-secondary mb-0" for="accessories-sort-by">{{
-        'accessories.toolbar.sort_by' | translate
-      }}</label>
-      <select id="accessories-sort-by" class="form-select form-select-sm w-auto" (change)="onSortBy($event)">
-        @for (option of sortOptions; track option.value) {
-          <option [value]="option.value" [selected]="filter().sortBy === option.value">
-            {{ option.labelKey | translate }}
-          </option>
-        }
-      </select>
-    </div>
     <div class="form-check form-switch mb-0">
       <input
         id="accessories-show-hidden"
@@ -270,9 +351,17 @@
         [checked]="filter().showHidden"
         (change)="onShowHidden($event)"
       />
-      <label class="form-check-label small" for="accessories-show-hidden">{{
-        'accessories.toolbar.show_hidden' | translate
+      <label class="form-check-label" for="accessories-show-hidden">{{
+        'accessories.toolbar.show_hidden_accessories' | translate
       }}</label>
     </div>
   </div>
-</div>
+  <div class="offcanvas-footer border-top p-3 d-flex align-items-center justify-content-between gap-2">
+    <button type="button" class="btn btn-link p-0" [disabled]="!active()" (click)="clear()">
+      {{ 'accessories.toolbar.clear_all' | translate }}
+    </button>
+    <button type="button" class="btn btn-primary" (click)="closeFilters()">
+      {{ 'accessories.toolbar.show_count' | translate: { count: shown() } }}
+    </button>
+  </div>
+</ng-template>

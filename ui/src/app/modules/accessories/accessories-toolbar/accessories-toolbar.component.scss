@@ -1,12 +1,46 @@
+.accessories-topbar {
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
 .accessories-search {
-  max-width: 280px;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 480px;
 }
 
-.accessories-chip.active {
-  font-weight: 600;
+.accessories-search-input::-webkit-search-cancel-button {
+  display: none;
 }
 
-.accessories-check {
-  display: inline-block;
-  width: 1.25rem;
+.accessories-filter-badge {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.4rem;
+  font-size: 0.65rem;
+}
+
+.accessories-sort-menu {
+  min-width: 14rem;
+}
+
+.accessories-subcategories {
+  margin-top: 0.25rem;
+}
+
+.accessories-pill-count {
+  margin-left: 0.25rem;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+.accessories-view-pill,
+.accessories-pill,
+.accessories-subpill,
+.accessories-active-chip,
+.accessories-search-clear {
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
