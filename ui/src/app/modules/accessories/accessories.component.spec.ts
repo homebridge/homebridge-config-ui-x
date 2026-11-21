@@ -27,11 +27,11 @@ import { provideFakes, provideTestTranslate } from '@/testing/providers'
  * tiles hidden, the model indexes and the DOM indexes no longer line up, and a
  * drop moves an accessory the user was not touching.
  *
- * The fix is that the two are mutually exclusive - manage-layout mode shows
- * everything and suspends the filter, and picking a filter leaves manage-layout
- * mode. That interaction is what most of these specs are about, along with the
- * bridge names, which come from the child-bridge socket rather than the
- * accessory data and so can be missing.
+ * The fix is that the two never share a drag system. Manage-layout mode with no
+ * filter uses dragula, where every tile is shown and the model stays 1-to-1 with
+ * the DOM. With a filter on, manage-layout mode uses CDK drag-and-drop, which moves
+ * accessories by uniqueId, so hidden tiles keep their places. The bridge names come
+ * from the child-bridge socket rather than the accessory data and so can be missing.
  */
 describe('accessoriesComponent', () => {
   let settings: FakeSettings
@@ -116,7 +116,8 @@ describe('accessoriesComponent', () => {
         ])
         return true
       }),
-      updateServicesFlags: vi.fn(),
+      placeService: vi.fn(),
+      placeRoom: vi.fn(),
       bridgeUsernameToNameMap: options.bridgeNames ?? new Map<string, string>(),
       accessoryData,
       start: vi.fn(async () => undefined),
@@ -408,7 +409,7 @@ describe('accessoriesComponent', () => {
   })
 
   describe('manage layout mode', () => {
-    it('unlocks the layout and forces the default filter while on', async () => {
+    it('unlocks the layout and keeps the filter while on', async () => {
       const page = await open({
         rooms: [
           roomOf('Kitchen', [
@@ -425,35 +426,30 @@ describe('accessoriesComponent', () => {
 
       expect(page.manageLayoutMode).toBe(true)
       expect(page.layoutLocked()).toBe(false)
-      expect(page.filter().rooms).toEqual([])
-      expect(page.filter().showHidden).toBe(false)
-      // Forced for this visit only, so the saved filter is not overwritten
-      expect(accessories.setFilterState).toHaveBeenLastCalledWith(expect.objectContaining({ rooms: [] }), false)
+      expect(page.filter().rooms).toEqual(['Kitchen'])
+      expect(page.filter().showHidden).toBe(true)
     })
 
-    it('puts the user filter back when the user leaves it', async () => {
+    it('switches groupBy to room while on, and restores the user groupBy on exit', async () => {
       const page = await open({
         rooms: [
           roomOf('Kitchen', [
             makeService({ uniqueId: 'a' }),
           ]),
         ],
-        filter: {
-          rooms: ['Kitchen'],
-          showHidden: true,
-        },
+        filter: { groupBy: 'category' },
       })
 
       page.toggleManageLayout()
-      page.toggleManageLayout()
+      expect(page.filter().groupBy).toBe('room')
 
+      page.toggleManageLayout()
       expect(page.manageLayoutMode).toBe(false)
       expect(page.layoutLocked()).toBe(true)
-      expect(page.filter().rooms).toEqual(['Kitchen'])
-      expect(page.filter().showHidden).toBe(true)
+      expect(page.filter().groupBy).toBe('category')
     })
 
-    it('leaves manage mode when a filter is picked, and does not bring back the old one', async () => {
+    it('keeps manage mode when a filter is picked, and keeps the layout unlocked', async () => {
       const page = await open({
         rooms: [
           roomOf('Kitchen', [
@@ -471,23 +467,9 @@ describe('accessoriesComponent', () => {
         rooms: ['Office'],
       })
 
-      expect(page.manageLayoutMode).toBe(false)
-      expect(page.layoutLocked()).toBe(true)
+      expect(page.manageLayoutMode).toBe(true)
+      expect(page.layoutLocked()).toBe(false)
       expect(page.filter().rooms).toEqual(['Office'])
-
-      page.toggleManageLayout()
-      page.toggleManageLayout()
-
-      expect(page.filter().rooms).toEqual(['Office'])
-    })
-
-    it('cannot start selecting while rearranging', async () => {
-      const page = await open()
-
-      page.toggleManageLayout()
-      page.toggleSelectMode()
-
-      expect(page.selectMode()).toBe(false)
     })
 
     it('only allows dragging while in manage layout mode', async () => {
@@ -602,25 +584,6 @@ describe('accessoriesComponent', () => {
 
       expect(accessories.activeViewId()).toBeNull()
     })
-
-    it('locks the layout again when a filter is picked in manage mode', async () => {
-      const page = await open({
-        rooms: [
-          roomOf('Kitchen', [
-            makeService({ uniqueId: 'a' }),
-          ]),
-        ],
-      })
-
-      page.toggleManageLayout()
-      page.onFilterChange({
-        ...page.filter(),
-        showHidden: true,
-      })
-
-      // An unlocked layout plus an active filter is the combination that reorders the wrong accessory
-      expect(page.layoutLocked()).toBe(true)
-    })
   })
 
   describe('collapsing groups', () => {
@@ -726,116 +689,6 @@ describe('accessoriesComponent', () => {
       const badges = fixture.nativeElement.querySelectorAll('.badge-summary')
       expect(badges.length).toBe(1)
       expect(badges[0].textContent).toContain('21')
-    })
-  })
-
-  describe('bulk select', () => {
-    it('selects only what the filter shows when selecting all matching', async () => {
-      const page = await open({
-        rooms: [
-          roomOf('Kitchen', [
-            makeService({ uniqueId: 'a' }),
-            makeService({ uniqueId: 'h', hidden: true }),
-          ]),
-        ],
-      })
-
-      page.toggleSelectMode()
-      page.selectAllMatching()
-
-      expect([
-        ...page.selectedIds(),
-      ]).toEqual(['a'])
-    })
-
-    it('moves every selected accessory with one call, then clears the selection', async () => {
-      const page = await open({
-        rooms: [
-          roomOf('Kitchen', [
-            makeService({ uniqueId: 'a' }),
-            makeService({ uniqueId: 'b' }),
-          ]),
-        ],
-      })
-
-      page.toggleSelectMode()
-      page.toggleSelected(makeService({ uniqueId: 'a' }))
-      page.toggleSelected(makeService({ uniqueId: 'b' }))
-      page.onBulkRoom({
-        target: { value: 'Office' },
-      } as unknown as Event)
-      page.moveSelectedToRoom()
-
-      expect(accessories.moveServicesToRoom).toHaveBeenCalledTimes(1)
-      expect(accessories.moveServicesToRoom).toHaveBeenCalledWith(['a', 'b'], 'Office')
-      expect(page.selectedIds().size).toBe(0)
-    })
-
-    it('does not move anything without a room picked', async () => {
-      const page = await open({
-        rooms: [
-          roomOf('Kitchen', [
-            makeService({ uniqueId: 'a' }),
-          ]),
-        ],
-      })
-
-      page.toggleSelectMode()
-      page.toggleSelected(makeService({ uniqueId: 'a' }))
-      page.moveSelectedToRoom()
-
-      expect(accessories.moveServicesToRoom).not.toHaveBeenCalled()
-    })
-
-    it('hides the selection in one save', async () => {
-      const page = await open({
-        rooms: [
-          roomOf('Kitchen', [
-            makeService({ uniqueId: 'a' }),
-            makeService({ uniqueId: 'b' }),
-          ]),
-        ],
-      })
-
-      page.toggleSelectMode()
-      page.toggleSelected(makeService({ uniqueId: 'a' }))
-      page.hideSelected()
-
-      expect(accessories.updateServicesFlags).toHaveBeenCalledWith(['a'], { hidden: true })
-      expect(page.selectedIds().size).toBe(0)
-    })
-
-    it('shows the selection on the dashboard in one save', async () => {
-      const page = await open({
-        rooms: [
-          roomOf('Kitchen', [
-            makeService({ uniqueId: 'a' }),
-          ]),
-        ],
-      })
-
-      page.toggleSelectMode()
-      page.toggleSelected(makeService({ uniqueId: 'a' }))
-      page.showSelectedOnDashboard()
-
-      expect(accessories.updateServicesFlags).toHaveBeenCalledWith(['a'], { onDashboard: true })
-    })
-
-    it('clears the selection when select mode ends', async () => {
-      const page = await open({
-        rooms: [
-          roomOf('Kitchen', [
-            makeService({ uniqueId: 'a' }),
-          ]),
-        ],
-      })
-
-      page.toggleSelectMode()
-      page.toggleSelected(makeService({ uniqueId: 'a' }))
-      page.toggleSelectMode()
-
-      expect(page.selectMode()).toBe(false)
-      expect(page.selectedIds().size).toBe(0)
     })
   })
 
@@ -1501,7 +1354,7 @@ describe('accessoriesComponent', () => {
   })
 
   describe('moving tiles', () => {
-    it('shows no per-tile move menu on the tiles, and moves tiles by drag or bulk select only', async () => {
+    it('shows no per-tile move menu on the tiles, and moves tiles by drag only', async () => {
       await open({
         rooms: [
           roomOf('Kitchen', [
@@ -1590,7 +1443,7 @@ describe('accessoriesComponent', () => {
       expect(accessories.moveServicesToRoom).not.toHaveBeenCalled()
     })
 
-    it('turns the filtered drag off in manage layout mode', async () => {
+    it('keeps the filtered drag off the normal view while in manage layout mode', async () => {
       const page = await open({
         rooms: [
           roomOf('Kitchen', [
@@ -1608,12 +1461,145 @@ describe('accessoriesComponent', () => {
       page.manageLayoutMode = true
 
       expect(page.canDragBetweenRooms()).toBe(false)
+    })
+  })
+
+  describe('manage layout with a filter', () => {
+    /** Kitchen has a hidden tile between visible ones; the filter keeps Kitchen and Office in view */
+    async function openFiltered() {
+      return open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+            makeService({ uniqueId: 'h', hidden: true }),
+            makeService({ uniqueId: 'b' }),
+            makeService({ uniqueId: 'c' }),
+          ]),
+          roomOf('Hall', [
+            makeService({ uniqueId: 'hall-1' }),
+          ]),
+          roomOf('Office', [
+            makeService({ uniqueId: 'x' }),
+            makeService({ uniqueId: 'y' }),
+          ]),
+        ],
+        filter: {
+          groupBy: 'room',
+          rooms: ['Kitchen', 'Office'],
+        },
+      })
+    }
+
+    it('places a tile reordered within a room by its visible neighbours', async () => {
+      const page = await openFiltered()
+      page.toggleManageLayout()
+      const group = { data: 'Kitchen' }
+
+      // Visible Kitchen is a, b, c. c moves to the top.
+      page.onRoomDrop({
+        previousContainer: group,
+        container: group,
+        item: { data: 'c' },
+        previousIndex: 2,
+        currentIndex: 0,
+      } as any)
+
+      expect(accessories.placeService).toHaveBeenCalledWith('c', 'Kitchen', 'a', null)
+      expect(accessories.moveServicesToRoom).not.toHaveBeenCalled()
+    })
+
+    it('places a tile moved into another room between its visible neighbours', async () => {
+      const page = await openFiltered()
+      page.toggleManageLayout()
+
+      // Visible Office is x, y. a is dropped at position 1, between x and y.
       page.onRoomDrop({
         previousContainer: { data: 'Kitchen' },
         container: { data: 'Office' },
-        item: { data: 'kettle' },
+        item: { data: 'a' },
+        previousIndex: 0,
+        currentIndex: 1,
       } as any)
-      expect(accessories.moveServicesToRoom).not.toHaveBeenCalled()
+
+      expect(accessories.placeService).toHaveBeenCalledWith('a', 'Office', 'y', 'x')
+    })
+
+    it('reorders a room by its visible neighbours', async () => {
+      const page = await openFiltered()
+      page.toggleManageLayout()
+
+      // Every room is a row now, Kitchen, Hall, Office. Kitchen moves to the end, after Office.
+      page.onRoomReorder({
+        previousIndex: 0,
+        currentIndex: 2,
+      } as any)
+
+      expect(accessories.placeRoom).toHaveBeenCalledWith('Kitchen', null, 'Office')
+    })
+
+    it('uses dragula with no filter, and CDK with a filter, never both', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
+      })
+      const servicesGroup = dragula.createGroup.mock.calls.find(call => call[0] === 'services-bag')![1]
+      const tile = document.createElement('div')
+
+      page.toggleManageLayout()
+      expect(page.usesDragula()).toBe(true)
+      expect(page.manageFiltered()).toBe(false)
+      expect(page.tilesDraggable()).toBe(false)
+      expect(servicesGroup.moves(tile, null, tile)).toBe(true)
+
+      page.onFilterChange({
+        ...page.filter(),
+        rooms: ['Kitchen'],
+      })
+      expect(page.usesDragula()).toBe(false)
+      expect(page.manageFiltered()).toBe(true)
+      expect(page.tilesDraggable()).toBe(true)
+      expect(servicesGroup.moves(tile, null, tile)).toBe(false)
+    })
+
+    it('renders every room in filtered manage mode, including empty ones', async () => {
+      const page = await openFiltered()
+      page.toggleManageLayout()
+      fixture.detectChanges()
+
+      // Hall has only filtered-out services, so it has no visible tiles but is still a row
+      expect(fixture.nativeElement.querySelectorAll('section.accessory-group').length).toBe(3)
+      expect(fixture.nativeElement.textContent).toContain('accessories.manage_no_matches')
+    })
+
+    it('drops a tile into an empty room, placed at the end of its full list', async () => {
+      const page = await openFiltered()
+      page.toggleManageLayout()
+
+      page.onRoomDrop({
+        previousContainer: { data: 'Kitchen' },
+        container: { data: 'Hall' },
+        item: { data: 'a' },
+        previousIndex: 0,
+        currentIndex: 0,
+      } as any)
+
+      expect(accessories.placeService).toHaveBeenCalledWith('a', 'Hall', null, null)
+    })
+
+    it('reorders an empty room by its neighbours', async () => {
+      const page = await openFiltered()
+      page.toggleManageLayout()
+
+      // Rows are Kitchen, Hall, Office. Hall moves to the top, before Kitchen.
+      page.onRoomReorder({
+        previousIndex: 1,
+        currentIndex: 0,
+      } as any)
+
+      expect(accessories.placeRoom).toHaveBeenCalledWith('Hall', 'Kitchen', null)
     })
   })
 })

@@ -55,27 +55,6 @@ a:hover {
   position: relative;
 }
 
-// Select mode: a button covers the tile so a click selects instead of opening its controls
-.select-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
-  padding: 0.5rem;
-  border: 2px solid transparent;
-  border-radius: 0.5rem;
-  background: rgba(0, 0, 0, 0.08);
-  color: var(--bs-secondary-color, #6c757d);
-  cursor: pointer;
-
-  &.selected {
-    border-color: var(--bs-primary, #0d6efd);
-    color: var(--bs-primary, #0d6efd);
-  }
-}
-
 .group-placeholder {
   width: 100%;
 }
@@ -90,4 +69,22 @@ a:hover {
 
 .accessory-item.cdk-drag-placeholder {
   opacity: 0.3;
+}
+
+// A room being moved in filtered manage-layout mode: its slot shows a dashed outline while dragged
+.accessory-group.cdk-drag-placeholder {
+  opacity: 0.35;
+  outline: 2px dashed var(--bs-primary, #0d6efd);
+  outline-offset: 4px;
+  border-radius: 0.5rem;
+}
+
+// The room headers are the drag handles, so the pointer shows a move cursor over them while filtered
+.group-header[cdkDragHandle] {
+  cursor: grab;
+}
+
+.cdk-drag-preview {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  border-radius: 0.5rem;
 }

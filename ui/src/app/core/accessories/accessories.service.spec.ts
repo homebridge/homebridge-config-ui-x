@@ -1751,32 +1751,154 @@ describe('AccessoriesService', () => {
 
       expect(save).not.toHaveBeenCalled()
     })
+  })
 
-    it('sets the flags on each service and saves the layout once', () => {
+  describe('placing a service by uniqueId', () => {
+    /** A service in a room, with only the fields these tests read. */
+    function item(uniqueId: string): ServiceTypeX {
+      return {
+        uniqueId,
+        serviceName: uniqueId,
+        hidden: false,
+        onDashboard: false,
+      } as unknown as ServiceTypeX
+    }
+
+    function idsIn(roomName: string): string[] {
+      return service.rooms().find(room => room.name === roomName)!.services.map(entry => entry.uniqueId!)
+    }
+
+    beforeEach(() => {
+      service.rooms.set([
+        {
+          name: 'Kitchen',
+          isDefault: true,
+          services: [
+            item('a'),
+            item('h'),
+            item('b'),
+            item('c'),
+          ],
+        },
+        {
+          name: 'Office',
+          services: [
+            item('z'),
+            item('y'),
+          ],
+        },
+      ])
+    })
+
+    it('places before the given service in the full list', () => {
+      service.placeService('c', 'Kitchen', 'b', null)
+
+      expect(idsIn('Kitchen')).toEqual(['a', 'h', 'c', 'b'])
+    })
+
+    it('places right after the given service when there is no before', () => {
+      service.placeService('a', 'Kitchen', null, 'b')
+
+      expect(idsIn('Kitchen')).toEqual(['h', 'b', 'a', 'c'])
+    })
+
+    it('places at the end when neither neighbour is given or present', () => {
+      service.placeService('a', 'Office', 'missing', null)
+
+      expect(idsIn('Office')).toEqual(['z', 'y', 'a'])
+      expect(idsIn('Kitchen')).toEqual(['h', 'b', 'c'])
+    })
+
+    it('moves between rooms', () => {
+      service.placeService('b', 'Office', 'y', null)
+
+      expect(idsIn('Kitchen')).toEqual(['a', 'h', 'c'])
+      expect(idsIn('Office')).toEqual(['z', 'b', 'y'])
+    })
+
+    it('reorders within a room, leaving hidden services where they are placed by the full list', () => {
+      service.placeService('a', 'Kitchen', null, 'c')
+
+      expect(idsIn('Kitchen')).toEqual(['h', 'b', 'c', 'a'])
+    })
+
+    it('keeps the default room flag', () => {
+      service.placeService('z', 'Kitchen', null, null)
+
+      expect(service.rooms().find(room => room.name === 'Kitchen')!.isDefault).toBe(true)
+    })
+
+    it('saves the layout once', () => {
       const save = vi.spyOn(service, 'saveLayout')
 
-      service.updateServicesFlags(['a', 'z'], { hidden: true })
+      service.placeService('b', 'Office', null, null)
 
-      const flagged = service.rooms().flatMap(room => room.services).filter(entry => entry.hidden)
-      expect(flagged.map(entry => entry.uniqueId)).toEqual(['a', 'z'])
-      expect(idsIn('Kitchen')).toEqual(['a', 'b'])
       expect(save).toHaveBeenCalledTimes(1)
     })
 
-    it('leaves the other flag alone', () => {
-      service.updateServicesFlags(['a'], { onDashboard: true })
-
-      const a = service.rooms().find(room => room.name === 'Kitchen')!.services[0]
-      expect(a.onDashboard).toBe(true)
-      expect(a.hidden).toBe(false)
-    })
-
-    it('does nothing for services it cannot find', () => {
+    it('does nothing when the order does not change', () => {
       const save = vi.spyOn(service, 'saveLayout')
 
-      service.updateServicesFlags(['missing'], { hidden: true })
+      service.placeService('b', 'Kitchen', 'c', null)
+      service.placeService('unknown', 'Kitchen', null, null)
+      service.placeService('a', 'Nowhere', null, null)
 
       expect(save).not.toHaveBeenCalled()
+      expect(idsIn('Kitchen')).toEqual(['a', 'h', 'b', 'c'])
+    })
+  })
+
+  describe('placing a room by name', () => {
+    function room(name: string, isDefault = false): any {
+      return { name, isDefault, services: [] }
+    }
+
+    beforeEach(() => {
+      service.rooms.set([
+        room('Kitchen', true),
+        room('Hall'),
+        room('Office'),
+        room('Loft'),
+      ])
+    })
+
+    function names(): string[] {
+      return service.rooms().map(entry => entry.name)
+    }
+
+    it('places before the given room in the full list', () => {
+      service.placeRoom('Loft', 'Kitchen', null)
+
+      expect(names()).toEqual(['Loft', 'Kitchen', 'Hall', 'Office'])
+    })
+
+    it('places right after the given room when there is no before', () => {
+      service.placeRoom('Kitchen', null, 'Office')
+
+      expect(names()).toEqual(['Hall', 'Office', 'Kitchen', 'Loft'])
+    })
+
+    it('places at the end when neither neighbour is present', () => {
+      service.placeRoom('Hall', 'Missing', null)
+
+      expect(names()).toEqual(['Kitchen', 'Office', 'Loft', 'Hall'])
+    })
+
+    it('keeps the default room flag', () => {
+      service.placeRoom('Kitchen', null, 'Loft')
+
+      expect(service.rooms().find(entry => entry.name === 'Kitchen')!.isDefault).toBe(true)
+    })
+
+    it('saves the layout once, and nothing when the order is unchanged', () => {
+      const save = vi.spyOn(service, 'saveLayout')
+
+      service.placeRoom('Hall', 'Loft', null)
+      expect(save).toHaveBeenCalledTimes(1)
+
+      service.placeRoom('Hall', null, 'Office')
+      service.placeRoom('Nowhere', null, null)
+      expect(save).toHaveBeenCalledTimes(1)
     })
   })
 
