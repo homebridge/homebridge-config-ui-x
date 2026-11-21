@@ -184,6 +184,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(server): return an empty list, not a 500, when the accessories or persist folder is missing
 - chore(deps): dependency updates
 - fix(build): subset the font awesome fonts from a full copy each time, so an icon added after the first local build is included
+- test(accessories): time the 500-service grouping check after a warm-up, with a budget a busy ci runner can meet
 
 ### Homebridge Dependencies
 
