@@ -166,6 +166,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(terminal): leave a swipe past the first or last line to the phone, to scroll the page
 - fix(plugins): match the start of words in the plugin search (#3138) (@emreocell)
 - chore(deps): dependency updates
+- fix(build): subset the font awesome fonts from a full copy each time, so an icon added after the first local build is included
 
 ### Homebridge Dependencies
 
