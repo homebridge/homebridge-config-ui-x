@@ -2,7 +2,8 @@ import type { AccessoryCategory } from '@/app/core/accessories/filters/accessory
 
 import { describe, expect, it } from 'vitest'
 
-import { ACCESSORY_CATEGORIES, getAccessoryCategory } from '@/app/core/accessories/filters/accessory-categories'
+import { ACCESSORY_CATEGORIES, ACCESSORY_SUBCATEGORIES, getAccessoryCategory, getAccessorySubcategory } from '@/app/core/accessories/filters/accessory-categories'
+import { characteristic } from '@/testing'
 
 import { hap, matter } from './accessory-filter.fixture'
 
@@ -124,5 +125,161 @@ describe('getAccessoryCategory', () => {
       'media',
       'other',
     ])
+  })
+})
+
+describe('getAccessorySubcategory', () => {
+  const hapCases: Array<[string, string]> = [
+    ['OnOffLightSwitch', 'switch'],
+    ['Switch', 'switch'],
+    ['Pump', 'switch'],
+    ['Outlet', 'outlet'],
+    ['OnOffPlugInUnit', 'outlet'],
+    ['Valve', 'valve'],
+    ['WaterValve', 'valve'],
+    ['IrrigationSystem', 'irrigation'],
+    ['StatelessProgrammableSwitch', 'programmable'],
+    ['GenericSwitch', 'programmable'],
+    ['Thermostat', 'thermostat'],
+    ['HeaterCooler', 'heatercooler'],
+    ['Heater', 'heatercooler'],
+    ['Cooler', 'heatercooler'],
+    ['RoomAirConditioner', 'heatercooler'],
+    ['Fan', 'fan'],
+    ['Fanv2', 'fan'],
+    ['AirPurifier', 'airpurifier'],
+    ['HumidifierDehumidifier', 'humidifier'],
+    ['Humidifier', 'humidifier'],
+    ['Dehumidifier', 'humidifier'],
+    ['FilterMaintenance', 'filter'],
+    ['WindowCovering', 'windowcovering'],
+    ['Window', 'window'],
+    ['Door', 'door'],
+    ['GarageDoorOpener', 'garagedoor'],
+    ['SecuritySystem', 'securitysystem'],
+    ['LockMechanism', 'lock'],
+    ['DoorLock', 'lock'],
+    ['AccessCode', 'lock'],
+    ['Doorbell', 'doorbell'],
+    ['SmokeSensor', 'smoke'],
+    ['SmokeCoAlarm', 'smoke'],
+    ['CarbonMonoxideSensor', 'carbonmonoxide'],
+    ['LeakSensor', 'leak'],
+    ['WaterLeakDetector', 'leak'],
+    ['MotionSensor', 'motion'],
+    ['OccupancySensor', 'occupancy'],
+    ['ContactSensor', 'contact'],
+    ['LightSensor', 'light'],
+    ['TemperatureSensor', 'temperature'],
+    ['HumiditySensor', 'humidity'],
+    ['AirQualitySensor', 'airquality'],
+    ['CarbonDioxideSensor', 'carbondioxide'],
+    ['Battery', 'battery'],
+    ['BatteryService', 'battery'],
+    ['Television', 'television'],
+    ['Speaker', 'speaker'],
+    ['SmartSpeaker', 'speaker'],
+    ['Microphone', 'microphone'],
+    ['RobotVacuum', 'vacuum'],
+    ['RoboticVacuumCleaner', 'vacuum'],
+    ['WashingMachine', 'laundry'],
+  ]
+
+  it.each(hapCases)('maps HAP type %s to %s', (type, subcategory) => {
+    expect(getAccessorySubcategory(hap({ type }))).toBe(subcategory)
+  })
+
+  const matterCases: Array<[string, string]> = [
+    ['OnOffLight', 'onoff'],
+    ['DimmableLight', 'dimmable'],
+    ['ColorTemperatureLight', 'colortemp'],
+    ['ExtendedColorLight', 'color'],
+    ['OnOffPlugInUnit', 'outlet'],
+    ['OnOffLightSwitch', 'switch'],
+    ['GenericSwitch', 'programmable'],
+    ['Thermostat', 'thermostat'],
+    ['WindowCovering', 'windowcovering'],
+    ['DoorLock', 'lock'],
+    ['OccupancySensor', 'occupancy'],
+    ['RoboticVacuumCleaner', 'vacuum'],
+  ]
+
+  it.each(matterCases)('maps Matter deviceType %s to %s', (deviceType, subcategory) => {
+    expect(getAccessorySubcategory(matter({ deviceType }))).toBe(subcategory)
+  })
+
+  it('splits a HAP Lightbulb by its characteristics', () => {
+    expect(getAccessorySubcategory(hap({ type: 'Lightbulb' }))).toBe('onoff')
+    expect(getAccessorySubcategory(hap({
+      type: 'Lightbulb',
+      characteristics: [
+        characteristic('Brightness', 50),
+      ],
+    }))).toBe('dimmable')
+    expect(getAccessorySubcategory(hap({
+      type: 'Lightbulb',
+      characteristics: [
+        characteristic('Brightness', 50),
+        characteristic('ColorTemperature', 300),
+      ],
+    }))).toBe('colortemp')
+    expect(getAccessorySubcategory(hap({
+      type: 'Lightbulb',
+      characteristics: [
+        characteristic('Brightness', 50),
+        characteristic('ColorTemperature', 300),
+        characteristic('Hue', 10),
+      ],
+    }))).toBe('color')
+    expect(getAccessorySubcategory(hap({
+      type: 'Lightbulb',
+      characteristics: [
+        characteristic('Saturation', 10),
+      ],
+    }))).toBe('color')
+  })
+
+  it('reads lightbulb characteristics from the current values when the list is missing', () => {
+    const service = hap({ type: 'Lightbulb' })
+    service.serviceCharacteristics = []
+    ;(service as any).values = { On: true, Brightness: 40 }
+    expect(getAccessorySubcategory(service)).toBe('dimmable')
+    ;(service as any).values = { On: true, Hue: 1 }
+    expect(getAccessorySubcategory(service)).toBe('color')
+  })
+
+  it('uses the customType for the subcategory, as it does for the category', () => {
+    expect(getAccessorySubcategory(hap({ type: 'Switch', customType: 'Fan' }))).toBe('fan')
+    expect(getAccessorySubcategory(hap({ type: 'Lightbulb', customType: 'Outlet' }))).toBe('outlet')
+  })
+
+  it('falls back to other for unknown types', () => {
+    expect(getAccessorySubcategory(hap({ type: 'SomethingNew' }))).toBe('other')
+    expect(getAccessorySubcategory(matter({ deviceType: 'SomethingNew' }))).toBe('other')
+    expect(getAccessorySubcategory(hap({ type: 'constructor' }))).toBe('other')
+  })
+
+  it('always returns a key listed under the service category', () => {
+    const types = [
+      'Lightbulb',
+      'Switch',
+      'Thermostat',
+      'WindowCovering',
+      'LockMechanism',
+      'MotionSensor',
+      'Television',
+      'RobotVacuum',
+      'SomethingNew',
+    ]
+    for (const type of types) {
+      const service = hap({ type })
+      expect(ACCESSORY_SUBCATEGORIES[getAccessoryCategory(service)]).toContain(getAccessorySubcategory(service))
+    }
+  })
+
+  it('lists subcategories for every category', () => {
+    for (const category of ACCESSORY_CATEGORIES) {
+      expect(ACCESSORY_SUBCATEGORIES[category].length).toBeGreaterThan(0)
+    }
   })
 })

@@ -1,16 +1,19 @@
+import { CdkDrag, CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop'
 import { NgTemplateOutlet } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
+import { ToastrService } from 'ngx-toastr'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
 import { buildBatteryIndex } from '@/app/core/accessories/filters/accessory-battery'
-import { AccessoryFilterState, AccessoryGroup, DEFAULT_FILTER_STATE, FLOOR_OTHER_KEY, groupAndSort } from '@/app/core/accessories/filters/accessory-filters'
+import { AccessoryFilterState, AccessoryGroup, DEFAULT_FILTER_STATE, FLOOR_OTHER_KEY, groupAndSort, isFilterActive } from '@/app/core/accessories/filters/accessory-filters'
 import { RoomSummary, summarizeRoom } from '@/app/core/accessories/filters/room-summary'
 import { serviceBridgeName } from '@/app/core/accessories/filters/service-helpers'
 import { AuthService } from '@/app/core/auth/auth.service'
@@ -42,6 +45,13 @@ const COLLAPSED_STORAGE_KEY = 'accessories-collapsed-v1'
     ConvertTempPipe,
     DragHerePlaceholderComponent,
     TranslatePipe,
+    CdkDrag,
+    CdkDropList,
+    CdkDropListGroup,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownItem,
   ],
   standalone: true,
   templateUrl: './accessories.component.html',
@@ -87,6 +97,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public readonly selectedIds = signal<ReadonlySet<string>>(new Set())
   public readonly bulkRoom = signal('')
   public readonly placeholders = Array.from({ length: 10 })
+  private $toastr = inject(ToastrService)
 
   /** Bumped when a bridge is renamed on the socket, so the labelled rooms are rebuilt */
   private readonly bridgeNamesVersion = signal(0)
@@ -575,6 +586,28 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     if (this.layoutLocked()) {
       this.toggleLayoutLock()
     }
+  }
+
+  /**
+   * Whether tiles can be dragged onto another room's group. Only while a room grouping is filtered:
+   * never in manage-layout mode, where dragula owns the drag-and-drop (#2790).
+   */
+  public canDragBetweenRooms(): boolean {
+    return !this.manageLayoutMode && this.filter().groupBy === 'room' && isFilterActive(this.filter())
+  }
+
+  /** A tile was dropped into a room's group. Moves it by uniqueId; a drop within the same group does nothing. */
+  public onRoomDrop(event: CdkDragDrop<string, string, string>): void {
+    if (event.previousContainer === event.container || !this.canDragBetweenRooms()) {
+      return
+    }
+    const uniqueId = event.item.data
+    const roomName = event.container.data
+    if (!uniqueId || !roomName) {
+      return
+    }
+    this.$accessories.moveServicesToRoom([uniqueId], roomName)
+    this.$toastr.success(this.$translate.instant('accessories.move.moved', { room: roomName }))
   }
 
   /** Room badges for a group, computed from the services shown in it */
