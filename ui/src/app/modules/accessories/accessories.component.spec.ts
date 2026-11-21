@@ -103,6 +103,19 @@ describe('accessoriesComponent', () => {
       }),
       setFilterState: vi.fn((state: any) => accessories.filterState.set(state)),
       moveServicesToRoom: vi.fn(),
+      getRoomNameForService: vi.fn((uniqueId: string) => accessories.rooms().find((room: any) => room.services.some((service: any) => service.uniqueId === uniqueId))?.name),
+      addRoom: vi.fn((name: string) => {
+        const trimmed = name.trim()
+        const taken = accessories.rooms().some((room: any) => room.name.toLowerCase() === trimmed.toLowerCase())
+        if (!trimmed || taken) {
+          return false
+        }
+        accessories.rooms.update((current: any[]) => [
+          ...current,
+          { name: trimmed, services: [] },
+        ])
+        return true
+      }),
       updateServicesFlags: vi.fn(),
       bridgeUsernameToNameMap: options.bridgeNames ?? new Map<string, string>(),
       accessoryData,
@@ -1484,6 +1497,123 @@ describe('accessoriesComponent', () => {
       recompute(page)
 
       expect(accessories.availableBridges()).toEqual(['Homebridge'])
+    })
+  })
+
+  describe('moving tiles', () => {
+    it('shows no per-tile move menu on the tiles, and moves tiles by drag or bulk select only', async () => {
+      await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'kettle' }),
+          ]),
+          roomOf('Office', []),
+        ],
+        filter: {
+          groupBy: 'room',
+          rooms: ['Kitchen'],
+        },
+      })
+
+      expect(fixture.nativeElement.querySelector('.accessory-move')).toBeNull()
+      expect(fixture.nativeElement.querySelector('.accessory-move-toggle')).toBeNull()
+    })
+
+    it('drops a tile into another room group and moves it by its uniqueId', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'kettle' }),
+          ]),
+          roomOf('Office', []),
+        ],
+        filter: {
+          groupBy: 'room',
+          rooms: ['Kitchen'],
+        },
+      })
+      const from = { data: 'Kitchen' }
+      const to = { data: 'Office' }
+
+      page.onRoomDrop({
+        previousContainer: from,
+        container: to,
+        item: { data: 'kettle' },
+      } as any)
+
+      expect(accessories.moveServicesToRoom).toHaveBeenCalledTimes(1)
+      expect(accessories.moveServicesToRoom).toHaveBeenCalledWith(['kettle'], 'Office')
+    })
+
+    it('ignores a drop within the same room group', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'kettle' }),
+            makeService({ uniqueId: 'ceiling' }),
+          ]),
+        ],
+        filter: {
+          groupBy: 'room',
+          rooms: ['Kitchen'],
+        },
+      })
+      const group = { data: 'Kitchen' }
+
+      page.onRoomDrop({
+        previousContainer: group,
+        container: group,
+        item: { data: 'kettle' },
+      } as any)
+
+      expect(accessories.moveServicesToRoom).not.toHaveBeenCalled()
+    })
+
+    it('does not allow drops between rooms while no filter is on', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'kettle' }),
+          ]),
+          roomOf('Office', []),
+        ],
+        filter: { groupBy: 'room' },
+      })
+
+      expect(page.canDragBetweenRooms()).toBe(false)
+      page.onRoomDrop({
+        previousContainer: { data: 'Kitchen' },
+        container: { data: 'Office' },
+        item: { data: 'kettle' },
+      } as any)
+
+      expect(accessories.moveServicesToRoom).not.toHaveBeenCalled()
+    })
+
+    it('turns the filtered drag off in manage layout mode', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'kettle' }),
+          ]),
+          roomOf('Office', []),
+        ],
+        filter: {
+          groupBy: 'room',
+          rooms: ['Kitchen'],
+        },
+      })
+      expect(page.canDragBetweenRooms()).toBe(true)
+
+      page.manageLayoutMode = true
+
+      expect(page.canDragBetweenRooms()).toBe(false)
+      page.onRoomDrop({
+        previousContainer: { data: 'Kitchen' },
+        container: { data: 'Office' },
+        item: { data: 'kettle' },
+      } as any)
+      expect(accessories.moveServicesToRoom).not.toHaveBeenCalled()
     })
   })
 })

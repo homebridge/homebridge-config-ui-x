@@ -79,3 +79,15 @@ a:hover {
 .group-placeholder {
   width: 100%;
 }
+
+// Drop target while a tile is dragged between room groups (set by CDK on the receiving list)
+.group-tiles.cdk-drop-list-receiving {
+  outline: 2px dashed var(--bs-primary, #0d6efd);
+  outline-offset: 4px;
+  border-radius: 0.5rem;
+  transition: outline-color 0.15s ease;
+}
+
+.accessory-item.cdk-drag-placeholder {
+  opacity: 0.3;
+}
