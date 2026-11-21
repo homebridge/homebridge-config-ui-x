@@ -8,9 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { buildBatteryIndex } from '@/app/core/accessories/filters/accessory-battery'
 import { DEFAULT_FILTER_STATE } from '@/app/core/accessories/filters/accessory-filters'
-import { AuthService } from '@/app/core/auth/auth.service'
-import { KioskLinksService } from '@/app/modules/kiosk/kiosk-links.service'
-import { TabletEditComponent } from '@/app/modules/users/users-tablets/tablet-edit.component'
+import { KioskStartComponent } from '@/app/modules/kiosk/kiosk-start/kiosk-start.component'
 import { provideTestTranslate } from '@/testing/providers'
 
 import { AccessoriesToolbarComponent } from './accessories-toolbar.component'
@@ -22,8 +20,6 @@ import { AccessoriesToolbarComponent } from './accessories-toolbar.component'
  * what it emits.
  */
 describe('accessoriesToolbarComponent', () => {
-  let kiosk: { open: ReturnType<typeof vi.fn>, copy: ReturnType<typeof vi.fn> }
-  let authUser: { admin: boolean }
   let modal: { open: ReturnType<typeof vi.fn> }
   let fixture: ComponentFixture<AccessoriesToolbarComponent>
 
@@ -97,42 +93,17 @@ describe('accessoriesToolbarComponent', () => {
     fixture.detectChanges()
   }
 
-  /** The items of the filter panel's menu, once it is open */
-  function menuItems(): HTMLButtonElement[] {
-    ;(document.querySelector('.accessories-filters-panel .accessories-filters-menu') as HTMLButtonElement).click()
-    fixture.detectChanges()
-    return [
-      ...document.querySelectorAll<HTMLButtonElement>('.dropdown-menu.show .dropdown-item'),
-    ]
-  }
-
-  function menuItem(label: string): HTMLButtonElement | undefined {
-    return menuItems().find(item => item.textContent!.trim() === label)
-  }
-
   beforeEach(() => {
-    authUser = { admin: false }
     modal = {
       open: vi.fn(() => ({
         componentInstance: {},
         result: new Promise(() => {}),
       })),
     }
-    kiosk = {
-      open: vi.fn(async () => true),
-      copy: vi.fn(async () => {}),
-    }
     TestBed.configureTestingModule({
       imports: [AccessoriesToolbarComponent],
       providers: [
-        {
-          provide: AuthService,
-          useValue: {
-            user: authUser,
-          },
-        },
         provideTestTranslate(),
-        { provide: KioskLinksService, useValue: kiosk },
         { provide: NgbModal, useValue: modal },
       ],
     })
@@ -148,9 +119,6 @@ describe('accessoriesToolbarComponent', () => {
       'accessories.toolbar.show_count': 'Show {{count}} accessories',
       'accessories.toolbar.show_hidden_accessories': 'Show hidden accessories',
       'accessories.categories.lights': 'Lights',
-      'accessories.kiosk.open': 'Open as kiosk',
-      'accessories.kiosk.copy_link': 'Copy kiosk link',
-      'kiosk.tablets.pair_a_tablet': 'Pair a tablet…',
       'accessories.subcategories.onoff': 'On/off',
       'accessories.subcategories.dimmable': 'Dimmable',
       'accessories.subcategories.thermostat': 'Thermostat',
@@ -419,85 +387,29 @@ describe('accessoriesToolbarComponent', () => {
     })
   })
 
-  describe('open as kiosk', () => {
-    const everything = {
-      rooms: [],
-      categories: [],
-      subcategories: [],
-      labels: [],
-    }
-
-    function kioskItem(label: string): HTMLButtonElement | undefined {
-      openPanel()
-      return menuItem(label)
-    }
-
-    it('opens the filter as a kiosk, with its rooms, categories, subcategories and labels', () => {
+  describe('kiosk mode', () => {
+    it('opens the kiosk dialog from the top bar, prefilled with the filter', () => {
       setup({
         rooms: ['Kitchen'],
-        categories: ['lights'],
-        subcategories: ['onoff'],
-        labels: ['Bedtime'],
+        labels: ['Night'],
       })
 
-      kioskItem('Open as kiosk')!.click()
+      ;(fixture.nativeElement.querySelector('.accessories-kiosk-button') as HTMLButtonElement).click()
 
-      expect(kiosk.open).toHaveBeenCalledWith({
-        rooms: ['Kitchen'],
-        categories: ['lights'],
-        subcategories: ['onoff'],
-        labels: ['Bedtime'],
-      })
-    })
-
-    it('opens an empty filter as the kiosk for every accessory', () => {
-      setup()
-
-      kioskItem('Open as kiosk')!.click()
-
-      expect(kiosk.open).toHaveBeenCalledWith(everything)
-    })
-
-    it('copies the kiosk link for the filter', () => {
-      setup({
-        rooms: ['Kitchen'],
-      })
-
-      kioskItem('Copy kiosk link')!.click()
-
-      expect(kiosk.copy).toHaveBeenCalledWith({
-        ...everything,
-        rooms: ['Kitchen'],
-      })
-    })
-
-    it('offers no pairing to a user who is not an admin', () => {
-      setup({
-        rooms: ['Kitchen'],
-      })
-
-      expect(kioskItem('Pair a tablet…')).toBeUndefined()
-    })
-
-    it('lets an admin pair a tablet, prefilled with the filter as its scope', () => {
-      authUser.admin = true
-      setup({
-        categories: ['lights'],
-      })
-
-      kioskItem('Pair a tablet…')!.click()
-
-      expect(modal.open).toHaveBeenCalledWith(TabletEditComponent, expect.anything())
+      expect(modal.open).toHaveBeenCalledWith(KioskStartComponent, expect.anything())
       expect(modal.open.mock.results[0].value.componentInstance.preselectScope).toEqual({
-        ...everything,
-        categories: ['lights'],
+        rooms: ['Kitchen'],
+        categories: [],
+        subcategories: [],
+        labels: ['Night'],
       })
     })
 
-    it('offers the kiosk items for an empty result too', () => {
-      setup({ search: 'kettle' })
+    it('offers no tablet pairing on the accessories page', () => {
+      setup()
+      openPanel()
 
-      expect(kioskItem('Open as kiosk')).toBeDefined()
+      expect(document.body.textContent).not.toContain('Pair a tablet')
     })
   })
 

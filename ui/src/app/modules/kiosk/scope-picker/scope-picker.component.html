@@ -1,0 +1,71 @@
+<div class="list-group list-group-box">
+  <div class="list-group-item d-flex flex-column align-items-start">
+    <span class="mb-2 fw-semibold">{{ 'kiosk.tablets.rooms' | translate }}</span>
+    <div class="d-flex flex-wrap gap-2">
+      @for (room of rooms(); track room) {
+        <button
+          type="button"
+          class="btn btn-sm rounded-pill"
+          [class.btn-primary]="isPicked('rooms', room)"
+          [class.btn-outline-secondary]="!isPicked('rooms', room)"
+          [attr.aria-pressed]="isPicked('rooms', room)"
+          (click)="toggleRoom(room)"
+        >
+          {{ room }}
+        </button>
+      }
+    </div>
+  </div>
+  <div class="list-group-item d-flex flex-column align-items-start">
+    <span class="mb-2 fw-semibold">{{ 'kiosk.tablets.categories' | translate }}</span>
+    <div class="d-flex flex-wrap gap-2">
+      @for (category of categories; track category) {
+        <button
+          type="button"
+          class="btn btn-sm rounded-pill"
+          [class.btn-primary]="isPicked('categories', category)"
+          [class.btn-outline-secondary]="!isPicked('categories', category)"
+          [attr.aria-pressed]="isPicked('categories', category)"
+          (click)="toggleCategory(category)"
+        >
+          {{ `accessories.categories.${category}` | translate }}
+        </button>
+      }
+    </div>
+    @for (category of categories; track category) {
+      @if (isPicked('categories', category) && subcategoriesFor(category).length) {
+        <div class="d-flex flex-wrap gap-2 ms-3 mt-2">
+          @for (subcategory of subcategoriesFor(category); track subcategory) {
+            <button
+              type="button"
+              class="btn btn-sm rounded-pill"
+              [class.btn-secondary]="isPicked('subcategories', subcategory)"
+              [class.btn-outline-secondary]="!isPicked('subcategories', subcategory)"
+              [attr.aria-pressed]="isPicked('subcategories', subcategory)"
+              (click)="toggleSubcategory(subcategory)"
+            >
+              {{ `accessories.subcategories.${subcategory}` | translate }}
+            </button>
+          }
+        </div>
+      }
+    }
+  </div>
+  <div class="list-group-item d-flex flex-column align-items-start">
+    <span class="mb-2 fw-semibold">{{ 'kiosk.tablets.labels' | translate }}</span>
+    <div class="d-flex flex-wrap gap-2">
+      @for (label of labels(); track label) {
+        <button
+          type="button"
+          class="btn btn-sm rounded-pill"
+          [class.btn-primary]="isPicked('labels', label)"
+          [class.btn-outline-secondary]="!isPicked('labels', label)"
+          [attr.aria-pressed]="isPicked('labels', label)"
+          (click)="toggleLabel(label)"
+        >
+          {{ label }}
+        </button>
+      }
+    </div>
+  </div>
+</div>

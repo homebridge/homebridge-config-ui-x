@@ -4,7 +4,7 @@ import type { AccessoryFilterState, AccessoryGroupBy, AccessorySortBy, FilterCon
 
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model, OnDestroy, output, signal, TemplateRef, untracked, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
+import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbOffcanvas, NgbOffcanvasRef } from '@ng-bootstrap/ng-bootstrap/offcanvas'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
@@ -13,10 +13,8 @@ import { debounceTime, Subject } from 'rxjs'
 
 import { ACCESSORY_CATEGORIES, ACCESSORY_SUBCATEGORIES, getAccessorySubcategory } from '@/app/core/accessories/filters/accessory-categories'
 import { DEFAULT_FILTER_STATE, isFilterActive, matchesFilter } from '@/app/core/accessories/filters/accessory-filters'
-import { AuthService } from '@/app/core/auth/auth.service'
-import { KioskLinksService } from '@/app/modules/kiosk/kiosk-links.service'
 import { scopeFromFilter } from '@/app/modules/kiosk/kiosk-scope'
-import { openAddTablet } from '@/app/modules/users/users-tablets/open-tablet-editor'
+import { KioskStartComponent } from '@/app/modules/kiosk/kiosk-start/kiosk-start.component'
 
 export type FacetKey = 'rooms' | 'categories' | 'bridges' | 'protocols' | 'states' | 'battery' | 'labels'
 
@@ -95,7 +93,6 @@ function countMatching(
     NgbDropdown,
     NgbDropdownToggle,
     NgbDropdownMenu,
-    NgbDropdownItem,
     NgbTooltip,
     TranslatePipe,
   ],
@@ -153,8 +150,6 @@ export class AccessoriesToolbarComponent implements OnDestroy {
     ...new Set(Object.values(this.labels()).flat()),
   ].sort((a, b) => a.localeCompare(b)))
 
-  private readonly $kiosk = inject(KioskLinksService)
-  private readonly $auth = inject(AuthService)
   private readonly $modal = inject(NgbModal)
   private readonly $offcanvas = inject(NgbOffcanvas)
 
@@ -393,27 +388,13 @@ export class AccessoriesToolbarComponent implements OnDestroy {
     this.expandedFacets.set(next)
   }
 
-  /** The rooms, categories, subcategories and labels of the filter, as the kiosk scope it opens with */
-  public readonly kioskScope = computed(() => scopeFromFilter(this.filter()))
-
-  /** Open the filter as a kiosk, in this tab */
-  public openKiosk(): void {
-    void this.$kiosk.open(this.kioskScope())
-  }
-
-  /** Copy the kiosk link for the filter */
-  public copyKioskLink(): void {
-    void this.$kiosk.copy(this.kioskScope())
-  }
-
-  /** Only admins pair tablets */
-  public canPairTablets(): boolean {
-    return !!this.$auth.user.admin
-  }
-
-  /** Add a tablet scoped to the filter, then show its pairing code */
-  public pairTablet(): void {
-    void openAddTablet(this.$modal, this.kioskScope())
+  /** Start kiosk mode for the accessories in the filter, from a dialog that can change the scope first */
+  public openKioskMode(): void {
+    const ref = this.$modal.open(KioskStartComponent, { size: 'lg' })
+    ref.componentInstance.preselectScope = scopeFromFilter(this.filter())
+    ref.result.catch(() => {
+      // Dismissed: nothing to do
+    })
   }
 
   public clear(): void {
