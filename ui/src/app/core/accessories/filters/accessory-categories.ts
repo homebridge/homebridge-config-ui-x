@@ -60,20 +60,20 @@ const TYPE_CATEGORY = new Map<string, AccessoryCategory>([
   ['Door', 'covers'],
   ['GarageDoorOpener', 'covers'],
 
-  // Security and safety
+  // Security
   ['SecuritySystem', 'security'],
   ['LockMechanism', 'security'],
   ['DoorLock', 'security'],
   ['AccessCode', 'security'],
   ['Doorbell', 'security'],
-  ['SmokeSensor', 'security'],
-  ['SmokeCoAlarm', 'security'],
-  ['CarbonMonoxideSensor', 'security'],
-  ['LeakSensor', 'security'],
-  ['WaterLeakDetector', 'security'],
 
-  // Sensors
+  // Sensors, including smoke, carbon monoxide and leak detectors
   ['MotionSensor', 'sensors'],
+  ['SmokeSensor', 'sensors'],
+  ['SmokeCoAlarm', 'sensors'],
+  ['CarbonMonoxideSensor', 'sensors'],
+  ['LeakSensor', 'sensors'],
+  ['WaterLeakDetector', 'sensors'],
   ['OccupancySensor', 'sensors'],
   ['ContactSensor', 'sensors'],
   ['LightSensor', 'sensors'],
@@ -129,9 +129,6 @@ export const ACCESSORY_SUBCATEGORIES: Record<AccessoryCategory, readonly string[
     'lock',
     'securitysystem',
     'doorbell',
-    'smoke',
-    'carbonmonoxide',
-    'leak',
   ],
   sensors: [
     'motion',
@@ -141,7 +138,10 @@ export const ACCESSORY_SUBCATEGORIES: Record<AccessoryCategory, readonly string[
     'humidity',
     'light',
     'airquality',
+    'smoke',
+    'carbonmonoxide',
     'carbondioxide',
+    'leak',
     'battery',
   ],
   media: ['television', 'speaker', 'microphone'],

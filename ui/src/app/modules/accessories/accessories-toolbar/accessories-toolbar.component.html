@@ -30,8 +30,14 @@
       class="btn btn-sm btn-elegant my-0 position-relative flex-shrink-0 accessories-filters-button"
       aria-haspopup="dialog"
       container="body"
-      [ngbTooltip]="'accessories.toolbar.filters' | translate"
-      [attr.aria-label]="'accessories.toolbar.filters' | translate"
+      [ngbTooltip]="
+        (filterCount() > 0 ? 'accessories.toolbar.filters_summary_active' : 'accessories.toolbar.filters_summary')
+          | translate: { count: filterCount(), shown: shown(), total: total() }
+      "
+      [attr.aria-label]="
+        (filterCount() > 0 ? 'accessories.toolbar.filters_summary_active' : 'accessories.toolbar.filters_summary')
+          | translate: { count: filterCount(), shown: shown(), total: total() }
+      "
       (click)="openFilters()"
     >
       <i class="fas fa-bars-staggered" aria-hidden="true"></i>
@@ -123,32 +129,6 @@
     >
       <i class="fas fa-square-check" aria-hidden="true"></i>
     </button>
-  </div>
-
-  <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-    @for (chip of activeChips(); track `${chip.key}:${chip.value}`) {
-      <button
-        type="button"
-        class="btn btn-sm rounded-pill btn-outline-primary accessories-active-chip"
-        [class.accessories-view-chip]="chip.key === 'view'"
-        (click)="removeChip(chip)"
-      >
-        @if (chip.key === 'view') {
-          {{ 'accessories.views.chip' | translate: { name: chip.translate ? (chip.label | translate) : chip.label } }}
-        } @else {
-          {{ chip.translate ? (chip.label | translate) : chip.label }}
-        }
-        <i class="fas fa-xmark ms-1" aria-hidden="true"></i>
-      </button>
-    }
-    @if (active()) {
-      <button type="button" class="btn btn-sm btn-link p-0" (click)="clear()">
-        {{ 'accessories.toolbar.clear_all' | translate }}
-      </button>
-    }
-    <div class="small text-secondary ms-auto text-end" role="status" aria-live="polite">
-      {{ 'accessories.toolbar.showing' | translate: { shown: shown(), total: total() } }}
-    </div>
   </div>
 </div>
 
