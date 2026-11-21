@@ -430,25 +430,94 @@ export class AccessoriesService {
   }
 
   /**
-   * Set hidden and/or onDashboard on several services, then save the layout once.
-   * Services are replaced with copies so the tiles re-render.
+   * Place a service in a room by uniqueId, then save the layout once. The room's FULL services
+   * list is used: before `beforeUniqueId` if it is given and present, else right after
+   * `afterUniqueId` if that is given and present, else at the end. Services hidden by a filter
+   * keep their places. Does nothing if nothing changes.
    */
-  public updateServicesFlags(uniqueIds: string[], flags: { hidden?: boolean, onDashboard?: boolean }): void {
-    const ids = new Set(uniqueIds)
-    const found = this.rooms().some(room => room.services.some(service => ids.has(service.uniqueId ?? '')))
-    if (!found) {
+  public placeService(uniqueId: string, targetRoom: string, beforeUniqueId: string | null, afterUniqueId: string | null): void {
+    const current = this.rooms()
+    const source = current.find(room => room.services.some(service => service.uniqueId === uniqueId))
+    const target = current.find(room => room.name === targetRoom)
+    if (!source || !target) {
       return
     }
-    this.rooms.update(current => current.map(room => ({
-      ...room,
-      services: room.services.map(service => ids.has(service.uniqueId ?? '')
-        ? {
-            ...service,
-            ...flags,
-          }
-        : service),
-    })))
+
+    const service = source.services.find(entry => entry.uniqueId === uniqueId)!
+    const sourceServices = source.services.filter(entry => entry.uniqueId !== uniqueId)
+    const base = source === target
+      ? sourceServices
+      : target.services
+    const insertAt = this.insertIndex(base.map(entry => entry.uniqueId ?? ''), beforeUniqueId, afterUniqueId)
+    const targetServices = [
+      ...base.slice(0, insertAt),
+      service,
+      ...base.slice(insertAt),
+    ]
+
+    if (source === target && targetServices.every((entry, index) => entry === target.services[index])) {
+      return
+    }
+
+    this.rooms.set(current.map((room) => {
+      if (room === target) {
+        return {
+          ...room,
+          services: targetServices,
+        }
+      }
+      if (room === source) {
+        return {
+          ...room,
+          services: sourceServices,
+        }
+      }
+      return { ...room }
+    }))
     this.saveLayout()
+  }
+
+  /**
+   * Place a room by name, then save the layout once. Uses the FULL rooms list with the same
+   * before/after/end rule as placeService. Rooms hidden by a filter keep their relative order.
+   * The default room flag is kept. Does nothing if nothing changes.
+   */
+  public placeRoom(roomName: string, beforeRoomName: string | null, afterRoomName: string | null): void {
+    const current = this.rooms()
+    const from = current.findIndex(room => room.name === roomName)
+    if (from === -1) {
+      return
+    }
+
+    const moving = current[from]
+    const rest = current.filter((_, index) => index !== from)
+    const insertAt = this.insertIndex(rest.map(room => room.name), beforeRoomName, afterRoomName)
+    const reordered = [
+      ...rest.slice(0, insertAt),
+      moving,
+      ...rest.slice(insertAt),
+    ]
+
+    if (reordered.every((room, index) => room === current[index])) {
+      return
+    }
+
+    this.rooms.set(reordered.map(room => ({ ...room })))
+    this.saveLayout()
+  }
+
+  /**
+   * Index to insert at in a list of keys: before `before` if present, else after `after` if present,
+   * else the end.
+   */
+  private insertIndex(keys: string[], before: string | null, after: string | null): number {
+    if (before !== null && keys.includes(before)) {
+      return keys.indexOf(before)
+    }
+    if (after !== null && keys.includes(after)) {
+      return keys.indexOf(after) + 1
+    }
+    return keys.length
   }
 
   /**

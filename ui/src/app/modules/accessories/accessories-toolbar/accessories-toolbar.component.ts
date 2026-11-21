@@ -134,7 +134,6 @@ export class AccessoriesToolbarComponent implements OnDestroy {
   /** Accessories on the page, before filtering */
   public readonly total = input(0)
   public readonly manageLayoutActive = input(false)
-  public readonly selectActive = input(false)
   /** The saved views, the user's own and those shared with them */
   public readonly customViews = input<AccessoryView[]>([])
   /** uniqueId -> labels */
@@ -145,7 +144,6 @@ export class AccessoriesToolbarComponent implements OnDestroy {
   public readonly activeViewId = input<string | null>(null)
 
   public readonly manageLayoutToggle = output<void>()
-  public readonly selectToggle = output<void>()
   /** A custom view was picked (its id), or the built-in views were picked (null) */
   public readonly viewSelect = output<string | null>()
   /** Save the current filter as a view with this name */

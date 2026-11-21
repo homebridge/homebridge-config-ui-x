@@ -632,7 +632,7 @@ describe('accessoriesToolbarComponent', () => {
     })
   })
 
-  describe('manage layout and select', () => {
+  describe('manage layout', () => {
     it('emits the manage layout toggle', () => {
       const toolbar = setup()
       const spy = vi.fn()
@@ -643,25 +643,13 @@ describe('accessoriesToolbarComponent', () => {
       expect(spy).toHaveBeenCalledTimes(1)
     })
 
-    it('reports manage layout as pressed and stops select from being used', () => {
+    it('reports manage layout as pressed', () => {
       setup()
       fixture.componentRef.setInput('manageLayoutActive', true)
       fixture.detectChanges()
 
       const manage = fixture.nativeElement.querySelector('[aria-label="accessories.manage_layout"]') as HTMLButtonElement
-      const select = fixture.nativeElement.querySelector('[aria-label="accessories.toolbar.select"]') as HTMLButtonElement
       expect(manage.getAttribute('aria-pressed')).toBe('true')
-      expect(select.disabled).toBe(true)
-    })
-
-    it('emits the select toggle', () => {
-      const toolbar = setup()
-      const spy = vi.fn()
-      toolbar.selectToggle.subscribe(spy)
-
-      ;(fixture.nativeElement.querySelector('[aria-label="accessories.toolbar.select"]') as HTMLButtonElement).click()
-
-      expect(spy).toHaveBeenCalledTimes(1)
     })
   })
 

@@ -116,19 +116,6 @@
     >
       <i class="fas fa-up-down-left-right" aria-hidden="true"></i>
     </button>
-    <button
-      type="button"
-      class="btn btn-sm btn-elegant my-0 flex-shrink-0"
-      container="body"
-      [class.active]="selectActive()"
-      [attr.aria-pressed]="selectActive()"
-      [disabled]="manageLayoutActive()"
-      [ngbTooltip]="'accessories.toolbar.select' | translate"
-      [attr.aria-label]="'accessories.toolbar.select' | translate"
-      (click)="selectToggle.emit()"
-    >
-      <i class="fas fa-square-check" aria-hidden="true"></i>
-    </button>
   </div>
 </div>
 
