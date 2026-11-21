@@ -124,135 +124,40 @@
     <h5 id="accessories-filters-title" class="offcanvas-title primary-text">
       {{ 'accessories.toolbar.filters' | translate }}
     </h5>
-    <button
-      type="button"
-      class="btn-close"
-      [attr.aria-label]="'accessories.toolbar.close_filters' | translate"
-      (click)="closeFilters()"
-    ></button>
-  </div>
-  <div class="offcanvas-body accessories-filters-body">
-    <section class="accessories-facet mb-4" aria-labelledby="accessories-facet-views">
-      <div class="d-flex align-items-center justify-content-between mb-2">
-        <h6 class="small text-uppercase fw-semibold text-secondary mb-0" id="accessories-facet-views">
-          {{ 'accessories.views.label' | translate }}
-        </h6>
-        <div ngbDropdown container="body" class="d-inline-block">
-          <button
-            type="button"
-            class="btn btn-sm btn-elegant my-0 accessories-views-menu"
-            ngbDropdownToggle
-            [attr.aria-label]="'accessories.views.menu' | translate"
-          >
-            <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
-          </button>
-          <div ngbDropdownMenu>
-            <button type="button" ngbDropdownItem (click)="openSaveView()">
-              <i class="fas fa-floppy-disk me-2" aria-hidden="true"></i>{{ 'accessories.views.save' | translate }}
-            </button>
-            <button type="button" ngbDropdownItem (click)="manageViews.emit()">
-              <i class="fas fa-layer-group me-2" aria-hidden="true"></i>{{ 'accessories.views.manage' | translate }}
-            </button>
-            @if (kioskViewId(); as kioskId) {
-              <div class="dropdown-divider"></div>
-              <button type="button" ngbDropdownItem (click)="openKiosk(kioskId)">
-                <i class="fas fa-tablet-screen-button me-2" aria-hidden="true"></i
-                >{{ 'accessories.kiosk.open' | translate }}
-              </button>
-              <button type="button" ngbDropdownItem (click)="copyKioskLink(kioskId)">
-                <i class="fas fa-link me-2" aria-hidden="true"></i>{{ 'accessories.kiosk.copy_link' | translate }}
-              </button>
-              @if (canPairTablets()) {
-                <button type="button" ngbDropdownItem (click)="pairTablet(kioskId)">
-                  <i class="fas fa-qrcode me-2" aria-hidden="true"></i>{{ 'kiosk.tablets.pair_a_tablet' | translate }}
-                </button>
-              }
-            }
-          </div>
-        </div>
-      </div>
-      <div class="d-flex flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2">
+      <div ngbDropdown container="body" class="d-inline-block">
         <button
           type="button"
-          class="btn btn-sm rounded-pill accessories-view-pill"
-          [class.btn-primary]="activeView() === 'all'"
-          [class.btn-outline-secondary]="activeView() !== 'all'"
-          [attr.aria-pressed]="activeView() === 'all'"
-          (click)="applyView(null)"
+          class="btn btn-sm btn-elegant my-0 accessories-filters-menu"
+          ngbDropdownToggle
+          [attr.aria-label]="'accessories.toolbar.filters_menu' | translate"
         >
-          {{ 'accessories.views.all' | translate }}
+          <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
         </button>
-        @for (view of views; track view.id) {
-          <button
-            type="button"
-            class="btn btn-sm rounded-pill accessories-view-pill"
-            [class.btn-primary]="activeView() === view.id"
-            [class.btn-outline-secondary]="activeView() !== view.id"
-            [attr.aria-pressed]="activeView() === view.id"
-            (click)="applyView(view)"
-          >
-            {{ view.labelKey | translate }}
+        <div ngbDropdownMenu>
+          <button type="button" ngbDropdownItem (click)="openKiosk()">
+            <i class="fas fa-tablet-screen-button me-2" aria-hidden="true"></i
+            >{{ 'accessories.kiosk.open' | translate }}
           </button>
-        }
-        @for (view of customViews(); track view.id) {
-          <button
-            type="button"
-            class="btn btn-sm rounded-pill accessories-view-pill accessories-custom-view"
-            [class.btn-primary]="activeViewId() === view.id"
-            [class.btn-outline-secondary]="activeViewId() !== view.id"
-            [attr.aria-pressed]="activeViewId() === view.id"
-            (click)="applyCustomView(view)"
-          >
-            @if (isSharedWithMe(view)) {
-              <i class="fas fa-share-nodes me-1" aria-hidden="true"></i>
-            }
-            {{ view.name }}
-            @if (isSharedWithMe(view)) {
-              <span class="small ms-1 opacity-75">{{
-                'accessories.views.shared_by' | translate: { owner: view.owner }
-              }}</span>
-            } @else if (view.shared) {
-              <i
-                class="fas fa-share-nodes ms-1"
-                role="img"
-                [attr.aria-label]="'accessories.views.shared' | translate"
-              ></i>
-            }
+          <button type="button" ngbDropdownItem (click)="copyKioskLink()">
+            <i class="fas fa-link me-2" aria-hidden="true"></i>{{ 'accessories.kiosk.copy_link' | translate }}
           </button>
-        }
-      </div>
-      @if (saveFormOpen()) {
-        <div
-          class="d-flex flex-wrap align-items-center gap-2 mt-2"
-          role="group"
-          [attr.aria-label]="'accessories.views.save' | translate"
-        >
-          <input
-            type="text"
-            class="form-control form-control-sm accessories-view-name"
-            autocomplete="off"
-            [value]="viewName()"
-            [placeholder]="'accessories.views.name_placeholder' | translate"
-            [attr.aria-label]="'accessories.views.name_placeholder' | translate"
-            (input)="onViewNameInput($event)"
-            (keyup.enter)="confirmSaveView()"
-            (keyup.escape)="cancelSaveView()"
-          />
-          <button
-            type="button"
-            class="btn btn-sm btn-primary my-0"
-            [disabled]="!viewName().trim()"
-            (click)="confirmSaveView()"
-          >
-            {{ 'accessories.views.save_button' | translate }}
-          </button>
-          <button type="button" class="btn btn-sm btn-elegant my-0" (click)="cancelSaveView()">
-            {{ 'form.button_cancel' | translate }}
-          </button>
+          @if (canPairTablets()) {
+            <button type="button" ngbDropdownItem (click)="pairTablet()">
+              <i class="fas fa-qrcode me-2" aria-hidden="true"></i>{{ 'kiosk.tablets.pair_a_tablet' | translate }}
+            </button>
+          }
         </div>
-      }
-    </section>
-
+      </div>
+      <button
+        type="button"
+        class="btn-close"
+        [attr.aria-label]="'accessories.toolbar.close_filters' | translate"
+        (click)="closeFilters()"
+      ></button>
+    </div>
+  </div>
+  <div class="offcanvas-body accessories-filters-body">
     @for (facet of orderedFacets(); track facet.key) {
       <section class="accessories-facet mb-4" [attr.aria-labelledby]="`accessories-facet-${facet.key}`">
         <h6 class="small text-uppercase fw-semibold text-secondary mb-2" [attr.id]="`accessories-facet-${facet.key}`">

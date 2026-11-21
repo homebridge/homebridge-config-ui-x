@@ -512,65 +512,6 @@ describe('labels', () => {
   })
 })
 
-describe('pinned and excluded accessories', () => {
-  const lamp = hap({ type: 'Lightbulb', customName: 'Lamp', uniqueId: 'lamp' })
-  const fan = hap({ type: 'Fan', customName: 'Fan', uniqueId: 'fan' })
-  const hidden = hap({
-    type: 'Switch',
-    customName: 'Hidden',
-    uniqueId: 'sw',
-    hidden: true,
-  })
-
-  it('shows a pinned accessory even when the filter excludes it', () => {
-    const context = {
-      pinned: new Set(['fan']),
-    }
-    expect(matchesFilter(fan, 'Kitchen', state({
-      categories: ['lights'],
-    }), emptyIndex, context)).toBe(true)
-    expect(matchesFilter(lamp, 'Kitchen', state({
-      categories: ['lights'],
-    }), emptyIndex, context)).toBe(true)
-  })
-
-  it('never shows an excluded accessory, even when the filter allows it', () => {
-    const context = {
-      excluded: new Set(['lamp']),
-    }
-    expect(matchesFilter(lamp, 'Kitchen', state(), emptyIndex, context)).toBe(false)
-  })
-
-  it('shows a pinned hidden accessory without showing hidden ones', () => {
-    expect(matchesFilter(hidden, 'Kitchen', state(), emptyIndex)).toBe(false)
-    expect(matchesFilter(hidden, 'Kitchen', state(), emptyIndex, {
-      pinned: new Set(['sw']),
-    })).toBe(true)
-  })
-
-  it('applies to grouped output', () => {
-    const groups = groupAndSort(
-      [
-        {
-          name: 'Kitchen',
-          services: [lamp, fan],
-        },
-      ],
-      state({
-        categories: ['lights'],
-      }),
-      emptyIndex,
-      {
-        pinned: new Set(['fan']),
-        excluded: new Set(['lamp']),
-      },
-    )
-    expect(ids(groups)).toEqual([
-      ['fan'],
-    ])
-  })
-})
-
 describe('groupBy floor', () => {
   const kitchenLamp = hap({ type: 'Lightbulb', customName: 'Kitchen Lamp', uniqueId: 'kl' })
   const hallSwitch = hap({ type: 'Switch', customName: 'Hall Switch', uniqueId: 'hs' })

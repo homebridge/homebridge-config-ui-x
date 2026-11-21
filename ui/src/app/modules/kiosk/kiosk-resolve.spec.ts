@@ -1,9 +1,9 @@
-import type { AccessoryView } from '@/app/core/accessories/filters/accessory-views'
-
 import { describe, expect, it } from 'vitest'
 
+import { getAccessorySubcategory } from '@/app/core/accessories/filters/accessory-categories'
 import { hap } from '@/app/core/accessories/filters/accessory-filter.fixture'
-import { findKioskView, resolveViewUniqueIds } from '@/app/modules/kiosk/kiosk-resolve'
+import { resolveScopeUniqueIds } from '@/app/modules/kiosk/kiosk-resolve'
+import { EMPTY_KIOSK_SCOPE } from '@/app/modules/kiosk/kiosk-scope'
 
 function rooms() {
   return [
@@ -18,63 +18,81 @@ function rooms() {
       name: 'Hall',
       services: [
         hap({ type: 'Switch', uniqueId: 'c' }),
+        hap({ type: 'Switch', uniqueId: 'd', hidden: true }),
       ],
     },
   ]
 }
 
-describe('resolveViewUniqueIds', () => {
-  it('returns every service for a view with no filter', () => {
-    const view: AccessoryView = { id: 'v', name: 'All', state: {} }
-    expect(resolveViewUniqueIds(view, rooms()).sort()).toEqual(['a', 'b', 'c'])
+describe('resolveScopeUniqueIds', () => {
+  it('returns every visible service for an empty scope', () => {
+    expect(resolveScopeUniqueIds(EMPTY_KIOSK_SCOPE, rooms()).sort()).toEqual(['a', 'b', 'c'])
   })
 
-  it('applies the view filter', () => {
-    const view: AccessoryView = {
-      id: 'v',
-      name: 'Dash',
-      state: { onDashboardOnly: true },
-    }
-    expect(resolveViewUniqueIds(view, rooms())).toEqual(['a'])
+  it('narrows to the picked rooms', () => {
+    expect(resolveScopeUniqueIds({
+      ...EMPTY_KIOSK_SCOPE,
+      rooms: ['Hall'],
+    }, rooms())).toEqual(['c'])
   })
 
-  it('adds pinned services even when the filter does not match them', () => {
-    const view: AccessoryView = {
-      id: 'v',
-      name: 'Dash',
-      state: { onDashboardOnly: true },
-      pinned: ['c'],
-    }
-    expect(resolveViewUniqueIds(view, rooms()).sort()).toEqual(['a', 'c'])
+  it('narrows to the picked categories', () => {
+    expect(resolveScopeUniqueIds({
+      ...EMPTY_KIOSK_SCOPE,
+      categories: ['lights'],
+    }, rooms()).sort()).toEqual(['a', 'b'])
   })
 
-  it('drops excluded services', () => {
-    const view: AccessoryView = {
-      id: 'v',
-      name: 'All',
-      state: {},
-      excluded: ['b'],
-    }
-    expect(resolveViewUniqueIds(view, rooms()).sort()).toEqual(['a', 'c'])
+  it('narrows to the picked subcategories within their categories', () => {
+    const kind = getAccessorySubcategory(rooms()[0].services[0])
+    const ids = resolveScopeUniqueIds({
+      ...EMPTY_KIOSK_SCOPE,
+      categories: ['lights'],
+      subcategories: [kind],
+    }, rooms())
+    expect(ids).toContain('a')
+    expect(ids).not.toContain('c')
+  })
+
+  it('narrows to services with any of the picked labels', () => {
+    const labels = new Map([
+      [
+        'b',
+        ['Bedtime'],
+      ],
+    ])
+    expect(resolveScopeUniqueIds({
+      ...EMPTY_KIOSK_SCOPE,
+      labels: ['Bedtime'],
+    }, rooms(), labels)).toEqual(['b'])
+  })
+
+  it('combines rooms and labels', () => {
+    const labels = new Map([
+      [
+        'a',
+        ['Bedtime'],
+      ],
+      [
+        'c',
+        ['Bedtime'],
+      ],
+    ])
+    expect(resolveScopeUniqueIds({
+      ...EMPTY_KIOSK_SCOPE,
+      rooms: ['Kitchen'],
+      labels: ['Bedtime'],
+    }, rooms(), labels)).toEqual(['a'])
+  })
+
+  it('never includes hidden services, even when the scope would match them', () => {
+    expect(resolveScopeUniqueIds({
+      ...EMPTY_KIOSK_SCOPE,
+      rooms: ['Hall'],
+    }, rooms())).not.toContain('d')
   })
 
   it('returns nothing for an empty room list', () => {
-    const view: AccessoryView = { id: 'v', name: 'All', state: {} }
-    expect(resolveViewUniqueIds(view, [])).toEqual([])
-  })
-})
-
-describe('findKioskView', () => {
-  it('finds a built-in view by id', () => {
-    expect(findKioskView('favorites', [])?.state).toEqual({ onDashboardOnly: true })
-  })
-
-  it('finds a saved view by id', () => {
-    const saved: AccessoryView = { id: 'mine', name: 'Mine', state: {} }
-    expect(findKioskView('mine', [saved])).toBe(saved)
-  })
-
-  it('returns undefined for an unknown id', () => {
-    expect(findKioskView('nope', [])).toBeUndefined()
+    expect(resolveScopeUniqueIds(EMPTY_KIOSK_SCOPE, [])).toEqual([])
   })
 })

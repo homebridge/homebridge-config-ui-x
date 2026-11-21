@@ -11,15 +11,7 @@
     (contextmenu)="$event.preventDefault()"
     (keydown.enter)="openPanel()"
   >
-    <span class="kiosk-view-name">
-      @if (device) {
-        {{ deviceViewName() || ('kiosk.title' | translate) }}
-      } @else if (builtIn) {
-        {{ builtIn.labelKey | translate }}
-      } @else {
-        {{ customView()?.name ?? ('kiosk.title' | translate) }}
-      }
-    </span>
+    <span class="kiosk-view-name">{{ title() }}</span>
     <time class="kiosk-clock" aria-live="off" [attr.datetime]="clock()">{{ clock() }}</time>
     <span
       class="kiosk-connection"
@@ -45,12 +37,6 @@
     <div class="kiosk-message">
       <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
       <span>{{ 'kiosk.loading' | translate }}</span>
-    </div>
-  } @else if (!known()) {
-    <div class="kiosk-message">
-      <h1 class="kiosk-message-title">{{ 'kiosk.not_found.title' | translate }}</h1>
-      <p>{{ 'kiosk.not_found.text' | translate }}</p>
-      <a class="btn btn-elegant" routerLink="/accessories">{{ 'kiosk.not_found.back' | translate }}</a>
     </div>
   } @else if (groups().length === 0) {
     <div class="kiosk-message">

@@ -12,6 +12,7 @@ import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX } from '@/app/cor
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { BatteryInfo, buildBatteryIndex } from '@/app/core/accessories/filters/accessory-battery'
 import { getAccessoryCategory } from '@/app/core/accessories/filters/accessory-categories'
+import { AccessoryMetadata } from '@/app/core/accessories/filters/accessory-filters'
 import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
@@ -133,8 +134,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(this.formActionEvent.bind(this))
 
-    // Tell the plugin when its accessory layout or views change, so it can re-read them
-    merge(this.$accessories.layoutSaved, this.$accessories.viewsSaved)
+    // Tell the plugin when its accessory layout or labels and floors change, so it can re-read them
+    merge(this.$accessories.layoutSaved, this.$accessories.metadataSaved)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.iframe?.contentWindow?.postMessage({
@@ -351,10 +352,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         }
         case 'accessoryLayout.get': {
           void this.handleGetAccessoryLayout(e)
-          break
-        }
-        case 'accessoryViews.get': {
-          void this.handleGetAccessoryViews(e)
           break
         }
         case 'cachedMatterAccessories.get': {
@@ -725,14 +722,24 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   /**
    * Handle the event to get the accessory room layout.
    * Room names, the default flag and, per service, its id, custom name and type, category,
-   * hidden flag, labels and battery (when known) are passed on.
+   * hidden flag, labels and battery (when known) are passed on, and each room carries its floor (or null).
    */
   private async handleGetAccessoryLayout(event: MessageEvent): Promise<void> {
     try {
-      const [layout, views] = await Promise.all([
+      const [layout, metadata] = await Promise.all([
         this.$api.get<AccessoryLayout>('/accessories/layout'),
-        this.getSavedViews(),
+        this.getSavedMetadata(),
       ])
+
+      // Each room's floor, or null for a room on no floor
+      const floorOf = new Map<string, string>()
+      for (const floor of metadata?.floors ?? []) {
+        for (const room of floor.rooms) {
+          if (!floorOf.has(room)) {
+            floorOf.set(room, floor.name)
+          }
+        }
+      }
 
       // The live services, when the accessories page has them, give the category and battery
       const live = new Map<string, ServiceTypeX>()
@@ -744,10 +751,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       const batteries = buildBatteryIndex([
         ...live.values(),
       ])
-      const labels = views?.labels ?? this.$accessories.labels()
+      const labels = metadata?.labels ?? this.$accessories.labels()
 
       return this.requestResponse(event, (layout || []).map(room => ({
         name: room.name,
+        floor: floorOf.get(room.name) ?? null,
         ...(room.isDefault
           ? { isDefault: true }
           : {}),
@@ -759,23 +767,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Handle the event to get the saved accessory views, as the server returns them
-   */
-  private async handleGetAccessoryViews(event: MessageEvent): Promise<void> {
+  /** The saved labels and floors, or undefined when they cannot be read. Labels then fall back to the page's. */
+  private async getSavedMetadata(): Promise<AccessoryMetadata | undefined> {
     try {
-      const views = await this.$api.get('/accessories/views')
-      return this.requestResponse(event, views)
-    } catch (error) {
-      console.error('Failed to get accessory views:', error)
-      return this.requestResponse(event, { message: (error as any)?.error?.message || (error as Error)?.message || 'Failed to get accessory views' }, false)
-    }
-  }
-
-  /** The saved views, labels and floors, or undefined when they cannot be read. Labels then fall back to the page's. */
-  private async getSavedViews(): Promise<{ labels?: Record<string, string[]> } | undefined> {
-    try {
-      return await this.$api.get<{ labels?: Record<string, string[]> }>('/accessories/views')
+      return await this.$api.get<AccessoryMetadata>('/accessories/metadata')
     } catch {
       return undefined
     }

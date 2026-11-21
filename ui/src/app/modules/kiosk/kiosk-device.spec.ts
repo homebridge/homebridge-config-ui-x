@@ -51,7 +51,7 @@ const SESSION = {
   device: {
     id: 'dev-1',
     name: 'Hall',
-    viewName: 'Lights',
+    scopeLabel: 'Lights',
     allowSensitive: false,
   },
   rooms: [
@@ -100,10 +100,6 @@ describe('kiosk device mode', () => {
           provide: AccessoriesService,
           useValue: {
             rooms: () => [],
-            views: () => [],
-            activeViewId: Object.assign(() => null, {
-              set: vi.fn(),
-            }),
             start: vi.fn(async () => {}),
             stop: vi.fn(),
             filterContext: () => ({}),

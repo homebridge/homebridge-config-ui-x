@@ -46,7 +46,9 @@ export class ConfigService {
   public secretPath = resolve(this.storagePath, '.uix-secrets')
   public authPath = resolve(this.storagePath, 'auth.json')
   public accessoryLayoutPath = resolve(this.storagePath, 'accessories', 'uiAccessoriesLayout.json')
-  public accessoryViewsPath = resolve(this.storagePath, 'accessory-views.json')
+  public accessoryMetadataPath = resolve(this.storagePath, 'accessory-metadata.json')
+  // Read-only: the pre-release views file, still read for a user's labels and floors until they save
+  public legacyAccessoryViewsPath = resolve(this.storagePath, 'accessory-views.json')
   public kioskDevicesPath = resolve(this.storagePath, 'kiosk-devices.json')
   public configBackupPath = resolve(this.storagePath, 'backups/config-backups')
   public instanceBackupPath = resolve(this.storagePath, 'backups/instance-backups')

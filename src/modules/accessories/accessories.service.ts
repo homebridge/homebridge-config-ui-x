@@ -3,7 +3,7 @@ import type { Socket } from 'socket.io'
 
 import type { MatterAccessoriesResponse, MatterAccessory, MatterAccessoryInfo, MatterAccessoryPart, MatterControlResponse, MatterEvent, MatterService, MatterStateUpdate } from '../../core/matter/matter.interfaces.js'
 import type { AccessoryControlMessage } from './accessories.interfaces.js'
-import type { AccessoryView, AccessoryViewsData } from './accessory-views.dto.js'
+import type { AccessoryMetadata } from './accessory-metadata.dto.js'
 
 import { join } from 'node:path'
 
@@ -681,59 +681,49 @@ export class AccessoriesService {
   }
 
   /**
-   * Get the saved views visible to a user: their own views (owner set to them), plus other users' views
-   * marked shared. Labels and floors are always the user's own.
+   * Get a user's accessory labels and floors. If the user has no entry yet but the old accessory-views.json
+   * holds labels/floors for them, those are returned (nothing is written until the next save).
    */
-  public async getAccessoryViews(username: string): Promise<AccessoryViewsData> {
-    let all: Record<string, Partial<AccessoryViewsData>> = {}
-    try {
-      all = await readJson(this.configService.accessoryViewsPath)
-    } catch {
-      all = {}
-    }
-
-    const views: AccessoryView[] = []
-    for (const [owner, data] of Object.entries(all)) {
-      for (const view of data?.views ?? []) {
-        if (owner === username || view.shared === true) {
-          views.push({ ...view, owner })
-        }
+  public async getAccessoryMetadata(username: string): Promise<AccessoryMetadata> {
+    const readFor = async (path: string): Promise<Partial<AccessoryMetadata> | undefined> => {
+      try {
+        const all = await readJson(path)
+        return all && Object.hasOwn(all, username)
+          ? all[username]
+          : undefined
+      } catch {
+        return undefined
       }
     }
 
-    const own = Object.hasOwn(all, username)
-      ? all[username]
-      : undefined
+    const own = (await readFor(this.configService.accessoryMetadataPath))
+      ?? (await readFor(this.configService.legacyAccessoryViewsPath))
     return {
-      views,
       labels: own?.labels ?? {},
       floors: own?.floors ?? [],
     }
   }
 
   /**
-   * Save a user's views, labels and floors. Views owned by someone else are dropped, and `owner` is not stored.
+   * Save a user's labels and floors.
    * @param username - the verified user, never a value from the client message
    * @param data - validated payload
    */
-  public async saveAccessoryViews(username: string, data: AccessoryViewsData): Promise<AccessoryViewsData> {
-    const saved: AccessoryViewsData = {
-      views: data.views
-        .filter(view => !view.owner || view.owner === username)
-        .map(({ owner: _owner, ...view }) => view),
+  public async saveAccessoryMetadata(username: string, data: AccessoryMetadata): Promise<AccessoryMetadata> {
+    const saved: AccessoryMetadata = {
       labels: data.labels,
       floors: data.floors,
     }
 
     // Per-path mutex, as for the layout, so two saves cannot drop each other's update
-    await this.jsonStore.mutate<Record<string, AccessoryViewsData>>(
-      this.configService.accessoryViewsPath,
+    await this.jsonStore.mutate<Record<string, AccessoryMetadata>>(
+      this.configService.accessoryMetadataPath,
       current => ({
         ...(current ?? {}),
         [username]: saved,
       }),
     )
-    this.logger.log(`Accessory views saved for ${username}.`)
+    this.logger.log(`Accessory metadata saved for ${username}.`)
     return saved
   }
 

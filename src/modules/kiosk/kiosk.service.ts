@@ -1,8 +1,9 @@
 /**
  * Paired kiosk tablets - security model
  *
- * - A kiosk device is a record an administrator creates for one view of one user's layout, limited to an explicit
- *   list of accessory uniqueIds (`allowedUniqueIds`). Sensitive services (locks, garage doors, security systems)
+ * - A kiosk device is a record an administrator creates for a kiosk tablet. Its `scope` (rooms, categories,
+ *   subcategories, labels) and `scopeLabel` only describe what the tablet shows; the enforced limit is the explicit
+ *   list of accessory uniqueIds (`allowedUniqueIds`), which is what every check uses. Sensitive services (locks, garage doors, security systems)
  *   can be viewed but not controlled unless `allowSensitive` is set.
  * - A device authenticates with a random 32-byte token, only ever sent as `Authorization: Kiosk <token>` (HTTP) or
  *   the socket handshake `auth.kioskToken`. Only the SHA-256 of the token is stored, so the file cannot be used to
@@ -32,12 +33,19 @@ import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { AccessoriesService } from '../accessories/accessories.service.js'
 
+export interface KioskScope {
+  rooms: string[]
+  categories: string[]
+  subcategories: string[]
+  labels: string[]
+}
+
 export interface KioskDevice {
   id: string
   name: string
   owner: string
-  viewId: string
-  viewName: string
+  scope: KioskScope
+  scopeLabel: string
   allowSensitive: boolean
   allowedUniqueIds: string[]
   tokenHash?: string
@@ -45,6 +53,35 @@ export interface KioskDevice {
   createdAt: number
   lastSeenAt?: number
   lastSeenIp?: string
+}
+
+function cleanScope(scope?: Partial<KioskScope>): KioskScope {
+  const list = (v: unknown) => Array.isArray(v)
+    ? [
+        ...new Set(v.filter((x): x is string => typeof x === 'string')),
+      ]
+    : []
+  return {
+    rooms: list(scope?.rooms),
+    categories: list(scope?.categories),
+    subcategories: list(scope?.subcategories),
+    labels: list(scope?.labels),
+  }
+}
+
+/** Devices stored before scopes existed have `viewId`/`viewName`: they get an empty scope and the view name as label */
+function migrateDevice(raw: any): KioskDevice {
+  const { viewName, ...device } = raw ?? {}
+  delete device.viewId
+  return {
+    ...device,
+    scope: cleanScope(device.scope),
+    scopeLabel: typeof device.scopeLabel === 'string'
+      ? device.scopeLabel
+      : typeof viewName === 'string'
+        ? viewName
+        : '',
+  } as KioskDevice
 }
 
 /** No 0/O/1/I/L: easy to misread when typed from a screen */
@@ -113,7 +150,7 @@ export class KioskService {
     try {
       const data = await this.jsonStore.read<KioskDevice[]>(this.path)
       this.devices = Array.isArray(data)
-        ? data
+        ? data.map(migrateDevice)
         : []
     } catch (e: any) {
       if (e?.code !== 'ENOENT') {
@@ -128,7 +165,7 @@ export class KioskService {
     let result: T
     await this.jsonStore.mutate<KioskDevice[]>(this.path, (current) => {
       const devices = Array.isArray(current)
-        ? current
+        ? current.map(migrateDevice)
         : []
       result = fn(devices)
       this.devices = devices
@@ -150,13 +187,13 @@ export class KioskService {
     return (await this.readAll()).map(publicDevice)
   }
 
-  async createDevice(owner: string, body: Pick<KioskDevice, 'name' | 'viewId' | 'viewName' | 'allowSensitive' | 'allowedUniqueIds'>) {
+  async createDevice(owner: string, body: Pick<KioskDevice, 'name' | 'scope' | 'scopeLabel' | 'allowSensitive' | 'allowedUniqueIds'>) {
     const device: KioskDevice = {
       id: randomUUID(),
       name: body.name,
       owner,
-      viewId: body.viewId,
-      viewName: body.viewName,
+      scope: cleanScope(body.scope),
+      scopeLabel: body.scopeLabel,
       allowSensitive: body.allowSensitive === true,
       allowedUniqueIds: [
         ...new Set(body.allowedUniqueIds),
@@ -167,7 +204,7 @@ export class KioskService {
     return publicDevice(device)
   }
 
-  async updateDevice(id: string, body: Partial<Pick<KioskDevice, 'name' | 'viewId' | 'viewName' | 'allowSensitive' | 'allowedUniqueIds'>>) {
+  async updateDevice(id: string, body: Partial<Pick<KioskDevice, 'name' | 'scope' | 'scopeLabel' | 'allowSensitive' | 'allowedUniqueIds'>>) {
     const updated = await this.mutate((devices) => {
       const device = devices.find(d => d.id === id)
       if (!device) {
@@ -176,11 +213,11 @@ export class KioskService {
       if (body.name !== undefined) {
         device.name = body.name
       }
-      if (body.viewId !== undefined) {
-        device.viewId = body.viewId
+      if (body.scope !== undefined) {
+        device.scope = cleanScope(body.scope)
       }
-      if (body.viewName !== undefined) {
-        device.viewName = body.viewName
+      if (body.scopeLabel !== undefined) {
+        device.scopeLabel = body.scopeLabel
       }
       if (body.allowSensitive !== undefined) {
         device.allowSensitive = body.allowSensitive === true
@@ -294,7 +331,7 @@ export class KioskService {
     this.disconnectDevice(paired.id)
     return {
       token,
-      device: { id: paired.id, name: paired.name, viewName: paired.viewName },
+      device: { id: paired.id, name: paired.name, scopeLabel: paired.scopeLabel },
     }
   }
 
@@ -357,7 +394,7 @@ export class KioskService {
       device: {
         id: device.id,
         name: device.name,
-        viewName: device.viewName,
+        scopeLabel: device.scopeLabel,
         allowSensitive: device.allowSensitive,
       },
       rooms,

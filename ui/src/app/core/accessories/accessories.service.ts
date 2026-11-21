@@ -11,8 +11,7 @@ import { takeUntil, timeout } from 'rxjs/operators'
 import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { attachControlHelpers } from '@/app/core/accessories/accessory-control'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
-import { AccessoryFilterState, DEFAULT_FILTER_STATE, FilterContext } from '@/app/core/accessories/filters/accessory-filters'
-import { AccessoryFloor, AccessoryView } from '@/app/core/accessories/filters/accessory-views'
+import { AccessoryFilterState, AccessoryFloor, DEFAULT_FILTER_STATE, FilterContext } from '@/app/core/accessories/filters/accessory-filters'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
 import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
@@ -22,10 +21,10 @@ import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 
 /** localStorage key for the accessories page filter, grouping and sort */
 const FILTER_STORAGE_KEY = 'accessories-filter-v1'
-/** Quiet time after the last views, labels or floors change before they are sent */
-const VIEWS_SAVE_DELAY = 300
-/** How long to wait for `get-views` before giving up on the saved views */
-const VIEWS_LOAD_TIMEOUT = 10000
+/** Quiet time after the last label or floor change before they are sent */
+const METADATA_SAVE_DELAY = 300
+/** How long to wait for `get-metadata` before giving up on the saved labels and floors */
+const METADATA_LOAD_TIMEOUT = 10000
 
 @Injectable({
   providedIn: 'root',
@@ -71,13 +70,13 @@ export class AccessoriesService {
     'History', // Eve History
   ])
 
-  private viewsSaveTimer: ReturnType<typeof setTimeout> | null = null
-  // Saves are held back until the saved views have loaded, so a failed load can never
+  private metadataSaveTimer: ReturnType<typeof setTimeout> | null = null
+  // Saves are held back until the saved labels and floors have loaded, so a failed load can never
   // overwrite what the server holds with an empty list
-  private viewsLoaded = false
+  private metadataLoaded = false
 
   public layoutSaved = new Subject()
-  public viewsSaved = new Subject<void>()
+  public metadataSaved = new Subject<void>()
   public accessoryData = new Subject()
   public hapReadyForControl = false
   public matterReadyForControl = false
@@ -94,14 +93,10 @@ export class AccessoriesService {
     services: ServiceTypeX[]
   }>>([])
 
-  /** The user's saved views, plus the views shared with them by others */
-  public readonly views = signal<AccessoryView[]>([])
   /** uniqueId -> labels for each accessory that has any */
   public readonly labels = signal<Record<string, string[]>>({})
   /** Floors, each with the rooms on it */
   public readonly floors = signal<AccessoryFloor[]>([])
-  /** The view applied on the accessories page, or null. Holds its pinned and excluded accessories. */
-  public readonly activeViewId = signal<string | null>(null)
 
   constructor() {
     if (this.$auth.user.admin) {
@@ -230,8 +225,8 @@ export class AccessoriesService {
     this.stop$.next()
     this.stop$.complete()
 
-    // Send any views, labels or floors still waiting out their debounce while the socket is open
-    this.flushViewsSave()
+    // Send any labels or floors still waiting out their debounce while the socket is open
+    this.flushMetadataSave()
 
     // Mark the session inactive so any in-flight `accessories-data` event that
     // lands between `io.end()` and the socket actually closing is dropped
@@ -263,10 +258,9 @@ export class AccessoriesService {
     this.ambiguousNameIds.clear()
     this.accessoryLayout = undefined as any
     this.originalLayout = undefined as any
-    this.views.set([])
     this.labels.set({})
     this.floors.set([])
-    this.viewsLoaded = false
+    this.metadataLoaded = false
 
     // Reset the internal unsubscribe channel for the next session. The public
     // Subjects persist for the lifetime of this singleton service.
@@ -363,7 +357,7 @@ export class AccessoriesService {
       this.matterReadyForControl = true
     })
 
-    await this.loadViews()
+    await this.loadMetadata()
   }
 
   /**
@@ -574,84 +568,67 @@ export class AccessoriesService {
   }
 
   /**
-   * Load the saved views, labels and floors. A failure leaves them empty and blocks saving,
+   * Load the saved labels and floors. A failure leaves them empty and blocks saving,
    * so the page still works without them.
    */
-  private async loadViews(): Promise<void> {
+  private async loadMetadata(): Promise<void> {
     try {
-      const payload = await firstValueFrom(this.io.request('get-views').pipe(timeout(VIEWS_LOAD_TIMEOUT)))
+      const payload = await firstValueFrom(this.io.request('get-metadata').pipe(timeout(METADATA_LOAD_TIMEOUT)))
       if (!payload || typeof payload !== 'object') {
-        throw new Error('No saved views in the reply')
+        throw new Error('No saved metadata in the reply')
       }
-      this.views.set(Array.isArray(payload.views)
-        ? payload.views
-        : [])
       this.labels.set(payload.labels && typeof payload.labels === 'object'
         ? payload.labels
         : {})
       this.floors.set(Array.isArray(payload.floors)
         ? payload.floors
         : [])
-      this.viewsLoaded = true
+      this.metadataLoaded = true
     } catch (error) {
-      console.warn('Could not load saved accessory views:', error)
-      this.views.set([])
+      console.warn('Could not load saved accessory metadata:', error)
       this.labels.set({})
       this.floors.set([])
-      this.viewsLoaded = false
+      this.metadataLoaded = false
     }
-  }
-
-  /** Whether the current user made a view, as opposed to having it shared with them */
-  public isOwnView(view: AccessoryView): boolean {
-    return !view.owner || view.owner === this.$auth.user.username
   }
 
   /**
-   * Save views, labels and floors after a short quiet time, so a burst of changes is one request
+   * Save labels and floors after a short quiet time, so a burst of changes is one request
    */
-  public saveViews(): void {
-    if (this.viewsSaveTimer !== null) {
-      clearTimeout(this.viewsSaveTimer)
+  public saveMetadata(): void {
+    if (this.metadataSaveTimer !== null) {
+      clearTimeout(this.metadataSaveTimer)
     }
-    this.viewsSaveTimer = setTimeout(() => {
-      this.viewsSaveTimer = null
-      this.saveViewsNow()
-    }, VIEWS_SAVE_DELAY)
+    this.metadataSaveTimer = setTimeout(() => {
+      this.metadataSaveTimer = null
+      this.saveMetadataNow()
+    }, METADATA_SAVE_DELAY)
   }
 
   /** Send any save still waiting out its quiet time, now */
-  private flushViewsSave(): void {
-    if (this.viewsSaveTimer !== null) {
-      clearTimeout(this.viewsSaveTimer)
-      this.viewsSaveTimer = null
-      this.saveViewsNow()
+  private flushMetadataSave(): void {
+    if (this.metadataSaveTimer !== null) {
+      clearTimeout(this.metadataSaveTimer)
+      this.metadataSaveTimer = null
+      this.saveMetadataNow()
     }
   }
 
   /**
-   * Send the user's own views (owner stripped, the server sets it), with the labels and floors
+   * Send the labels and floors
    */
-  private saveViewsNow(): void {
-    if (!this.sessionActive || !this.viewsLoaded) {
+  private saveMetadataNow(): void {
+    if (!this.sessionActive || !this.metadataLoaded) {
       return
     }
 
-    const views = this.views()
-      .filter(view => this.isOwnView(view))
-      .map(view => ({
-        ...view,
-        owner: undefined,
-      }))
-
-    this.io.request('save-views', {
-      views,
+    this.io.request('save-metadata', {
       labels: this.labels(),
       floors: this.floors(),
     })
       .pipe(takeUntilDestroyed(this.$destroyRef))
       .subscribe({
-        next: () => this.viewsSaved.next(),
+        next: () => this.metadataSaved.next(),
         error: (error) => {
           console.error(error)
           this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
@@ -660,112 +637,13 @@ export class AccessoriesService {
   }
 
   /**
-   * The views, labels and floors as a filter context, for matching and grouping
+   * The labels and floors as a filter context, for matching and grouping
    */
   public filterContext(): FilterContext {
-    const view = this.views().find(entry => entry.id === this.activeViewId())
     return {
       labels: new Map(Object.entries(this.labels())),
       floors: this.floors(),
-      pinned: new Set(view?.pinned ?? []),
-      excluded: new Set(view?.excluded ?? []),
     }
-  }
-
-  /**
-   * Save the current filter as a new view of the user's own. Returns its id, or null for a blank name.
-   */
-  public createViewFromState(name: string, state: Partial<AccessoryFilterState>): string | null {
-    const trimmed = name.trim()
-    if (!trimmed) {
-      return null
-    }
-
-    const id = `view-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
-    this.views.update(current => [
-      ...current,
-      {
-        id,
-        name: trimmed,
-        state: JSON.parse(JSON.stringify(state)),
-        pinned: [],
-        excluded: [],
-        shared: false,
-      },
-    ])
-    this.saveViews()
-    return id
-  }
-
-  /**
-   * Change a view's name, state, pinned or excluded accessories. Only the user's own views change.
-   */
-  public updateView(id: string, patch: Partial<Pick<AccessoryView, 'name' | 'state' | 'pinned' | 'excluded'>>): boolean {
-    const view = this.views().find(entry => entry.id === id)
-    if (!view || !this.isOwnView(view)) {
-      return false
-    }
-
-    const trimmed = patch.name?.trim()
-    this.views.update(current => current.map(entry => entry.id === id
-      ? {
-          ...entry,
-          ...patch,
-          ...(trimmed
-            ? { name: trimmed }
-            : {}),
-        }
-      : entry))
-    this.saveViews()
-    return true
-  }
-
-  /** Delete one of the user's own views. Clears it as the active view if it was. */
-  public deleteView(id: string): boolean {
-    const view = this.views().find(entry => entry.id === id)
-    if (!view || !this.isOwnView(view)) {
-      return false
-    }
-
-    this.views.update(current => current.filter(entry => entry.id !== id))
-    if (this.activeViewId() === id) {
-      this.activeViewId.set(null)
-    }
-    this.saveViews()
-    return true
-  }
-
-  /** Move a view one place up (-1) or down (1) in the list. Does nothing at either end. */
-  public reorderViews(id: string, direction: -1 | 1): boolean {
-    const current = this.views()
-    const index = current.findIndex(entry => entry.id === id)
-    const target = index + direction
-    if (index === -1 || target < 0 || target >= current.length) {
-      return false
-    }
-
-    const next = [...current]
-    ;[next[index], next[target]] = [next[target], next[index]]
-    this.views.set(next)
-    this.saveViews()
-    return true
-  }
-
-  /** Share one of the user's own views with others, or stop sharing it */
-  public toggleShare(id: string): boolean {
-    const view = this.views().find(entry => entry.id === id)
-    if (!view || !this.isOwnView(view)) {
-      return false
-    }
-
-    this.views.update(current => current.map(entry => entry.id === id
-      ? {
-          ...entry,
-          shared: !entry.shared,
-        }
-      : entry))
-    this.saveViews()
-    return true
   }
 
   /**
@@ -791,7 +669,7 @@ export class AccessoriesService {
       delete next[uniqueId]
     }
     this.labels.set(next)
-    this.saveViews()
+    this.saveMetadata()
   }
 
   /**
@@ -832,7 +710,7 @@ export class AccessoriesService {
       return
     }
     this.floors.set(floors)
-    this.saveViews()
+    this.saveMetadata()
   }
 
   /** Add an empty floor. Returns false for a blank or a duplicate name. */
@@ -850,7 +728,7 @@ export class AccessoriesService {
         rooms: [],
       },
     ])
-    this.saveViews()
+    this.saveMetadata()
     return true
   }
 
@@ -871,7 +749,7 @@ export class AccessoriesService {
           name: trimmed,
         }
       : entry))
-    this.saveViews()
+    this.saveMetadata()
     return true
   }
 
@@ -881,7 +759,7 @@ export class AccessoriesService {
       return false
     }
     this.floors.update(current => current.filter(entry => entry.name !== name))
-    this.saveViews()
+    this.saveMetadata()
     return true
   }
 
@@ -898,7 +776,7 @@ export class AccessoriesService {
         : room),
     })))
     if (JSON.stringify(this.floors()) !== before) {
-      this.saveViews()
+      this.saveMetadata()
     }
   }
 
@@ -910,7 +788,7 @@ export class AccessoriesService {
       rooms: entry.rooms.filter(existing => existing !== room),
     })))
     if (JSON.stringify(this.floors()) !== before) {
-      this.saveViews()
+      this.saveMetadata()
     }
   }
 

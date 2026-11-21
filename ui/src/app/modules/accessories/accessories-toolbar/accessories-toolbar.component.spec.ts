@@ -2,14 +2,15 @@ import type { AccessoryFilterState } from '@/app/core/accessories/filters/access
 import type { ComponentFixture } from '@angular/core/testing'
 
 import { TestBed } from '@angular/core/testing'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslateService } from '@ngx-translate/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { buildBatteryIndex } from '@/app/core/accessories/filters/accessory-battery'
 import { DEFAULT_FILTER_STATE } from '@/app/core/accessories/filters/accessory-filters'
-import { BUILT_IN_VIEWS } from '@/app/core/accessories/filters/accessory-views'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { KioskLinksService } from '@/app/modules/kiosk/kiosk-links.service'
+import { TabletEditComponent } from '@/app/modules/users/users-tablets/tablet-edit.component'
 import { provideTestTranslate } from '@/testing/providers'
 
 import { AccessoriesToolbarComponent } from './accessories-toolbar.component'
@@ -22,6 +23,8 @@ import { AccessoriesToolbarComponent } from './accessories-toolbar.component'
  */
 describe('accessoriesToolbarComponent', () => {
   let kiosk: { open: ReturnType<typeof vi.fn>, copy: ReturnType<typeof vi.fn> }
+  let authUser: { admin: boolean }
+  let modal: { open: ReturnType<typeof vi.fn> }
   let fixture: ComponentFixture<AccessoriesToolbarComponent>
 
   /** A service the toolbar can count. Matches the shape the accessories page passes it. */
@@ -94,20 +97,9 @@ describe('accessoriesToolbarComponent', () => {
     fixture.detectChanges()
   }
 
-  /** The view pills in the open filter panel */
-  function viewPills(): HTMLButtonElement[] {
-    return [
-      ...document.querySelectorAll<HTMLButtonElement>('.accessories-filters-panel .accessories-view-pill'),
-    ]
-  }
-
-  function viewButton(label: string): HTMLButtonElement {
-    return viewPills().find(button => button.textContent!.replace(/\s+/g, ' ').trim().startsWith(label)) as HTMLButtonElement
-  }
-
-  /** Open the Views menu in the panel, and return its open items */
-  function viewsMenuItems(): HTMLButtonElement[] {
-    ;(document.querySelector('.accessories-filters-panel .accessories-views-menu') as HTMLButtonElement).click()
+  /** The items of the filter panel's menu, once it is open */
+  function menuItems(): HTMLButtonElement[] {
+    ;(document.querySelector('.accessories-filters-panel .accessories-filters-menu') as HTMLButtonElement).click()
     fixture.detectChanges()
     return [
       ...document.querySelectorAll<HTMLButtonElement>('.dropdown-menu.show .dropdown-item'),
@@ -115,10 +107,17 @@ describe('accessoriesToolbarComponent', () => {
   }
 
   function menuItem(label: string): HTMLButtonElement | undefined {
-    return viewsMenuItems().find(item => item.textContent!.trim() === label)
+    return menuItems().find(item => item.textContent!.trim() === label)
   }
 
   beforeEach(() => {
+    authUser = { admin: false }
+    modal = {
+      open: vi.fn(() => ({
+        componentInstance: {},
+        result: new Promise(() => {}),
+      })),
+    }
     kiosk = {
       open: vi.fn(async () => true),
       copy: vi.fn(async () => {}),
@@ -129,11 +128,12 @@ describe('accessoriesToolbarComponent', () => {
         {
           provide: AuthService,
           useValue: {
-            user: { admin: false },
+            user: authUser,
           },
         },
         provideTestTranslate(),
         { provide: KioskLinksService, useValue: kiosk },
+        { provide: NgbModal, useValue: modal },
       ],
     })
 
@@ -148,12 +148,9 @@ describe('accessoriesToolbarComponent', () => {
       'accessories.toolbar.show_count': 'Show {{count}} accessories',
       'accessories.toolbar.show_hidden_accessories': 'Show hidden accessories',
       'accessories.categories.lights': 'Lights',
-      'accessories.views.lights': 'Lights',
-      'accessories.views.all': 'All',
-      'accessories.views.manage': 'Manage views',
-      'accessories.views.save': 'Save as view',
       'accessories.kiosk.open': 'Open as kiosk',
       'accessories.kiosk.copy_link': 'Copy kiosk link',
+      'kiosk.tablets.pair_a_tablet': 'Pair a tablet…',
       'accessories.subcategories.onoff': 'On/off',
       'accessories.subcategories.dimmable': 'Dimmable',
       'accessories.subcategories.thermostat': 'Thermostat',
@@ -283,238 +280,7 @@ describe('accessoriesToolbarComponent', () => {
     })
   })
 
-  describe('built-in views', () => {
-    it('lists All and every built-in view as pills in the Views section of the panel', () => {
-      setup()
-      openPanel()
-
-      const labels = viewPills().map(button => button.textContent!.trim())
-      expect(labels[0]).toBe('All')
-      expect(labels.length).toBe(BUILT_IN_VIEWS.length + 1)
-      expect(fixture.nativeElement.querySelector('.accessories-views')).toBeNull()
-    })
-
-    it('applies a view on top of a cleared filter', () => {
-      const toolbar = setup({
-        search: 'x',
-        rooms: ['Office'],
-      })
-      const lights = BUILT_IN_VIEWS.find(view => view.id === 'lights')!
-
-      toolbar.applyView(lights)
-
-      expect(toolbar.filter()).toEqual(expect.objectContaining({
-        search: '',
-        rooms: [],
-        categories: ['lights'],
-      }))
-    })
-
-    it('applies the batteries view by its battery filter and sort', () => {
-      const toolbar = setup()
-      const batteries = BUILT_IN_VIEWS.find(view => view.id === 'batteries')!
-
-      toolbar.applyView(batteries)
-
-      expect(toolbar.filter()).toEqual(expect.objectContaining({
-        battery: ['any'],
-        sortBy: 'battery',
-      }))
-    })
-
-    it('All clears the filter', () => {
-      const toolbar = setup({
-        categories: ['lights'],
-      })
-
-      toolbar.applyView(null)
-
-      expect(toolbar.filter().categories).toEqual([])
-    })
-
-    it('marks the view that matches the filter as active', () => {
-      const toolbar = setup({
-        categories: ['climate'],
-      })
-      expect(toolbar.activeView()).toBe('climate')
-
-      fixture.componentRef.setInput('filter', { ...DEFAULT_FILTER_STATE })
-      fixture.detectChanges()
-      expect(toolbar.activeView()).toBe('all')
-
-      fixture.componentRef.setInput('filter', { ...DEFAULT_FILTER_STATE, search: 'x' })
-      fixture.detectChanges()
-      expect(toolbar.activeView()).toBeNull()
-    })
-
-    it('shows the matching view as pressed', () => {
-      setup({
-        categories: ['lights'],
-      })
-      openPanel()
-
-      expect(viewButton('Lights')?.getAttribute('aria-pressed')).toBe('true')
-      expect(viewButton('All')?.getAttribute('aria-pressed')).toBe('false')
-    })
-  })
-
-  describe('saved views', () => {
-    const ownView = {
-      id: 'v1',
-      name: 'Downstairs',
-      state: {
-        groupBy: 'floor' as const,
-        rooms: ['Kitchen'],
-      },
-      pinned: [],
-      excluded: [],
-      shared: true,
-    }
-    const aliceView = {
-      id: 'v2',
-      name: 'Alice lights',
-      state: {
-        categories: ['lights' as const],
-      },
-      shared: true,
-      owner: 'alice',
-    }
-
-    beforeEach(() => {
-      TestBed.inject(TranslateService).setTranslation('en', {
-        'accessories.views.shared_by': 'Shared by {{owner}}',
-        'accessories.views.save': 'Save as view',
-        'accessories.views.manage': 'Manage views',
-      }, true)
-    })
-
-    function pill(label: string): HTMLButtonElement | undefined {
-      return [
-        ...document.querySelectorAll<HTMLButtonElement>('.accessories-filters-panel .accessories-custom-view'),
-      ].find(button => button.textContent!.includes(label))
-    }
-
-    it('lists the custom views after the built-in ones', () => {
-      setup()
-      fixture.componentRef.setInput('customViews', [ownView, aliceView])
-      fixture.detectChanges()
-      openPanel()
-
-      const labels = viewPills().map(button => button.textContent!.replace(/\s+/g, ' ').trim())
-      expect(labels.slice(-2)).toEqual(['Downstairs', 'Alice lights Shared by alice'])
-    })
-
-    it('names the owner of a view shared with the user', () => {
-      setup()
-      fixture.componentRef.setInput('username', 'bob')
-      fixture.componentRef.setInput('customViews', [ownView, aliceView])
-      fixture.detectChanges()
-      openPanel()
-
-      expect(pill('Alice lights')!.textContent).toContain('Shared by alice')
-      expect(pill('Alice lights')!.querySelector('.fa-share-nodes')).not.toBeNull()
-      expect(pill('Downstairs')!.textContent).not.toContain('Shared by')
-    })
-
-    it('marks the active custom view, and no built-in view', () => {
-      setup()
-      fixture.componentRef.setInput('customViews', [ownView])
-      fixture.componentRef.setInput('activeViewId', 'v1')
-      fixture.detectChanges()
-      openPanel()
-
-      expect(pill('Downstairs')!.getAttribute('aria-pressed')).toBe('true')
-      expect(viewButton('All')!.getAttribute('aria-pressed')).toBe('false')
-    })
-
-    it('applies a custom view on top of a cleared filter, and reports which view', () => {
-      const toolbar = setup({
-        search: 'x',
-        rooms: ['Office'],
-      })
-      fixture.componentRef.setInput('customViews', [ownView])
-      fixture.detectChanges()
-      openPanel()
-      const selected = vi.fn()
-      toolbar.viewSelect.subscribe(selected)
-
-      pill('Downstairs')!.click()
-
-      expect(toolbar.filter()).toEqual(expect.objectContaining({
-        groupBy: 'floor',
-        rooms: ['Kitchen'],
-        search: '',
-      }))
-      expect(selected).toHaveBeenCalledWith('v1')
-    })
-
-    it('reports a built-in view as no custom view', () => {
-      const toolbar = setup()
-      const selected = vi.fn()
-      toolbar.viewSelect.subscribe(selected)
-
-      toolbar.applyView(null)
-
-      expect(selected).toHaveBeenCalledWith(null)
-    })
-
-    it('offers Save as view in the Views menu of the panel', () => {
-      const toolbar = setup({ search: 'kettle' })
-      openPanel()
-      const save = menuItem('Save as view')
-      expect(save).toBeDefined()
-
-      save!.click()
-      fixture.detectChanges()
-      expect(toolbar.saveFormOpen()).toBe(true)
-    })
-
-    it('names and saves a view from the inline form, and closes the form', () => {
-      const toolbar = setup({ search: 'kettle' })
-      const saved = vi.fn()
-      toolbar.saveView.subscribe(saved)
-      openPanel()
-
-      toolbar.openSaveView()
-      fixture.detectChanges()
-      expect(document.querySelector('.accessories-filters-panel .accessories-view-name')).not.toBeNull()
-
-      toolbar.onViewNameInput({
-        target: { value: '  Kettles ' },
-      } as unknown as Event)
-      toolbar.confirmSaveView()
-      fixture.detectChanges()
-
-      expect(saved).toHaveBeenCalledWith('Kettles')
-      expect(document.querySelector('.accessories-view-name')).toBeNull()
-    })
-
-    it('does not save a blank name', () => {
-      const toolbar = setup({ search: 'kettle' })
-      const saved = vi.fn()
-      toolbar.saveView.subscribe(saved)
-
-      toolbar.openSaveView()
-      toolbar.onViewNameInput({
-        target: { value: '   ' },
-      } as unknown as Event)
-      toolbar.confirmSaveView()
-
-      expect(saved).not.toHaveBeenCalled()
-      expect(toolbar.saveFormOpen()).toBe(true)
-    })
-
-    it('opens the manage views modal from the Views menu', () => {
-      const toolbar = setup()
-      const opened = vi.fn()
-      toolbar.manageViews.subscribe(opened)
-      openPanel()
-
-      menuItem('Manage views')!.click()
-
-      expect(opened).toHaveBeenCalledTimes(1)
-    })
-
+  describe('labels and floors', () => {
     it('offers a label facet, counting the accessories with each label', () => {
       const toolbar = setup()
       fixture.componentRef.setInput('labels', {
@@ -654,41 +420,84 @@ describe('accessoriesToolbarComponent', () => {
   })
 
   describe('open as kiosk', () => {
+    const everything = {
+      rooms: [],
+      categories: [],
+      subcategories: [],
+      labels: [],
+    }
+
     function kioskItem(label: string): HTMLButtonElement | undefined {
       openPanel()
       return menuItem(label)
     }
 
-    it('opens the active built-in view as a kiosk from the Views menu', () => {
+    it('opens the filter as a kiosk, with its rooms, categories, subcategories and labels', () => {
       setup({
-        categories: ['climate'],
+        rooms: ['Kitchen'],
+        categories: ['lights'],
+        subcategories: ['onoff'],
+        labels: ['Bedtime'],
       })
 
       kioskItem('Open as kiosk')!.click()
 
-      expect(kiosk.open).toHaveBeenCalledWith('climate')
+      expect(kiosk.open).toHaveBeenCalledWith({
+        rooms: ['Kitchen'],
+        categories: ['lights'],
+        subcategories: ['onoff'],
+        labels: ['Bedtime'],
+      })
     })
 
-    it('copies the kiosk link of the active saved view', () => {
-      const toolbar = setup({}, {})
-      fixture.componentRef.setInput('customViews', [
-        { id: 'v9', name: 'Hall', state: {} },
-      ])
-      fixture.componentRef.setInput('activeViewId', 'v9')
-      fixture.detectChanges()
-      expect(toolbar.kioskViewId()).toBe('v9')
+    it('opens an empty filter as the kiosk for every accessory', () => {
+      setup()
+
+      kioskItem('Open as kiosk')!.click()
+
+      expect(kiosk.open).toHaveBeenCalledWith(everything)
+    })
+
+    it('copies the kiosk link for the filter', () => {
+      setup({
+        rooms: ['Kitchen'],
+      })
 
       kioskItem('Copy kiosk link')!.click()
 
-      expect(kiosk.copy).toHaveBeenCalledWith('v9')
+      expect(kiosk.copy).toHaveBeenCalledWith({
+        ...everything,
+        rooms: ['Kitchen'],
+      })
     })
 
-    it('offers no kiosk items when nothing matches a view', () => {
-      setup({ search: 'kettle' })
-      openPanel()
+    it('offers no pairing to a user who is not an admin', () => {
+      setup({
+        rooms: ['Kitchen'],
+      })
 
-      expect(menuItem('Open as kiosk')).toBeUndefined()
-      expect(menuItem('Copy kiosk link')).toBeUndefined()
+      expect(kioskItem('Pair a tablet…')).toBeUndefined()
+    })
+
+    it('lets an admin pair a tablet, prefilled with the filter as its scope', () => {
+      authUser.admin = true
+      setup({
+        categories: ['lights'],
+      })
+
+      kioskItem('Pair a tablet…')!.click()
+
+      expect(modal.open).toHaveBeenCalledWith(TabletEditComponent, expect.anything())
+      expect(modal.open.mock.results[0].value.componentInstance.preselectScope).toEqual({
+        ...everything,
+        categories: ['lights'],
+      })
+    })
+
+    it('offers the kiosk items for an empty result too', () => {
+      setup({ search: 'kettle' })
+
+      expect(kioskItem('Open as kiosk')).toBeDefined()
     })
   })
 

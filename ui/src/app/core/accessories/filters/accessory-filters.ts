@@ -2,10 +2,22 @@ import type { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces
 
 import type { BatteryInfo } from './accessory-battery'
 import type { AccessoryCategory } from './accessory-categories'
-import type { AccessoryFloor } from './accessory-views'
 
 import { ACCESSORY_CATEGORIES, getAccessoryCategory, getAccessorySubcategory } from './accessory-categories'
 import { isMatterService, isServiceNotResponding, isServiceOn, serviceBridgeKey, serviceBridgeName, serviceDisplayName } from './service-helpers'
+
+/** A named floor and the rooms on it. A room is on at most one floor. */
+export interface AccessoryFloor {
+  name: string
+  rooms: string[]
+}
+
+/** The labels and floors kept for the accessories page, as the server holds them */
+export interface AccessoryMetadata {
+  /** uniqueId -> labels */
+  labels: Record<string, string[]>
+  floors: AccessoryFloor[]
+}
 
 export type AccessoryProtocol = 'hap' | 'matter'
 export type AccessoryStateFilter = 'on' | 'notResponding'
@@ -47,10 +59,6 @@ export interface RoomInput {
 export interface FilterContext {
   /** uniqueId -> labels */
   labels?: ReadonlyMap<string, string[]>
-  /** uniqueIds that always show, whatever the filter (from the active view) */
-  pinned?: ReadonlySet<string>
-  /** uniqueIds that never show (from the active view) */
-  excluded?: ReadonlySet<string>
   /** Floors, for groupBy 'floor' */
   floors?: AccessoryFloor[]
 }
@@ -138,13 +146,6 @@ export function matchesFilter(
   context: FilterContext = {},
 ): boolean {
   const uniqueId = service.uniqueId ?? ''
-  // An excluded accessory never shows; a pinned one always does, whatever the filter says
-  if (context.excluded?.has(uniqueId)) {
-    return false
-  }
-  if (context.pinned?.has(uniqueId)) {
-    return true
-  }
   if (!state.showHidden && service.hidden) {
     return false
   }

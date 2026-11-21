@@ -81,19 +81,14 @@ describe('accessoriesComponent', () => {
     accessories = {
       rooms: signal(options.rooms ?? []),
       availableBridges: signal(options.availableBridges ?? []),
-      views: signal<any[]>([]),
-      viewsSaved: new Subject<void>(),
+      layoutSaved: new Subject<void>(),
+      metadataSaved: new Subject<void>(),
       labels: signal<Record<string, string[]>>({}),
       floors: signal<any[]>([]),
-      activeViewId: signal<string | null>(null),
       filterContext: vi.fn(() => ({
         labels: new Map(),
         floors: [],
-        pinned: new Set(),
-        excluded: new Set(),
       })),
-      createViewFromState: vi.fn(() => 'view-new'),
-      isOwnView: vi.fn(() => true),
       renameRoomInFloors: vi.fn(),
       removeRoomFromFloors: vi.fn(),
       setRoomFloor: vi.fn(),
@@ -549,40 +544,6 @@ describe('accessoriesComponent', () => {
 
       expect(accessories.setFilterState).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'kettle' }))
       expect(page.filter().search).toBe('kettle')
-    })
-
-    it('saves the filter as a view, which becomes the active one', async () => {
-      const page = await open({
-        rooms: [
-          roomOf('Kitchen', [
-            makeService({ uniqueId: 'a' }),
-          ]),
-        ],
-      })
-      accessories.createViewFromState.mockReturnValueOnce('view-1')
-
-      page.onSaveView('Kettles')
-
-      expect(accessories.createViewFromState).toHaveBeenCalledWith('Kettles', page.filter())
-      expect(accessories.activeViewId()).toBe('view-1')
-    })
-
-    it('leaves the active view when the filter is changed by hand', async () => {
-      const page = await open({
-        rooms: [
-          roomOf('Kitchen', [
-            makeService({ uniqueId: 'a' }),
-          ]),
-        ],
-      })
-      page.onViewSelect('view-1')
-
-      page.onFilterChange({
-        ...page.filter(),
-        search: 'kettle',
-      })
-
-      expect(accessories.activeViewId()).toBeNull()
     })
   })
 
