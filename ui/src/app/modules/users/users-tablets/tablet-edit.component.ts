@@ -7,11 +7,11 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
-import { ACCESSORY_CATEGORIES, ACCESSORY_SUBCATEGORIES } from '@/app/core/accessories/filters/accessory-categories'
 import { RequiredIndicatorComponent } from '@/app/core/components/required-indicator/required-indicator.component'
 import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { KioskDevicesService } from '@/app/modules/kiosk/kiosk-devices.service'
 import { describeScope, EMPTY_KIOSK_SCOPE, KioskScope } from '@/app/modules/kiosk/kiosk-scope'
+import { ScopePickerComponent } from '@/app/modules/kiosk/scope-picker/scope-picker.component'
 
 /** Add a tablet, or change one's name, scope, label or sensitive setting. The accessories in the scope are sent with it. */
 @Component({
@@ -19,6 +19,7 @@ import { describeScope, EMPTY_KIOSK_SCOPE, KioskScope } from '@/app/modules/kios
   imports: [
     ReactiveFormsModule,
     RequiredIndicatorComponent,
+    ScopePickerComponent,
     TranslatePipe,
   ],
   standalone: true,
@@ -39,8 +40,6 @@ export class TabletEditComponent implements OnInit {
   /** Set by the opener: the scope a new tablet starts with, e.g. the accessories page filter */
   public preselectScope?: KioskScope
 
-  protected readonly categories = ACCESSORY_CATEGORIES
-  protected readonly subcategoriesOf = ACCESSORY_SUBCATEGORIES
   protected readonly loading = signal(true)
   protected readonly saving = signal(false)
   protected readonly rooms = signal<string[]>([])
@@ -108,57 +107,13 @@ export class TabletEditComponent implements OnInit {
     this.loading.set(false)
   }
 
-  /** Whether a value is picked in one of the scope lists */
-  protected isPicked(list: keyof KioskScope, value: string): boolean {
-    return this.scope()[list].includes(value)
-  }
-
-  protected toggleRoom(room: string): void {
-    this.setScope({
-      ...this.scope(),
-      rooms: this.toggle(this.scope().rooms, room),
-    })
-  }
-
-  protected toggleLabel(label: string): void {
-    this.setScope({
-      ...this.scope(),
-      labels: this.toggle(this.scope().labels, label),
-    })
-  }
-
-  protected toggleCategory(category: string): void {
-    const current = this.scope()
-    const categories = this.toggle(current.categories, category)
-    // Subcategories belong to their category, so dropping a category drops its subcategories
-    const own = ACCESSORY_SUBCATEGORIES[category as keyof typeof ACCESSORY_SUBCATEGORIES] as readonly string[]
-    const subcategories = categories.includes(category)
-      ? current.subcategories
-      : current.subcategories.filter(entry => !own.includes(entry))
-    this.setScope({ ...current, categories, subcategories })
-  }
-
-  protected toggleSubcategory(subcategory: string): void {
-    this.setScope({
-      ...this.scope(),
-      subcategories: this.toggle(this.scope().subcategories, subcategory),
-    })
-  }
-
-  /** Subcategories shown under a picked category */
-  protected subcategoriesFor(category: string): readonly string[] {
-    return this.subcategoriesOf[category as keyof typeof ACCESSORY_SUBCATEGORIES] ?? []
+  protected onScopeChange(scope: KioskScope): void {
+    this.setScope(scope)
   }
 
   protected onLabelInput(value: string): void {
     this.labelEdited = true
     this.scopeLabelControl.setValue(value)
-  }
-
-  private toggle(values: string[], value: string): string[] {
-    return values.includes(value)
-      ? values.filter(entry => entry !== value)
-      : [...values, value]
   }
 
   private setScope(scope: KioskScope): void {

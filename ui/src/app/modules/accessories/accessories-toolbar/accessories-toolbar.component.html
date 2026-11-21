@@ -106,6 +106,17 @@
 
     <button
       type="button"
+      class="btn btn-sm btn-elegant my-0 flex-shrink-0 accessories-kiosk-button"
+      container="body"
+      [ngbTooltip]="'kiosk.start.toolbar' | translate"
+      [attr.aria-label]="'kiosk.start.toolbar' | translate"
+      (click)="openKioskMode()"
+    >
+      <i class="fas fa-display" aria-hidden="true"></i>
+    </button>
+
+    <button
+      type="button"
       class="btn btn-sm btn-elegant my-0 flex-shrink-0"
       container="body"
       [class.active]="manageLayoutActive()"
@@ -125,30 +136,6 @@
       {{ 'accessories.toolbar.filters' | translate }}
     </h5>
     <div class="d-flex align-items-center gap-2">
-      <div ngbDropdown container="body" class="d-inline-block">
-        <button
-          type="button"
-          class="btn btn-sm btn-elegant my-0 accessories-filters-menu"
-          ngbDropdownToggle
-          [attr.aria-label]="'accessories.toolbar.filters_menu' | translate"
-        >
-          <i class="fas fa-ellipsis-vertical" aria-hidden="true"></i>
-        </button>
-        <div ngbDropdownMenu>
-          <button type="button" ngbDropdownItem (click)="openKiosk()">
-            <i class="fas fa-tablet-screen-button me-2" aria-hidden="true"></i
-            >{{ 'accessories.kiosk.open' | translate }}
-          </button>
-          <button type="button" ngbDropdownItem (click)="copyKioskLink()">
-            <i class="fas fa-link me-2" aria-hidden="true"></i>{{ 'accessories.kiosk.copy_link' | translate }}
-          </button>
-          @if (canPairTablets()) {
-            <button type="button" ngbDropdownItem (click)="pairTablet()">
-              <i class="fas fa-qrcode me-2" aria-hidden="true"></i>{{ 'kiosk.tablets.pair_a_tablet' | translate }}
-            </button>
-          }
-        </div>
-      </div>
       <button
         type="button"
         class="btn-close"

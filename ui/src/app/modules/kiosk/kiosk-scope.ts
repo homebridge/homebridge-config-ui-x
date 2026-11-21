@@ -127,3 +127,11 @@ export function describeScope(scope: KioskScope, translate: (key: string) => str
   ]
   return parts.join(' · ')
 }
+
+/** The in-app path of the kiosk page for a scope, e.g. /kiosk?room=Kitchen, for copied links */
+export function kioskPath(scope: KioskScope): string {
+  const query = scopeToSearchParams(scope).toString()
+  return query
+    ? `/kiosk?${query}`
+    : '/kiosk'
+}

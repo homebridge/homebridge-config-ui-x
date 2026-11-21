@@ -1,0 +1,28 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'kiosk.start.title' | translate }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="dismiss()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <p class="small text-secondary">{{ 'kiosk.start.intro' | translate }}</p>
+    <app-scope-picker
+      class="d-block mb-3"
+      [scope]="scope()"
+      [rooms]="rooms()"
+      [labels]="labels()"
+      (scopeChange)="scope.set($event)"
+    />
+    <p class="small mb-0" role="status">{{ 'kiosk.start.count' | translate: { count: count() } }}</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-elegant" (click)="copyLink()">
+      {{ 'kiosk.start.copy_link' | translate }}
+    </button>
+    <button type="button" class="btn btn-primary" (click)="start()">{{ 'kiosk.start.button' | translate }}</button>
+  </div>
+</div>
