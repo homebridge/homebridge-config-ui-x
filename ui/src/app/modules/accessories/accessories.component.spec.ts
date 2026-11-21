@@ -409,23 +409,52 @@ describe('accessoriesComponent', () => {
       expect(page.filter().showHidden).toBe(true)
     })
 
-    it('switches groupBy to room while on, and restores the user groupBy on exit', async () => {
+    it('keeps the grouping, sort and filters unchanged when manage layout turns on and off', async () => {
       const page = await open({
         rooms: [
           roomOf('Kitchen', [
             makeService({ uniqueId: 'a' }),
           ]),
         ],
-        filter: { groupBy: 'category' },
+        filter: {
+          groupBy: 'category',
+          sortBy: 'name',
+          rooms: ['Kitchen'],
+        },
       })
+      const before = {
+        ...page.filter(),
+      }
 
       page.toggleManageLayout()
-      expect(page.filter().groupBy).toBe('room')
+      expect(page.filter()).toEqual(before)
 
       page.toggleManageLayout()
       expect(page.manageLayoutMode).toBe(false)
       expect(page.layoutLocked()).toBe(true)
-      expect(page.filter().groupBy).toBe('category')
+      expect(page.filter()).toEqual(before)
+      expect(accessories.setFilterState).not.toHaveBeenCalled()
+    })
+
+    it('lets the user change the grouping, sort and filters while manage layout is on', async () => {
+      const page = await open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'a' }),
+          ]),
+        ],
+      })
+      page.toggleManageLayout()
+
+      page.onFilterChange({
+        ...page.filter(),
+        groupBy: 'bridge',
+        sortBy: 'battery',
+      })
+
+      expect(page.filter().groupBy).toBe('bridge')
+      expect(page.filter().sortBy).toBe('battery')
+      expect(page.manageLayoutMode).toBe(true)
     })
 
     it('keeps manage mode when a filter is picked, and keeps the layout unlocked', async () => {
@@ -1510,6 +1539,145 @@ describe('accessoriesComponent', () => {
       } as any)
 
       expect(accessories.placeRoom).toHaveBeenCalledWith('Hall', 'Kitchen', null)
+    })
+  })
+
+  describe('manage layout views', () => {
+    /** Two rooms, one with two tiles, so a drop has something to move */
+    async function openView(filter: Record<string, any>) {
+      return open({
+        rooms: [
+          roomOf('Kitchen', [
+            makeService({ uniqueId: 'kettle' }),
+            makeService({ uniqueId: 'ceiling' }),
+          ]),
+          roomOf('Office', []),
+        ],
+        filter,
+      })
+    }
+
+    it('uses dragula for room grouping in manual sort with no filter, and shows the layout hint', async () => {
+      const page = await openView({ groupBy: 'room', sortBy: 'manual' })
+      const servicesGroup = dragula.createGroup.mock.calls.find(call => call[0] === 'services-bag')![1]
+      const tile = document.createElement('div')
+
+      page.toggleManageLayout()
+      fixture.detectChanges()
+
+      expect(page.manageView()).toBe('dragula')
+      expect(page.usesDragula()).toBe(true)
+      expect(page.manageFiltered()).toBe(false)
+      expect(page.manageSorted()).toBe(false)
+      expect(page.tilesDraggable()).toBe(false)
+      expect(servicesGroup.moves(tile, null, tile)).toBe(true)
+      expect(fixture.nativeElement.textContent).toContain('accessories.manage_layout_hint')
+    })
+
+    it('uses CDK with every room and room reordering for room grouping in manual sort with a filter', async () => {
+      const page = await openView({
+        groupBy: 'room',
+        sortBy: 'manual',
+        rooms: ['Kitchen'],
+      })
+      const servicesGroup = dragula.createGroup.mock.calls.find(call => call[0] === 'services-bag')![1]
+      const tile = document.createElement('div')
+
+      page.toggleManageLayout()
+      fixture.detectChanges()
+
+      expect(page.manageView()).toBe('filtered')
+      expect(page.usesDragula()).toBe(false)
+      expect(page.manageFiltered()).toBe(true)
+      expect(page.tilesDraggable()).toBe(true)
+      expect(page.displayGroups().map(group => group.key)).toEqual(['Kitchen', 'Office'])
+      expect(servicesGroup.moves(tile, null, tile)).toBe(false)
+      expect(fixture.nativeElement.textContent).toContain('accessories.manage_filtered_hint')
+    })
+
+    it('moves tiles between rooms only, with room reordering off, for room grouping in another sort', async () => {
+      const page = await openView({ groupBy: 'room', sortBy: 'name' })
+      const servicesGroup = dragula.createGroup.mock.calls.find(call => call[0] === 'services-bag')![1]
+      const tile = document.createElement('div')
+
+      page.toggleManageLayout()
+      fixture.detectChanges()
+
+      expect(page.manageView()).toBe('sorted')
+      expect(page.usesDragula()).toBe(false)
+      expect(page.manageFiltered()).toBe(false)
+      expect(page.manageSorted()).toBe(true)
+      expect(page.tilesDraggable()).toBe(true)
+      expect(servicesGroup.moves(tile, null, tile)).toBe(false)
+      expect(fixture.nativeElement.textContent).toContain('accessories.manage_sorted_hint')
+    })
+
+    it('disables tile drag when not grouped by room, and shows the group-by-room hint', async () => {
+      const page = await openView({ groupBy: 'category' })
+
+      page.toggleManageLayout()
+      fixture.detectChanges()
+
+      expect(page.manageView()).toBe('ungrouped')
+      expect(page.usesDragula()).toBe(false)
+      expect(page.tilesDraggable()).toBe(false)
+      expect(page.manageRoomRows()).toBe(false)
+      expect(fixture.nativeElement.textContent).toContain('accessories.manage_ungrouped_hint')
+    })
+
+    it('moves a tile into another room when sorted, appending it, with one call', async () => {
+      const page = await openView({ groupBy: 'room', sortBy: 'name' })
+      page.toggleManageLayout()
+
+      page.onRoomDrop({
+        previousContainer: { data: 'Kitchen' },
+        container: { data: 'Office' },
+        item: { data: 'kettle' },
+      } as any)
+
+      expect(accessories.moveServicesToRoom).toHaveBeenCalledTimes(1)
+      expect(accessories.moveServicesToRoom).toHaveBeenCalledWith(['kettle'], 'Office')
+      expect(accessories.placeService).not.toHaveBeenCalled()
+    })
+
+    it('does nothing for a drop within the same room when sorted', async () => {
+      const page = await openView({ groupBy: 'room', sortBy: 'name' })
+      page.toggleManageLayout()
+      const group = { data: 'Kitchen' }
+
+      page.onRoomDrop({
+        previousContainer: group,
+        container: group,
+        item: { data: 'kettle' },
+        previousIndex: 0,
+        currentIndex: 1,
+      } as any)
+
+      expect(accessories.moveServicesToRoom).not.toHaveBeenCalled()
+      expect(accessories.placeService).not.toHaveBeenCalled()
+    })
+
+    it('does not reorder rooms when sorted', async () => {
+      const page = await openView({ groupBy: 'room', sortBy: 'name' })
+      page.toggleManageLayout()
+
+      page.onRoomReorder({ previousIndex: 0, currentIndex: 1 } as any)
+
+      expect(accessories.placeRoom).not.toHaveBeenCalled()
+    })
+
+    it('does not move tiles between groups when not grouped by room, even in manage layout', async () => {
+      const page = await openView({ groupBy: 'category' })
+      page.toggleManageLayout()
+
+      page.onRoomDrop({
+        previousContainer: { data: 'Kitchen' },
+        container: { data: 'Office' },
+        item: { data: 'kettle' },
+      } as any)
+
+      expect(accessories.moveServicesToRoom).not.toHaveBeenCalled()
+      expect(accessories.placeService).not.toHaveBeenCalled()
     })
   })
 })

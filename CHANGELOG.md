@@ -128,6 +128,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(accessories): remove accessory views; kiosks and tablets are set up by rooms, categories, types and labels
 - fix(accessories): name bridges in the filters as homebridge advertises them, and drop the dashed outline while dragging
 - feat(accessories): start kiosk mode from its own button, and manage paired tablets only in users
+- feat(accessories): keep the chosen grouping and sort in manage layout, and open the filters as a tick list below their button
 
 ### Other Changes
 

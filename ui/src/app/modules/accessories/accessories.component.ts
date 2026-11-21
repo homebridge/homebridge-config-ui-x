@@ -29,6 +29,16 @@ import { KioskDevicesService } from '@/app/modules/kiosk/kiosk-devices.service'
 /** localStorage key for the collapsed group ids */
 const COLLAPSED_STORAGE_KEY = 'accessories-collapsed-v1'
 
+/**
+ * How manage-layout mode lets the user move things, from the view the user chose:
+ * - dragula: room groups in layout order with no filter, dragged with dragula
+ * - filtered: room groups in layout order with a filter, dragged with CDK by uniqueId
+ * - sorted: rooms grouped, sorted by something else, so tiles move between rooms only
+ * - ungrouped: grouped by category, bridge, floor or nothing, so tiles cannot move
+ * - off: manage-layout mode is off
+ */
+export type ManageView = 'dragula' | 'filtered' | 'sorted' | 'ungrouped' | 'off'
+
 @Component({
   selector: 'app-accessories',
   imports: [
@@ -70,13 +80,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public readonly linkInsecure = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
   public readonly hasPlugins = signal(this.$settings.env.hasInstalledPlugins ?? true)
   public manageLayoutMode = false
-  /**
-   * The groupBy and sortBy the user had before manage-layout mode forced them to room and manual
-   * (layout order), put back when it is left. Only keys that differ from those are kept.
-   */
-  private manageRestore: Partial<Pick<AccessoryFilterState, 'groupBy' | 'sortBy'>> = {}
-  /** The filter values manage-layout mode needs: room groups in layout order */
-  private static readonly MANAGE_FILTER = { groupBy: 'room', sortBy: 'manual' } as const
 
   // Signal references for persisted properties from service (persist across navigation)
   public readonly availableBridges = this.$accessories.availableBridges
@@ -356,9 +359,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    if (this.manageLayoutMode) {
-      this.leaveManageLayout()
-    }
     this.$accessories.stop()
 
     // Destroy drag and drop bags
@@ -426,29 +426,18 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     )))
   }
 
-  /**
-   * Called by the toolbar with the next filter. In manage-layout mode the filter is kept for this
-   * visit only, and the groupBy and sortBy it asks for are remembered for when manage-layout ends.
-   */
+  /** Called by the toolbar with the next filter. Manage-layout mode changes nothing about it. */
   public onFilterChange(next: AccessoryFilterState): void {
-    if (this.manageLayoutMode) {
-      this.manageRestore = this.overridesFor(next)
-      this.$accessories.setFilterState({
-        ...next,
-        ...AccessoriesComponent.MANAGE_FILTER,
-      }, false)
-      return
-    }
     this.$accessories.setFilterState(next)
   }
 
   /**
-   * Toggle manage layout mode. The filter stays as it is. Room grouping and layout-order sorting
-   * are used while it is on, and the user's own groupBy and sortBy come back when it ends.
+   * Toggle manage layout mode. The filter, grouping and sort stay as the user set them. Manage mode
+   * only adds editing, and the drag behaviour follows the view (see manageView).
    */
   public toggleManageLayout(): void {
     if (this.manageLayoutMode) {
-      this.leaveManageLayout()
+      this.manageLayoutMode = false
       if (!this.layoutLocked()) {
         this.toggleLayoutLock()
       }
@@ -456,32 +445,51 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     }
 
     this.manageLayoutMode = true
-    this.manageRestore = this.overridesFor(this.filter())
-    if (Object.keys(this.manageRestore).length > 0) {
-      this.$accessories.setFilterState({
-        ...this.filter(),
-        ...AccessoriesComponent.MANAGE_FILTER,
-      }, false)
-    }
-
     if (this.layoutLocked()) {
       this.toggleLayoutLock()
     }
   }
 
-  /** Whether manage-layout mode is on with no filter, so dragula does the drag-and-drop */
+  /** The drag behaviour for the view the user chose, with manage-layout mode on */
+  public manageView(): ManageView {
+    if (!this.manageLayoutMode) {
+      return 'off'
+    }
+    const { groupBy, sortBy } = this.filter()
+    if (groupBy !== 'room') {
+      return 'ungrouped'
+    }
+    if (sortBy !== 'manual') {
+      return 'sorted'
+    }
+    return this.filterActive()
+      ? 'filtered'
+      : 'dragula'
+  }
+
+  /** Whether dragula does the drag-and-drop: room grouping, manual sort, no filter */
   public usesDragula(): boolean {
-    return this.manageLayoutMode && !this.filterActive()
+    return this.manageView() === 'dragula'
   }
 
-  /** Whether manage-layout mode is on with a filter, so CDK does the drag-and-drop by uniqueId */
+  /** Whether CDK moves tiles by uniqueId and rooms can be reordered: room grouping, manual sort, with a filter */
   public manageFiltered(): boolean {
-    return this.manageLayoutMode && this.filterActive()
+    return this.manageView() === 'filtered'
   }
 
-  /** Whether tiles can be dragged at all: between rooms when filtered, or in filtered manage-layout mode */
+  /** Whether tiles move between rooms only, while sorted by something other than layout order */
+  public manageSorted(): boolean {
+    return this.manageView() === 'sorted'
+  }
+
+  /** Whether the room headers and every room are shown in manage-layout mode (room grouping, not dragula) */
+  public manageRoomRows(): boolean {
+    return this.manageLayoutMode && this.filter().groupBy === 'room' && !this.usesDragula()
+  }
+
+  /** Whether tiles can be dragged at all, in the normal filtered view or in manage-layout mode */
   public tilesDraggable(): boolean {
-    return this.canDragBetweenRooms() || this.manageFiltered()
+    return this.canDragBetweenRooms() || this.manageFiltered() || this.manageSorted()
   }
 
   /**
@@ -491,11 +499,16 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     return !this.manageLayoutMode && this.filter().groupBy === 'room' && isFilterActive(this.filter())
   }
 
-  /** The room groups the page shows: every room in filtered manage-layout mode, else the filtered groups */
+  /** The room groups the page shows: every room in manage-layout mode with room grouping, else the filtered groups */
   public displayGroups(): AccessoryGroup[] {
-    return this.manageFiltered()
+    return this.manageRoomRows()
       ? this.manageRooms()
       : this.groups()
+  }
+
+  /** The translated name of the sort in use, for the manage-layout sort hint */
+  public sortLabel(): string {
+    return this.$translate.instant(`accessories.toolbar.sort_${this.filter().sortBy}`)
   }
 
   /** How many of a room's services the filter hides */
@@ -511,14 +524,15 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   /**
    * A tile was dropped into a room's group. In filtered manage-layout mode it is placed by uniqueId
-   * among the full room. Otherwise it moves between rooms, and a drop within the same group does nothing.
+   * among the full room. Otherwise it moves between rooms (appended to the target room), and a drop
+   * within the same group does nothing.
    */
   public onRoomDrop(event: CdkDragDrop<string, string, string>): void {
     if (this.manageFiltered()) {
       this.placeDroppedTile(event)
       return
     }
-    if (event.previousContainer === event.container || !this.canDragBetweenRooms()) {
+    if (event.previousContainer === event.container || !(this.canDragBetweenRooms() || this.manageSorted())) {
       return
     }
     const uniqueId = event.item.data
@@ -600,29 +614,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.setCollapsed(this.allCollapsed()
       ? new Set()
       : new Set(this.groups().map(group => this.groupId(group))))
-  }
-
-  /** Turn manage-layout mode off, and put back the groupBy and sortBy the user chose */
-  private leaveManageLayout(): void {
-    this.manageLayoutMode = false
-    const restored = {
-      ...this.filter(),
-      ...this.manageRestore,
-    }
-    this.manageRestore = {}
-    this.$accessories.setFilterState(restored)
-  }
-
-  /** The groupBy and sortBy in a filter that differ from what manage-layout mode uses */
-  private overridesFor(state: AccessoryFilterState): Partial<Pick<AccessoryFilterState, 'groupBy' | 'sortBy'>> {
-    const overrides: Partial<Pick<AccessoryFilterState, 'groupBy' | 'sortBy'>> = {}
-    if (state.groupBy !== AccessoriesComponent.MANAGE_FILTER.groupBy) {
-      overrides.groupBy = state.groupBy
-    }
-    if (state.sortBy !== AccessoriesComponent.MANAGE_FILTER.sortBy) {
-      overrides.sortBy = state.sortBy
-    }
-    return overrides
   }
 
   private setCollapsed(next: ReadonlySet<string>): void {

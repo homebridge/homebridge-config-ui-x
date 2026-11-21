@@ -2,11 +2,10 @@ import type { BatteryInfo } from '@/app/core/accessories/filters/accessory-batte
 import type { AccessoryCategory } from '@/app/core/accessories/filters/accessory-categories'
 import type { AccessoryFilterState, AccessoryGroupBy, AccessorySortBy, FilterContext, RoomInput } from '@/app/core/accessories/filters/accessory-filters'
 
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model, OnDestroy, output, signal, TemplateRef, untracked, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, input, model, output, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
-import { NgbOffcanvas, NgbOffcanvasRef } from '@ng-bootstrap/ng-bootstrap/offcanvas'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe } from '@ngx-translate/core'
 import { debounceTime, Subject } from 'rxjs'
@@ -101,7 +100,7 @@ function countMatching(
   styleUrl: './accessories-toolbar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccessoriesToolbarComponent implements OnDestroy {
+export class AccessoriesToolbarComponent {
   public readonly filter = model.required<AccessoryFilterState>()
   public readonly rooms = input<RoomInput[]>([])
   public readonly bridges = input<string[]>([])
@@ -135,9 +134,6 @@ export class AccessoriesToolbarComponent implements OnDestroy {
   /** Sections the user expanded past the first options */
   public readonly expandedFacets = signal<ReadonlySet<FacetKey>>(new Set())
 
-  private readonly filtersPanel = viewChild.required<TemplateRef<unknown>>('filtersPanel')
-  private offcanvasRef: NgbOffcanvasRef | null = null
-
   public readonly active = computed(() => isFilterActive(this.filter()))
 
   /** The labels on the accessories, as the matching context needs them */
@@ -151,7 +147,7 @@ export class AccessoriesToolbarComponent implements OnDestroy {
   ].sort((a, b) => a.localeCompare(b)))
 
   private readonly $modal = inject(NgbModal)
-  private readonly $offcanvas = inject(NgbOffcanvas)
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
 
   /** How many accessories each subcategory holds, ignoring the other filters (but not hidden ones unless shown) */
   private readonly subcategoryCounts = computed(() => {
@@ -286,10 +282,6 @@ export class AccessoriesToolbarComponent implements OnDestroy {
     })
   }
 
-  public ngOnDestroy(): void {
-    this.closeFilters()
-  }
-
   public onSearch(text: string): void {
     this.searchText.set(text)
     this.searchPending = true
@@ -308,21 +300,17 @@ export class AccessoriesToolbarComponent implements OnDestroy {
     this.emit({ showHidden: (event.target as HTMLInputElement).checked })
   }
 
-  /** Open the filter panel from the right */
-  public openFilters(): void {
-    this.closeFilters()
-    this.offcanvasRef = this.$offcanvas.open(this.filtersPanel(), {
-      position: 'end',
-      panelClass: 'accessories-filters-panel',
-      ariaLabelledBy: 'accessories-filters-title',
-    })
-    // Dismissing with Escape or the backdrop rejects the result promise; nothing waits on it
-    this.offcanvasRef.result.catch(() => undefined)
-  }
-
-  public closeFilters(): void {
-    this.offcanvasRef?.close()
-    this.offcanvasRef = null
+  /**
+   * On phones the Filters panel spans the viewport under the top bar. Record where the top bar ends
+   * when it opens, so the panel can be placed there.
+   */
+  public onFiltersOpenChange(open: boolean): void {
+    if (!open) {
+      return
+    }
+    const topbar = this.host.nativeElement.querySelector<HTMLElement>('.accessories-topbar')
+    const bottom = topbar?.getBoundingClientRect().bottom ?? 0
+    this.host.nativeElement.style.setProperty('--accessories-filters-top', `${bottom}px`)
   }
 
   /** Add or remove one value from a multi-select filter. Any selected value matches within a filter. */
