@@ -163,6 +163,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - test(ui): stop loading the app polyfills in the ui tests, which left them unchecked
 - fix(accessories): hide a camera's recording, operating mode and data stream services
 - feat(accessories): show a camera as one tile, with its sound, motion sensor and doorbell
+- fix(accessories): accept an id saved before hap-client 5.4.1 in the accessory api (#3125)
 
 ### Homebridge Dependencies
 

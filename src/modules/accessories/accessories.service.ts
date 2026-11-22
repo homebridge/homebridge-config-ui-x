@@ -464,6 +464,24 @@ export class AccessoriesService {
   }
 
   /**
+   * Find a HAP service by its uniqueId. hap-client 5.4.1 builds the id differently, so an id saved
+   * from an older version (by a script or an app using this API) still finds its service through
+   * `legacyUniqueId`, but only when no other service shares that old id.
+   * @param services
+   * @param uniqueId
+   */
+  private findService(services: ServiceType[], uniqueId: string): ServiceType | undefined {
+    const service = services.find(x => x.uniqueId === uniqueId)
+    if (service) {
+      return service
+    }
+    const legacy = services.filter(x => x.legacyUniqueId === uniqueId)
+    return legacy.length === 1
+      ? legacy[0]
+      : undefined
+  }
+
+  /**
    * Get a single accessory and refresh its characteristics
    * @param uniqueId
    */
@@ -475,7 +493,7 @@ export class AccessoriesService {
 
     // HAP accessory (existing logic)
     const services = await this.loadAccessories()
-    const service = services.find(x => x.uniqueId === uniqueId)
+    const service = this.findService(services, uniqueId)
 
     if (!service) {
       throw new BadRequestException(`Service with uniqueId of '${uniqueId}' not found.`)
@@ -537,7 +555,7 @@ export class AccessoriesService {
    */
   public async setAccessoryCharacteristic(uniqueId: string, characteristicType: string, value: number | boolean | string) {
     const services = await this.loadAccessories()
-    const service = services.find(x => x.uniqueId === uniqueId)
+    const service = this.findService(services, uniqueId)
 
     if (!service) {
       throw new BadRequestException(`Service with uniqueId of '${uniqueId}' not found.`)

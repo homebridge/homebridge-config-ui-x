@@ -192,6 +192,61 @@ describe('AccessoriesController (e2e)', () => {
     expect(refreshCharacteristics).toHaveBeenCalledTimes(1)
   })
 
+  // hap-client 5.4.1 builds each service's uniqueId differently, so a script that saved an id from an
+  // older version must still reach the service through its legacyUniqueId (#3125)
+  const LEGACY_ID = 'a1'.repeat(32)
+  const withLegacy = (...legacyIds: string[]) => legacyIds.map((legacyUniqueId, i) => ({
+    ...mockedServices[0],
+    uniqueId: `${'b2'.repeat(31)}${i}${i}`,
+    legacyUniqueId,
+  }))
+
+  it('GET /accessories/:uniqueId accepts an id saved before hap-client 5.4.1 (#3125)', async () => {
+    hapClientMock.mockResolvedValue(withLegacy(LEGACY_ID) as any)
+    const res = await app.inject({
+      method: 'GET',
+      path: `/accessories/${LEGACY_ID}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().uniqueId).toBe(`${'b2'.repeat(31)}00`)
+  })
+
+  it('PUT /accessories/:uniqueId accepts an id saved before hap-client 5.4.1 (#3125)', async () => {
+    hapClientMock.mockResolvedValue(withLegacy(LEGACY_ID) as any)
+    getCharacteristic.mockReturnValueOnce(booleanCharacteristic)
+    const res = await app.inject({
+      method: 'PUT',
+      path: `/accessories/${LEGACY_ID}`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        characteristicType: 'On',
+        value: 'true',
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(setValue).toHaveBeenCalledWith(true)
+  })
+
+  it('GET /accessories/:uniqueId refuses an old id that two services shared (#3125)', async () => {
+    hapClientMock.mockResolvedValue(withLegacy(LEGACY_ID, LEGACY_ID) as any)
+    const res = await app.inject({
+      method: 'GET',
+      path: `/accessories/${LEGACY_ID}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
   it('GET /accessories/:uniqueId (invalid unique id)', async () => {
     const res = await app.inject({
       method: 'GET',
