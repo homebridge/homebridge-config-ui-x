@@ -6,8 +6,13 @@ import process from 'node:process'
 
 import { Catch, NotFoundException } from '@nestjs/common'
 
+import { setBaseHref } from '../web-root.js'
+
 @Catch(NotFoundException)
 export class SpaFilter implements ExceptionFilter {
+  /** @param webRoot - the path the UI is served under, which the page is pointed at */
+  constructor(private readonly webRoot = '') {}
+
   catch(exception: NotFoundException, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
     const req = ctx.getRequest()
@@ -30,6 +35,6 @@ export class SpaFilter implements ExceptionFilter {
     res.header('Cache-Control', 'no-cache, no-store, must-revalidate')
     res.header('Pragma', 'no-cache')
     res.header('Expires', '0')
-    res.send(indexHtml)
+    res.send(setBaseHref(indexHtml, this.webRoot))
   }
 }

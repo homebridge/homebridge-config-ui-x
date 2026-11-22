@@ -756,6 +756,8 @@
   "settings.network.title_network_interfaces": "Інтерфейс мережі",
   "settings.network.title_security": "Безпека",
   "settings.network.title_terminal": "Логування та термінал",
+  "settings.network.web_root": "Web Root Path",
+  "settings.network.web_root_desc": "A path to open the UI under, such as /homebridge, when a reverse proxy shares one address between several apps. Leave it empty to use no path.",
   "settings.ports.commissioned": "Введено в експлуатацію",
   "settings.ports.conflict_warning": "Виявлено конфлікти портів.",
   "settings.ports.hap_port": "HAP порт",

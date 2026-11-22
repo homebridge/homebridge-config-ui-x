@@ -756,6 +756,8 @@
   "settings.network.title_network_interfaces": "ממשק רשת",
   "settings.network.title_security": "אבטחה",
   "settings.network.title_terminal": "Logging & Terminal",
+  "settings.network.web_root": "Web Root Path",
+  "settings.network.web_root_desc": "A path to open the UI under, such as /homebridge, when a reverse proxy shares one address between several apps. Leave it empty to use no path.",
   "settings.ports.commissioned": "Commissioned",
   "settings.ports.conflict_warning": "Port conflicts detected.",
   "settings.ports.hap_port": "HAP Port",

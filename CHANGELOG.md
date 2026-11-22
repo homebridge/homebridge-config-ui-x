@@ -164,6 +164,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): hide a camera's recording, operating mode and data stream services
 - feat(accessories): show a camera as one tile, with its sound, motion sensor and doorbell
 - fix(accessories): accept an id saved before hap-client 5.4.1 in the accessory api (#3125)
+- feat(server): add a web root setting, to serve the ui under a path behind a reverse proxy (#746)
 
 ### Homebridge Dependencies
 

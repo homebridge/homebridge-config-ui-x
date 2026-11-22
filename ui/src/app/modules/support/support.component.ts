@@ -36,7 +36,7 @@ export class SupportComponent implements OnInit {
   public get swaggerUrl(): string {
     // In development mode, point to the backend server directly
     return environment.production
-      ? this.swaggerEndpoint
+      ? `${environment.api.webRoot}${this.swaggerEndpoint}`
       : `${environment.api.origin}${this.swaggerEndpoint}`
   }
 

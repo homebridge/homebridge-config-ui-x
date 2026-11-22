@@ -52,6 +52,19 @@ describe('WsService', () => {
       expect(options).toMatchObject({ reconnectionAttempts: 10, reconnectionDelayMax: 30000 })
     })
 
+    it('connects on the path under the web root, which is all a reverse proxy may pass on', () => {
+      const original = environment.api.socketPath
+      try {
+        environment.api.socketPath = '/homebridge/socket.io'
+
+        service.connectToNamespace('status')
+
+        expect(vi.mocked(io).mock.calls[0][1]).toMatchObject({ path: '/homebridge/socket.io' })
+      } finally {
+        environment.api.socketPath = original
+      }
+    })
+
     it('sends the token that is current at each handshake', () => {
       service.connectToNamespace('status')
       const { auth: authCallback } = vi.mocked(io).mock.calls[0][1] as any

@@ -15,6 +15,7 @@ import { pathExists, pathExistsSync, readJson, readJSONSync, readJsonSync } from
 import { satisfies } from 'semver'
 
 import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry.js'
+import { activeWebRoot } from '../web-root.js'
 
 const WALLPAPER_EXTENSIONS = new Set([
   '.avif',
@@ -120,9 +121,17 @@ export class ConfigService {
   /** `ui.restart` as config.json has it (the run-time `ui.restart` is replaced by setConfig) */
   public savedUiRestart: string | undefined
 
+  /**
+   * The path the UI is served under (see core/web-root.ts), as it was when the UI started. A saved change is in
+   * `ui.webRoot`, and is not used until a restart: the server keeps answering on the path it started with, and
+   * the page and the cookies must go on matching it.
+   */
+  public readonly webRoot: string
+
   constructor() {
     const homebridgeConfig = readJSONSync(this.configPath)
     this.parseConfig(homebridgeConfig)
+    this.webRoot = activeWebRoot(this.ui.webRoot)
     this.checkIfRunningOnRaspberryPi()
     this.checkIfRunningOnRaspbianImage()
   }
@@ -302,6 +311,7 @@ export class ConfigService {
       wallpaper: this.ui.wallpaper,
       host: this.ui.host || '',
       proxyHost: this.ui.proxyHost || '',
+      webRoot: this.ui.webRoot || '',
       keepOrphans: this.hbStartupSettings?.keepOrphans || false,
     }
   }

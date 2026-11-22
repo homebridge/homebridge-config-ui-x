@@ -17,7 +17,10 @@ export const environment = {
   api: {
     base: `${backendUrl}/api`,
     socket: backendUrl,
+    socketPath: '/socket.io',
     origin: backendUrl,
+    // The dev server always calls the root of the backend: see activeWebRoot() on the server
+    webRoot: '',
   },
   jwt: {
     tokenKey: 'access_token',

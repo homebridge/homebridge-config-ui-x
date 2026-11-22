@@ -756,6 +756,8 @@
   "settings.network.title_network_interfaces": "網路介面",
   "settings.network.title_security": "安全性",
   "settings.network.title_terminal": "日誌與終端機",
+  "settings.network.web_root": "Web Root Path",
+  "settings.network.web_root_desc": "A path to open the UI under, such as /homebridge, when a reverse proxy shares one address between several apps. Leave it empty to use no path.",
   "settings.ports.commissioned": "已配對",
   "settings.ports.conflict_warning": "偵測到連接埠衝突。",
   "settings.ports.hap_port": "HAP 連接埠",

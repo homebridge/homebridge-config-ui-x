@@ -552,6 +552,43 @@ describe('setupWizardComponent', () => {
       await pending
     })
 
+    it.each([
+      [
+        'the home page, after the first user is made',
+        'setup-complete',
+        '',
+        '/',
+      ],
+      [
+        'the home page under the web root, after the first user is made',
+        'setup-complete',
+        '/homebridge',
+        '/homebridge/',
+      ],
+      [
+        'the login page, after a restore',
+        'restore-complete',
+        '',
+        '/login',
+      ],
+      [
+        'the login page under the web root, after a restore',
+        'restore-complete',
+        '/homebridge',
+        '/homebridge/login',
+      ],
+    ])('links to %s', (_case, step, webRoot, href) => {
+      const original = environment.api.webRoot
+      try {
+        environment.api.webRoot = webRoot
+        showStep(create(), step)
+
+        expect(fixture.nativeElement.querySelector('a.btn-primary').getAttribute('href')).toBe(href)
+      } finally {
+        environment.api.webRoot = original
+      }
+    })
+
     it('stops asking once homebridge is up', async () => {
       const wizard = create()
       api.respond('get', '/auth/settings', {})

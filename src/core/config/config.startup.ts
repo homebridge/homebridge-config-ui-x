@@ -9,6 +9,7 @@ import { readJson } from 'fs-extra/esm'
 
 import { Logger } from '../logger/logger.service.js'
 import { SslCertGeneratorService } from '../ssl/ssl-cert-generator.service.js'
+import { activeWebRoot } from '../web-root.js'
 
 /**
  * Return config required to start the console server
@@ -31,6 +32,7 @@ export async function getStartupConfig() {
   }).length
 
   config.host = ipv6 ? '::' : '0.0.0.0'
+  config.webRoot = ''
 
   // If no ui settings configured - we are done
   if (!ui) {
@@ -96,6 +98,13 @@ export async function getStartupConfig() {
   // Preload proxy host settings
   if (ui.proxyHost && process.env.UIX_DEVELOPMENT !== '1') {
     config.cspWsOverride = `wss://${ui.proxyHost} ws://${ui.proxyHost}`
+  }
+
+  // Preload the web root. A value the server cannot use must not stop the UI from starting: it then starts at
+  // the root, so the user can open it and fix the setting
+  config.webRoot = activeWebRoot(ui.webRoot)
+  if (ui.webRoot && !config.webRoot && process.env.UIX_DEVELOPMENT !== '1') {
+    logger.error(`Web root config error: ui.webRoot: ${JSON.stringify(ui.webRoot)} is not a valid path, so the UI is at the root.`)
   }
 
   // Extra origins allowed to frame the UI. The default CSP is

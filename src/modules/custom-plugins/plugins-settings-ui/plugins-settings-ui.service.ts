@@ -214,7 +214,7 @@ export class PluginsSettingsUiService {
             serverEnv: ${JSON.stringify(this.configService.uiSettings(true)).replace(/</g, '\\u003c')},
           };
           </script>
-          <script src="${safeOrigin}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
+          <script src="${safeOrigin}${this.configService.webRoot}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
           <script>
             window.addEventListener('load', () => {
               window.parent.postMessage({action: 'loaded'}, '*');

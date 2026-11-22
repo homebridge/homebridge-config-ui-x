@@ -42,6 +42,10 @@ export class SetupWizardComponent implements OnInit {
   private destroyRef = inject(DestroyRef)
 
   // Signals
+  /** Plain links, for a full page load: under the web root when the UI has one */
+  public readonly homeUrl = `${environment.api.webRoot}/`
+  public readonly loginUrl = `${environment.api.webRoot}/login`
+
   public readonly step = signal<'welcome' | 'create-account' | 'setup-complete' | 'restore-backup' | 'restoring' | 'restarting' | 'restore-complete'>('welcome')
   public readonly backgroundStyle = signal<string | undefined>(undefined)
   public readonly progress = signal(1)

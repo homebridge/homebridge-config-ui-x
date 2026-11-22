@@ -1072,6 +1072,40 @@
             </li>
             <li
               class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-network-web-root')"
+              [attr.inert]="isItemHidden('setting-network-web-root') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'settings.network.web_root' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.network.web_root_desc' | translate }}</small>
+                  @if (isPwa) {
+                    <br /><small class="grey-text pe-2">
+                      <i aria-hidden="true" class="fas fa-exclamation-triangle red-text"></i>
+                      {{ 'settings.warning_pwa' | translate }}
+                    </small>
+                  }
+                </span>
+                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+                  <input
+                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
+                    type="text"
+                    placeholder="/homebridge"
+                    [formControl]="uiWebRootFormControl"
+                    [attr.aria-label]="'settings.network.web_root' | translate"
+                    [class.is-invalid]="uiWebRootIsInvalid()"
+                  />
+                  @if (uiWebRootIsSaving()) {
+                    <i
+                      aria-hidden="true"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
+                    ></i>
+                  }
+                </div>
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
               [class.setting-hidden]="isItemHidden('setting-ui-port-network')"
               [attr.inert]="isItemHidden('setting-ui-port-network') || null"
             >

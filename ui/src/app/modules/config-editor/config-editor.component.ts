@@ -1371,6 +1371,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           pattern: '^[^{}/ :\\\\]+(?::\\d+)?$',
                           description: this.$translate.instant('settings.network.proxy_desc'),
                         },
+                        webRoot: {
+                          title: this.$translate.instant('settings.network.web_root'),
+                          type: 'string',
+                          pattern: '^/?[\\w.~-]+(?:/[\\w.~-]+)*/?$',
+                          description: this.$translate.instant('settings.network.web_root_desc'),
+                        },
                         scheduledBackupPath: {
                           title: this.$translate.instant('backup.settings_path'),
                           description: 'The full path to where the service should save daily scheduled backups archives.',

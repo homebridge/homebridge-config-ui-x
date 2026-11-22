@@ -213,6 +213,12 @@ describe('SettingsComponent', () => {
         'proxy.local',
       ],
       [
+        'uiWebRootFormControl',
+        '/homebridge',
+        'webRoot',
+        '/homebridge',
+      ],
+      [
         'uiTerminalBufferSizeFormControl',
         5000,
         'terminal.bufferSize',
@@ -451,6 +457,7 @@ describe('SettingsComponent', () => {
       ['the ui port', 'uiPortFormControl'],
       ['the host it binds to', 'uiHostFormControl'],
       ['the proxy host', 'uiProxyHostFormControl'],
+      ['the web root', 'uiWebRootFormControl'],
       ['the certificate mode', 'uiSslTypeFormControl'],
     ])('locks %s in an installed app', async (_case, control) => {
       const page = await asInstalledApp()
@@ -644,6 +651,33 @@ describe('SettingsComponent', () => {
 
       expect(uiPatch()?.port).toBeUndefined()
       expect(component.uiPortIsInvalid()).toBe(true)
+    })
+
+    it.each([
+      ['with a space in it', '/home bridge'],
+      ['that goes up a folder', '/home/../bridge'],
+      ['the server answers on itself', '/api'],
+      ['that is a full address', 'https://example.com/homebridge'],
+    ])('rejects a web root %s', async (_case, webRoot) => {
+      await change('uiWebRootFormControl', webRoot)
+
+      // The server starts at the root when it reads a web root it cannot use
+      expect(uiPatch()?.webRoot).toBeUndefined()
+      expect(component.uiWebRootIsInvalid()).toBe(true)
+    })
+
+    it('saves a web root the way the server reads it', async () => {
+      await change('uiWebRootFormControl', 'homebridge/')
+
+      expect(uiPatch()).toMatchObject({ webRoot: '/homebridge' })
+      expect(component.uiWebRootIsInvalid()).toBe(false)
+    })
+
+    it('saves an empty web root, to go back to the root', async () => {
+      await change('uiWebRootFormControl', '/homebridge')
+      await change('uiWebRootFormControl', '')
+
+      expect(uiPatch()).toMatchObject({ webRoot: '' })
     })
 
     it('refuses to put the ui on the homebridge port', async () => {
@@ -1009,6 +1043,12 @@ describe('SettingsComponent', () => {
         control: 'uiProxyHostFormControl',
         value: 'proxy.local',
         saving: 'uiProxyHostIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiWebRootFormControl',
+        value: '/homebridge',
+        saving: 'uiWebRootIsSaving',
         ...UI_CONFIG,
       },
       {

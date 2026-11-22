@@ -6,6 +6,7 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 import { API_PREFIX } from '../../../core/api.constants.js'
 import { AdminGuard } from '../../../core/auth/guards/admin.guard.js'
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard.js'
+import { ConfigService } from '../../../core/config/config.service.js'
 import { PluginsSettingsUiTicketService } from './plugins-settings-ui-ticket.service.js'
 import { PluginsSettingsUiService } from './plugins-settings-ui.service.js'
 
@@ -15,6 +16,7 @@ export class PluginsSettingsUiController {
   constructor(
     @Inject(PluginsSettingsUiService) private readonly pluginSettingsUiService: PluginsSettingsUiService,
     @Inject(PluginsSettingsUiTicketService) private readonly ticketService: PluginsSettingsUiTicketService,
+    @Inject(ConfigService) private readonly configService: ConfigService,
   ) {}
 
   @Post('/:pluginName/ticket')
@@ -98,9 +100,10 @@ export class PluginsSettingsUiController {
   }
 
   private setAssetSessionCookie(request, reply, token: string, maxAge = PluginsSettingsUiTicketService.assetSessionTtl) {
-    // Build the scope from the known application prefix and route parameter;
-    // never let encoded path text or query data influence a Set-Cookie Path.
-    const cookiePath = `${API_PREFIX}/plugins/settings-ui/${encodeURIComponent(request.params.pluginName)}/`
+    // Build the scope from the web root, the known application prefix and the
+    // route parameter; never let encoded path text or query data influence a
+    // Set-Cookie Path.
+    const cookiePath = `${this.configService.webRoot}${API_PREFIX}/plugins/settings-ui/${encodeURIComponent(request.params.pluginName)}/`
     const secure = request.protocol === 'https'
       ? '; Secure'
       : ''

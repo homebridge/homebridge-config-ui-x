@@ -36,6 +36,7 @@ export class SettingsService implements OnDestroy {
   public env: EnvInterface = {} as EnvInterface
   public host!: string
   public proxyHost!: string
+  public webRoot!: string
   public formAuth = true
   public sessionTimeout = 28800
   public sessionTimeoutInactivityBased = false
@@ -124,6 +125,7 @@ export class SettingsService implements OnDestroy {
     this.env = data.env
     this.host = data.host!
     this.proxyHost = data.proxyHost!
+    this.webRoot = data.webRoot!
     this.lightingMode = data.lightingMode
     this.wallpaper = data.wallpaper
     this.setLightingMode(this.lightingMode, 'user')

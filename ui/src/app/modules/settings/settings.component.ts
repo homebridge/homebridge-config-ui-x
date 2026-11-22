@@ -16,6 +16,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { NotificationService } from '@/app/core/communication/notification.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
+import { readWebRoot } from '@/app/core/helpers/web-root.helper'
 import { chooseStartupLanguage, localeIdFor } from '@/app/core/locales'
 import { ACCESSORY_CONTROL_LISTS_MODAL_DATA, CONFIRM_MODAL_DATA, NETWORK_INTERFACES_MODAL_DATA, REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { RE_CRON_FIELD, RE_HAP_NAME_PATTERN, RE_WHITESPACE_SINGLE } from '@/app/core/regex.constants'
@@ -130,6 +131,7 @@ export class SettingsComponent implements OnInit {
       'setting-port-range',
       'setting-network-host',
       'setting-network-proxy',
+      'setting-network-web-root',
       'setting-ui-port-network',
       'setting-port-overview',
     ],
@@ -322,6 +324,10 @@ export class SettingsComponent implements OnInit {
 
   public readonly uiProxyHostIsSaving = signal(false)
   public uiProxyHostFormControl = new FormControl('')
+
+  public readonly uiWebRootIsSaving = signal(false)
+  public readonly uiWebRootIsInvalid = signal(false)
+  public uiWebRootFormControl = new FormControl('')
 
   public readonly uiAuthIsSaving = signal(false)
   public uiAuthFormControl = new UntypedFormControl(true)
@@ -599,6 +605,7 @@ export class SettingsComponent implements OnInit {
       'setting-port-range': this.$translate.instant('settings.network.port_range'),
       'setting-network-host': this.$translate.instant('settings.network.host'),
       'setting-network-proxy': this.$translate.instant('settings.network.proxy'),
+      'setting-network-web-root': this.$translate.instant('settings.network.web_root'),
       'setting-ui-port-network': this.$translate.instant('settings.network.port_ui'),
       'setting-port-overview': this.$translate.instant('settings.ports.title'),
 
@@ -659,6 +666,7 @@ export class SettingsComponent implements OnInit {
       this.uiPortFormControl.disable()
       this.uiHostFormControl.disable()
       this.uiProxyHostFormControl.disable()
+      this.uiWebRootFormControl.disable()
       this.uiSslTypeFormControl.disable()
     }
 
@@ -818,6 +826,11 @@ export class SettingsComponent implements OnInit {
     this.uiProxyHostFormControl.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.uiProxyHostSave(value!))
+
+    this.uiWebRootFormControl.patchValue(this.$settings.webRoot || '', { emitEvent: false })
+    this.uiWebRootFormControl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
+      .subscribe(value => this.uiWebRootSave(value!))
 
     this.hbPackageFormControl.patchValue(this.$settings.env.homebridgePackagePath || '', { emitEvent: false })
     this.hbPackageFormControl.valueChanges
@@ -1856,6 +1869,30 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiProxyHostIsSaving.set(false)
+    }
+  }
+
+  private async uiWebRootSave(typed: string): Promise<void> {
+    // The server starts at the root when it reads a path it cannot use, so that one is never saved
+    const value = readWebRoot(typed)
+    if (value === null) {
+      this.uiWebRootIsInvalid.set(true)
+      return
+    }
+
+    try {
+      this.uiWebRootIsSaving.set(true)
+      this.$settings.setItem('webRoot', value)
+      await this.queueUiSettingChange('webRoot', value)
+      this.uiWebRootIsInvalid.set(false)
+      setTimeout(() => {
+        this.uiWebRootIsSaving.set(false)
+        this.$settings.showRestartToast()
+      }, 1000)
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+      this.uiWebRootIsSaving.set(false)
     }
   }
 
