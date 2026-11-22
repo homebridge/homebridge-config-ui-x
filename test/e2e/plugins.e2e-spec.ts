@@ -368,6 +368,44 @@ describe('PluginController (e2e)', () => {
       expect(await search('philips hue')).toEqual(['homebridge-hue', 'homebridge-hue-sync'])
     })
 
+    it('shows the first maintainer as the author, not github actions for a trusted publish (#3146)', async () => {
+      mockNpm([
+        {
+          package: {
+            ...searchHit('homebridge-fhemgate', 'FHEM gateway').package,
+            publisher: {
+              username: 'GitHub Actions',
+              email: 'npm-oidc-no-reply@github.com',
+              trustedPublisher: { id: 'github' },
+            },
+            maintainers: [
+              { username: 'bircni' },
+            ],
+          },
+        } as ReturnType<typeof searchHit>,
+        {
+          package: {
+            ...searchHit('homebridge-older', 'An older listing').package,
+            publisher: { username: 'someone' },
+          },
+        } as ReturnType<typeof searchHit>,
+      ])
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins/search/homebridge',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const authors = Object.fromEntries(res.json().map((x: HomebridgePlugin) => [x.name, x.author]))
+      expect(authors['homebridge-fhemgate']).toBe('bircni')
+      // A listing without maintainers still falls back to the publisher
+      expect(authors['homebridge-older']).toBe('someone')
+    })
+
     it('finds a package that npm search does not list by its name', async () => {
       mockNpm([], {
         'homebridge-newplug': {

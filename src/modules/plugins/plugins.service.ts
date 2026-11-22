@@ -634,7 +634,12 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
           description: (pkg.package.description || pkg.package.name).replace(RE_URL_WITH_OPTIONAL_PAREN, '').trim(),
           keywords: pkg.package.keywords || [],
           links: pkg.package.links,
-          author: this.pluginAuthors[pkg.package.name] || (pkg.package.publisher ? pkg.package.publisher.username : null),
+          // The first maintainer, as for an installed plugin. With npm trusted publishing the publisher is
+          // 'GitHub Actions', not a person (#3146)
+          author: this.pluginAuthors[pkg.package.name]
+            || pkg.package.maintainers?.[0]?.username
+            || pkg.package.publisher?.username
+            || null,
           verifiedPlugin: this.verifiedPlugins.includes(pkg.package.name),
           verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.package.name),
           supportsMatter: this.supportsMatter(pkg.package.keywords),
