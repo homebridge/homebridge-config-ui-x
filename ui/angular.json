@@ -208,6 +208,7 @@
             "tsConfig": "tsconfig.spec.json",
             "runner": "vitest",
             "runnerConfig": "vitest-base.config.ts",
+            "polyfills": [],
             "setupFiles": ["src/testing/setup.ts"]
           }
         }
