@@ -51,6 +51,10 @@ export class AccessoriesService {
     'InputSource',
     'LockManagement',
     'CameraRTPStreamManagement',
+    // The rest of a camera's video and recording plumbing, which has nothing to show
+    'CameraRecordingManagement',
+    'CameraOperatingMode',
+    'DataStreamTransportManagement',
     'ProtocolInformation',
     'NFCAccess',
     'BridgedNode',

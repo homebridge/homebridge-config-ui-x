@@ -161,6 +161,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): match the start of words in the plugin search (#3138) (@emreocell)
 - fix(plugins): show a plugin's first maintainer in the search, not github actions (#3146)
 - test(ui): stop loading the app polyfills in the ui tests, which left them unchecked
+- fix(accessories): hide a camera's recording, operating mode and data stream services
 
 ### Homebridge Dependencies
 
