@@ -8,6 +8,7 @@ import { AccessCodeComponent } from '@/app/core/accessories/types/hap/access-cod
 import { AirPurifierComponent } from '@/app/core/accessories/types/hap/air-purifier/air-purifier.component'
 import { AirQualitySensorComponent } from '@/app/core/accessories/types/hap/air-quality-sensor/air-quality-sensor.component'
 import { BatteryComponent } from '@/app/core/accessories/types/hap/battery/battery.component'
+import { CameraComponent } from '@/app/core/accessories/types/hap/camera/camera.component'
 import { CarbonDioxideSensorComponent } from '@/app/core/accessories/types/hap/carbon-dioxide-sensor/carbon-dioxide-sensor.component'
 import { CarbonMonoxideSensorComponent } from '@/app/core/accessories/types/hap/carbon-monoxide-sensor/carbon-monoxide-sensor.component'
 import { ContactSensorComponent } from '@/app/core/accessories/types/hap/contact-sensor/contact-sensor.component'
@@ -89,6 +90,7 @@ import { MatterWindowCoveringComponent } from '@/app/core/accessories/types/matt
     DoorComponent,
     TelevisionComponent,
     BatteryComponent,
+    CameraComponent,
     SpeakerComponent,
     SecuritySystemComponent,
     LeakSensorComponent,

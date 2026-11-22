@@ -283,6 +283,9 @@
           {{ 'accessories.core.speaker' | translate }}
         </app-speaker>
       }
+      @case ('CameraRTPStreamManagement') {
+        <app-camera [service]="service()" [readyForControl]="$accessories.hapReadyForControl" />
+      }
       @case ('Doorbell') {
         <app-doorbell [service]="service()" [readyForControl]="$accessories.hapReadyForControl">
           {{ 'accessories.core.doorbell' | translate }}

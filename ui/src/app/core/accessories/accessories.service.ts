@@ -50,8 +50,8 @@ export class AccessoriesService {
   private hiddenTypes = new Set([
     'InputSource',
     'LockManagement',
-    'CameraRTPStreamManagement',
-    // The rest of a camera's video and recording plumbing, which has nothing to show
+    // A camera's recording plumbing, which has nothing to show. Its video stream is the
+    // camera's own tile - see attachPartsToCamera()
     'CameraRecordingManagement',
     'CameraOperatingMode',
     'DataStreamTransportManagement',
@@ -945,11 +945,55 @@ export class AccessoriesService {
     }
   }
 
+  /**
+   * Show a camera as one tile, built on its first video stream. Folded into it: any other
+   * streams, its microphone, speaker and motion sensor, and on a video doorbell the bell and its
+   * button. A part is folded only when the camera has exactly one of that type, as with the fan
+   * on a heater cooler. The battery, a light and a siren keep their own tiles (decided by BP).
+   * A doorbell is told from a plain camera by its Doorbell service, which HomeKit requires.
+   */
+  private attachPartsToCamera(service: ServiceType) {
+    const sameAccessory = this.accessories.services.filter(serv => this.isSameAccessory(serv, service))
+    const ofType = (type: string) => sameAccessory.filter(serv => serv.type === type)
+
+    const streams = ofType('CameraRTPStreamManagement').sort((a, b) => a.iid - b.iid)
+    if (streams[0] !== service) {
+      return
+    }
+
+    const parts = streams.slice(1)
+    for (const type of [
+      'Microphone',
+      'Speaker',
+      'MotionSensor',
+      'Doorbell',
+    ]) {
+      const found = ofType(type)
+      if (found.length === 1) {
+        parts.push(found[0])
+      }
+    }
+    const buttons = ofType('StatelessProgrammableSwitch')
+    if (ofType('Doorbell').length === 1 && buttons.length === 1) {
+      parts.push(buttons[0])
+    }
+
+    for (const part of parts) {
+      if (!service.linkedServices) {
+        service.linkedServices = {}
+      }
+      service.linkedServices[part.iid] = part
+      this.combinedServiceIds.add(part.uniqueId!)
+    }
+  }
+
   private combineRelatedServices() {
     this.combinedServiceIds.clear()
 
     for (const service of this.accessories.services) {
-      if (service.type === 'HeaterCooler') {
+      if (service.type === 'CameraRTPStreamManagement') {
+        this.attachPartsToCamera(service)
+      } else if (service.type === 'HeaterCooler') {
         this.attachFanToHeaterCooler(service)
       } else if (service.type === 'HumidifierDehumidifier') {
         this.attachFanToHumidifierDehumidifier(service)

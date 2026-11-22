@@ -13,6 +13,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { HapAirQualitySensorManageComponent } from '@/app/core/accessories/types/hap/air-quality-sensor/air-quality-sensor.manage.component'
+import { CameraManageComponent } from '@/app/core/accessories/types/hap/camera/camera.manage.component'
 import { FilterMaintenanceManageComponent } from '@/app/core/accessories/types/hap/filter-maintenance/filter-maintenance.manage.component'
 import { GarageDoorOpenerManageComponent } from '@/app/core/accessories/types/hap/garage-door-opener/garage-door-opener.manage.component'
 import { SecuritySystemManageComponent } from '@/app/core/accessories/types/hap/security-system/security-system.manage.component'
@@ -467,6 +468,73 @@ describe('the remaining HAP manage modals', () => {
 
       expect(component.airQuality).toBe(5)
       expect(component.pm25).toBe(90)
+    })
+  })
+
+  describe('camera', () => {
+    /**
+     * A camera's video stream service, with its parts folded in as AccessoriesService does it.
+     * @param parts - the folded-in services
+     */
+    function camera(...parts: ServiceTypeX[]) {
+      const service = hapService({ type: 'CameraRTPStreamManagement', serviceName: 'Front', characteristics: [] })
+      service.linkedServices = Object.fromEntries(parts.map((part, index) => [20 + index, part]))
+      return service
+    }
+
+    function part(type: string, chars: Array<[string, any]>) {
+      return hapService({
+        type,
+        characteristics: chars.map(([name, value]) => characteristic(name, value)),
+      })
+    }
+
+    it('mutes the microphone, and only the microphone', () => {
+      const microphone = part('Microphone', [
+        ['Mute', false],
+      ])
+      const speaker = part('Speaker', [
+        ['Mute', false],
+      ])
+      const component = create(CameraManageComponent, camera(microphone, speaker))
+
+      component.setMute(microphone, true, {
+        target: document.createElement('button'),
+      } as any)
+
+      expect(writesTo(microphone)).toEqual([
+        { type: 'Mute', value: true },
+      ])
+      expect(writesTo(speaker)).toEqual([])
+    })
+
+    it('reads the motion sensor and tells a doorbell from a camera', () => {
+      const motion = part('MotionSensor', [
+        ['MotionDetected', true],
+      ])
+      const doorbell = part('Doorbell', [
+        ['ProgrammableSwitchEvent', null],
+      ])
+
+      const plain = create(CameraManageComponent, camera(motion))
+      expect(plain.motionSensor).toBe(motion)
+      expect(plain.isDoorbell).toBe(false)
+
+      expect(create(CameraManageComponent, camera(motion, doorbell)).isDoorbell).toBe(true)
+    })
+
+    it('follows the new parts after an accessory update', () => {
+      // Each update brings new part objects, linked to the new camera object
+      const { component, update } = createUpdatable(CameraManageComponent, camera(part('MotionSensor', [
+        ['MotionDetected', false],
+      ])))
+
+      const fresh = part('MotionSensor', [
+        ['MotionDetected', true],
+      ])
+      update(camera(fresh))
+
+      expect(component.motionSensor).toBe(fresh)
     })
   })
 })
