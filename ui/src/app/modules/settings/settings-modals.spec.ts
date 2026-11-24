@@ -125,6 +125,31 @@ describe('settings modals', () => {
       expect(modal.pairings().map(p => p.name)).toEqual(['Hue', 'Ring'])
     })
 
+    it('leaves out matter storage that nothing uses, as no accessory runs from it', async () => {
+      const leftOver = {
+        _id: 'old',
+        _username: '0E:DD:DD:DD:DD:DD',
+        name: 'Old Vacuum',
+        _matterOnly: true,
+        _couldBeStale: true,
+      }
+      const inUse = {
+        _id: 'vac',
+        _username: '0E:EE:EE:EE:EE:EE',
+        name: 'Vacuum',
+        _matterOnly: true,
+        _couldBeStale: false,
+      }
+      pairings.push(leftOver, inUse)
+      try {
+        const modal = await open(AccessoryControlListsComponent)
+
+        expect(modal.pairings().map(p => p.name)).toEqual(['Hue', 'Ring', 'Vacuum'])
+      } finally {
+        pairings.splice(pairings.indexOf(leftOver), 2)
+      }
+    })
+
     it('tidies up the stored list before comparing it', async () => {
       configure(['  0e:bb:bb:bb:bb:bb  ', '0E:CC:CC:CC:CC:CC'])
       const modal = await open(AccessoryControlListsComponent)

@@ -554,7 +554,8 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
 
     const externalPluginNames = new Set<string>()
     for (const pairing of pairings ?? []) {
-      if (typeof pairing?._plugin === 'string' && (pairing._isExternal === true || pairing._matterOnly === true)) {
+      // Matter storage that could be left over is not an accessory the plugin publishes now
+      if (typeof pairing?._plugin === 'string' && (pairing._isExternal === true || pairing._matterOnly === true) && !pairing._couldBeStale) {
         externalPluginNames.add(pairing._plugin)
       }
     }

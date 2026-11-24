@@ -8,6 +8,7 @@ import { LoggerModule } from '../../core/logger/logger.module.js'
 import { AccessoriesModule } from '../accessories/accessories.module.js'
 import { ChildBridgesModule } from '../child-bridges/child-bridges.module.js'
 import { ConfigEditorModule } from '../config-editor/config-editor.module.js'
+import { PluginsModule } from '../plugins/plugins.module.js'
 import { ServerController } from './server.controller.js'
 import { ServerService } from './server.service.js'
 
@@ -21,6 +22,7 @@ import { ServerService } from './server.service.js'
     ChildBridgesModule,
     HomebridgeIpcModule,
     FsModule,
+    PluginsModule,
   ],
   providers: [
     ServerService,

@@ -64,7 +64,8 @@ export class AccessoryControlListsComponent implements OnInit {
       const { pairings } = await this.$accessoryOverview.get<any, any, Pairing>()
       this.mainPairing.set(pairings.find((p: Pairing) => p._main))
       this.pairings.set(pairings
-        .filter((p: Pairing) => !p._main)
+        // Left-over Matter storage has no accessories: nothing runs from it
+        .filter((p: Pairing) => !p._main && !(p._matterOnly && p._couldBeStale))
         .sort((a: Pairing, b: Pairing) => a.name.localeCompare(b.name)))
     } catch (error: any) {
       console.error(error)

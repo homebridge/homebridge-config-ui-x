@@ -19,10 +19,10 @@ import { provideFakes, provideTestTranslate } from '@/testing/providers'
  * automations they were in; the user has to add them again by hand. So the list the
  * user ticks has to be exactly what gets sent, and nothing else.
  *
- * ⚠️ **The bridges are sorted into three lists** — child bridges that are running,
- * bridges that look stale (the plugin is gone but the pairing is still there), and
- * everything else. A stale bridge shown as active invites the user to unpair a
- * bridge they still use.
+ * ⚠️ **The bridges are sorted into four lists** — child bridges that are running,
+ * child bridges that look stale (the plugin is gone but the pairing is still there),
+ * matter storage that nothing uses any more, and everything else. A stale bridge
+ * shown as active invites the user to unpair a bridge they still use.
  */
 describe('resetIndividualBridgesComponent', () => {
   let api: FakeApi
@@ -154,6 +154,77 @@ describe('resetIndividualBridgesComponent', () => {
       expect(modal.pairingsChildActive()).toEqual([])
     })
 
+    it('lists matter storage that nothing uses in a section of its own', async () => {
+      // An external accessory whose plugin is gone, or a folder with no accessories at all. Among the
+      // ones in use it reads as "re-added by the plugin at the next start", which is the opposite. And
+      // it is not a child bridge, so it does not go with the stale ones of those either
+      const modal = open({
+        pairings: [
+          pairing({
+            _category: 'other',
+            _matterOnly: true,
+            _couldBeStale: true,
+            name: 'Old Vacuum',
+          }),
+          pairing({ _couldBeStale: true, name: 'Old Child Bridge' }),
+        ],
+      })
+      await settle()
+
+      expect(modal.pairingsMatterStale().map(p => p.name)).toEqual(['Old Vacuum'])
+      expect(modal.pairingsChildStale().map(p => p.name)).toEqual(['Old Child Bridge'])
+      expect(modal.pairingsNonChild()).toEqual([])
+    })
+
+    it('is not empty when left-over matter storage is all there is', async () => {
+      // "You have no bridges to unpair" would hide the one thing there is to clean up
+      const modal = open({
+        pairings: [
+          pairing({ _category: 'other', _matterOnly: true, _couldBeStale: true }),
+        ],
+      })
+      await settle()
+
+      expect(modal.isEmpty()).toBe(false)
+    })
+
+    it('is empty when only the main bridge is paired', async () => {
+      const modal = open({
+        pairings: [
+          pairing({ _main: true }),
+        ],
+      })
+      await settle()
+
+      expect(modal.isEmpty()).toBe(true)
+    })
+
+    it('says which plugin a stale one came from and whether it is still paired', async () => {
+      // The name alone can be "Unknown Matter Bridge". A paired one must also be removed in the Home app
+      const modal = open({
+        pairings: [
+          pairing({
+            _category: 'other',
+            _matterOnly: true,
+            _couldBeStale: true,
+            _plugin: 'homebridge-gone',
+            _isPaired: true,
+          }),
+        ],
+      })
+      await settle()
+      const fixture = TestBed.createComponent(ResetIndividualBridgesComponent)
+      fixture.detectChanges()
+      await settle()
+      fixture.detectChanges()
+
+      const row = fixture.nativeElement.querySelector('.list-group-item.d-flex').textContent
+      expect(modal.pairingsMatterStale()).toHaveLength(1)
+      expect(row).toContain('homebridge-gone')
+      expect(row).toContain('status.widget.qr_paired')
+      expect(fixture.nativeElement.querySelector('h6').textContent).toContain('reset.bridge_ind.head_matter_stale')
+    })
+
     it('never offers the main bridge', async () => {
       // Unpairing that is what the other modal does, and it takes everything with it
       const modal = open({
@@ -168,6 +239,7 @@ describe('resetIndividualBridgesComponent', () => {
         ...modal.pairingsChildActive(),
         ...modal.pairingsNonChild(),
         ...modal.pairingsChildStale(),
+        ...modal.pairingsMatterStale(),
       ]
       expect(listed.map(p => p.name)).toEqual(['Kitchen Bridge'])
     })

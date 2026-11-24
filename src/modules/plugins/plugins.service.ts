@@ -2321,6 +2321,16 @@ export class PluginsService implements BeforeApplicationShutdown, OnModuleDestro
   }
 
   /**
+   * The names of the packages in the plugin folders.
+   *
+   * This reads the folders only. getInstalledPlugins() also parses each package.json and asks npm for the
+   * latest version, which is too much for a caller that only needs to know whether a plugin is still there.
+   */
+  public async getInstalledModuleNames(): Promise<Set<string>> {
+    return new Set((await this.getInstalledModules()).map(module => module.name))
+  }
+
+  /**
    * Returns a list of modules installed
    */
   private async getInstalledModules(): Promise<Array<{ name: string, path: string, installPath: string }>> {
