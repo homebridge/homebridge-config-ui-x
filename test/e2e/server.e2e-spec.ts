@@ -203,6 +203,22 @@ describe('ServerController (e2e)', () => {
     expect(res.json()).toHaveLength(1)
   })
 
+  it('GET /server/cached-accessories (an empty list when the accessories folder is missing)', async () => {
+    // A storage folder where homebridge has never run has no accessories folder
+    await remove(accessoriesPath)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/cached-accessories',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual([])
+  })
+
   it('DELETE /server/cached-accessories/:uuid (valid uuid)', async () => {
     // Sanity check to ensure one cached accessory is preset
     let cachedAccessories = await readJson(resolve(accessoriesPath, 'cachedAccessories'))
@@ -276,6 +292,22 @@ describe('ServerController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(res.json()).toHaveLength(1)
+  })
+
+  it('GET /server/pairings (an empty list when the persist folder is missing)', async () => {
+    // A storage folder where homebridge has never run has no persist folder
+    await remove(persistPath)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/pairings',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual([])
   })
 
   it('GET /server/pairings/:deviceId', async () => {
@@ -416,6 +448,40 @@ describe('ServerController (e2e)', () => {
       const body = res.json()
       expect(body.hapAccessories).toHaveLength(1)
       expect(body.matterAccessories).toEqual([])
+      expect(body.pairings).toHaveLength(1)
+    })
+
+    it('returns empty lists when the accessories and persist folders are missing', async () => {
+      // A storage folder where homebridge has never run has neither folder
+      await remove(accessoriesPath)
+      await remove(persistPath)
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/server/accessory-overview',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      expect(res.json()).toEqual({ hapAccessories: [], matterAccessories: [], pairings: [] })
+    })
+
+    it('keeps the pairings when only the accessories folder is missing', async () => {
+      await remove(accessoriesPath)
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/server/accessory-overview',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const body = res.json()
+      expect(body.hapAccessories).toEqual([])
       expect(body.pairings).toHaveLength(1)
     })
 

@@ -382,7 +382,12 @@ export class ServerService {
   public async getDevicePairings() {
     const persistPath = join(this.configService.storagePath, 'persist')
 
-    const devices = (await readdir(persistPath))
+    // A storage folder where homebridge has never run has no persist folder: that is no pairings, not an error
+    const persistFiles = await pathExists(persistPath)
+      ? await readdir(persistPath)
+      : []
+
+    const devices = persistFiles
       .filter(x => x.match(RE_ACCESSORY_INFO_FILE) && RE_HEX_12.test(x.split('.')[1]))
 
     const configFile = await this.configEditorService.getConfigFile()
@@ -966,6 +971,11 @@ export class ServerService {
    */
   public async getCachedAccessories() {
     const cachedAccessoriesDir = join(this.configService.storagePath, 'accessories')
+
+    // A storage folder where homebridge has never run has no accessories folder: that is an empty list, not an error
+    if (!await pathExists(cachedAccessoriesDir)) {
+      return []
+    }
 
     const cachedAccessoryFiles = (await readdir(cachedAccessoriesDir))
       .filter(x => x.match(RE_CACHED_ACCESSORIES_EXACT) || x === 'cachedAccessories')
