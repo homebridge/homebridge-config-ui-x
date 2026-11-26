@@ -164,28 +164,45 @@
       display: none;
     }
 
-    // Not responding: a red triangle that swaps to the menu icon on hover,
-    // like the hidden indicator, so the menu stays reachable
+    // Status icons (low battery, not responding) share one row. The button is
+    // anchored to the right, so a second icon pushes the row left. The row
+    // swaps to the menu icon on hover, like the hidden indicator, so the menu
+    // stays reachable.
+    .accessory-status-icons {
+      display: inline-flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 0.35em;
+
+      i {
+        display: inline-block;
+        width: 1em;
+        text-align: center;
+        animation: accessory-status-icon-in 0.2s ease-out;
+
+        @media (prefers-reduced-motion: reduce) {
+          animation: none;
+        }
+      }
+    }
+
     .accessory-not-responding-icon,
-    .accessory-not-responding-hover-icon {
-      display: inline-block;
+    .accessory-low-battery-icon {
+      color: var(--bs-danger);
+    }
+
+    .accessory-status-hover-icon {
+      display: none;
       width: 1em;
       text-align: center;
     }
 
-    .accessory-not-responding-icon {
-      color: var(--bs-danger);
-    }
-
-    .accessory-not-responding-hover-icon {
-      display: none;
-    }
-
-    &.accessory-not-responding-indicator {
+    &.accessory-not-responding-indicator,
+    &.accessory-low-battery-indicator {
       opacity: 1;
       z-index: 2;
 
-      // Keep the triangle red where the buttons are otherwise greyed out
+      // Keep the icons red where the buttons are otherwise greyed out
       @media (max-width: 991px) {
         filter: none;
       }
@@ -193,12 +210,12 @@
       @media (hover: hover) {
         &:hover,
         &:active {
-          .accessory-not-responding-icon {
+          .accessory-status-icons {
             display: none;
           }
 
-          .accessory-not-responding-hover-icon {
-            display: inline;
+          .accessory-status-hover-icon {
+            display: inline-block;
           }
         }
       }
@@ -269,4 +286,25 @@
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+@keyframes accessory-status-icon-in {
+  from {
+    opacity: 0;
+    transform: translateX(0.5em);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// A battery row in the accessory info popup that reports a low battery
+.accessory-info-low-battery {
+  border-left: 3px solid var(--bs-danger) !important;
+
+  .font-monospace {
+    color: var(--bs-danger) !important;
+  }
 }

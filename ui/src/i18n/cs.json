@@ -195,6 +195,7 @@
   "accessories.hap_status.unknown": "Unknown error",
   "accessories.hap_status.write_only": "Write-only characteristic",
   "accessories.hide_this_accessory": "Skrýt toto příslušenství",
+  "accessories.low_battery": "Low Battery",
   "accessories.manage_layout": "Manage Layout",
   "accessories.message_must_use_insecure_mode": "Chcete-li ovládat své příslušenství, musíte mít systém Homebridge v režimu insecure (nedůvěryhodný).",
   "accessories.name": "Název",

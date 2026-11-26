@@ -92,8 +92,9 @@ describe('accessoryInfoComponent', () => {
    * @param options - the caches the modal is handed
    * @param options.accessoryCache - the cached accessories from disk
    * @param options.pairingCache - the known pairings
+   * @param options.accessoryServices - the other services of the same accessory
    */
-  function open(service: ServiceTypeX, options: { accessoryCache?: any[], pairingCache?: any[] } = {}) {
+  function open(service: ServiceTypeX, options: { accessoryCache?: any[], pairingCache?: any[], accessoryServices?: ServiceTypeX[] } = {}) {
     TestBed.resetTestingModule()
     modal = modalServiceSpy()
     activeModal = {
@@ -111,6 +112,7 @@ describe('accessoryInfoComponent', () => {
           useValue: {
             service,
             accessoryCache: options.accessoryCache ?? [],
+            accessoryServices: options.accessoryServices,
             pairingCache: options.pairingCache ?? [
               pairing(),
             ],
@@ -212,6 +214,86 @@ describe('accessoryInfoComponent', () => {
 
     it('shows no extra services for a lock with nothing linked', () => {
       expect(open(hapService({ type: 'LockMechanism' })).componentInstance.extraServices).toEqual([])
+    })
+  })
+
+  describe('the battery', () => {
+    const batteryService = (level: number, low: 0 | 1) => hapService({
+      type: 'Battery',
+      characteristics: [
+        characteristic('BatteryLevel', level),
+        characteristic('StatusLowBattery', low),
+      ],
+    })
+    const summaryRow = (element: HTMLElement) => [
+      ...element.querySelectorAll('li'),
+    ]
+      .find(row => row.querySelector('.text-start')?.textContent?.trim() === 'accessories.core.battery')
+
+    it('highlights the low battery characteristic rows of the service', () => {
+      const element = open(batteryService(8, 1)).nativeElement as HTMLElement
+
+      // BatteryLevel (under 20%) and StatusLowBattery
+      expect(element.querySelectorAll('.accessory-info-low-battery')).toHaveLength(2)
+    })
+
+    it('shows no battery row when the service lists its own battery characteristics', () => {
+      const element = open(hapService({
+        type: 'TemperatureSensor',
+        characteristics: [
+          characteristic('StatusLowBattery', 1),
+        ],
+      })).nativeElement as HTMLElement
+
+      expect(summaryRow(element)).toBeUndefined()
+    })
+
+    it('shows the battery of a separate battery service, highlighted when low', () => {
+      const sensor = hapService({
+        type: 'ContactSensor',
+        characteristics: [
+          characteristic('ContactSensorState', 0),
+        ],
+      })
+      const element = open(sensor, {
+        accessoryServices: [
+          sensor,
+          batteryService(8, 1),
+        ],
+      }).nativeElement as HTMLElement
+
+      const row = summaryRow(element)
+      expect(row?.classList).toContain('accessory-info-low-battery')
+      expect(row?.textContent).toContain('8%')
+    })
+
+    it('shows the level without a highlight when the separate battery is fine', () => {
+      const sensor = hapService({
+        type: 'ContactSensor',
+        characteristics: [
+          characteristic('ContactSensorState', 0),
+        ],
+      })
+      const element = open(sensor, {
+        accessoryServices: [
+          sensor,
+          batteryService(90, 0),
+        ],
+      }).nativeElement as HTMLElement
+
+      const row = summaryRow(element)
+      expect(row?.classList).not.toContain('accessory-info-low-battery')
+      expect(row?.textContent).toContain('90%')
+    })
+
+    it('shows no battery row for an accessory without a battery', () => {
+      const element = open(hapService({
+        characteristics: [
+          characteristic('On', true),
+        ],
+      })).nativeElement as HTMLElement
+
+      expect(summaryRow(element)).toBeUndefined()
     })
   })
 

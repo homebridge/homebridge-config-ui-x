@@ -1,6 +1,6 @@
 import type { ServiceType } from '@homebridge/hap-client'
 
-import { createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, Injectable, signal } from '@angular/core'
+import { computed, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, Injectable, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslateService } from '@ngx-translate/core'
@@ -10,6 +10,7 @@ import { takeUntil } from 'rxjs/operators'
 
 import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
+import { buildLowBatterySet, sameAccessoryServices } from '@/app/core/accessories/low-battery'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
 import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
@@ -77,6 +78,9 @@ export class AccessoriesService {
     services: ServiceTypeX[]
   }>>([])
 
+  /** uniqueIds of the services whose accessory reports a low battery, rebuilt when the rooms change */
+  public readonly lowBatteryIds = computed(() => buildLowBatterySet(this.rooms().flatMap(room => room.services)))
+
   constructor() {
     if (this.$auth.user.admin) {
       void this.loadCachedData()
@@ -119,6 +123,7 @@ export class AccessoriesService {
           service,
           accessoryCache: this.accessoryCache,
           pairingCache: this.pairingCache,
+          accessoryServices: sameAccessoryServices(this.rooms().flatMap(room => room.services), service),
         },
       },
     ], this.injector)

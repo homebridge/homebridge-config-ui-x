@@ -195,6 +195,7 @@
   "accessories.hap_status.unknown": "Unknown error",
   "accessories.hap_status.write_only": "Write-only characteristic",
   "accessories.hide_this_accessory": "Скрий аксесоара",
+  "accessories.low_battery": "Low Battery",
   "accessories.manage_layout": "Manage Layout",
   "accessories.message_must_use_insecure_mode": "За да управлявате вашите аксесоари Homebridge трябва да работи в insecure режим {{ link }}.",
   "accessories.name": "Име",

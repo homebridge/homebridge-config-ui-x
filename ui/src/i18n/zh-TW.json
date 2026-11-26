@@ -195,6 +195,7 @@
   "accessories.hap_status.unknown": "Unknown error",
   "accessories.hap_status.write_only": "Write-only characteristic",
   "accessories.hide_this_accessory": "設為隱藏",
+  "accessories.low_battery": "Low Battery",
   "accessories.manage_layout": "管理版面配置",
   "accessories.message_must_use_insecure_mode": "若要控制配件，必須以不安全模式執行 Homebridge {{ link }}。",
   "accessories.name": "名稱",
