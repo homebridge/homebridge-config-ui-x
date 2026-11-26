@@ -117,7 +117,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(config): show the secrets toggle as a lock icon, with the masking notice in its tooltip
 - fix(logs): make the log and terminal scrollbar always visible and easy to grab on touch screens
 - feat(settings): bind homebridge to a network interface by its ip address, not only its name (#3126) (@stalinCCCP415)
-- feat(accessories): show a low battery icon on accessory tiles, beside the not responding icon, when the device flags it or it is under 20%, and highlight the battery in the accessory info
+- feat(accessories): show a low battery icon on accessory tiles, beside the not responding icon, when the device flags it or it is under 20%, and highlight the battery in the accessory info (#3149)
 
 ### Other Changes
 
