@@ -462,11 +462,11 @@ describe('accessoriesComponent', () => {
       page.onFilterChange({
         ...page.filter(),
         groupBy: 'bridge',
-        sortBy: 'battery',
+        sortBy: 'name',
       })
 
       expect(page.filter().groupBy).toBe('bridge')
-      expect(page.filter().sortBy).toBe('battery')
+      expect(page.filter().sortBy).toBe('name')
       expect(page.manageLayoutMode).toBe(true)
     })
 

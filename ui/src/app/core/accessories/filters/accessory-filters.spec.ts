@@ -23,7 +23,7 @@ describe('isFilterActive', () => {
   })
 
   it('ignores grouping and sorting', () => {
-    expect(isFilterActive(state({ groupBy: 'category', sortBy: 'battery' }))).toBe(false)
+    expect(isFilterActive(state({ groupBy: 'category', sortBy: 'name' }))).toBe(false)
   })
 
   it('is true for each filter dimension', () => {
@@ -45,7 +45,7 @@ describe('isFilterActive', () => {
       states: ['on'],
     }))).toBe(true)
     expect(isFilterActive(state({
-      battery: ['low'],
+      states: ['lowBattery'],
     }))).toBe(true)
     expect(isFilterActive(state({ showHidden: true }))).toBe(true)
     expect(isFilterActive(state({ onDashboardOnly: true }))).toBe(true)
@@ -214,7 +214,7 @@ describe('matchesFilter', () => {
     })
   })
 
-  describe('battery', () => {
+  describe('lowBattery state', () => {
     const sensor = hap({ type: 'MotionSensor', aid: 9, uniqueId: 'sensor' })
     const plain = hap({ type: 'MotionSensor', aid: 10, uniqueId: 'plain' })
     const index = buildBatteryIndex([
@@ -223,31 +223,31 @@ describe('matchesFilter', () => {
       batteryService({ aid: 9, level: 15, low: true }),
     ])
 
-    it('any requires a battery', () => {
+    it('matches a battery reported low', () => {
       expect(matchesFilter(sensor, 'Office', state({
-        battery: ['any'],
+        states: ['lowBattery'],
       }), index)).toBe(true)
+    })
+
+    it('does not match a service without battery data', () => {
       expect(matchesFilter(plain, 'Office', state({
-        battery: ['any'],
+        states: ['lowBattery'],
       }), index)).toBe(false)
     })
 
-    it('low, under20 and charging filter by reading', () => {
+    it('matches a level under 20 percent even when not flagged low', () => {
+      const under20 = new Map([
+        [
+          'sensor',
+          { level: 19, low: false, charging: false },
+        ],
+      ])
       expect(matchesFilter(sensor, 'Office', state({
-        battery: ['low'],
-      }), index)).toBe(true)
-      expect(matchesFilter(sensor, 'Office', state({
-        battery: ['under20'],
-      }), index)).toBe(true)
-      expect(matchesFilter(sensor, 'Office', state({
-        battery: ['charging'],
-      }), index)).toBe(false)
-      expect(matchesFilter(plain, 'Office', state({
-        battery: ['low'],
-      }), index)).toBe(false)
+        states: ['lowBattery'],
+      }), under20)).toBe(true)
     })
 
-    it('under20 is false for a battery at 50 percent', () => {
+    it('does not match a battery at 50 percent', () => {
       const healthy = new Map([
         [
           'sensor',
@@ -255,7 +255,7 @@ describe('matchesFilter', () => {
         ],
       ])
       expect(matchesFilter(sensor, 'Office', state({
-        battery: ['under20'],
+        states: ['lowBattery'],
       }), healthy)).toBe(false)
     })
   })
@@ -403,50 +403,6 @@ describe('groupAndSort', () => {
     ])
   })
 
-  describe('battery sort', () => {
-    const low = hap({ type: 'MotionSensor', aid: 20, uniqueId: 'low' })
-    const lowNoLevel = hap({ type: 'MotionSensor', aid: 21, uniqueId: 'lownolevel' })
-    const mid = hap({ type: 'MotionSensor', aid: 22, uniqueId: 'mid' })
-    const noBattery = hap({ type: 'MotionSensor', aid: 23, uniqueId: 'none' })
-    const full = hap({ type: 'MotionSensor', aid: 24, uniqueId: 'full' })
-    const index = new Map<string, { level?: number, low: boolean, charging: boolean }>([
-      [
-        'low',
-        { level: 12, low: true, charging: false },
-      ],
-      [
-        'lownolevel',
-        { low: true, charging: false },
-      ],
-      [
-        'mid',
-        { level: 55, low: false, charging: false },
-      ],
-      [
-        'full',
-        { level: 95, low: false, charging: true },
-      ],
-    ])
-
-    it('puts low-without-level first, then lowest level, then no level, then no battery last', () => {
-      const groups = groupAndSort([
-        {
-          name: 'Room',
-          services: [full, noBattery, mid, low, lowNoLevel],
-        },
-      ], state({ sortBy: 'battery' }), index)
-      expect(ids(groups)).toEqual([
-        [
-          'lownolevel',
-          'low',
-          'mid',
-          'full',
-          'none',
-        ],
-      ])
-    })
-  })
-
   it('drops rooms with no matching services and does not mutate the input', () => {
     const original = [...rooms[0].services]
     groupAndSort(rooms, state({ sortBy: 'name' }), emptyIndex)
@@ -475,7 +431,7 @@ describe('groupAndSort', () => {
     const index = buildBatteryIndex(big.flatMap(r => r.services))
     const filter = state({
       search: 'accessory',
-      sortBy: 'battery',
+      sortBy: 'name',
       states: ['on'],
     })
     groupAndSort(big, filter, index)

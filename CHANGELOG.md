@@ -136,6 +136,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): put the search beside the header buttons, and plain menu rows with muted counts
 - fix(accessories): import the dropdown item directive, so the filter and sort menu rows render as menu items in light and dark mode
 - fix(accessories): name bridges by their advertised mdns name from hap-client 5.4.1-beta.4, without the username suffix
+- feat(accessories): filter low batteries under state instead of a battery section, drop the battery sort, and keep the full advertised bridge name
 
 ### Other Changes
 

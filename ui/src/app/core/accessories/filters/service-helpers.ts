@@ -52,17 +52,7 @@ export function isServiceNotResponding(service: ServiceTypeX): boolean {
   return isNotResponding(service)
 }
 
-/**
- * The bridge's advertised mDNS name without the 4 character suffix Homebridge adds from its username
- * ("Hue B509" for username ..:B5:09 becomes "Hue"), or undefined when hap-client did not give one
- */
+/** The bridge's advertised mDNS name as hap-client reports it, or undefined when it did not give one */
 export function advertisedBridgeName(service: ServiceTypeX): string | undefined {
-  const name = service.instance?.displayName
-  if (!name) {
-    return undefined
-  }
-  const suffix = (service.instance?.username || '').replace(/:/g, '').slice(-4).toUpperCase()
-  return suffix && name.toUpperCase().endsWith(` ${suffix}`) && name.length > suffix.length + 1
-    ? name.slice(0, -(suffix.length + 1))
-    : name
+  return service.instance?.displayName || undefined
 }

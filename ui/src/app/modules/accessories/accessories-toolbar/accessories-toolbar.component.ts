@@ -15,7 +15,7 @@ import { DEFAULT_FILTER_STATE, isFilterActive, matchesFilter } from '@/app/core/
 import { scopeFromFilter } from '@/app/modules/kiosk/kiosk-scope'
 import { KioskStartComponent } from '@/app/modules/kiosk/kiosk-start/kiosk-start.component'
 
-export type FacetKey = 'rooms' | 'categories' | 'bridges' | 'protocols' | 'states' | 'battery' | 'labels'
+export type FacetKey = 'rooms' | 'categories' | 'bridges' | 'protocols' | 'states' | 'labels'
 
 /** The order the filter panel shows its sections in */
 const FACET_ORDER: FacetKey[] = [
@@ -25,7 +25,6 @@ const FACET_ORDER: FacetKey[] = [
   'bridges',
   'protocols',
   'states',
-  'battery',
 ]
 
 /** Sections with more options than this collapse behind Show all */
@@ -153,7 +152,6 @@ export class AccessoriesToolbarComponent {
     { value: 'manual', labelKey: 'accessories.toolbar.sort_manual' },
     { value: 'name', labelKey: 'accessories.toolbar.sort_name' },
     { value: 'category', labelKey: 'accessories.toolbar.sort_category' },
-    { value: 'battery', labelKey: 'accessories.toolbar.sort_battery' },
   ]
 
   public readonly searchText = signal('')
@@ -267,12 +265,7 @@ export class AccessoriesToolbarComponent {
       build('states', 'accessories.toolbar.facet_state', [
         { value: 'on', label: 'accessories.toolbar.state_on', translate: true },
         { value: 'notResponding', label: 'accessories.toolbar.state_not_responding', translate: true },
-      ]),
-      build('battery', 'accessories.toolbar.facet_battery', [
-        { value: 'any', label: 'accessories.toolbar.battery_any', translate: true },
-        { value: 'low', label: 'accessories.toolbar.battery_low', translate: true },
-        { value: 'under20', label: 'accessories.toolbar.battery_under_20', translate: true },
-        { value: 'charging', label: 'accessories.toolbar.battery_charging', translate: true },
+        { value: 'lowBattery', label: 'accessories.toolbar.state_low_battery', translate: true },
       ]),
       build('labels', 'accessories.toolbar.facet_label', this.allLabels().map(label => ({ value: label, label, translate: false }))),
     ]

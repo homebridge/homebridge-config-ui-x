@@ -182,8 +182,8 @@ describe('accessoriesToolbarComponent', () => {
       toolbar.onGroupBy('bridge')
       expect(toolbar.filter()).toEqual(expect.objectContaining({ groupBy: 'bridge', sortBy: 'manual' }))
 
-      toolbar.onSortBy('battery')
-      expect(toolbar.filter()).toEqual(expect.objectContaining({ groupBy: 'bridge', sortBy: 'battery' }))
+      toolbar.onSortBy('name')
+      expect(toolbar.filter()).toEqual(expect.objectContaining({ groupBy: 'bridge', sortBy: 'name' }))
 
       toolbar.toggleShowHidden()
       expect(toolbar.filter().showHidden).toBe(true)
@@ -325,7 +325,7 @@ describe('accessoriesToolbarComponent', () => {
     it('shows a Reset link in the footer once grouping or sort changes', () => {
       setup()
       openSortMenu()
-      sortRow(1, 'battery').click()
+      sortRow(1, 'name').click()
       fixture.detectChanges()
 
       const reset = sortMenu().querySelector<HTMLButtonElement>('.accessories-filters-footer .btn-link')!
@@ -337,7 +337,7 @@ describe('accessoriesToolbarComponent', () => {
         search: 'kettle',
         categories: ['lights'],
         groupBy: 'floor',
-        sortBy: 'battery',
+        sortBy: 'name',
       })
       openSortMenu()
 
@@ -380,10 +380,10 @@ describe('accessoriesToolbarComponent', () => {
       expect(toolbar.filter().groupBy).toBe('floor')
       expect(sortRow(0, 'floor').getAttribute('aria-checked')).toBe('true')
 
-      sortRow(1, 'battery').click()
+      sortRow(1, 'name').click()
       fixture.detectChanges()
-      expect(toolbar.filter().sortBy).toBe('battery')
-      expect(sortRow(1, 'battery').querySelector('.fa-check')).not.toBeNull()
+      expect(toolbar.filter().sortBy).toBe('name')
+      expect(sortRow(1, 'name').querySelector('.fa-check')).not.toBeNull()
       expect(sortRow(1, 'manual').querySelector('.fa-check')).toBeNull()
     })
 
@@ -761,7 +761,7 @@ describe('accessoriesToolbarComponent', () => {
         rooms: ['Kitchen'],
         showHidden: true,
         groupBy: 'floor',
-        sortBy: 'battery',
+        sortBy: 'name',
       })
 
       ;(fixture.nativeElement.querySelector('.accessories-reset-button') as HTMLButtonElement).click()

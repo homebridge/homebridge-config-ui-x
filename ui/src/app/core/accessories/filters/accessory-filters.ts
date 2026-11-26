@@ -20,10 +20,9 @@ export interface AccessoryMetadata {
 }
 
 export type AccessoryProtocol = 'hap' | 'matter'
-export type AccessoryStateFilter = 'on' | 'notResponding'
-export type AccessoryBatteryFilter = 'any' | 'low' | 'under20' | 'charging'
+export type AccessoryStateFilter = 'on' | 'notResponding' | 'lowBattery'
 export type AccessoryGroupBy = 'room' | 'category' | 'bridge' | 'floor' | 'none'
-export type AccessorySortBy = 'manual' | 'name' | 'category' | 'battery'
+export type AccessorySortBy = 'manual' | 'name' | 'category'
 
 export interface AccessoryFilterState {
   search: string
@@ -34,7 +33,6 @@ export interface AccessoryFilterState {
   bridges: string[]
   protocols: AccessoryProtocol[]
   states: AccessoryStateFilter[]
-  battery: AccessoryBatteryFilter[]
   /** Label names. A service matches when it has any of them. */
   labels: string[]
   showHidden: boolean
@@ -75,7 +73,6 @@ export const DEFAULT_FILTER_STATE: AccessoryFilterState = {
   bridges: [],
   protocols: [],
   states: [],
-  battery: [],
   labels: [],
   showHidden: false,
   onDashboardOnly: false,
@@ -95,7 +92,6 @@ export function isFilterActive(state: AccessoryFilterState): boolean {
     || state.bridges.length > 0
     || state.protocols.length > 0
     || state.states.length > 0
-    || state.battery.length > 0
     || state.labels.length > 0
     || state.showHidden !== DEFAULT_FILTER_STATE.showHidden
     || (state.onDashboardOnly ?? false) !== (DEFAULT_FILTER_STATE.onDashboardOnly ?? false)
@@ -116,22 +112,9 @@ function matchesSearch(service: ServiceTypeX, query: string): boolean {
   return haystack.some(value => typeof value === 'string' && value.toLowerCase().includes(needle))
 }
 
-function matchesBattery(filters: AccessoryBatteryFilter[], info: BatteryInfo | undefined): boolean {
-  return filters.some((filter) => {
-    if (filter === 'any') {
-      return info !== undefined
-    }
-    if (!info) {
-      return false
-    }
-    if (filter === 'low') {
-      return info.low
-    }
-    if (filter === 'under20') {
-      return info.low || (info.level !== undefined && info.level < 20)
-    }
-    return info.charging
-  })
+/** A low battery: the device reports low, or its level is under 20 percent */
+function isLowBattery(info: BatteryInfo | undefined): boolean {
+  return info !== undefined && (info.low || (info.level !== undefined && info.level < 20))
 }
 
 /**
@@ -173,15 +156,18 @@ export function matchesFilter(
     return false
   }
   if (state.states.length) {
-    const stateMatch = state.states.some(filter => filter === 'on'
-      ? isServiceOn(service)
-      : isServiceNotResponding(service))
+    const stateMatch = state.states.some((filter) => {
+      if (filter === 'on') {
+        return isServiceOn(service)
+      }
+      if (filter === 'lowBattery') {
+        return isLowBattery(batteryIndex.get(uniqueId))
+      }
+      return isServiceNotResponding(service)
+    })
     if (!stateMatch) {
       return false
     }
-  }
-  if (state.battery.length && !matchesBattery(state.battery, batteryIndex.get(uniqueId))) {
-    return false
   }
   if (state.labels.length) {
     const own = context.labels?.get(uniqueId) ?? []
@@ -192,30 +178,11 @@ export function matchesFilter(
   return true
 }
 
-/** Sort rank for battery: low without a level first, then by level, then no level, then no battery */
-function batteryRank(info: BatteryInfo | undefined): [number, number] {
-  if (!info) {
-    return [3, 0]
-  }
-  if (info.level === undefined) {
-    return info.low
-      ? [0, 0]
-      : [2, 0]
-  }
-  return [1, info.level]
-}
-
-function compareBattery(a: ServiceTypeX, b: ServiceTypeX, batteryIndex: Map<string, BatteryInfo>): number {
-  const [groupA, valueA] = batteryRank(batteryIndex.get(a.uniqueId ?? ''))
-  const [groupB, valueB] = batteryRank(batteryIndex.get(b.uniqueId ?? ''))
-  return groupA - groupB || valueA - valueB
-}
-
 function compareName(a: ServiceTypeX, b: ServiceTypeX): number {
   return serviceDisplayName(a).localeCompare(serviceDisplayName(b), undefined, { numeric: true, sensitivity: 'base' })
 }
 
-function sortServices(services: ServiceTypeX[], sortBy: AccessorySortBy, batteryIndex: Map<string, BatteryInfo>): ServiceTypeX[] {
+function sortServices(services: ServiceTypeX[], sortBy: AccessorySortBy): ServiceTypeX[] {
   const copy = [...services]
   switch (sortBy) {
     case 'name':
@@ -224,8 +191,6 @@ function sortServices(services: ServiceTypeX[], sortBy: AccessorySortBy, battery
       return copy.sort((a, b) =>
         ACCESSORY_CATEGORIES.indexOf(getAccessoryCategory(a)) - ACCESSORY_CATEGORIES.indexOf(getAccessoryCategory(b))
         || compareName(a, b))
-    case 'battery':
-      return copy.sort((a, b) => compareBattery(a, b, batteryIndex))
     default:
       return copy
   }
@@ -262,7 +227,7 @@ export function groupAndSort(
       .map(room => ({
         key: room.name,
         label: room.name,
-        services: sortServices(room.services, state.sortBy, batteryIndex),
+        services: sortServices(room.services, state.sortBy),
       }))
   }
 
@@ -274,7 +239,7 @@ export function groupAndSort(
           {
             key: 'all',
             label: '',
-            services: sortServices(all, state.sortBy, batteryIndex),
+            services: sortServices(all, state.sortBy),
           },
         ]
       : []
@@ -307,7 +272,7 @@ export function groupAndSort(
       .map(([key, bucket]) => ({
         key,
         label: bucket.label,
-        services: sortServices(bucket.services, state.sortBy, batteryIndex),
+        services: sortServices(bucket.services, state.sortBy),
       }))
   }
 
@@ -325,7 +290,7 @@ export function groupAndSort(
       .map(([key, bucket]) => ({
         key,
         label: bucket.label,
-        services: sortServices(bucket.services, state.sortBy, batteryIndex),
+        services: sortServices(bucket.services, state.sortBy),
       }))
   }
 
@@ -346,6 +311,6 @@ export function groupAndSort(
     .map(([key, bucket]) => ({
       key,
       label: bucket.label,
-      services: sortServices(bucket.services, state.sortBy, batteryIndex),
+      services: sortServices(bucket.services, state.sortBy),
     }))
 }

@@ -2028,6 +2028,24 @@ describe('AccessoriesService', () => {
       expect(() => service.setFilterState({ ...DEFAULT_FILTER_STATE, search: 'kettle' })).not.toThrow()
       expect(service.filterState().search).toBe('kettle')
     })
+
+    it('drops the removed battery filter and sort, and unknown state values, when loading a saved filter', () => {
+      localStorage.setItem('accessories-filter-v1', JSON.stringify({
+        search: 'kettle',
+        battery: ['low'],
+        sortBy: 'battery',
+        states: ['lowBattery', 'bogus'],
+      }))
+
+      const loaded = (service as unknown as { loadFilterState: () => Record<string, unknown> }).loadFilterState()
+
+      expect(loaded).toEqual({
+        ...DEFAULT_FILTER_STATE,
+        search: 'kettle',
+        states: ['lowBattery'],
+      })
+      expect('battery' in loaded).toBe(false)
+    })
   })
 
   describe('adding a room from the accessory information modal', () => {

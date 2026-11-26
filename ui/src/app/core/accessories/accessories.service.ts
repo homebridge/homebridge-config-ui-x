@@ -11,7 +11,7 @@ import { takeUntil, timeout } from 'rxjs/operators'
 import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { attachControlHelpers } from '@/app/core/accessories/accessory-control'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
-import { AccessoryFilterState, AccessoryFloor, DEFAULT_FILTER_STATE, FilterContext } from '@/app/core/accessories/filters/accessory-filters'
+import { AccessoryFilterState, AccessoryFloor, AccessorySortBy, AccessoryStateFilter, DEFAULT_FILTER_STATE, FilterContext } from '@/app/core/accessories/filters/accessory-filters'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
 import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
@@ -21,6 +21,8 @@ import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 
 /** localStorage key for the accessories page filter, grouping and sort */
 const FILTER_STORAGE_KEY = 'accessories-filter-v1'
+const STATE_FILTER_VALUES: AccessoryStateFilter[] = ['on', 'notResponding', 'lowBattery']
+const SORT_BY_VALUES: AccessorySortBy[] = ['manual', 'name', 'category']
 /** Quiet time after the last label or floor change before they are sent */
 const METADATA_SAVE_DELAY = 300
 /** How long to wait for `get-metadata` before giving up on the saved labels and floors */
@@ -387,10 +389,25 @@ export class AccessoriesService {
     try {
       const raw = localStorage.getItem(FILTER_STORAGE_KEY)
       if (raw) {
-        return {
-          ...DEFAULT_FILTER_STATE,
-          ...JSON.parse(raw),
+        const saved = JSON.parse(raw) as Record<string, unknown>
+        // Keep only the fields the filter still has, with the values it still knows
+        const state: AccessoryFilterState = { ...DEFAULT_FILTER_STATE }
+        for (const key of Object.keys(DEFAULT_FILTER_STATE) as Array<keyof AccessoryFilterState>) {
+          const expected = Array.isArray(DEFAULT_FILTER_STATE[key])
+            ? 'array'
+            : typeof DEFAULT_FILTER_STATE[key]
+          const actual = Array.isArray(saved[key])
+            ? 'array'
+            : typeof saved[key]
+          if (key in saved && actual === expected) {
+            (state as unknown as Record<string, unknown>)[key] = saved[key]
+          }
         }
+        state.states = state.states.filter(value => STATE_FILTER_VALUES.includes(value))
+        if (!SORT_BY_VALUES.includes(state.sortBy)) {
+          state.sortBy = DEFAULT_FILTER_STATE.sortBy
+        }
+        return state
       }
     } catch {
       // Corrupt or unavailable storage: start from the defaults

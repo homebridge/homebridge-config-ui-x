@@ -20,10 +20,10 @@ describe('serviceBridgeName', () => {
     }))).toBe('Hue 3A1B')
   })
 
-  it('drops the mDNS suffix that matches the bridge username', () => {
+  it('keeps the mDNS suffix as advertised, even when it matches the bridge username', () => {
     expect(serviceBridgeName(withBridge({
       instance: { name: 'homebridge', displayName: 'Tasmota CC79 CC79', username: '0E:11:22:33:CC:79' },
-    }))).toBe('Tasmota CC79')
+    }))).toBe('Tasmota CC79 CC79')
     expect(serviceBridgeName(withBridge({
       instance: { name: 'homebridge', displayName: 'Skyler Test Node Red DF3C', username: '0E:11:22:33:44:55' },
     }))).toBe('Skyler Test Node Red DF3C')
