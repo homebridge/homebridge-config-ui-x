@@ -14,6 +14,21 @@ function withBridge(options: { instance?: Record<string, unknown>, bridge?: unkn
 }
 
 describe('serviceBridgeName', () => {
+  it('prefers the advertised mDNS name over the model in instance.name', () => {
+    expect(serviceBridgeName(withBridge({
+      instance: { name: 'homebridge', displayName: 'Hue 3A1B', username: 'AA:BB:CC:DD:EE:FF' },
+    }))).toBe('Hue 3A1B')
+  })
+
+  it('drops the mDNS suffix that matches the bridge username', () => {
+    expect(serviceBridgeName(withBridge({
+      instance: { name: 'homebridge', displayName: 'Tasmota CC79 CC79', username: '0E:11:22:33:CC:79' },
+    }))).toBe('Tasmota CC79')
+    expect(serviceBridgeName(withBridge({
+      instance: { name: 'homebridge', displayName: 'Skyler Test Node Red DF3C', username: '0E:11:22:33:44:55' },
+    }))).toBe('Skyler Test Node Red DF3C')
+  })
+
   it('uses the name the bridge advertises in the HAP instance', () => {
     const service = withBridge({
       instance: { username: 'AA:11', name: 'Kitchen Bridge' },

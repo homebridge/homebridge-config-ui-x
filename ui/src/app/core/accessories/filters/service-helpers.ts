@@ -25,7 +25,8 @@ export function serviceBridgeKey(service: ServiceTypeX): string {
  */
 export function serviceBridgeName(service: ServiceTypeX): string {
   const bridge = service.bridge as unknown
-  return service.instance?.name
+  return advertisedBridgeName(service)
+    || service.instance?.name
     || (typeof bridge === 'string'
       ? bridge
       : (bridge as { name?: string } | undefined)?.name)
@@ -49,4 +50,19 @@ export function isServiceOn(service: ServiceTypeX): boolean {
 /** True when any characteristic of the service answered with a HAP error status */
 export function isServiceNotResponding(service: ServiceTypeX): boolean {
   return isNotResponding(service)
+}
+
+/**
+ * The bridge's advertised mDNS name without the 4 character suffix Homebridge adds from its username
+ * ("Hue B509" for username ..:B5:09 becomes "Hue"), or undefined when hap-client did not give one
+ */
+export function advertisedBridgeName(service: ServiceTypeX): string | undefined {
+  const name = service.instance?.displayName
+  if (!name) {
+    return undefined
+  }
+  const suffix = (service.instance?.username || '').replace(/:/g, '').slice(-4).toUpperCase()
+  return suffix && name.toUpperCase().endsWith(` ${suffix}`) && name.length > suffix.length + 1
+    ? name.slice(0, -(suffix.length + 1))
+    : name
 }

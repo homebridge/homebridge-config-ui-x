@@ -14,7 +14,7 @@ import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/ac
 import { buildBatteryIndex } from '@/app/core/accessories/filters/accessory-battery'
 import { AccessoryFilterState, AccessoryGroup, FLOOR_OTHER_KEY, groupAndSort, isFilterActive } from '@/app/core/accessories/filters/accessory-filters'
 import { RoomSummary, summarizeRoom } from '@/app/core/accessories/filters/room-summary'
-import { serviceBridgeName } from '@/app/core/accessories/filters/service-helpers'
+import { advertisedBridgeName, serviceBridgeName } from '@/app/core/accessories/filters/service-helpers'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { listenUntilDestroyed } from '@/app/core/communication/socket-listener'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
@@ -163,7 +163,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     if (!username) {
       return service
     }
-    const name = this.bridgeUsernameToNameMap.get(username) || service.instance?.name
+    const name = this.bridgeUsernameToNameMap.get(username) || advertisedBridgeName(service) || service.instance?.name
     if (!name || name === serviceBridgeName(service)) {
       return service
     }
