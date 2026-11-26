@@ -67,6 +67,7 @@ describe('accessoriesToolbarComponent', () => {
    */
   function setup(filter: Partial<AccessoryFilterState> = {}, options: { shown?: number, total?: number } = {}) {
     fixture = TestBed.createComponent(AccessoriesToolbarComponent)
+    fixture.componentRef.setInput('variant', 'actions')
     fixture.componentRef.setInput('filter', {
       ...DEFAULT_FILTER_STATE,
       ...filter,
@@ -81,19 +82,25 @@ describe('accessoriesToolbarComponent', () => {
     return fixture.componentInstance
   }
 
-  /** The option rows in the Filters dropdown: the checkboxes of the top-level options, or of the subcategories */
-  function rows(subcategory = false): HTMLInputElement[] {
+  /** The option rows in the Filters dropdown: the top-level options, or the subcategories */
+  function rows(subcategory = false): HTMLButtonElement[] {
     const row = subcategory ? '.accessories-suboption' : ':not(.accessories-suboption)'
     return [
-      ...document.querySelectorAll<HTMLInputElement>(`.accessories-filters-menu .accessories-menu-option${row} input[type="checkbox"]`),
+      ...document.querySelectorAll<HTMLButtonElement>(`.accessories-filters-menu button.accessories-menu-option${row}`),
     ]
   }
 
-  /** The text of an option row, its label and count */
-  function rowText(input: HTMLInputElement): string {
+  /** The text of an option row, its label and count (the check column is empty when unticked) */
+  function rowText(button: HTMLElement): string {
     return [
-      ...input.closest('.form-check')!.querySelectorAll('span'),
-    ].map(span => span.textContent!.trim()).join(' ')
+      ...button.querySelectorAll('span'),
+    ].map(span => span.textContent!.trim()).filter(Boolean).join(' ')
+  }
+
+  /** A row of the Group and sort menu: section 0 is Group by, section 1 is Sort */
+  function sortRow(section: 0 | 1, value: string): HTMLButtonElement {
+    const sections = document.querySelectorAll<HTMLElement>('.accessories-sort-menu .accessories-menu-section')
+    return sections[section].querySelector<HTMLButtonElement>(`[data-value="${value}"]`)!
   }
 
   function openPanel(): void {
@@ -172,19 +179,13 @@ describe('accessoriesToolbarComponent', () => {
     it('keeps the grouping, sort and hidden setting the user picks', () => {
       const toolbar = setup()
 
-      toolbar.onGroupBy({
-        target: { value: 'bridge' },
-      } as unknown as Event)
+      toolbar.onGroupBy('bridge')
       expect(toolbar.filter()).toEqual(expect.objectContaining({ groupBy: 'bridge', sortBy: 'manual' }))
 
-      toolbar.onSortBy({
-        target: { value: 'battery' },
-      } as unknown as Event)
+      toolbar.onSortBy('battery')
       expect(toolbar.filter()).toEqual(expect.objectContaining({ groupBy: 'bridge', sortBy: 'battery' }))
 
-      toolbar.onShowHidden({
-        target: { checked: true },
-      } as unknown as Event)
+      toolbar.toggleShowHidden()
       expect(toolbar.filter().showHidden).toBe(true)
     })
   })
@@ -289,8 +290,8 @@ describe('accessoriesToolbarComponent', () => {
       setup()
 
       const values = [
-        ...fixture.nativeElement.querySelectorAll('input[name="accessories-group-by"]'),
-      ].map((option: any) => option.value)
+        ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.accessories-sort-menu [role="menuitemradio"][data-value]'),
+      ].map(option => option.dataset.value)
       expect(values).toContain('floor')
     })
   })
@@ -324,7 +325,7 @@ describe('accessoriesToolbarComponent', () => {
     it('shows a Reset link in the footer once grouping or sort changes', () => {
       setup()
       openSortMenu()
-      sortMenu().querySelector<HTMLInputElement>('input[name="accessories-sort-by"][value="battery"]')!.click()
+      sortRow(1, 'battery').click()
       fixture.detectChanges()
 
       const reset = sortMenu().querySelector<HTMLButtonElement>('.accessories-filters-footer .btn-link')!
@@ -351,12 +352,12 @@ describe('accessoriesToolbarComponent', () => {
       expect(sortMenu().querySelector('.accessories-filters-footer')).toBeNull()
     })
 
-    it('lists Group by and Sort as radio groups with uppercase section headings', () => {
+    it('lists Group by and Sort as tick rows with uppercase section headings', () => {
       setup()
       openSortMenu()
 
       const groups = [
-        ...sortMenu().querySelectorAll<HTMLElement>('.accessories-menu-section[role="radiogroup"]'),
+        ...sortMenu().querySelectorAll<HTMLElement>('.accessories-menu-section[role="group"]'),
       ]
       expect(groups.map(group => group.querySelector('.accessories-menu-section-title')?.textContent?.trim())).toEqual([
         'Group by',
@@ -364,23 +365,26 @@ describe('accessoriesToolbarComponent', () => {
       ])
       for (const group of groups) {
         expect(document.getElementById(group.getAttribute('aria-labelledby')!)).not.toBeNull()
-        const radios = group.querySelectorAll<HTMLInputElement>('input[type="radio"]')
-        expect(radios.length).toBeGreaterThan(0)
-        expect(group.querySelector('input[type="checkbox"]')).toBeNull()
+        const options = group.querySelectorAll<HTMLButtonElement>('button[role="menuitemradio"]')
+        expect(options.length).toBeGreaterThan(0)
+        expect(group.querySelector('input')).toBeNull()
       }
     })
 
-    it('sets groupBy and sortBy from the radio rows', () => {
+    it('sets groupBy and sortBy from the tick rows', () => {
       const toolbar = setup()
       openSortMenu()
 
-      const groupRow = sortMenu().querySelector<HTMLInputElement>('input[name="accessories-group-by"][value="floor"]')!
-      groupRow.click()
+      sortRow(0, 'floor').click()
+      fixture.detectChanges()
       expect(toolbar.filter().groupBy).toBe('floor')
+      expect(sortRow(0, 'floor').getAttribute('aria-checked')).toBe('true')
 
-      const sortRow = sortMenu().querySelector<HTMLInputElement>('input[name="accessories-sort-by"][value="battery"]')!
-      sortRow.click()
+      sortRow(1, 'battery').click()
+      fixture.detectChanges()
       expect(toolbar.filter().sortBy).toBe('battery')
+      expect(sortRow(1, 'battery').querySelector('.fa-check')).not.toBeNull()
+      expect(sortRow(1, 'manual').querySelector('.fa-check')).toBeNull()
     })
 
     it('closes on the close button', () => {
@@ -461,19 +465,20 @@ describe('accessoriesToolbarComponent', () => {
       openPanel()
 
       const kitchen = () => rows().find(entry => rowText(entry).includes('Kitchen'))!
-      expect(kitchen().type).toBe('checkbox')
-      expect(kitchen().checked).toBe(false)
-      expect(kitchen().labels![0].textContent).toContain('3')
+      expect(kitchen().getAttribute('aria-pressed')).toBe('false')
+      expect(kitchen().querySelector('.fa-check')).toBeNull()
+      expect(kitchen().querySelector('.accessories-pill-count')!.textContent).toContain('3')
 
       kitchen().click()
       fixture.detectChanges()
       expect(toolbar.filter().rooms).toEqual(['Kitchen'])
-      expect(kitchen().checked).toBe(true)
+      expect(kitchen().getAttribute('aria-pressed')).toBe('true')
+      expect(kitchen().querySelector('.fa-check')).not.toBeNull()
 
       kitchen().click()
       fixture.detectChanges()
       expect(toolbar.filter().rooms).toEqual([])
-      expect(kitchen().checked).toBe(false)
+      expect(kitchen().getAttribute('aria-pressed')).toBe('false')
     })
 
     it('groups each section, labelled by its heading', () => {
@@ -559,13 +564,19 @@ describe('accessoriesToolbarComponent', () => {
   })
 
   describe('kiosk mode', () => {
-    it('opens the kiosk dialog from the top bar, prefilled with the filter', () => {
-      setup({
+    it('renders no kiosk button while kiosk mode is hidden', () => {
+      setup()
+
+      expect(fixture.nativeElement.querySelector('.accessories-kiosk-button')).toBeNull()
+    })
+
+    it('opens the kiosk dialog when it is started, prefilled with the filter', () => {
+      const toolbar = setup({
         rooms: ['Kitchen'],
         labels: ['Night'],
       })
 
-      ;(fixture.nativeElement.querySelector('.accessories-kiosk-button') as HTMLButtonElement).click()
+      toolbar.openKioskMode()
 
       expect(modal.open).toHaveBeenCalledWith(KioskStartComponent, expect.anything())
       expect(modal.open.mock.results[0].value.componentInstance.preselectScope).toEqual({
@@ -606,6 +617,7 @@ describe('accessoriesToolbarComponent', () => {
 
     function setupSub(filter: Partial<AccessoryFilterState>) {
       fixture = TestBed.createComponent(AccessoriesToolbarComponent)
+      fixture.componentRef.setInput('variant', 'actions')
       fixture.componentRef.setInput('filter', {
         ...DEFAULT_FILTER_STATE,
         ...filter,
@@ -617,7 +629,7 @@ describe('accessoriesToolbarComponent', () => {
       return fixture.componentInstance
     }
 
-    function subRows(): HTMLInputElement[] {
+    function subRows(): HTMLButtonElement[] {
       return rows(true)
     }
 
@@ -679,6 +691,160 @@ describe('accessoriesToolbarComponent', () => {
 
       expect(toolbar.filter().categories).toEqual(['climate'])
       expect(toolbar.filter().subcategories).toEqual(['thermostat'])
+    })
+  })
+
+  describe('faceted counts', () => {
+    it('counts each option under the other filters, search included', () => {
+      setup({ search: 'counter' })
+      openPanel()
+
+      // Only Counter matches the search, and it is in Kitchen as a light
+      const row = (label: string) => rows().find(entry => rowText(entry).includes(label))!
+      expect(rowText(row('Kitchen'))).toContain('1')
+      expect(rowText(row('Lights'))).toContain('1')
+      expect(row('Switches')).toBeUndefined()
+    })
+
+    it('does not count an option under its own facet selection', () => {
+      const toolbar = setup({
+        categories: ['lights'],
+        rooms: ['Kitchen'],
+      })
+      const category = (key: string) => toolbar.facets().find(entry => entry.key === 'categories')!.options.find(option => option.value === key)!
+      const room = toolbar.facets().find(entry => entry.key === 'rooms')!.options.find(option => option.value === 'Kitchen')!
+
+      // Lights: ceiling and counter, both in Kitchen. Switches: kettle, in Kitchen.
+      expect(category('lights').count).toBe(2)
+      expect(category('switches').count).toBe(1)
+      // Kitchen under the Lights selection: ceiling and counter
+      expect(room.count).toBe(2)
+    })
+
+    it('counts a category under the rooms that are selected, not under its own subcategories', () => {
+      const toolbar = setup({
+        rooms: ['Kitchen'],
+      })
+      const lights = toolbar.facets().find(entry => entry.key === 'categories')!.options.find(option => option.value === 'lights')!
+
+      expect(lights.count).toBe(2)
+    })
+  })
+
+  describe('reset', () => {
+    it('is hidden while nothing is set', () => {
+      setup()
+
+      expect(fixture.nativeElement.querySelector('.accessories-reset-button')).toBeNull()
+    })
+
+    it('shows for an active filter, the search, or a changed grouping or sort', () => {
+      setup({
+        rooms: ['Kitchen'],
+      })
+      expect(fixture.nativeElement.querySelector('.accessories-reset-button')).not.toBeNull()
+    })
+
+    it('shows for search text alone', () => {
+      setup({ search: 'kettle' })
+      expect(fixture.nativeElement.querySelector('.accessories-reset-button')).not.toBeNull()
+    })
+
+    it('shows for a non-default group or sort alone', () => {
+      setup({ sortBy: 'name' })
+      expect(fixture.nativeElement.querySelector('.accessories-reset-button')).not.toBeNull()
+    })
+
+    it('clears the search, filters, and grouping and sort back to the defaults when clicked', () => {
+      const toolbar = setup({
+        search: 'kettle',
+        rooms: ['Kitchen'],
+        showHidden: true,
+        groupBy: 'floor',
+        sortBy: 'battery',
+      })
+
+      ;(fixture.nativeElement.querySelector('.accessories-reset-button') as HTMLButtonElement).click()
+      fixture.detectChanges()
+
+      expect(toolbar.filter()).toEqual(DEFAULT_FILTER_STATE)
+      expect(fixture.nativeElement.querySelector('.accessories-reset-button')).toBeNull()
+    })
+  })
+
+  describe('tick rows', () => {
+    it('draws a check only on the selected option, with a fixed check column', () => {
+      setup({
+        rooms: ['Kitchen'],
+      })
+      openPanel()
+
+      const kitchen = rows().find(entry => rowText(entry).includes('Kitchen'))!
+      const office = rows().find(entry => rowText(entry).includes('Office'))
+      expect(kitchen.querySelector('.accessories-check .fa-check.primary-text')).not.toBeNull()
+      expect(kitchen.getAttribute('aria-pressed')).toBe('true')
+      expect(office).toBeUndefined()
+      expect(fixture.nativeElement.querySelectorAll('.accessories-filters-menu input[type="checkbox"]').length).toBe(0)
+    })
+
+    it('shows Show hidden accessories as a tick row', () => {
+      const toolbar = setup()
+      openPanel()
+
+      const hidden = document.querySelector<HTMLButtonElement>('.accessories-filters-menu button[aria-pressed]:not(.accessories-suboption)')
+      const row = [
+        ...document.querySelectorAll<HTMLButtonElement>('.accessories-filters-menu button.accessories-menu-option'),
+      ]
+        .find(entry => entry.textContent!.includes('Show hidden accessories'))!
+      expect(hidden).not.toBeNull()
+      expect(row.getAttribute('aria-pressed')).toBe('false')
+
+      row.click()
+      fixture.detectChanges()
+      expect(toolbar.filter().showHidden).toBe(true)
+      expect(row.getAttribute('aria-pressed')).toBe('true')
+    })
+  })
+
+  describe('label section', () => {
+    it('is left out of the panel when no accessory has a label', () => {
+      const toolbar = setup()
+      openPanel()
+
+      expect(toolbar.orderedFacets().some(facet => facet.key === 'labels')).toBe(false)
+      expect(document.getElementById('accessories-menu-section-labels')).toBeNull()
+    })
+
+    it('is shown once an accessory has a label', () => {
+      const toolbar = setup()
+      fixture.componentRef.setInput('labels', {
+        kettle: ['Bedtime'],
+      })
+      fixture.detectChanges()
+
+      expect(toolbar.orderedFacets().some(facet => facet.key === 'labels')).toBe(true)
+    })
+  })
+
+  describe('variants', () => {
+    it('renders only the search field in the search variant', () => {
+      fixture = TestBed.createComponent(AccessoriesToolbarComponent)
+      fixture.componentRef.setInput('variant', 'search')
+      fixture.componentRef.setInput('filter', DEFAULT_FILTER_STATE)
+      fixture.detectChanges()
+
+      expect(fixture.nativeElement.querySelector('input[type="search"]')).not.toBeNull()
+      expect(fixture.nativeElement.querySelector('.accessories-filters-button')).toBeNull()
+      expect(fixture.nativeElement.querySelector('.accessories-manage-layout-button, [aria-label="accessories.manage_layout"]')).toBeNull()
+    })
+
+    it('renders the Filters, Group and sort and Manage layout buttons, and no search field, in the actions variant', () => {
+      setup()
+
+      expect(fixture.nativeElement.querySelector('input[type="search"]')).toBeNull()
+      expect(fixture.nativeElement.querySelector('.accessories-filters-button')).not.toBeNull()
+      expect(fixture.nativeElement.querySelector('.accessories-sort-button')).not.toBeNull()
+      expect(fixture.nativeElement.querySelector('[aria-label="accessories.manage_layout"]')).not.toBeNull()
     })
   })
 })

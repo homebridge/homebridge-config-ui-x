@@ -132,6 +132,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): keep the filters dropdown hidden until it is opened, sized like the group and sort menu
 - feat(accessories): style the group and sort menu like the filters menu, and drop the show accessories button
 - feat(accessories): reset the grouping and sort from the group and sort menu
+- feat(accessories): move the toolbar buttons to the header, add a reset, count filter options against the other filters, and show tick marks
 
 ### Other Changes
 

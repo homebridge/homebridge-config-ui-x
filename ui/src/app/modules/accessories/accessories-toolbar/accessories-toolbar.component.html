@@ -1,29 +1,47 @@
-<div class="accessories-toolbar mb-3" role="toolbar" [attr.aria-label]="'accessories.toolbar.label' | translate">
-  <div class="accessories-topbar d-flex align-items-center gap-2 mb-2">
-    <div class="input-group input-group-sm accessories-search">
-      <span class="input-group-text accessories-search-icon" aria-hidden="true">
-        <i class="fas fa-magnifying-glass"></i>
-      </span>
-      <input
-        #searchInput
-        type="search"
-        class="form-control"
-        [value]="searchText()"
-        [placeholder]="'accessories.toolbar.search' | translate"
-        [attr.aria-label]="'accessories.toolbar.search' | translate"
-        (input)="onSearch(searchInput.value)"
-      />
-      @if (searchText()) {
-        <button
-          type="button"
-          class="btn btn-elegant accessories-search-clear"
-          [attr.aria-label]="'accessories.toolbar.clear_search' | translate"
-          (click)="onSearch('')"
-        >
-          <i class="fas fa-xmark" aria-hidden="true"></i>
-        </button>
-      }
+@if (variant() === 'search') {
+  <div class="accessories-toolbar mb-3" role="search" [attr.aria-label]="'accessories.toolbar.label' | translate">
+    <div class="accessories-topbar d-flex align-items-center gap-2">
+      <div class="input-group input-group-sm accessories-search">
+        <span class="input-group-text accessories-search-icon" aria-hidden="true">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+        <input
+          #searchInput
+          type="search"
+          class="form-control"
+          [value]="searchText()"
+          [placeholder]="'accessories.toolbar.search' | translate"
+          [attr.aria-label]="'accessories.toolbar.search' | translate"
+          (input)="onSearch(searchInput.value)"
+        />
+        @if (searchText()) {
+          <button
+            type="button"
+            class="btn btn-elegant accessories-search-clear"
+            [attr.aria-label]="'accessories.toolbar.clear_search' | translate"
+            (click)="onSearch('')"
+          >
+            <i class="fas fa-xmark" aria-hidden="true"></i>
+          </button>
+        }
+      </div>
     </div>
+  </div>
+} @else {
+  <div
+    class="accessories-actions d-inline-flex align-items-center gap-2 me-2"
+    role="toolbar"
+    [attr.aria-label]="'accessories.toolbar.label' | translate"
+  >
+    @if (resetAvailable()) {
+      <button
+        type="button"
+        class="btn btn-sm btn-link my-0 flex-shrink-0 accessories-reset-button"
+        (click)="resetAll()"
+      >
+        {{ 'form.button_reset' | translate }}
+      </button>
+    }
 
     <div
       #filtersDropdown="ngbDropdown"
@@ -70,7 +88,7 @@
             (click)="filtersDropdown.close()"
           ></button>
         </div>
-        <div class="accessories-menu-body px-3 pt-2 pb-2">
+        <div class="accessories-menu-body px-2 pt-2 pb-2">
           @for (facet of orderedFacets(); track facet.key) {
             <section
               class="accessories-menu-section"
@@ -78,28 +96,29 @@
               [attr.aria-labelledby]="`accessories-menu-section-${facet.key}`"
             >
               <h6
-                class="accessories-menu-section-title small text-uppercase fw-semibold text-secondary"
+                class="accessories-menu-section-title small text-uppercase fw-semibold text-secondary px-2"
                 [attr.id]="`accessories-menu-section-${facet.key}`"
               >
                 {{ facet.labelKey | translate }}
               </h6>
               @for (option of visibleOptions(facet); track option.value; let i = $index) {
-                <div class="form-check accessories-menu-option">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    [id]="`accessories-opt-${facet.key}-${i}`"
-                    [checked]="isSelected(facet, option)"
-                    (change)="toggleValue(facet.key, option.value)"
-                  />
-                  <label
-                    class="form-check-label accessories-menu-label"
-                    [attr.for]="`accessories-opt-${facet.key}-${i}`"
-                  >
-                    <span>{{ option.translate ? (option.label | translate) : option.label }}</span>
-                    <span class="accessories-pill-count">{{ option.count }}</span>
-                  </label>
-                </div>
+                <button
+                  type="button"
+                  ngbDropdownItem
+                  class="accessories-menu-option"
+                  [attr.aria-pressed]="isSelected(facet, option)"
+                  (click)="toggleValue(facet.key, option.value)"
+                >
+                  <span class="accessories-check" aria-hidden="true">
+                    @if (isSelected(facet, option)) {
+                      <i class="fas fa-check primary-text"></i>
+                    }
+                  </span>
+                  <span class="accessories-menu-label-text">{{
+                    option.translate ? (option.label | translate) : option.label
+                  }}</span>
+                  <span class="accessories-pill-count">{{ option.count }}</span>
+                </button>
                 @if (subcategoryGroupFor(facet, option); as group) {
                   <div
                     class="accessories-subcategories"
@@ -107,36 +126,39 @@
                     [attr.aria-labelledby]="`accessories-sub-title-${facet.key}-${i}`"
                   >
                     <div
-                      class="small text-secondary accessories-subcategories-title"
+                      class="small text-secondary accessories-subcategories-title px-2"
                       [attr.id]="`accessories-sub-title-${facet.key}-${i}`"
                     >
                       {{ group.labelKey | translate }}
                     </div>
-                    @for (sub of group.options; track sub.value; let j = $index) {
-                      <div class="form-check accessories-menu-option accessories-suboption">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          [id]="`accessories-sub-${facet.key}-${i}-${j}`"
-                          [checked]="isSubcategorySelected(sub.value)"
-                          (change)="toggleSubcategory(sub.value)"
-                        />
-                        <label
-                          class="form-check-label accessories-menu-label"
-                          [attr.for]="`accessories-sub-${facet.key}-${i}-${j}`"
-                        >
-                          <span>{{ sub.label | translate }}</span>
-                          <span class="accessories-pill-count">{{ sub.count }}</span>
-                        </label>
-                      </div>
+                    @for (sub of group.options; track sub.value) {
+                      <button
+                        type="button"
+                        ngbDropdownItem
+                        class="accessories-menu-option accessories-suboption"
+                        [attr.aria-pressed]="isSubcategorySelected(sub.value)"
+                        (click)="toggleSubcategory(sub.value)"
+                      >
+                        <span class="accessories-check" aria-hidden="true">
+                          @if (isSubcategorySelected(sub.value)) {
+                            <i class="fas fa-check primary-text"></i>
+                          }
+                        </span>
+                        <span class="accessories-menu-label-text">{{ sub.label | translate }}</span>
+                        <span class="accessories-pill-count">{{ sub.count }}</span>
+                      </button>
                     }
                   </div>
                 }
               } @empty {
-                <span class="small text-secondary">{{ 'accessories.toolbar.no_matches' | translate }}</span>
+                <span class="small text-secondary px-2">{{ 'accessories.toolbar.no_matches' | translate }}</span>
               }
               @if (facet.options.length > 8) {
-                <button type="button" class="btn btn-sm btn-link p-0 mt-1 small" (click)="toggleExpanded(facet.key)">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-link p-0 mt-1 ms-2 small"
+                  (click)="toggleExpanded(facet.key)"
+                >
                   {{
                     (expandedFacets().has(facet.key)
                       ? 'accessories.toolbar.show_fewer'
@@ -148,18 +170,22 @@
             </section>
           }
           <section class="accessories-menu-section">
-            <div class="form-check accessories-menu-option mb-0">
-              <input
-                id="accessories-show-hidden"
-                class="form-check-input"
-                type="checkbox"
-                [checked]="filter().showHidden"
-                (change)="onShowHidden($event)"
-              />
-              <label class="form-check-label accessories-menu-label" for="accessories-show-hidden">
-                <span>{{ 'accessories.toolbar.show_hidden_accessories' | translate }}</span>
-              </label>
-            </div>
+            <button
+              type="button"
+              ngbDropdownItem
+              class="accessories-menu-option"
+              [attr.aria-pressed]="filter().showHidden"
+              (click)="toggleShowHidden()"
+            >
+              <span class="accessories-check" aria-hidden="true">
+                @if (filter().showHidden) {
+                  <i class="fas fa-check primary-text"></i>
+                }
+              </span>
+              <span class="accessories-menu-label-text">{{
+                'accessories.toolbar.show_hidden_accessories' | translate
+              }}</span>
+            </button>
           </section>
         </div>
         @if (active()) {
@@ -198,59 +224,57 @@
             (click)="sortDropdown.close()"
           ></button>
         </div>
-        <div class="accessories-menu-body px-3 pt-2 pb-2">
-          <section class="accessories-menu-section" role="radiogroup" aria-labelledby="accessories-sort-title-group-by">
+        <div class="accessories-menu-body px-2 pt-2 pb-2">
+          <section class="accessories-menu-section" role="group" aria-labelledby="accessories-sort-title-group-by">
             <h6
-              class="accessories-menu-section-title small text-uppercase fw-semibold text-secondary"
+              class="accessories-menu-section-title small text-uppercase fw-semibold text-secondary px-2"
               id="accessories-sort-title-group-by"
             >
               {{ 'accessories.toolbar.group_by' | translate }}
             </h6>
             @for (option of groupOptions; track option.value) {
-              <div class="form-check accessories-menu-option">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="accessories-group-by"
-                  [id]="`accessories-group-by-${option.value}`"
-                  [value]="option.value"
-                  [checked]="filter().groupBy === option.value"
-                  (change)="onGroupBy($event)"
-                />
-                <label
-                  class="form-check-label accessories-menu-label"
-                  [attr.for]="`accessories-group-by-${option.value}`"
-                >
-                  <span>{{ option.labelKey | translate }}</span>
-                </label>
-              </div>
+              <button
+                type="button"
+                ngbDropdownItem
+                class="accessories-menu-option"
+                role="menuitemradio"
+                [attr.data-value]="option.value"
+                [attr.aria-checked]="filter().groupBy === option.value"
+                (click)="onGroupBy(option.value)"
+              >
+                <span class="accessories-check" aria-hidden="true">
+                  @if (filter().groupBy === option.value) {
+                    <i class="fas fa-check primary-text"></i>
+                  }
+                </span>
+                <span class="accessories-menu-label-text">{{ option.labelKey | translate }}</span>
+              </button>
             }
           </section>
-          <section class="accessories-menu-section" role="radiogroup" aria-labelledby="accessories-sort-title-sort-by">
+          <section class="accessories-menu-section" role="group" aria-labelledby="accessories-sort-title-sort-by">
             <h6
-              class="accessories-menu-section-title small text-uppercase fw-semibold text-secondary"
+              class="accessories-menu-section-title small text-uppercase fw-semibold text-secondary px-2"
               id="accessories-sort-title-sort-by"
             >
               {{ 'accessories.toolbar.sort_by' | translate }}
             </h6>
             @for (option of sortOptions; track option.value) {
-              <div class="form-check accessories-menu-option">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="accessories-sort-by"
-                  [id]="`accessories-sort-by-${option.value}`"
-                  [value]="option.value"
-                  [checked]="filter().sortBy === option.value"
-                  (change)="onSortBy($event)"
-                />
-                <label
-                  class="form-check-label accessories-menu-label"
-                  [attr.for]="`accessories-sort-by-${option.value}`"
-                >
-                  <span>{{ option.labelKey | translate }}</span>
-                </label>
-              </div>
+              <button
+                type="button"
+                ngbDropdownItem
+                class="accessories-menu-option"
+                role="menuitemradio"
+                [attr.data-value]="option.value"
+                [attr.aria-checked]="filter().sortBy === option.value"
+                (click)="onSortBy(option.value)"
+              >
+                <span class="accessories-check" aria-hidden="true">
+                  @if (filter().sortBy === option.value) {
+                    <i class="fas fa-check primary-text"></i>
+                  }
+                </span>
+                <span class="accessories-menu-label-text">{{ option.labelKey | translate }}</span>
+              </button>
             }
           </section>
         </div>
@@ -264,16 +288,18 @@
       </div>
     </div>
 
-    <button
-      type="button"
-      class="btn btn-sm btn-elegant my-0 flex-shrink-0 accessories-kiosk-button"
-      container="body"
-      [ngbTooltip]="'kiosk.start.toolbar' | translate"
-      [attr.aria-label]="'kiosk.start.toolbar' | translate"
-      (click)="openKioskMode()"
-    >
-      <i class="fas fa-display" aria-hidden="true"></i>
-    </button>
+    @if (showKioskMode) {
+      <button
+        type="button"
+        class="btn btn-sm btn-elegant my-0 flex-shrink-0 accessories-kiosk-button"
+        container="body"
+        [ngbTooltip]="'kiosk.start.toolbar' | translate"
+        [attr.aria-label]="'kiosk.start.toolbar' | translate"
+        (click)="openKioskMode()"
+      >
+        <i class="fas fa-display" aria-hidden="true"></i>
+      </button>
+    }
 
     <button
       type="button"
@@ -288,4 +314,4 @@
       <i class="fas fa-up-down-left-right" aria-hidden="true"></i>
     </button>
   </div>
-</div>
+}

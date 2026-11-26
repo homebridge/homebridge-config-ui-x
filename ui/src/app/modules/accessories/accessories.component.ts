@@ -16,7 +16,10 @@ import { AccessoryFilterState, AccessoryGroup, FLOOR_OTHER_KEY, groupAndSort, is
 import { RoomSummary, summarizeRoom } from '@/app/core/accessories/filters/room-summary'
 import { serviceBridgeName } from '@/app/core/accessories/filters/service-helpers'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { listenUntilDestroyed } from '@/app/core/communication/socket-listener'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
+import { ChildBridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { AccessoriesToolbarComponent } from '@/app/modules/accessories/accessories-toolbar/accessories-toolbar.component'
 import { AccessorySupportComponent } from '@/app/modules/accessories/accessory-support/accessory-support.component'
@@ -72,6 +75,14 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   private injector = inject(EnvironmentInjector)
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+  private ioStatus!: IoNamespace
+  private ioChild!: IoNamespace
+
+  // Getter for persisted bridge name mapping from service
+  private get bridgeUsernameToNameMap(): Map<string, string> {
+    return this.$accessories.bridgeUsernameToNameMap
+  }
 
   public isAdmin = this.$auth.user.admin
   public enableAccessories = this.$settings.env.enableAccessories
@@ -88,13 +99,28 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public readonly placeholders = Array.from({ length: 10 })
   private $toastr = inject(ToastrService)
 
+  /** Bumped when a bridge is renamed on the socket, so the labelled rooms are rebuilt */
+  private readonly bridgeNamesVersion = signal(0)
+
+  /**
+   * The rooms with each bridge named the way the page shows it (the name from the child bridge
+   * status when known, else the name it advertises). The filter and the bridge facet match by these names.
+   */
+  public readonly labelledRooms = computed(() => {
+    this.bridgeNamesVersion()
+    return this.$accessories.rooms().map(room => ({
+      ...room,
+      services: room.services.map(service => this.withBridgeName(service)),
+    }))
+  })
+
   public readonly batteryIndex = computed(() =>
-    buildBatteryIndex(this.$accessories.rooms().flatMap(room => room.services)),
+    buildBatteryIndex(this.labelledRooms().flatMap(room => room.services)),
   )
 
   /** The accessories to show, filtered, grouped and sorted */
   public readonly groups = computed<AccessoryGroup[]>(() =>
-    groupAndSort(this.$accessories.rooms(), this.filter(), this.batteryIndex(), this.$accessories.filterContext()),
+    groupAndSort(this.labelledRooms(), this.filter(), this.batteryIndex(), this.$accessories.filterContext()),
   )
 
   /** Group key of the rooms on no floor, shown with its translated label */
@@ -111,7 +137,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
    */
   public readonly manageRooms = computed<AccessoryGroup[]>(() => {
     const visible = this.groups()
-    return this.$accessories.rooms().map(room => ({
+    return this.labelledRooms().map(room => ({
       key: room.name,
       label: room.name,
       services: visible.find(group => group.key === room.name)?.services ?? [],
@@ -119,7 +145,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   })
 
   public readonly totalCount = computed(() =>
-    this.$accessories.rooms().reduce((count, room) => count + room.services.length, 0),
+    this.labelledRooms().reduce((count, room) => count + room.services.length, 0),
   )
 
   public readonly shownCount = computed(() =>
@@ -130,6 +156,39 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     const groups = this.groups()
     return groups.length > 0 && groups.every(group => this.collapsed().has(this.groupId(group)))
   })
+
+  /** The name a service's bridge is shown under: the name from the child bridge status socket when known, else the advertised name */
+  private withBridgeName(service: ServiceTypeX): ServiceTypeX {
+    const username = service.instance?.username
+    if (!username) {
+      return service
+    }
+    const name = this.bridgeUsernameToNameMap.get(username) || service.instance?.name
+    if (!name || name === serviceBridgeName(service)) {
+      return service
+    }
+    const bridge = typeof service.bridge === 'object' && service.bridge !== null
+      ? service.bridge
+      : {}
+    return {
+      ...service,
+      instance: {
+        ...service.instance,
+        name,
+      },
+      bridge: {
+        ...bridge,
+        username,
+        name,
+      },
+    } as unknown as ServiceTypeX
+  }
+
+  /** Called when a bridge name arrives or changes on the socket */
+  private bridgeNamesChanged(): void {
+    this.bridgeNamesVersion.update(version => version + 1)
+    this.updateAvailableBridges()
+  }
 
   // Getter/setter for dragula two-way binding
   public get rooms(): Array<{ name: string, isDefault?: boolean, services: ServiceTypeX[] }> {
@@ -170,6 +229,9 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.$settings.setPageTitle(title)
 
     void this.$accessories.start()
+
+    // Set up WebSocket connections to get custom bridge names
+    this.setupBridgeNameMapping()
 
     // Subscribe to accessory data to update available bridges
     this.$accessories.accessoryData.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
@@ -366,16 +428,60 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.dragulaService.destroy?.('services-bag')
 
     // Clean up WebSocket connections
+    this.ioStatus?.end?.()
+    this.ioChild?.end?.()
+  }
+
+  /**
+   * Set up WebSocket connections to get custom bridge names from config
+   */
+  private setupBridgeNameMapping(): void {
+    // Connect to status namespace for main Homebridge instance
+    this.ioStatus = this.$ws.connectToNamespace('status')
+    this.ioStatus.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.ioStatus.socket.emit('monitor-server-status')
+    })
+
+    listenUntilDestroyed(this.destroyRef, this.ioStatus.socket).on('homebridge-status', (data: any) => {
+      if (data.username) {
+        this.bridgeUsernameToNameMap.set(data.username, 'Homebridge')
+        this.bridgeNamesChanged()
+      }
+    })
+
+    // Connect to child-bridges namespace for child bridge instances
+    this.ioChild = this.$ws.connectToNamespace('child-bridges')
+    this.ioChild.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.ioChild.socket.emit('monitor-child-bridge-status')
+      this.fetchChildBridges()
+    })
+
+    listenUntilDestroyed(this.destroyRef, this.ioChild.socket).on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
+      this.bridgeUsernameToNameMap.set(data.username, data.name)
+      this.bridgeNamesChanged()
+    })
+  }
+
+  /**
+   * Fetch initial list of child bridges
+   */
+  private fetchChildBridges(): void {
+    this.ioChild.request('get-homebridge-child-bridge-status').subscribe((data: ChildBridgeStatusResponse[]) => {
+      data.forEach((bridge) => {
+        this.bridgeUsernameToNameMap.set(bridge.username, bridge.name)
+      })
+      this.bridgeNamesChanged()
+    })
   }
 
   /**
    * Update the list of available bridges from the current accessories
-   * Each bridge is named by the name it advertises
+   * Each bridge is named as the labelled rooms name it (the socket name when known, else the advertised name)
    */
   private updateAvailableBridges(): void {
     const bridges = new Set<string>()
 
-    this.$accessories.rooms().forEach((room) => {
+    this.labelledRooms().forEach((room) => {
       room.services.forEach((service) => {
         if (service.instance?.username) {
           const bridgeName = serviceBridgeName(service)
@@ -513,7 +619,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   /** How many of a room's services the filter hides */
   public hiddenCountFor(group: AccessoryGroup): number {
-    const total = this.$accessories.rooms().find(room => room.name === group.key)?.services.length ?? 0
+    const total = this.labelledRooms().find(room => room.name === group.key)?.services.length ?? 0
     return total - group.services.length
   }
 

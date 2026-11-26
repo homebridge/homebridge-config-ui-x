@@ -31,6 +31,9 @@ const FACET_ORDER: FacetKey[] = [
 /** Sections with more options than this collapse behind Show all */
 const COLLAPSED_OPTION_COUNT = 8
 
+/** Whether the kiosk mode button shows in the toolbar. Kiosk mode is hidden for now; the code stays. */
+const SHOW_KIOSK_MODE = false
+
 export interface FacetOption {
   value: string
   /** The label, or a translation key when `translate` is set */
@@ -82,6 +85,22 @@ function countMatching(
 }
 
 /**
+ * The filter state an option's count is taken under: every filter applied except this facet's own
+ * selection, which is replaced by the option itself. Search and the hidden setting always apply.
+ */
+function facetCountState(current: AccessoryFilterState, key: FacetKey, value: string): AccessoryFilterState {
+  const state = {
+    ...current,
+    [key]: [value],
+  } as AccessoryFilterState
+  if (key === 'categories') {
+    // Subcategories narrow their category, so they are part of the category facet's own selection
+    state.subcategories = []
+  }
+  return state
+}
+
+/**
  * The search, filter, grouping and sort controls for the accessories page. It holds no state of
  * its own: it shows `filter` and emits the next filter whenever the user changes something.
  * The filters sit in a slide-out panel, opened from the Filters button.
@@ -99,8 +118,14 @@ function countMatching(
   templateUrl: './accessories-toolbar.component.html',
   styleUrl: './accessories-toolbar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.accessories-toolbar-actions]': 'variant() === \'actions\'',
+  },
 })
 export class AccessoriesToolbarComponent {
+  /** `search` is the search field row; `actions` is the Reset, Filters, Group and sort and Manage layout buttons */
+  public readonly variant = input<'search' | 'actions'>('search')
+  public readonly showKioskMode = SHOW_KIOSK_MODE
   public readonly filter = model.required<AccessoryFilterState>()
   public readonly rooms = input<RoomInput[]>([])
   public readonly bridges = input<string[]>([])
@@ -136,6 +161,11 @@ export class AccessoriesToolbarComponent {
 
   public readonly active = computed(() => isFilterActive(this.filter()))
 
+  /** Whether anything is set that Reset would clear: a filter, the search, or a changed grouping or sort */
+  public readonly resetAvailable = computed(() => isFilterActive(this.filter())
+    || this.filter().search.trim() !== ''
+    || this.groupSortChanged())
+
   /** Whether grouping or sorting differ from the defaults, so the Group and sort menu offers a reset */
   public readonly groupSortChanged = computed(() => this.filter().groupBy !== DEFAULT_FILTER_STATE.groupBy
     || this.filter().sortBy !== DEFAULT_FILTER_STATE.sortBy)
@@ -153,10 +183,14 @@ export class AccessoriesToolbarComponent {
   private readonly $modal = inject(NgbModal)
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
 
-  /** How many accessories each subcategory holds, ignoring the other filters (but not hidden ones unless shown) */
+  /** How many accessories each subcategory holds under the other filters, search included */
   private readonly subcategoryCounts = computed(() => {
     const counts = new Map<string, number>()
-    const base = { ...DEFAULT_FILTER_STATE, showHidden: this.filter().showHidden }
+    // Every filter applies except the subcategories themselves
+    const base: AccessoryFilterState = {
+      ...this.filter(),
+      subcategories: [],
+    }
     const batteryIndex = this.batteryIndex()
     const context = this.labelContext()
     for (const room of this.rooms()) {
@@ -206,11 +240,7 @@ export class AccessoriesToolbarComponent {
       const options = base
         .map(option => ({
           ...option,
-          count: countMatching(rooms, {
-            ...DEFAULT_FILTER_STATE,
-            showHidden: current.showHidden,
-            [key]: [option.value],
-          } as AccessoryFilterState, batteryIndex, context),
+          count: countMatching(rooms, facetCountState(current, key, option.value), batteryIndex, context),
         }))
         .filter(option => option.count > 0 || selectedValues.includes(option.value))
       return {
@@ -247,10 +277,12 @@ export class AccessoriesToolbarComponent {
     ]
   })
 
-  /** The filter sections, in the order the panel shows them */
+  /** The filter sections, in the order the panel shows them. The label section is left out when no accessory has a label. */
   public readonly orderedFacets = computed<Facet[]>(() => {
     const byKey = new Map(this.facets().map(facet => [facet.key, facet]))
+    const hasLabels = this.allLabels().length > 0
     return FACET_ORDER
+      .filter(key => key !== 'labels' || hasLabels)
       .map(key => byKey.get(key))
       .filter((facet): facet is Facet => !!facet)
   })
@@ -292,12 +324,19 @@ export class AccessoriesToolbarComponent {
     this.search$.next(text)
   }
 
-  public onGroupBy(event: Event): void {
-    this.emit({ groupBy: (event.target as HTMLInputElement).value as AccessoryGroupBy })
+  public onGroupBy(value: AccessoryGroupBy): void {
+    this.emit({ groupBy: value })
   }
 
-  public onSortBy(event: Event): void {
-    this.emit({ sortBy: (event.target as HTMLInputElement).value as AccessorySortBy })
+  public onSortBy(value: AccessorySortBy): void {
+    this.emit({ sortBy: value })
+  }
+
+  /** Clear the search, every filter, and the grouping and sort, back to the defaults */
+  public resetAll(): void {
+    this.searchPending = false
+    this.searchText.set('')
+    this.filter.set({ ...DEFAULT_FILTER_STATE })
   }
 
   /** Put grouping and sort back to their defaults, leaving the filters as they are */
@@ -305,8 +344,8 @@ export class AccessoriesToolbarComponent {
     this.emit({ groupBy: DEFAULT_FILTER_STATE.groupBy, sortBy: DEFAULT_FILTER_STATE.sortBy })
   }
 
-  public onShowHidden(event: Event): void {
-    this.emit({ showHidden: (event.target as HTMLInputElement).checked })
+  public toggleShowHidden(): void {
+    this.emit({ showHidden: !this.filter().showHidden })
   }
 
   /**
@@ -317,8 +356,8 @@ export class AccessoriesToolbarComponent {
     if (!open) {
       return
     }
-    const topbar = this.host.nativeElement.querySelector<HTMLElement>('.accessories-topbar')
-    const bottom = topbar?.getBoundingClientRect().bottom ?? 0
+    const header = this.host.nativeElement.closest<HTMLElement>('.accessories-page-header')
+    const bottom = header?.getBoundingClientRect().bottom ?? 0
     this.host.nativeElement.style.setProperty('--accessories-filters-top', `${bottom}px`)
   }
 

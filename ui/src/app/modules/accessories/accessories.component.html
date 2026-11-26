@@ -10,44 +10,63 @@
 </ng-template>
 
 @if (enableAccessories) {
-  <div class="row mb-3">
-    <div class="col-6">
-      <h3 class="primary-text m-0">{{ 'menu.label_accessories' | translate }}</h3>
+  <div class="accessories-page-header">
+    <div class="row mb-2">
+      <div class="col-6">
+        <h3 class="primary-text m-0">{{ 'menu.label_accessories' | translate }}</h3>
+      </div>
+      <div class="col-6 text-end">
+        @if (hasPlugins()) {
+          <app-accessories-toolbar
+            variant="actions"
+            [filter]="filter()"
+            [rooms]="labelledRooms()"
+            [bridges]="availableBridges()"
+            [batteryIndex]="batteryIndex()"
+            [shown]="shownCount()"
+            [total]="totalCount()"
+            [manageLayoutActive]="manageLayoutMode"
+            [labels]="labels()"
+            (filterChange)="onFilterChange($event)"
+            (manageLayoutToggle)="toggleManageLayout()"
+          />
+        }
+        @if (hasPlugins()) {
+          <button
+            type="button"
+            class="btn btn-elegant my-0 me-2"
+            container="body"
+            placement="bottom"
+            triggers="hover"
+            [hidden]="layoutLocked()"
+            [openDelay]="150"
+            [ngbTooltip]="'accessories.button_add_room' | translate"
+            [attr.aria-label]="'accessories.button_add_room' | translate"
+            (click)="addRoom()"
+          >
+            <i class="fas fa-folder-plus" aria-hidden="true"></i>
+          </button>
+        }
+        <ng-container *ngTemplateOutlet="supportButton" />
+      </div>
     </div>
-    <div class="col-6 text-end">
-      @if (hasPlugins()) {
-        <button
-          type="button"
-          class="btn btn-elegant my-0 me-2"
-          container="body"
-          placement="bottom"
-          triggers="hover"
-          [hidden]="layoutLocked()"
-          [openDelay]="150"
-          [ngbTooltip]="'accessories.button_add_room' | translate"
-          [attr.aria-label]="'accessories.button_add_room' | translate"
-          (click)="addRoom()"
-        >
-          <i class="fas fa-folder-plus" aria-hidden="true"></i>
-        </button>
-      }
-      <ng-container *ngTemplateOutlet="supportButton" />
-    </div>
+    @if (hasPlugins()) {
+      <app-accessories-toolbar
+        variant="search"
+        [filter]="filter()"
+        [rooms]="labelledRooms()"
+        [bridges]="availableBridges()"
+        [batteryIndex]="batteryIndex()"
+        [shown]="shownCount()"
+        [total]="totalCount()"
+        [manageLayoutActive]="manageLayoutMode"
+        [labels]="labels()"
+        (filterChange)="onFilterChange($event)"
+        (manageLayoutToggle)="toggleManageLayout()"
+      />
+    }
   </div>
   @if (hasPlugins()) {
-    <app-accessories-toolbar
-      [filter]="filter()"
-      [rooms]="rooms"
-      [bridges]="availableBridges()"
-      [batteryIndex]="batteryIndex()"
-      [shown]="shownCount()"
-      [total]="totalCount()"
-      [manageLayoutActive]="manageLayoutMode"
-      [labels]="labels()"
-      (filterChange)="onFilterChange($event)"
-      (manageLayoutToggle)="toggleManageLayout()"
-    />
-
     @if (manageLayoutMode) {
       <p class="small text-secondary mb-2 manage-hint">
         @switch (manageView()) {

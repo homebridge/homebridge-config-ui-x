@@ -3,6 +3,10 @@
   min-width: 0;
 }
 
+.accessories-actions {
+  flex-wrap: nowrap;
+}
+
 .accessories-search {
   flex: 1 1 0;
   min-width: 0;
@@ -77,27 +81,34 @@
   margin-bottom: 0.25rem;
 }
 
-// One tick row per option, like the Group/Sort list: the count sits at the right
+// One tick row per option, like the bridge filter menu: a fixed check column, the label, and the count at the right.
+// The rows are dropdown items, so they take the theme's text colour in light and dark mode.
 .accessories-menu-option {
-  padding: 0.125rem 0.25rem 0.125rem 1.75em;
-  border-radius: 0.25rem;
-}
-
-.accessories-menu-option:hover {
-  background-color: var(--bs-tertiary-bg);
-}
-
-.accessories-menu-label {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 0.5rem;
+  align-items: center;
   width: 100%;
-  cursor: pointer;
+  white-space: normal;
+  text-align: left;
+  border-radius: 0.25rem;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+}
+
+.accessories-check {
+  display: inline-block;
+  flex: 0 0 1.25rem;
+  width: 1.25rem;
+  margin-right: 0.5rem;
+  text-align: center;
+}
+
+.accessories-menu-label-text {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .accessories-suboption {
-  padding-left: 2.75em;
+  padding-left: 1.5rem;
 }
 
 .accessories-subcategories {
@@ -105,13 +116,27 @@
 }
 
 .accessories-subcategories-title {
-  padding-left: 1.75em;
+  padding-left: 0.5rem;
 }
 
 .accessories-pill-count {
-  margin-left: 0.25rem;
+  flex: 0 0 auto;
+  margin-left: 0.5rem;
   opacity: 0.75;
   font-variant-numeric: tabular-nums;
+}
+
+.accessories-reset-button {
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+:host {
+  display: block;
+}
+
+:host(.accessories-toolbar-actions) {
+  display: inline-block;
 }
 
 .accessories-search-clear {

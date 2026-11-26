@@ -86,6 +86,7 @@ export class AccessoriesService {
   public readonly availableBridges = signal<string[]>([])
   /** Filter, grouping and sort for the accessories page. Lives here so it survives navigation. */
   public readonly filterState = signal<AccessoryFilterState>(this.loadFilterState())
+  public bridgeUsernameToNameMap: Map<string, string> = new Map()
   public readonly rooms = signal<Array<{
     name: string
     isDefault?: boolean
