@@ -195,6 +195,7 @@
   "accessories.hap_status.unknown": "Unknown error",
   "accessories.hap_status.write_only": "Write-only characteristic",
   "accessories.hide_this_accessory": "Kiegészítő elrejtése",
+  "accessories.low_battery": "Low Battery",
   "accessories.manage_layout": "Manage Layout",
   "accessories.message_must_use_insecure_mode": "A kiegészítők vezérléseihez a Homebridge-t insecure módban kell futtatni {{ link }}.",
   "accessories.name": "Név",

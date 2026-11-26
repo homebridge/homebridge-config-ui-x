@@ -195,6 +195,7 @@
   "accessories.hap_status.unknown": "Unknown error",
   "accessories.hap_status.write_only": "Write-only characteristic",
   "accessories.hide_this_accessory": "Bu aksesuarı gizle",
+  "accessories.low_battery": "Low Battery",
   "accessories.manage_layout": "Manage Layout",
   "accessories.message_must_use_insecure_mode": "Aksesuarlarınızı kontrol etmek için Homebridge'i emniyetsiz modda çalıştırıyor olmalısınız {{ link }}.",
   "accessories.name": "Ad",

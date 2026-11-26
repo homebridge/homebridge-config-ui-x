@@ -147,6 +147,7 @@ export class AccessoryTileComponent {
 
   public readonly service = input.required<ServiceTypeX>()
   protected readonly notResponding = computed(() => this.service().protocol !== 'matter' && isNotResponding(this.service()))
+  protected readonly lowBattery = computed(() => !!this.service().uniqueId && this.$accessories.lowBatteryIds().has(this.service().uniqueId!))
 
   /** Hover text for the whole tile: each HAP status description with its code, one per line */
   protected readonly notRespondingTitle = computed(() => this.notResponding()

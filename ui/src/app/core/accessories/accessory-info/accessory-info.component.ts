@@ -23,6 +23,7 @@ import {
   PairingInfo,
   ServiceTypeX,
 } from '@/app/core/accessories/accessories.interfaces'
+import { batterySummary, hasHapBatteryValues, isLowBatteryCharacteristic } from '@/app/core/accessories/low-battery'
 import { hapStatusKey, hasErrorStatus, isNotResponding, notRespondingCodes } from '@/app/core/accessories/not-responding'
 import { ACCESSORY_INFO_MODAL_DATA, REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
@@ -127,6 +128,24 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   protected readonly isNotResponding = isNotResponding
   protected readonly notRespondingCodes = notRespondingCodes
   protected readonly hasErrorStatus = hasErrorStatus
+  protected readonly isLowBatteryCharacteristic = isLowBatteryCharacteristic
+
+  /**
+   * Battery level and low flag across the accessory's services, for the
+   * Battery row. Undefined without a battery, and when the services listed
+   * above already show their own battery characteristics, so it is not shown twice.
+   */
+  protected battery() {
+    const listed = [this.localService, ...this.extraServices]
+    if (listed.some(hasHapBatteryValues)) {
+      return undefined
+    }
+    return batterySummary([
+      ...listed,
+      ...(this.modalData.accessoryServices ?? []),
+    ])
+  }
+
   protected readonly hapStatusKey = hapStatusKey
 
   // Other public properties

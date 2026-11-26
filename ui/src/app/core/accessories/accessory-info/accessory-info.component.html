@@ -117,7 +117,10 @@
           <span class="text-start text-md-end grey-text font-monospace">{{ localService.serviceName }}</span>
         </li>
         @for (characteristic of localService.serviceCharacteristics; track characteristic) {
-          <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <li
+            class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row"
+            [class.accessory-info-low-battery]="isLowBatteryCharacteristic(characteristic)"
+          >
             <span class="me-3">
               @if (hasLimits(characteristic)) {
                 <span
@@ -131,6 +134,12 @@
                 >
               } @else {
                 <span class="text-nowrap">{{ characteristic.description }}</span>
+              }
+              @if (isLowBatteryCharacteristic(characteristic)) {
+                <span class="text-danger ms-1 text-nowrap">
+                  <i class="fas fa-battery-quarter" aria-hidden="true"></i>
+                  {{ 'accessories.low_battery' | translate }}
+                </span>
               }
               @if (hasErrorStatus(characteristic.status)) {
                 <span class="text-danger font-monospace ms-1">
@@ -236,7 +245,10 @@
           <span class="text-start text-md-end grey-text font-monospace">{{ extraService.serviceName }}</span>
         </li>
         @for (characteristic of extraService.serviceCharacteristics; track characteristic) {
-          <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <li
+            class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row"
+            [class.accessory-info-low-battery]="isLowBatteryCharacteristic(characteristic)"
+          >
             <span>
               @if (hasLimits(characteristic)) {
                 <span
@@ -250,6 +262,12 @@
                 >
               } @else {
                 {{ characteristic.description }}
+              }
+              @if (isLowBatteryCharacteristic(characteristic)) {
+                <span class="text-danger ms-1 text-nowrap">
+                  <i class="fas fa-battery-quarter" aria-hidden="true"></i>
+                  {{ 'accessories.low_battery' | translate }}
+                </span>
               }
               @if (hasErrorStatus(characteristic.status)) {
                 <span class="text-danger font-monospace ms-1">
@@ -368,6 +386,29 @@
               'accessories.responding' | translate
             }}</span>
           }
+        </li>
+      }
+      @if (battery(); as battery) {
+        <li
+          class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row"
+          [class.accessory-info-low-battery]="battery.low"
+        >
+          <span class="text-start">{{ 'accessories.core.battery' | translate }}</span>
+          <span
+            class="text-start text-md-end font-monospace"
+            [class.grey-text]="!battery.low"
+            [class.text-danger]="battery.low"
+          >
+            @if (battery.low) {
+              <i class="fas fa-battery-quarter me-1" aria-hidden="true"></i>{{ 'accessories.low_battery' | translate }}
+            }
+            @if (battery.level !== undefined) {
+              @if (battery.low) {
+                &middot;
+              }
+              {{ battery.level }}%
+            }
+          </span>
         </li>
       }
       @if (matchedCachedAccessory) {

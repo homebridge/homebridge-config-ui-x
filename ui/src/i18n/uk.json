@@ -195,6 +195,7 @@
   "accessories.hap_status.unknown": "Unknown error",
   "accessories.hap_status.write_only": "Write-only characteristic",
   "accessories.hide_this_accessory": "Приховати цей аксесуар",
+  "accessories.low_battery": "Low Battery",
   "accessories.manage_layout": "Керувати макетом",
   "accessories.message_must_use_insecure_mode": "Щоб керувати своїми аксесуарами, Ви повинні запустити Homebridge в безпечному режимі {{ link }}.",
   "accessories.name": "Назва",

@@ -200,6 +200,8 @@ export interface AccessoryInfoModalData {
   service: any
   accessoryCache: any[]
   pairingCache: any[]
+  /** The other services of the same accessory, for the battery row */
+  accessoryServices?: any[]
 }
 
 export const ACCESSORY_INFO_MODAL_DATA = new InjectionToken<AccessoryInfoModalData>('AccessoryInfoModalData')

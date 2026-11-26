@@ -195,6 +195,7 @@
   "accessories.hap_status.unknown": "Unknown error",
   "accessories.hap_status.write_only": "Write-only characteristic",
   "accessories.hide_this_accessory": "Ẩn phụ kiện này",
+  "accessories.low_battery": "Low Battery",
   "accessories.manage_layout": "Quản lý bố cục",
   "accessories.message_must_use_insecure_mode": "Để điều khiển phụ kiện, bạn phải chạy Homebridge ở chế độ insecure {{ link }}.",
   "accessories.name": "Tên",

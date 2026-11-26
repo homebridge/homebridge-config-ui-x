@@ -195,6 +195,7 @@
   "accessories.hap_status.unknown": "Unknown error",
   "accessories.hap_status.write_only": "Write-only characteristic",
   "accessories.hide_this_accessory": "Skjul dette tilbehøret",
+  "accessories.low_battery": "Low Battery",
   "accessories.manage_layout": "Manage Layout",
   "accessories.message_must_use_insecure_mode": "For å kontrollere dine tilbehør må du kjøre Homebridge i usikker modus {{ link }}.",
   "accessories.name": "navn",
