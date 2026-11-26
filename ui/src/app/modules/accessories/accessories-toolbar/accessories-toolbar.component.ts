@@ -4,7 +4,7 @@ import type { AccessoryFilterState, AccessoryGroupBy, AccessorySortBy, FilterCon
 
 import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, input, model, output, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
+import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -111,6 +111,7 @@ function facetCountState(current: AccessoryFilterState, key: FacetKey, value: st
     NgbDropdown,
     NgbDropdownToggle,
     NgbDropdownMenu,
+    NgbDropdownItem,
     NgbTooltip,
     TranslatePipe,
   ],

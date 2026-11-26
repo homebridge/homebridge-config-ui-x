@@ -134,6 +134,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(accessories): reset the grouping and sort from the group and sort menu
 - feat(accessories): move the toolbar buttons to the header, add a reset, count filter options against the other filters, and show tick marks
 - fix(accessories): put the search beside the header buttons, and plain menu rows with muted counts
+- fix(accessories): import the dropdown item directive, so the filter and sort menu rows render as menu items in light and dark mode
 
 ### Other Changes
 
