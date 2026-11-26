@@ -81,17 +81,14 @@
   margin-bottom: 0.25rem;
 }
 
-// One tick row per option, like the bridge filter menu: a fixed check column, the label, and the count at the right.
-// The rows are dropdown items, so they take the theme's text colour in light and dark mode.
+// One tick row per option, like the bridge filter menu: the theme's dropdown-item look, a fixed check column,
+// the label, and the count at the right in muted text.
 .accessories-menu-option {
   display: flex;
   align-items: center;
   width: 100%;
   white-space: normal;
   text-align: left;
-  border-radius: 0.25rem;
-  margin: 0;
-  padding: 0.25rem 0.5rem;
 }
 
 .accessories-check {
@@ -121,8 +118,9 @@
 
 .accessories-pill-count {
   flex: 0 0 auto;
-  margin-left: 0.5rem;
-  opacity: 0.75;
+  margin-left: auto;
+  padding-left: 0.5rem;
+  color: var(--bs-secondary-color);
   font-variant-numeric: tabular-nums;
 }
 

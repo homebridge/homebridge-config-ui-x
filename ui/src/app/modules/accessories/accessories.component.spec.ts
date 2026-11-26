@@ -1192,6 +1192,26 @@ describe('accessoriesComponent', () => {
       page.updateAvailableBridges()
     }
 
+    it('names a child bridge from the child-bridge feed and the main bridge from its advertised name', async () => {
+      const page = await open({
+        rooms: [
+          room([
+            service('0E:11:11:11:11:11', 'homebridge'),
+            service('0E:22:22:22:22:22', 'Hue Bridge 3F2A'),
+          ]),
+        ],
+        childBridges: [
+          { username: '0E:22:22:22:22:22', name: 'Hue' },
+        ],
+      })
+
+      recompute(page)
+
+      expect(accessories.availableBridges()).toEqual(['homebridge', 'Hue'])
+      const names = page.labelledRooms()[0].services.map((s: any) => s.instance.name)
+      expect(names).toEqual(['homebridge', 'Hue'])
+    })
+
     it('lists the bridge each accessory belongs to', async () => {
       const page = await open({
         rooms: [

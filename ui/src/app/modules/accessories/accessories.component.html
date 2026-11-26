@@ -11,14 +11,12 @@
 
 @if (enableAccessories) {
   <div class="accessories-page-header">
-    <div class="row mb-2">
-      <div class="col-6">
-        <h3 class="primary-text m-0">{{ 'menu.label_accessories' | translate }}</h3>
-      </div>
-      <div class="col-6 text-end">
-        @if (hasPlugins()) {
+    <div class="accessories-header d-flex flex-wrap align-items-center gap-2 mb-2">
+      <h3 class="primary-text m-0 accessories-title me-auto">{{ 'menu.label_accessories' | translate }}</h3>
+      @if (hasPlugins()) {
+        <div class="accessories-header-search">
           <app-accessories-toolbar
-            variant="actions"
+            variant="search"
             [filter]="filter()"
             [rooms]="labelledRooms()"
             [bridges]="availableBridges()"
@@ -30,41 +28,37 @@
             (filterChange)="onFilterChange($event)"
             (manageLayoutToggle)="toggleManageLayout()"
           />
-        }
-        @if (hasPlugins()) {
-          <button
-            type="button"
-            class="btn btn-elegant my-0 me-2"
-            container="body"
-            placement="bottom"
-            triggers="hover"
-            [hidden]="layoutLocked()"
-            [openDelay]="150"
-            [ngbTooltip]="'accessories.button_add_room' | translate"
-            [attr.aria-label]="'accessories.button_add_room' | translate"
-            (click)="addRoom()"
-          >
-            <i class="fas fa-folder-plus" aria-hidden="true"></i>
-          </button>
-        }
-        <ng-container *ngTemplateOutlet="supportButton" />
-      </div>
+        </div>
+        <app-accessories-toolbar
+          variant="actions"
+          [filter]="filter()"
+          [rooms]="labelledRooms()"
+          [bridges]="availableBridges()"
+          [batteryIndex]="batteryIndex()"
+          [shown]="shownCount()"
+          [total]="totalCount()"
+          [manageLayoutActive]="manageLayoutMode"
+          [labels]="labels()"
+          (filterChange)="onFilterChange($event)"
+          (manageLayoutToggle)="toggleManageLayout()"
+        />
+        <button
+          type="button"
+          class="btn btn-elegant my-0 me-2"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [hidden]="layoutLocked()"
+          [openDelay]="150"
+          [ngbTooltip]="'accessories.button_add_room' | translate"
+          [attr.aria-label]="'accessories.button_add_room' | translate"
+          (click)="addRoom()"
+        >
+          <i class="fas fa-folder-plus" aria-hidden="true"></i>
+        </button>
+      }
+      <ng-container *ngTemplateOutlet="supportButton" />
     </div>
-    @if (hasPlugins()) {
-      <app-accessories-toolbar
-        variant="search"
-        [filter]="filter()"
-        [rooms]="labelledRooms()"
-        [bridges]="availableBridges()"
-        [batteryIndex]="batteryIndex()"
-        [shown]="shownCount()"
-        [total]="totalCount()"
-        [manageLayoutActive]="manageLayoutMode"
-        [labels]="labels()"
-        (filterChange)="onFilterChange($event)"
-        (manageLayoutToggle)="toggleManageLayout()"
-      />
-    }
   </div>
   @if (hasPlugins()) {
     @if (manageLayoutMode) {

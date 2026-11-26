@@ -77,3 +77,18 @@ a:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   border-radius: 0.5rem;
 }
+
+// Header row: the title on the left; the search sits left of the action buttons and wraps to its own row on phones
+.accessories-header-search {
+  flex: 1 1 12rem;
+  min-width: 0;
+  max-width: 22rem;
+}
+
+@media (max-width: 575.98px) {
+  .accessories-header-search {
+    flex: 1 1 100%;
+    max-width: none;
+    order: 10;
+  }
+}
