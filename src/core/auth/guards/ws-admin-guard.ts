@@ -34,7 +34,7 @@ export class WsAdminGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient()
     try {
-      const user = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey) as UserDto & { instanceId?: string }
+      const user = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey, { algorithms: ['HS256'] }) as UserDto & { instanceId?: string }
       // Reject mismatched instanceId — the setup-wizard token signs a
       // sentinel value and must not reach admin WS endpoints. Live wizard
       // tokens are still allowed *only* while the wizard is in progress.

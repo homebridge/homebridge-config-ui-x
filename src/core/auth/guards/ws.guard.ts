@@ -35,7 +35,7 @@ export class WsGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient()
     try {
-      const payload = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey) as UserDto & { instanceId?: string }
+      const payload = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey, { algorithms: ['HS256'] }) as UserDto & { instanceId?: string }
       // Mirror JwtStrategy.validate — reject mismatched instanceId so the
       // setup-wizard token (intentionally signed with a wrong instanceId)
       // cannot reach socket endpoints once the wizard has completed.
