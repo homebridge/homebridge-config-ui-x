@@ -76,7 +76,8 @@ export class PluginExternalsComponent implements OnInit {
     try {
       const pairings = await this.$pairingsCache.get<any[]>()
       const filtered: ExternalAccessoryPairing[] = (pairings ?? [])
-        .filter(p => p._plugin === this.plugin.name && (p._isExternal === true || p._matterOnly === true))
+        // Not one that could be left over: nothing publishes it now, so its pairing code leads nowhere
+        .filter(p => p._plugin === this.plugin.name && (p._isExternal === true || p._matterOnly === true) && !p._couldBeStale)
         .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))
       this.accessories.set(filtered)
     } catch (error) {

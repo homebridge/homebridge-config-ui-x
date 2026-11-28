@@ -1,6 +1,6 @@
 @let hasHumidity = 'CurrentRelativeHumidity' in service().values;
 @let humidityText =
-  hasHumidity ? `${service().values?.CurrentRelativeHumidity}%` : ('accessories.control.no_data' | translate);
+  hasHumidity ? `${service().values.CurrentRelativeHumidity}%` : ('accessories.control.no_data' | translate);
 
 @let srBaseName = (service().customName || service().serviceName || '').trim();
 @let srType = 'accessories.core.humidity_sensor' | translate;
@@ -54,7 +54,7 @@
     <div class="accessory-label mt-auto" aria-hidden="true">{{ service().customName || service().serviceName }}</div>
     <div class="accessory-label grey-text" aria-hidden="true">
       @if (hasHumidity) {
-        {{ service().values?.CurrentRelativeHumidity }}%
+        {{ service().values.CurrentRelativeHumidity }}%
       } @else {
         {{ 'accessories.control.no_data' | translate }}
       }

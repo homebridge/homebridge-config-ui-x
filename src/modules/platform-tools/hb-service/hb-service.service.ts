@@ -36,8 +36,8 @@ export class HbServiceService {
           HOMEBRIDGE_INSECURE: typeof settings.insecureMode === 'boolean'
             ? settings.insecureMode
             : this.configService.homebridgeInsecureMode,
-          ENV_DEBUG: settings.env.DEBUG,
-          ENV_NODE_OPTIONS: settings.env.NODE_OPTIONS,
+          ENV_DEBUG: settings.env?.DEBUG,
+          ENV_NODE_OPTIONS: settings.env?.NODE_OPTIONS,
         }
       } else {
         return {
@@ -124,8 +124,10 @@ export class HbServiceService {
       },
     })
 
-    return createReadStream(this.configService.ui.log.path, { encoding: 'utf8' })
-      .pipe(removeColor)
+    // `pipe` does not pass a read error on: without this, a read that fails part-way leaves the download hanging
+    const source = createReadStream(this.configService.ui.log.path, { encoding: 'utf8' })
+    source.on('error', error => removeColor.destroy(error))
+    return source.pipe(removeColor)
   }
 
   /**

@@ -264,14 +264,24 @@ export class ServerController {
   }
 
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: 'Return a list of the network interface names assigned to Homebridge.' })
+  @ApiOperation({ summary: 'Return a list of the network interface names or IP addresses assigned to Homebridge.' })
   @Get('/network-interfaces/bridge')
   getHomebridgeNetworkInterfaces() {
     return this.serverService.getHomebridgeNetworkInterfaces()
   }
 
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: 'Set a list of the network interface names assigned to Homebridge.' })
+  @ApiOperation({
+    summary: 'Return the network interfaces assigned to Homebridge, each with the interface it stands for on this server.',
+    description: 'An entry may be an IP address instead of an interface name. `iface` is then the interface that owns the address, or `null` if this server does not have it.',
+  })
+  @Get('/network-interfaces/bridge/resolved')
+  getHomebridgeNetworkInterfacesResolved() {
+    return this.serverService.getHomebridgeNetworkInterfacesResolved()
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Set a list of the network interface names or IP addresses assigned to Homebridge.' })
   @Put('/network-interfaces/bridge')
   setHomebridgeNetworkInterfaces(@Body() body: HomebridgeNetworkInterfacesDto) {
     return this.serverService.setHomebridgeNetworkInterfaces(body.adapters)

@@ -506,6 +506,24 @@ describe('UsersController (e2e)', () => {
     expect(authFile[0].otpSecret).toBeTruthy()
   })
 
+  it.each([
+    ['POST', '/users/change-password'],
+    ['POST', '/users/otp/activate'],
+    ['POST', '/users/otp/deactivate'],
+    ['POST', '/users'],
+  ])('%s %s with a field missing is a 400, not a 500', async (method: 'POST', path) => {
+    const payload = path === '/users'
+      ? { name: 'No Password', username: 'nopass', admin: false }
+      : {}
+    const res = await app.inject({
+      method,
+      path,
+      headers: { authorization },
+      payload,
+    })
+    expect(res.statusCode).toBe(400)
+  })
+
   afterAll(async () => {
     await app.close()
   })

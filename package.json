@@ -2,7 +2,7 @@
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge UI",
   "type": "module",
-  "version": "5.30.1",
+  "version": "5.30.2",
   "description": "A web based management, configuration and control platform for Homebridge.",
   "author": "oznu <dev@oz.nu>",
   "license": "MIT",
@@ -16,6 +16,7 @@
       "url": "https://paypal.me/oznu"
     }
   ],
+  "homepage": "https://github.com/homebridge/homebridge-config-ui-x#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/homebridge/homebridge-config-ui-x.git"
@@ -71,11 +72,14 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "npm run lint -- --fix",
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run build",
-    "start": "tsx src/main.ts",
+    "start": "node --import @swc-node/register/esm-register src/main.ts",
     "test": "npm run test:server && npm run test:ui",
     "test-coverage": "npm run test:server -- --coverage && npm run test:ui -- --coverage",
     "test:server": "vitest run",
     "test:ui": "npm run test --prefix ui --",
+    "typecheck": "npm run typecheck:server && npm run typecheck:ui",
+    "typecheck:server": "tsc -p tsconfig.typecheck.json",
+    "typecheck:ui": "tsc -p ui/tsconfig.spec.json --noEmit --rootDir .",
     "upgrade-install": "./scripts/upgrade-install.sh",
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "nodemon",
@@ -83,19 +87,19 @@
   },
   "dependencies": {
     "@fastify/helmet": "13.2.0",
-    "@fastify/multipart": "10.1.8",
-    "@fastify/static": "10.1.11",
-    "@homebridge/hap-client": "5.4.0",
+    "@fastify/multipart": "10.1.9",
+    "@fastify/static": "11.0.0",
+    "@homebridge/hap-client": "5.5.0",
     "@homebridge/node-pty-prebuilt-multiarch": "0.15.0",
     "@nestjs/axios": "12.0.2",
-    "@nestjs/common": "12.5.0",
-    "@nestjs/core": "12.5.0",
+    "@nestjs/common": "12.6.3",
+    "@nestjs/core": "12.6.3",
     "@nestjs/jwt": "12.0.5",
     "@nestjs/passport": "12.0.2",
-    "@nestjs/platform-fastify": "12.5.0",
-    "@nestjs/platform-socket.io": "12.5.0",
-    "@nestjs/swagger": "12.1.2",
-    "@nestjs/websockets": "12.5.0",
+    "@nestjs/platform-fastify": "12.6.3",
+    "@nestjs/platform-socket.io": "12.6.3",
+    "@nestjs/swagger": "12.1.3",
+    "@nestjs/websockets": "12.6.3",
     "axios": "1.21.1",
     "bash-color": "0.0.4",
     "bonjour-service": "1.4.4",
@@ -107,7 +111,7 @@
     "fs-extra": "11.4.1",
     "jsonwebtoken": "9.0.3",
     "node-cache": "5.1.2",
-    "node-forge": "1.4.3",
+    "node-forge": "1.4.4",
     "node-schedule": "2.1.2",
     "ora": "10.0.0",
     "otplib": "13.6.0",
@@ -117,9 +121,9 @@
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
     "semver": "7.8.6",
-    "systeminformation": "5.33.21",
+    "systeminformation": "5.33.28",
     "tail": "2.2.6",
-    "tar": "7.5.23",
+    "tar": "8.0.2",
     "tcp-port-used": "1.0.3",
     "unzipper": "0.12.5"
   },
@@ -128,39 +132,42 @@
     "osx-temperature-sensor": "1.0.8"
   },
   "devDependencies": {
-    "@angular-eslint/eslint-plugin": "^22.6.0",
-    "@angular-eslint/eslint-plugin-template": "^22.6.0",
-    "@angular-eslint/template-parser": "^22.6.0",
+    "@angular-eslint/eslint-plugin": "^22.8.0",
+    "@angular-eslint/eslint-plugin-template": "^22.8.0",
+    "@angular-eslint/template-parser": "^22.8.0",
     "@antfu/eslint-config": "^10.0.0",
-    "@nestjs/testing": "^12.5.0",
+    "@nestjs/testing": "^12.6.3",
     "@prettier/plugin-xml": "^3.4.2",
+    "@swc-node/register": "^1.12.1",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^26.6.6",
+    "@types/node": "^26.6.11",
     "@types/node-forge": "^1.3.14",
     "@types/node-schedule": "^2.1.8",
-    "@types/passport-jwt": "^4.0.1",
+    "@types/passport-jwt": "^4.0.2",
     "@types/semver": "^7.8.0",
     "@types/tail": "^2.2.3",
     "@types/tcp-port-used": "^1.0.4",
     "@types/unzipper": "^0.10.11",
-    "@vitest/coverage-v8": "^5.1.0",
+    "@vitest/coverage-v8": "^5.1.2",
     "ajv": "^8.20.0",
     "concurrently": "^10.0.7",
     "eslint-plugin-format": "^2.0.1",
     "form-data": "^4.0.6",
     "nodemon": "^3.1.14",
     "rimraf": "^6.1.4",
+    "socket.io": "^4.8.4",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "unplugin-swc": "^2.0.0",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.2"
   },
   "overrides": {
     "@antfu/eslint-config": {
-      "@angular-eslint/eslint-plugin": "^22.6.0",
-      "@angular-eslint/eslint-plugin-template": "^22.6.0",
-      "@angular-eslint/template-parser": "^22.6.0"
+      "@angular-eslint/eslint-plugin": "^22.8.0",
+      "@angular-eslint/eslint-plugin-template": "^22.8.0",
+      "@angular-eslint/template-parser": "^22.8.0"
     },
+    "@fastify/static": "11.0.0",
     "micromark-extension-math": {
       "katex": "^0.19.1"
     },
@@ -168,44 +175,6 @@
       "tinypool": "^2.2.0"
     }
   },
-  "maintainers": [
-    {
-      "email": "bwp91@icloud.com",
-      "name": "bwp91"
-    },
-    {
-      "email": "dev@oz.nu",
-      "name": "oznu"
-    },
-    {
-      "email": "northern.man1@gmail.com",
-      "name": "northernman"
-    },
-    {
-      "email": "mail@anderl-bauer.de",
-      "name": "supereg"
-    },
-    {
-      "email": "khaos.tian@gmail.com",
-      "name": "khaost"
-    },
-    {
-      "email": "erik.baauw@xs4all.nl",
-      "name": "ebaauw"
-    },
-    {
-      "email": "donavan.becker@icloud.com",
-      "name": "donavanbecker"
-    },
-    {
-      "email": "dustin.greif@gmail.com",
-      "name": "dustin.greif"
-    },
-    {
-      "email": "nfarina@gmail.com",
-      "name": "nfarina"
-    }
-  ],
   "scarfSettings": {
     "enabled": false
   },

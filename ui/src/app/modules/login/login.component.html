@@ -72,6 +72,25 @@
           />
         </div>
       }
+      @if (loginError()) {
+        <div class="input-group no-border mb-4" role="alert">
+          <div class="input-group-text custom-input">
+            <i class="fas fa-exclamation-triangle pink-text fa-lg" aria-hidden="true"></i>
+          </div>
+          <div class="form-control custom-input">
+            <div class="small grey-text fw-semibold">
+              {{
+                (loginError() === 'locked'
+                  ? 'login.too_many_attempts'
+                  : loginError() === 'error'
+                    ? 'toast.api_error_generic'
+                    : 'login.server_unreachable'
+                ) | translate
+              }}
+            </div>
+          </div>
+        </div>
+      }
       @if (invalidCredentials()) {
         <div class="input-group no-border mb-4">
           <div class="input-group-text custom-input">

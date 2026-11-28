@@ -258,6 +258,23 @@ describe('LogGateway (e2e)', () => {
     expect(client.listenerCount('end')).toBe(0)
   })
 
+  it('ON /log/tail-log (native) cleans up a socket that leaves while the log file is checked', async () => {
+    // Regression: the clean-up handler was added only after an `await stat`, so a socket that left in that
+    // moment kept its line listener on the shared tail, and stayed in activeClients, for good
+    configService.ui.log = { method: 'native', path: logFilePath }
+    logService.setLogMethod()
+    const linesBefore = (logService as any).nativeTail?.listenerCount('line') ?? 0
+
+    logGateway.connect(client, size)
+    client.emit('disconnect')
+
+    await new Promise(res => setTimeout(res, 100))
+
+    expect((logService as any).nativeTail?.listenerCount('line') ?? 0).toBe(linesBefore)
+    expect((logService as any).activeClients.has(client)).toBe(false)
+    expect(client.listenerCount('disconnect')).toBe(0)
+  })
+
   it('ON /log/tail-log (not configured)', async () => {
     logGateway.connect(client, size)
 

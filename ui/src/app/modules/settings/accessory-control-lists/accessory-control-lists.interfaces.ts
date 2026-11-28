@@ -5,6 +5,7 @@ export interface Pairing {
   _category?: string
   _matter?: boolean
   _matterOnly?: boolean
+  _couldBeStale?: boolean
   name: string
   username: string
 }

@@ -13,6 +13,9 @@
     <div class="text-center mb-3"><i class="fas fa-ethernet primary-text icon-xl"></i></div>
     <ul class="mb-3">
       <li>{{ 'settings.network.message_network_interface' | translate }}</li>
+      @if (canBindByAddress) {
+        <li>{{ 'settings.network.message_bind_by_address' | translate }}</li>
+      }
     </ul>
     <ul class="list-group list-group-box">
       @for (adapter of adaptersAvailable; track adapter) {
@@ -20,6 +23,24 @@
           <div>
             <span class="font-monospace">{{ adapter.ip4 || adapter.ip6 }}</span><br />
             <span class="font-monospace grey-text">{{ adapter.iface }}</span>
+            @if (adapter.selected && bindOptions(adapter).length > 1) {
+              <select
+                class="custom-select mt-2"
+                [id]="`bindBy${adapter.iface}`"
+                [attr.aria-label]="'settings.network.label_bind_by' | translate"
+                [(ngModel)]="adapter.bindBy"
+                (ngModelChange)="onAdapterSelectionChange()"
+              >
+                @for (option of bindOptions(adapter); track option) {
+                  <option [value]="option">
+                    {{
+                      (option === adapter.iface ? 'settings.network.bind_by_name' : 'settings.network.bind_by_address')
+                        | translate: { value: option }
+                    }}
+                  </option>
+                }
+              </select>
+            }
           </div>
           <span>
             <input

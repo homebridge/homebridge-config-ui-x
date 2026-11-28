@@ -1,4 +1,6 @@
-import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common'
+import type { CanActivate, ExecutionContext } from '@nestjs/common'
+
+import { Inject, Injectable } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 import { WsException } from '@nestjs/websockets'
 import jwt from 'jsonwebtoken'
@@ -6,6 +8,7 @@ import jwt from 'jsonwebtoken'
 import { UserDto } from '../../../modules/users/users.dto.js'
 import { ConfigService } from '../../config/config.service.js'
 import { AuthService } from '../auth.service.js'
+import { JWT_ALGORITHM } from '../jwt.constants.js'
 import { extractWsToken } from './ws-token.js'
 
 @Injectable()
@@ -32,7 +35,9 @@ export class WsAdminGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient()
     try {
-      const user = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey) as UserDto & { instanceId?: string }
+      const user = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey, {
+        algorithms: [JWT_ALGORITHM],
+      }) as UserDto & { instanceId?: string }
       // Reject mismatched instanceId — the setup-wizard token signs a
       // sentinel value and must not reach admin WS endpoints. Live wizard
       // tokens are still allowed *only* while the wizard is in progress.
@@ -49,6 +54,8 @@ export class WsAdminGuard implements CanActivate {
       if (!await this.authService.validateUser(user)) {
         throw new Error('User no longer valid')
       }
+      // so the socket is closed if this user is deleted, demoted or revoked while it only listens
+      this.authService.trackSocket(client, user)
       return user.admin
     } catch (e) {
       client.disconnect()

@@ -11,13 +11,12 @@
     ></button>
   </div>
   <div class="modal-body">
-    @if (pairingsChildActive().length === 0 && pairingsChildStale().length === 0 && pairingsNonChild().length === 0) {
+    @if (isEmpty()) {
       <div class="text-center mb-3">
         <i class="fas fa-circle-check primary-text icon-xl"></i>
       </div>
       <p class="text-center mb-0">{{ 'reset.bridges.empty' | translate }}</p>
-    }
-    @if (pairingsChildActive().length > 0 || pairingsChildStale().length > 0 || pairingsNonChild().length > 0) {
+    } @else {
       <div class="text-center mb-3"><i class="fas fa-bridge primary-text icon-xl"></i></div>
       @if (pairingsNonChild().length > 0) {
         <ul class="list-group list-group-box mt-3 mb-0">
@@ -146,11 +145,56 @@
           }
         </ul>
       }
+      @if (pairingsMatterStale().length > 0) {
+        <ul class="list-group list-group-box mt-3 mb-0">
+          <li class="list-group-item">
+            <h6 class="mb-1 text-center">{{ 'reset.bridge_ind.head_matter_stale' | translate }}</h6>
+            <p class="mb-0 small grey-text text-center">{{ 'reset.bridge_ind.desc_matter_stale' | translate }}</p>
+          </li>
+          @for (item of pairingsMatterStale(); track item) {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="me-3">
+                <i class="fas fa-lg fa-hap me-2 opacity-muted"></i>
+                <i class="fas fa-lg fa-matter"></i>
+              </span>
+              <span class="flex-grow-1">
+                {{ item.name }}
+                <br />
+                @if (item._plugin) {
+                  <span class="grey-text">{{ item._plugin }}</span><br />
+                }
+                <span class="grey-text">
+                  {{ (item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }}
+                </span>
+                <br />
+                <small class="grey-text font-monospace">{{ item._username }}</small>
+              </span>
+              <button
+                type="button"
+                class="btn btn-danger m-0 ms-3"
+                [disabled]="clicked()"
+                [class.btn-danger]="!isInList(item._id)"
+                [class.btn-elegant]="isInList(item._id)"
+                [attr.aria-label]="'form.button_unpair' | translate"
+                (click)="toggleList(item._id, false)"
+              >
+                <i
+                  class="fas"
+                  [class.fa-trash]="!isInList(item._id)"
+                  [class.fa-undo]="isInList(item._id) && !clicked()"
+                  [class.fa-circle-notch]="isInList(item._id) && clicked()"
+                  [class.fa-spin]="isInList(item._id) && clicked()"
+                ></i>
+              </button>
+            </li>
+          }
+        </ul>
+      }
     }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
-      @if (pairingsChildActive().length > 0 || pairingsChildStale().length > 0 || pairingsNonChild().length > 0) {
+      @if (!isEmpty()) {
         <button
           type="button"
           class="btn btn-elegant"
@@ -163,14 +207,14 @@
       }
     </div>
     <div class="text-center">
-      @if (pairingsChildActive().length === 0 && pairingsChildStale().length === 0 && pairingsNonChild().length === 0) {
+      @if (isEmpty()) {
         <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
           {{ 'form.button_close' | translate }}
         </button>
       }
     </div>
     <div class="text-end">
-      @if (pairingsChildActive().length > 0 || pairingsChildStale().length > 0 || pairingsNonChild().length > 0) {
+      @if (!isEmpty()) {
         <button
           type="button"
           class="btn btn-danger"

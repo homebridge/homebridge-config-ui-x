@@ -92,8 +92,9 @@ describe('accessoryInfoComponent', () => {
    * @param options - the caches the modal is handed
    * @param options.accessoryCache - the cached accessories from disk
    * @param options.pairingCache - the known pairings
+   * @param options.accessoryServices - the other services of the same accessory
    */
-  function open(service: ServiceTypeX, options: { accessoryCache?: any[], pairingCache?: any[] } = {}) {
+  function open(service: ServiceTypeX, options: { accessoryCache?: any[], pairingCache?: any[], accessoryServices?: ServiceTypeX[] } = {}) {
     TestBed.resetTestingModule()
     modal = modalServiceSpy()
     activeModal = {
@@ -111,6 +112,7 @@ describe('accessoryInfoComponent', () => {
           useValue: {
             service,
             accessoryCache: options.accessoryCache ?? [],
+            accessoryServices: options.accessoryServices,
             pairingCache: options.pairingCache ?? [
               pairing(),
             ],
@@ -153,6 +155,29 @@ describe('accessoryInfoComponent', () => {
       ])
     })
 
+    it('shows the status and marks the characteristic that did not respond', () => {
+      const element = open(hapService({
+        characteristics: [
+          characteristic('On', true, { status: -70402 }),
+        ],
+      })).nativeElement as HTMLElement
+
+      // The status row plus the characteristic row, each with the description and HAP code
+      const marks = element.querySelectorAll('.text-danger')
+      expect(marks).toHaveLength(2)
+      marks.forEach(mark => expect(mark.textContent).toContain('(-70402)'))
+    })
+
+    it('shows no not responding marks when everything answered', () => {
+      const element = open(hapService({
+        characteristics: [
+          characteristic('On', true, { status: 0 }),
+        ],
+      })).nativeElement as HTMLElement
+
+      expect(element.querySelector('.fa-triangle-exclamation')).toBeNull()
+    })
+
     it('knows it is not a matter accessory', () => {
       expect(open(hapService()).componentInstance.isMatterAccessory).toBe(false)
     })
@@ -189,6 +214,86 @@ describe('accessoryInfoComponent', () => {
 
     it('shows no extra services for a lock with nothing linked', () => {
       expect(open(hapService({ type: 'LockMechanism' })).componentInstance.extraServices).toEqual([])
+    })
+  })
+
+  describe('the battery', () => {
+    const batteryService = (level: number, low: 0 | 1) => hapService({
+      type: 'Battery',
+      characteristics: [
+        characteristic('BatteryLevel', level),
+        characteristic('StatusLowBattery', low),
+      ],
+    })
+    const summaryRow = (element: HTMLElement) => [
+      ...element.querySelectorAll('li'),
+    ]
+      .find(row => row.querySelector('.text-start')?.textContent?.trim() === 'accessories.core.battery')
+
+    it('highlights the low battery characteristic rows of the service', () => {
+      const element = open(batteryService(8, 1)).nativeElement as HTMLElement
+
+      // BatteryLevel (under 20%) and StatusLowBattery
+      expect(element.querySelectorAll('.accessory-info-low-battery')).toHaveLength(2)
+    })
+
+    it('shows no battery row when the service lists its own battery characteristics', () => {
+      const element = open(hapService({
+        type: 'TemperatureSensor',
+        characteristics: [
+          characteristic('StatusLowBattery', 1),
+        ],
+      })).nativeElement as HTMLElement
+
+      expect(summaryRow(element)).toBeUndefined()
+    })
+
+    it('shows the battery of a separate battery service, highlighted when low', () => {
+      const sensor = hapService({
+        type: 'ContactSensor',
+        characteristics: [
+          characteristic('ContactSensorState', 0),
+        ],
+      })
+      const element = open(sensor, {
+        accessoryServices: [
+          sensor,
+          batteryService(8, 1),
+        ],
+      }).nativeElement as HTMLElement
+
+      const row = summaryRow(element)
+      expect(row?.classList).toContain('accessory-info-low-battery')
+      expect(row?.textContent).toContain('8%')
+    })
+
+    it('shows the level without a highlight when the separate battery is fine', () => {
+      const sensor = hapService({
+        type: 'ContactSensor',
+        characteristics: [
+          characteristic('ContactSensorState', 0),
+        ],
+      })
+      const element = open(sensor, {
+        accessoryServices: [
+          sensor,
+          batteryService(90, 0),
+        ],
+      }).nativeElement as HTMLElement
+
+      const row = summaryRow(element)
+      expect(row?.classList).not.toContain('accessory-info-low-battery')
+      expect(row?.textContent).toContain('90%')
+    })
+
+    it('shows no battery row for an accessory without a battery', () => {
+      const element = open(hapService({
+        characteristics: [
+          characteristic('On', true),
+        ],
+      })).nativeElement as HTMLElement
+
+      expect(summaryRow(element)).toBeUndefined()
     })
   })
 
@@ -486,6 +591,40 @@ describe('accessoryInfoComponent', () => {
       info.dismissModal()
 
       expect((service as any).customName).toBeUndefined()
+    })
+
+    it('undoes the edits when the window closes another way, such as Escape', () => {
+      // Regression: only the close buttons undid them. Escape (ng-bootstrap closes the window itself) left the
+      // "cancelled" name on the tile's service object, and the next layout save stored it
+      const service = hapService({
+        type: 'Switch',
+        overrides: { customName: 'Kitchen', hidden: false, onDashboard: true } as any,
+      })
+      const fixture = open(service)
+
+      Object.assign(fixture.componentInstance.localService, {
+        customName: 'Changed',
+        hidden: true,
+      })
+      fixture.destroy()
+
+      expect(editable(service)).toEqual({
+        customName: 'Kitchen',
+        customType: 'Switch',
+        hidden: false,
+        onDashboard: true,
+      })
+    })
+
+    it('keeps the edits after a save, when the window then closes', () => {
+      const service = hapService()
+      const fixture = open(service)
+
+      fixture.componentInstance.localService.customName = 'Kitchen Light'
+      fixture.componentInstance.saveModal()
+      fixture.destroy()
+
+      expect((service as any).customName).toBe('Kitchen Light')
     })
 
     it('dismisses the modal', () => {

@@ -134,6 +134,21 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     return this.$settings.getEffectiveTerminalLightingMode() === 'light'
   }
 
+  // Named, so ngOnDestroy can take it off the shared, cached `plugins` socket: `io.end()` leaves listeners in place,
+  // so each opened modal used to keep its closed terminal (and its error log) receiving every later npm run
+  private onStdout = (data: string | Uint8Array) => {
+    this.term.write(data)
+    // xterm recreates the textarea/live-region as it renders, so re-patch on every write
+    this.applyXtermA11yPatches()
+    const dataCleaned = data
+      .toString()
+      .replace(RE_ANSI, '')
+      .trimEnd()
+    if (dataCleaned) {
+      this.errorLog += `${dataCleaned}\r\n`
+    }
+  }
+
   constructor() {
     this.term = this.$terminals.createTerminal(this.$settings.getTerminalOptions({ disableStdin: true }))
     this.term.loadAddon(this.fitAddon)
@@ -209,18 +224,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     this.term.open(this.termTarget)
     this.fitAddon.fit()
 
-    this.io.socket.on('stdout', (data: string | Uint8Array) => {
-      this.term.write(data)
-      // xterm recreates the textarea/live-region as it renders, so re-patch on every write
-      this.applyXtermA11yPatches()
-      const dataCleaned = data
-        .toString()
-        .replace(RE_ANSI, '')
-        .trimEnd()
-      if (dataCleaned) {
-        this.errorLog += `${dataCleaned}\r\n`
-      }
-    })
+    this.io.socket.on('stdout', this.onStdout)
 
     // Initial patches — xterm's internal accessibility DOM is created lazily
     this.applyXtermA11yPatches()
@@ -311,7 +315,9 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       clearTimeout(this.restoreTerminalTimer)
       this.restoreTerminalTimer = null
     }
-    this.io.end?.()
+    this.io?.socket.off('stdout', this.onStdout)
+    this.io?.end?.()
+    this.term.dispose()
   }
 
   // Public methods

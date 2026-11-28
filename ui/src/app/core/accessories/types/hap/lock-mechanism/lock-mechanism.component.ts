@@ -12,12 +12,15 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
+import { HapNumberPipe } from '@/app/core/accessories/types/hap/hap-number.pipe'
+import { numberValue } from '@/app/core/accessories/types/hap/hap-values'
 import { LockMechanismManageComponent } from '@/app/core/accessories/types/hap/lock-mechanism/lock-mechanism.manage.component'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
   selector: 'app-lock-mechanism',
   imports: [
+    HapNumberPipe,
     LongClickDirective,
     TranslatePipe,
   ],
@@ -39,11 +42,11 @@ export class LockMechanismComponent {
       return
     }
     if ('LockTargetState' in this.service().values) {
-      void this.service().getCharacteristic!('LockTargetState').setValue!(this.service().values.LockTargetState
+      void this.service().getCharacteristic?.('LockTargetState')?.setValue?.(this.service().values.LockTargetState
         ? 0
         : 1)
     } else if ('On' in this.service().values) {
-      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
+      void this.service().getCharacteristic?.('On')?.setValue?.(!this.service().values.On)
     }
   }
 
@@ -83,6 +86,6 @@ export class LockMechanismComponent {
       return undefined
     }
 
-    return this.service().values.Consumption
+    return numberValue(this.service().values, 'Consumption')
   }
 }

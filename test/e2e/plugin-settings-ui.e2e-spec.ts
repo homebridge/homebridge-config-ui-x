@@ -1,5 +1,6 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
+import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import type { MockInstance } from 'vitest'
 
 import { readFile } from 'node:fs/promises'
@@ -12,7 +13,6 @@ import { ValidationPipe } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { copy, ensureDir, remove, writeFile } from 'fs-extra'
 import { of } from 'rxjs'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -854,6 +854,28 @@ describe('PluginsSettingsUiController (e2e)', () => {
       expect(metadata.plugin.name).toBe('homebridge-mock-plugin')
     })
 
+    it('getPluginUiMetadata refuses a custom ui path in a sibling folder whose name starts the same', async () => {
+      // Regression: the "inside the plugin" check compared the start of the path with no separator, so
+      // homebridge-mock-plugin could serve files from homebridge-mock-plugin-two
+      const schemaPath = resolve(pluginsPath, 'homebridge-mock-plugin', 'config.schema.json')
+      const sibling = resolve(pluginsPath, 'homebridge-mock-plugin-two', 'homebridge-ui-other')
+      const schemaBefore = await readFile(schemaPath, 'utf8')
+      await ensureDir(resolve(sibling, 'public'))
+      await writeFile(resolve(sibling, 'public', 'index.html'), '<p>not mine</p>')
+      await writeFile(schemaPath, JSON.stringify({
+        ...JSON.parse(schemaBefore),
+        customUiPath: '../homebridge-mock-plugin-two/homebridge-ui-other',
+      }))
+      try {
+        await expect((pluginsSettingsUiService as any).getPluginUiMetadata('homebridge-mock-plugin'))
+          .rejects
+          .toThrow()
+      } finally {
+        await writeFile(schemaPath, schemaBefore)
+        await remove(sibling)
+      }
+    })
+
     it('getPluginUiMetadata should throw for nonexistent plugin', async () => {
       await expect((pluginsSettingsUiService as any).getPluginUiMetadata('homebridge-nonexistent'))
         .rejects
@@ -979,13 +1001,27 @@ describe('PluginsSettingsUiController (e2e)', () => {
       const { client, emitSpy } = await createClient()
 
       await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
-      client.emit('request', { requestId: 'r1', path: '/x' })
+      client.emit('request', { action: 'request', requestId: 'r1', path: '/x' })
 
       expect(emitSpy).toHaveBeenCalledWith('response', {
         requestId: 'r1',
         success: false,
         data: { message: customUiUnavailable },
       })
+
+      client.emit('end')
+    })
+
+    it('passes on only request messages, so junk never reaches a plugin server that would crash on it', async () => {
+      const { client, emitSpy } = await createClient()
+
+      await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+      client.emit('request', null)
+      client.emit('request', 'text')
+      client.emit('request', [1, 2])
+      client.emit('request', { action: 'config.get', requestId: 'r9' })
+
+      expect(countEmits(emitSpy as any, 'response')).toBe(0)
 
       client.emit('end')
     })
@@ -997,7 +1033,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', a.client)
       await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', b.client)
 
-      a.client.emit('request', { requestId: 'r-a', path: '/x' })
+      a.client.emit('request', { action: 'request', requestId: 'r-a', path: '/x' })
 
       expect(a.emitSpy).toHaveBeenCalledWith('response', {
         requestId: 'r-a',
@@ -1053,6 +1089,12 @@ process.on('message', (request) => {
     return
   }
 
+  if (request.path === '/junk') {
+    process.send(null)
+    process.send({ action: 'disconnect' })
+    process.send({ action: 42 })
+  }
+
   process.send({ action: 'response', payload: { requestId: request.requestId, success: true, data: { echo: request.path } } })
 })
 `
@@ -1075,7 +1117,7 @@ process.on('message', (request) => {
 
         expect(await waitForEmit(emitSpy, 'ready')).toEqual({ server: true })
 
-        client.emit('request', { requestId: 'r2', path: '/hello' })
+        client.emit('request', { action: 'request', requestId: 'r2', path: '/hello' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r2'))
           .toEqual({
@@ -1083,6 +1125,28 @@ process.on('message', (request) => {
             success: true,
             data: { echo: '/hello' },
           })
+
+        client.emit('end')
+      })
+
+      it('ignores a null or junk message from the helper instead of crashing the ui process', async () => {
+        // Regression: `null.action` threw, and a reserved socket.io name such as 'disconnect' threw in
+        // `client.emit`, inside the child's message listener: an uncaught exception that ended the ui process
+        const { client, emitSpy } = await createClient()
+
+        await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+        await waitForEmit(emitSpy, 'ready')
+
+        client.emit('request', { action: 'request', requestId: 'r-junk', path: '/junk' })
+
+        expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-junk'))
+          .toEqual({
+            requestId: 'r-junk',
+            success: true,
+            data: { echo: '/junk' },
+          })
+        expect(emitSpy).not.toHaveBeenCalledWith('disconnect', undefined)
+        expect(emitSpy).not.toHaveBeenCalledWith(42, undefined)
 
         client.emit('end')
       })
@@ -1096,7 +1160,7 @@ process.on('message', (request) => {
 
         expect(client.listenerCount('request')).toBe(1)
 
-        client.emit('request', { requestId: 'r-second', path: '/again' })
+        client.emit('request', { action: 'request', requestId: 'r-second', path: '/again' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-second'))
           .toEqual({
@@ -1118,7 +1182,7 @@ process.on('message', (request) => {
         await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
         await waitForEmit(emitSpy, 'ready')
 
-        client.emit('request', { requestId: 'r-exit', path: '/exit' })
+        client.emit('request', { action: 'request', requestId: 'r-exit', path: '/exit' })
 
         // The child's `connected` flag drops a moment after the child itself is gone, so a single
         // post-exit request can still be handed to it and vanish. Re-emitting under a fresh request
@@ -1129,7 +1193,7 @@ process.on('message', (request) => {
 
         await vi.waitFor(() => {
           const requestId = `r-dead-${attempt++}`
-          client.emit('request', { requestId, path: '/x' })
+          client.emit('request', { action: 'request', requestId, path: '/x' })
           const call = emitSpy.mock.calls.find(([name, payload]) => name === 'response' && payload?.requestId === requestId)
           if (!call) {
             throw new Error('the socket has not received a rejection yet')
@@ -1164,7 +1228,7 @@ process.on('message', (request) => {
         expect(client.listenerCount('disconnect')).toBe(1)
         expect(client.listenerCount('end')).toBe(1)
 
-        client.emit('request', { requestId: 'r-again', path: '/back' })
+        client.emit('request', { action: 'request', requestId: 'r-again', path: '/back' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-again'))
           .toEqual({
@@ -1186,7 +1250,7 @@ process.on('message', (request) => {
 
         expect(client.listenerCount('request')).toBe(1)
 
-        client.emit('request', { requestId: 'r-single', path: '/single' })
+        client.emit('request', { action: 'request', requestId: 'r-single', path: '/single' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-single'))
           .toEqual({
@@ -1209,8 +1273,8 @@ process.on('message', (request) => {
         await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
         await waitForEmit(emitSpy, 'ready')
 
-        client.emit('request', { requestId: 'r-hang', path: '/hang' })
-        client.emit('request', { requestId: 'r-exit2', path: '/exit' })
+        client.emit('request', { action: 'request', requestId: 'r-hang', path: '/hang' })
+        client.emit('request', { action: 'request', requestId: 'r-exit2', path: '/exit' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-hang'))
           .toEqual({

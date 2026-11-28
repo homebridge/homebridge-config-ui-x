@@ -9,12 +9,13 @@ import process from 'node:process'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { copy, readFile, readJson, remove, writeFile } from 'fs-extra'
+import { copy, ensureDir, readFile, readJson, remove, writeFile, writeJson } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { HbServiceModule } from '../../src/modules/platform-tools/hb-service/hb-service.module.js'
+import { HbServiceService } from '../../src/modules/platform-tools/hb-service/hb-service.service.js'
 
 describe('PlatformToolsHbService (e2e)', () => {
   let app: NestFastifyApplication
@@ -109,6 +110,40 @@ describe('PlatformToolsHbService (e2e)', () => {
     expect(res.statusCode).toBe(200)
   })
 
+  it('reads an env file with no env block, so a save from the settings page keeps its values', async () => {
+    // Regression: `settings.env.DEBUG` threw on a file with no `env` block, the read answered {}, the settings
+    // page showed every switch off, and its next save wrote insecure mode as unset
+    await writeJson(envFilePath, { debugMode: false, keepOrphans: true, insecureMode: true })
+
+    const read = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/homebridge-startup-settings',
+      headers: {
+        authorization,
+      },
+    })
+    expect(read.json()).toMatchObject({
+      HOMEBRIDGE_DEBUG: false,
+      HOMEBRIDGE_KEEP_ORPHANS: true,
+      HOMEBRIDGE_INSECURE: true,
+    })
+
+    // What the settings page sends when the debug switch is turned on (JSON leaves out undefined values)
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/platform-tools/hb-service/homebridge-startup-settings',
+      headers: {
+        authorization,
+      },
+      payload: JSON.parse(JSON.stringify({
+        ...read.json(),
+        HOMEBRIDGE_DEBUG: true,
+      })),
+    })
+    expect(res.statusCode).toBe(200)
+    expect(await readJson(envFilePath)).toMatchObject({ debugMode: true, keepOrphans: true, insecureMode: true })
+  })
+
   it('PUT /platform-tools/hb-service/homebridge-startup-settings', async () => {
     const payload = {
       HOMEBRIDGE_DEBUG: true,
@@ -154,6 +189,28 @@ describe('PlatformToolsHbService (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(configService.hbServiceUiRestartRequired).toBe(true)
+  })
+
+  it('fails a log download without colours when the file can not be read, instead of hanging', async () => {
+    // Regression: `pipe` does not pass a read error on, so the colour-stripping stream never ended or failed
+    const service = app.get(HbServiceService)
+    const logBefore = configService.ui.log
+    const folder = resolve(process.env.UIX_STORAGE_PATH, 'not-a-log-file')
+    await ensureDir(folder)
+    configService.ui.log = { method: 'file', path: folder } as any
+    try {
+      const stream = await service.downloadLogFile(true)
+      const outcome = await new Promise((resolveOutcome) => {
+        stream.on('error', () => resolveOutcome('error'))
+        stream.on('end', () => resolveOutcome('end'))
+        stream.resume()
+        setTimeout(resolveOutcome, 1000, 'hung')
+      })
+      expect(outcome).toBe('error')
+    } finally {
+      configService.ui.log = logBefore
+      await remove(folder)
+    }
   })
 
   it('GET /platform-tools/hb-service/log/download', async () => {

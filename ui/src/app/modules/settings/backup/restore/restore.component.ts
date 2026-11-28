@@ -1,13 +1,14 @@
 import type { Terminal } from '@xterm/xterm'
 
 import { HttpClient, HttpEventType, HttpResponse } from '@angular/common/http'
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
+import { listenUntilDestroyed } from '@/app/core/communication/socket-listener'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
@@ -27,6 +28,7 @@ import { environment } from '@/environments/environment'
 export class RestoreComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private $terminals = inject(TERMINAL_FACTORY)
+  private destroyRef = inject(DestroyRef)
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $http = inject(HttpClient)
@@ -81,7 +83,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
     // on first paint, leaving the terminal at 0×0 until next resize.
     setTimeout(() => this.fitAddon.fit(), 0)
 
-    this.io.socket.on('stdout', (data) => {
+    listenUntilDestroyed(this.destroyRef, this.io.socket).on('stdout', (data) => {
       this.term.write(data)
     })
 

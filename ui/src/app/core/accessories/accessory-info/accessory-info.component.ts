@@ -1,4 +1,3 @@
-/* global NodeJS */
 import { KeyValuePipe } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -24,6 +23,8 @@ import {
   PairingInfo,
   ServiceTypeX,
 } from '@/app/core/accessories/accessories.interfaces'
+import { batterySummary, hasHapBatteryValues, isLowBatteryCharacteristic } from '@/app/core/accessories/low-battery'
+import { hapStatusKey, hasErrorStatus, isNotResponding, notRespondingCodes } from '@/app/core/accessories/not-responding'
 import { ACCESSORY_INFO_MODAL_DATA, REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
@@ -55,7 +56,7 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   // Private properties
   private modalData = inject(ACCESSORY_INFO_MODAL_DATA)
   private injector = inject(EnvironmentInjector)
-  private copyTimeouts = new Map<WritableSignal<boolean>, NodeJS.Timeout>()
+  private copyTimeouts = new Map<WritableSignal<boolean>, ReturnType<typeof setTimeout>>()
 
   private hapCustomTypeList: Array<Array<ServiceTypeX['type']>> = [
     // Groups of service types that can be changed from one to another
@@ -124,6 +125,28 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   public accessoryCache = this.modalData.accessoryCache
   public pairingCache = this.modalData.pairingCache
   public service = this.modalData.service
+  protected readonly isNotResponding = isNotResponding
+  protected readonly notRespondingCodes = notRespondingCodes
+  protected readonly hasErrorStatus = hasErrorStatus
+  protected readonly isLowBatteryCharacteristic = isLowBatteryCharacteristic
+
+  /**
+   * Battery level and low flag across the accessory's services, for the
+   * Battery row. Undefined without a battery, and when the services listed
+   * above already show their own battery characteristics, so it is not shown twice.
+   */
+  protected battery() {
+    const listed = [this.localService, ...this.extraServices]
+    if (listed.some(hasHapBatteryValues)) {
+      return undefined
+    }
+    return batterySummary([
+      ...listed,
+      ...(this.modalData.accessoryServices ?? []),
+    ])
+  }
+
+  protected readonly hapStatusKey = hapStatusKey
 
   // Other public properties
   public localAccessoryCache: CachedAccessoryWithServices[] = []
@@ -151,11 +174,12 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   public readonly uniqueIdCopied = signal(false)
   public readonly uuidCopied = signal(false)
 
-  public getEnumLabel(type: string, value: string | number | boolean): string | undefined {
+  public getEnumLabel(type: string, value: string | number | boolean | null | undefined): string | undefined {
     return this.enums[type]?.[String(value)]
   }
 
   // Original values to restore on dismiss
+  private saved = false
   private originalCustomName: string | undefined
   private originalCustomType: ServiceTypeX['type'] | undefined
   private originalHidden: boolean | undefined
@@ -258,6 +282,22 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
     // Clear all pending timeouts to prevent memory leaks
     this.copyTimeouts.forEach(timeout => clearTimeout(timeout))
     this.copyTimeouts.clear()
+
+    // The fields are edited on the tile's own service object. Closing in any way other than Save (Escape, or
+    // the cached accessories button) must undo them too, or the next layout save stores the "cancelled" edit
+    if (!this.saved) {
+      this.restoreOriginalValues()
+    }
+  }
+
+  private restoreOriginalValues(): void {
+    if (!this.localService) {
+      return
+    }
+    this.localService.customName = this.originalCustomName
+    this.localService.customType = this.originalCustomType
+    this.localService.hidden = this.originalHidden
+    this.localService.onDashboard = this.originalOnDashboard
   }
 
   public removeSingleCachedAccessories() {
@@ -296,15 +336,12 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   }
 
   public dismissModal() {
-    // Restore original values when dismissing without saving
-    this.localService.customName = this.originalCustomName
-    this.localService.customType = this.originalCustomType
-    this.localService.hidden = this.originalHidden
-    this.localService.onDashboard = this.originalOnDashboard
+    this.restoreOriginalValues()
     this.$activeModal.dismiss('Dismiss')
   }
 
   public saveModal() {
+    this.saved = true
     this.$activeModal.close({
       customName: this.localService.customName,
       customType: this.localService.customType,

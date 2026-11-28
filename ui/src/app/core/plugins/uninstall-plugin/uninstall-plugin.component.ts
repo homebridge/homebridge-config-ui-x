@@ -42,6 +42,9 @@ export class UninstallPluginComponent implements OnInit {
   public onRefreshPluginList = this.modalData.onRefreshPluginList ?? (() => {})
   private editorContext = this.modalData.editorContext
 
+  /** The ids of the plugin's external Matter accessories. Each has storage of its own, as a child bridge has */
+  private matterExternals: string[] = []
+
   // 3. Other public properties
   public readonly keepOrphansName = `<code>${this.$translate.instant('settings.startup.keep_accessories')}</code>`
   public keepOrphansValue = `<code>false</code>`
@@ -90,6 +93,12 @@ export class UninstallPluginComponent implements OnInit {
       } catch (error) {
         console.error(error)
       }
+    }
+
+    // With them, the storage of the plugin's external Matter accessories (a robot vacuum, for one). Homebridge
+    // never deletes it, and it would stay behind with its pairing
+    if (this.removeChildBridges()) {
+      await Promise.all(this.matterExternals.map(id => this.removeChildBridge(id)))
     }
 
     // Close the modal
@@ -157,6 +166,7 @@ export class UninstallPluginComponent implements OnInit {
       if (this.childBridges.length) {
         this.hasChildBridges.set(true)
       }
+      this.matterExternals = await this.loadMatterExternals()
 
       const schema = await this.getAlias()
       this.pluginType.set(schema.pluginType)
@@ -210,6 +220,19 @@ export class UninstallPluginComponent implements OnInit {
       this.$translate.instant('plugins.settings.plugin_config_saved'),
       this.$translate.instant('toast.title_success'),
     )
+  }
+
+  private async loadMatterExternals(): Promise<string[]> {
+    try {
+      const pairings = await this.$api.get<{ _id: string, _plugin?: string, _matterOnly?: boolean }[]>('/server/pairings')
+      return pairings
+        .filter(pairing => pairing._matterOnly && pairing._plugin === this.plugin?.name)
+        .map(pairing => pairing._id)
+    } catch (error) {
+      // The uninstall goes ahead without the list. What stays behind is shown as left over in the unpair window
+      console.error(error)
+      return []
+    }
   }
 
   private async removeChildBridge(id: string): Promise<void> {

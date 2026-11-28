@@ -174,6 +174,19 @@ describe('the support pages', () => {
       }
     })
 
+    it('is under the web root when the ui has one', () => {
+      const original = { production: environment.production, webRoot: environment.api.webRoot }
+      try {
+        environment.production = true
+        environment.api.webRoot = '/homebridge'
+
+        expect(createPage().componentInstance.swaggerUrl).toBe('/homebridge/swagger')
+      } finally {
+        environment.production = original.production
+        environment.api.webRoot = original.webRoot
+      }
+    })
+
     it('points at the backend when running the dev server', () => {
       // The dev server serves the UI on another port, so a relative path 404s
       expect(createPage().componentInstance.swaggerUrl).toBe(`${environment.api.origin}/swagger`)

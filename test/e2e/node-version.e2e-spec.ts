@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { isNodeMajorKnown, isNodeMajorSupported, pickNodeUpdate } from '../../src/core/node-version.constants.js'
+import { findRequestedNodeVersion, isNodeMajorKnown, isNodeMajorSupported, pickNodeUpdate } from '../../src/core/node-version.constants.js'
 
 /**
  * A plain `hb-service update-node` picks the newest LTS release. Node.js v24
@@ -48,9 +48,28 @@ describe('picking a node.js update', () => {
     expect(isNodeMajorSupported(24, 'arm', 'linux', '6.1.0')).toBe(false)
   })
 
-  it('knows the majors up to the newest in its list', () => {
+  it('finds the node.js version asked for by whole parts only', () => {
+    const list = [
+      'v26.1.0',
+      'v24.13.0',
+      'v24.1.2',
+      'v22.19.0',
+      'v22.1.5',
+      'v22.1.0',
+    ].map(version => ({ version, lts: false as const }))
+    expect(findRequestedNodeVersion(list, '22.1')?.version).toBe('v22.1.5')
+    expect(findRequestedNodeVersion(list, '24.1')?.version).toBe('v24.1.2')
+    expect(findRequestedNodeVersion(list, '22')?.version).toBe('v22.19.0')
+    expect(findRequestedNodeVersion(list, 'v22.1.0')?.version).toBe('v22.1.0')
+    expect(findRequestedNodeVersion(list, '2')).toBeUndefined()
+  })
+
+  it('knows only the majors in its list', () => {
     expect(isNodeMajorKnown(22)).toBe(true)
     expect(isNodeMajorKnown(26)).toBe(true)
+    // Odd majors are short-lived and not supported: asking for one needs confirming
+    expect(isNodeMajorKnown(23)).toBe(false)
+    expect(isNodeMajorKnown(25)).toBe(false)
     expect(isNodeMajorKnown(27)).toBe(false)
     expect(isNodeMajorKnown(28)).toBe(false)
     expect(isNodeMajorKnown(undefined)).toBe(false)

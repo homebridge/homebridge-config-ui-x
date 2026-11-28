@@ -84,10 +84,11 @@ export function isNodeMajorSupported(
 export const NODE_KNOWN_MAJORS = [22, 24, 26]
 
 /**
- * Check if a major version of Node.js is within those Homebridge knows about
+ * Check if a major version of Node.js is one Homebridge knows about (see NODE_KNOWN_MAJORS)
  */
 export function isNodeMajorKnown(major: number): boolean {
-  return major <= Math.max(...NODE_KNOWN_MAJORS)
+  // In the list, not "up to the newest": odd majors (23, 25) are short-lived releases Homebridge does not support
+  return NODE_KNOWN_MAJORS.includes(major)
 }
 
 /**
@@ -96,6 +97,18 @@ export function isNodeMajorKnown(major: number): boolean {
 export interface NodeReleaseEntry {
   version: string
   lts: string | false
+}
+
+/**
+ * The release `hb-service update-node <version>` asks for: a whole version, or the newest release of a whole part
+ * of one. `22.1` is the newest 22.1.x (never 22.19.0), and `2` matches nothing (never v26). The list is newest first.
+ */
+export function findRequestedNodeVersion<T extends NodeReleaseEntry>(versionList: T[], requested: string): T | undefined {
+  const wanted = String(requested).trim().replace(/^v/, '')
+  if (!wanted) {
+    return undefined
+  }
+  return versionList.find(x => x.version === `v${wanted}` || x.version.startsWith(`v${wanted}.`))
 }
 
 /**

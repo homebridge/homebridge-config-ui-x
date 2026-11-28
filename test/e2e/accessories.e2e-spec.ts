@@ -8,12 +8,14 @@ import process from 'node:process'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+import { WsException } from '@nestjs/websockets'
 import { copy, remove } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
+import { AccessoriesGateway } from '../../src/modules/accessories/accessories.gateway.js'
 import { AccessoriesModule } from '../../src/modules/accessories/accessories.module.js'
 import { AccessoriesService } from '../../src/modules/accessories/accessories.service.js'
 
@@ -188,6 +190,61 @@ describe('AccessoriesController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(refreshCharacteristics).toHaveBeenCalledTimes(1)
+  })
+
+  // hap-client 5.4.1 builds each service's uniqueId differently, so a script that saved an id from an
+  // older version must still reach the service through its legacyUniqueId (#3125)
+  const LEGACY_ID = 'a1'.repeat(32)
+  const withLegacy = (...legacyIds: string[]) => legacyIds.map((legacyUniqueId, i) => ({
+    ...mockedServices[0],
+    uniqueId: `${'b2'.repeat(31)}${i}${i}`,
+    legacyUniqueId,
+  }))
+
+  it('GET /accessories/:uniqueId accepts an id saved before hap-client 5.4.1 (#3125)', async () => {
+    hapClientMock.mockResolvedValue(withLegacy(LEGACY_ID) as any)
+    const res = await app.inject({
+      method: 'GET',
+      path: `/accessories/${LEGACY_ID}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().uniqueId).toBe(`${'b2'.repeat(31)}00`)
+  })
+
+  it('PUT /accessories/:uniqueId accepts an id saved before hap-client 5.4.1 (#3125)', async () => {
+    hapClientMock.mockResolvedValue(withLegacy(LEGACY_ID) as any)
+    getCharacteristic.mockReturnValueOnce(booleanCharacteristic)
+    const res = await app.inject({
+      method: 'PUT',
+      path: `/accessories/${LEGACY_ID}`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        characteristicType: 'On',
+        value: 'true',
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(setValue).toHaveBeenCalledWith(true)
+  })
+
+  it('GET /accessories/:uniqueId refuses an old id that two services shared (#3125)', async () => {
+    hapClientMock.mockResolvedValue(withLegacy(LEGACY_ID, LEGACY_ID) as any)
+    const res = await app.inject({
+      method: 'GET',
+      path: `/accessories/${LEGACY_ID}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
   })
 
   it('GET /accessories/:uniqueId (invalid unique id)', async () => {
@@ -539,6 +596,165 @@ describe('AccessoriesController (e2e)', () => {
     expect(loaded).toEqual(layout)
   })
 
+  describe('a single matter accessory', () => {
+    const lamp = {
+      uuid: 'abc',
+      displayName: 'Lamp',
+      deviceType: 'OnOffLight',
+      clusters: {},
+      bridge: { name: 'Main', username: '0E:00:00:00:00:01' },
+    }
+
+    function answerWith(withCorrelationId: boolean) {
+      const ipc = app.get(HomebridgeIpcService)
+      return vi.spyOn(ipc, 'sendMessage').mockImplementation((type: string, data: any) => {
+        if (type === 'getMatterAccessoryInfo') {
+          // What homebridge sends back (v2.5.1 adds the correlation id)
+          setImmediate(() => ipc.emit('matterEvent', {
+            type: 'accessoryInfoData',
+            ...(withCorrelationId
+              ? { correlationId: data.correlationId }
+              : {}),
+            data: { ...lamp, uuid: data.uuid },
+          }))
+        }
+      })
+    }
+
+    it('is found from the accessoryInfoData reply', async () => {
+      const spy = answerWith(true)
+      try {
+        const result = await accessoriesService.getAccessory('matter:abc')
+        expect(result.serviceName).toBe('Lamp')
+        expect(spy.mock.calls.filter(([type]) => type === 'getMatterAccessoryInfo')).toHaveLength(1)
+      } finally {
+        spy.mockRestore()
+      }
+    }, 5000)
+
+    it('is found from the reply of an older homebridge that sends no correlation id', async () => {
+      const spy = answerWith(false)
+      try {
+        const result = await accessoriesService.getAccessory('matter:abc')
+        expect(result.serviceName).toBe('Lamp')
+      } finally {
+        spy.mockRestore()
+      }
+    }, 5000)
+  })
+
+  describe('a matter control', () => {
+    it('on one part of a composed device changes that part, not the main accessory', async () => {
+      // Regression: the accessory was found by uuid, which the parts share, so the main tile was changed
+      const ipc = app.get(HomebridgeIpcService)
+      const spy = vi.spyOn(ipc, 'sendMessage').mockImplementation((type: string, data: any) => {
+        if (type === 'matterAccessoryControl') {
+          setImmediate(() => ipc.emit('matterEvent', {
+            type: 'accessoryControlResponse',
+            correlationId: data.correlationId,
+            data: { success: true },
+          }))
+        }
+      })
+      const bridge = { name: 'Main', username: '0E:00:00:00:00:01' }
+      const main = {
+        uniqueId: 'matter:strip',
+        uuid: 'strip',
+        clusters: {
+          onOff: { onOff: false },
+        },
+        bridge,
+      }
+      const part = {
+        uniqueId: 'matter:strip:outlet-2',
+        uuid: 'strip',
+        partId: 'outlet-2',
+        clusters: {
+          onOff: { onOff: false },
+        },
+        bridge,
+      }
+      const saved = (accessoriesService as any).matterAccessories
+      ;(accessoriesService as any).matterAccessories = [main, part]
+      const client = {
+        emit: vi.fn(),
+      } as any
+      try {
+        await (accessoriesService as any).handleMatterControl(client, {
+          uniqueId: 'matter:strip:outlet-2',
+          cluster: 'onOff',
+          attributes: { onOff: true },
+        })
+
+        expect(part.clusters.onOff.onOff).toBe(true)
+        expect(main.clusters.onOff.onOff).toBe(false)
+        expect(spy).toHaveBeenCalledWith('matterAccessoryControl', expect.objectContaining({ uuid: 'strip', partId: 'outlet-2' }))
+      } finally {
+        ;(accessoriesService as any).matterAccessories = saved
+        spy.mockRestore()
+      }
+    })
+
+    it('is sent once, not again when the reply is slow', async () => {
+      // Regression: the control went through the retrying wait, so a reply later than 10 seconds sent the
+      // same command a second time
+      const ipc = app.get(HomebridgeIpcService)
+      const spy = vi.spyOn(ipc, 'sendMessage').mockImplementation(() => undefined)
+      const client = {
+        emit: vi.fn(),
+      } as any
+      vi.useFakeTimers()
+      try {
+        const done = (accessoriesService as any).handleMatterControl(client, {
+          uniqueId: 'matter:abc',
+          cluster: 'onOff',
+          attributes: { onOff: true },
+        })
+        await vi.advanceTimersByTimeAsync(25000)
+        await done
+
+        expect(spy.mock.calls.filter(([type]) => type === 'matterAccessoryControl')).toHaveLength(1)
+        expect(client.emit).toHaveBeenCalledWith('accessory-control-failure', 'The Homebridge service did not respond')
+      } finally {
+        vi.useRealTimers()
+        spy.mockRestore()
+      }
+    })
+  })
+
+  it('the layout socket handlers act for the verified user, not the user named in the message', async () => {
+    const gateway = app.get(AccessoriesGateway)
+    const adminLayout = [
+      { name: 'Admin Room', services: [] },
+    ]
+    await accessoriesService.saveAccessoryLayout('admin', adminLayout as any)
+
+    // A non-admin's socket, as WsGuard leaves it after checking the token
+    const guestClient = {
+      data: {
+        user: { username: 'guest', admin: false },
+      },
+    }
+
+    await gateway.saveAccessoryLayout(guestClient, {
+      user: 'admin',
+      layout: [
+        { name: 'Hijacked', services: [] },
+      ],
+    })
+    expect(await accessoriesService.getAccessoryLayout('admin')).toEqual(adminLayout)
+    expect(await accessoriesService.getAccessoryLayout('guest')).toEqual([
+      { name: 'Hijacked', services: [] },
+    ])
+
+    expect(await gateway.getAccessoryLayout(guestClient)).toEqual([
+      { name: 'Hijacked', services: [] },
+    ])
+
+    // No verified user: nothing is read or written
+    expect(await gateway.getAccessoryLayout({})).toBeInstanceOf(WsException)
+  })
+
   it('service.connect survives a malformed accessory-control payload', async () => {
     // Regression: the accessory-control handler is an async socket listener.
     // socket.io does not await listeners and there is no global
@@ -618,6 +834,46 @@ describe('AccessoriesController (e2e)', () => {
     expect(monitor.finish).not.toHaveBeenCalled()
 
     clientB.emit('disconnect')
+    ;(accessoriesService as any).hapMonitorPromise = null
+  })
+
+  it('service.connect cleans up a socket that disconnects during the first load', async () => {
+    // Regression: the clean-up handler was only added after the first load, so a page reload while it was
+    // still running missed the one-time 'disconnect'. The socket stayed in activeClients (getting every
+    // Matter broadcast) and its listeners stayed on the shared monitor and hap client for good.
+    const { EventEmitter } = await import('node:events')
+    ;(accessoriesService as any).hapMonitorPromise = null
+
+    const monitor = new EventEmitter() as any
+    monitor.finish = vi.fn()
+    vi.spyOn(accessoriesService.hapClient, 'monitorCharacteristics').mockResolvedValue(monitor)
+    vi.spyOn(accessoriesService.hapClient, 'refreshInstances').mockImplementation(() => undefined)
+    let finishLoad: (value: any) => void
+    hapClientMock.mockReturnValueOnce(new Promise((resolve) => {
+      finishLoad = resolve
+    }) as any)
+    hapClientMock.mockResolvedValue((mockedServices as any[]).map(s => ({
+      ...s,
+      refreshCharacteristics: vi.fn().mockResolvedValue(undefined),
+    })) as any)
+
+    const discoveredBefore = accessoriesService.hapClient.listenerCount('instance-discovered')
+    const client = new EventEmitter() as any
+    const connecting = accessoriesService.connect(client)
+    await vi.waitFor(() => expect(hapClientMock).toHaveBeenCalled())
+
+    client.emit('disconnect')
+    finishLoad((mockedServices as any[]).map(s => ({
+      ...s,
+      refreshCharacteristics: vi.fn().mockResolvedValue(undefined),
+    })))
+    await connecting
+
+    expect((accessoriesService as any).activeClients.has(client)).toBe(false)
+    expect((accessoriesService as any).clientSessions.has(client)).toBe(false)
+    expect(monitor.listenerCount('service-update')).toBe(0)
+    expect(accessoriesService.hapClient.listenerCount('instance-discovered')).toBe(discoveredBefore)
+    expect(client.listenerCount('accessory-control')).toBe(0)
     ;(accessoriesService as any).hapMonitorPromise = null
   })
 

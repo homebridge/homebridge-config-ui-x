@@ -1,34 +1,26 @@
 import packageJson from '../../../package.json'
+import { webRootFromPage } from './web-root'
+
+const webRoot = webRootFromPage()
 
 export const environment = {
   serverTarget: packageJson.version,
   production: true,
   socket: '',
   api: {
-    base: (() => {
-      const baseElement = document.querySelector('base')
-      const baseHref = baseElement?.getAttribute('href') || '/'
-      return baseHref.endsWith('/')
-        ? `${baseHref}api`
-        : `${baseHref}/api`
-    })(),
+    base: `${webRoot}/api`,
     socket: `${(window.location.protocol) === 'http:'
       ? 'ws://'
       : 'wss://'}${window.location.host}`,
+    socketPath: `${webRoot}/socket.io`,
     origin: window.location.origin,
+    webRoot,
   },
   jwt: {
     tokenKey: 'access_token',
     allowedDomains: [document.location.host],
     disallowedRoutes: [
-      (() => {
-        const baseElement = document.querySelector('base')
-        const baseHref = baseElement?.getAttribute('href') || '/'
-        const apiBase = baseHref.endsWith('/')
-          ? `${baseHref}api`
-          : `${baseHref}/api`
-        return `${window.location.protocol}//${document.location.host}${apiBase}/auth/login`
-      })(),
+      `${window.location.protocol}//${document.location.host}${webRoot}/api/auth/login`,
     ],
   },
   apiHttpOptions: {},

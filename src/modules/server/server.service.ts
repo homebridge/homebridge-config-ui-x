@@ -1,6 +1,7 @@
 import type { MultipartFile } from '@fastify/multipart'
 import type { Systeminformation } from 'systeminformation'
 
+import type { ResolvedBindEntry } from '../../core/bridge-bind.js'
 import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces.js'
 import type { NetworkOverviewEntry, StoredMatterAccessory } from '../../core/matter/matter.interfaces.js'
 
@@ -8,7 +9,7 @@ import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
 import { createPublicKey, randomInt, X509Certificate } from 'node:crypto'
 import { createWriteStream } from 'node:fs'
-import { readdir, readFile, unlink, writeFile } from 'node:fs/promises'
+import { readdir, readFile, rename, unlink, writeFile } from 'node:fs/promises'
 import { basename, extname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { pipeline, Readable } from 'node:stream'
@@ -29,8 +30,10 @@ import NodeCache from 'node-cache'
 import { networkInterfaces } from 'systeminformation'
 import { check as tcpCheck } from 'tcp-port-used'
 
+import { resolveBindEntries } from '../../core/bridge-bind.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
+import { writePrivateFile } from '../../core/fs/private-file.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import {
@@ -48,10 +51,12 @@ import {
   RE_PRIVATE_KEY,
   RE_SAFE_RESTART_CMD,
   RE_VALID_NAME,
+  RE_WHITESPACE,
 } from '../../core/regex.constants.js'
 import { SslCertGeneratorService } from '../../core/ssl/ssl-cert-generator.service.js'
 import { AccessoriesService } from '../accessories/accessories.service.js'
 import { ConfigEditorService } from '../config-editor/config-editor.service.js'
+import { PluginsService } from '../plugins/plugins.service.js'
 import { HomebridgeMdnsSettingDto } from './server.dto.js'
 
 const pump = promisify(pipeline)
@@ -73,6 +78,16 @@ function toPortNumber(value: unknown): number | undefined {
 const CHILD_BRIDGE_PORT_MIN = 30000
 const CHILD_BRIDGE_PORT_MAX = 60000
 
+/** What is installed and in config.json, to tell Matter storage that nothing uses any more */
+interface MatterUsageContext {
+  /** Names of the installed plugins, or null when the list can not be trusted just now */
+  installedPlugins: Set<string> | null
+  /** The `platform` of each platform block in config.json */
+  platformAliases: Set<string>
+  /** The username of the main bridge and of each child bridge in config.json, in upper case */
+  bridgeUsernames: Set<string>
+}
+
 @Injectable()
 export class ServerService {
   private serverServiceCache = new NodeCache({ stdTTL: 300 })
@@ -90,6 +105,7 @@ export class ServerService {
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
     @Inject(JsonFileStoreService) private readonly jsonStore: JsonFileStoreService,
     @Inject(Logger) private readonly logger: Logger,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
   ) {
     this.accessoryId = ServerService.macToHex(this.configService.homebridgeConfig.bridge.username)
     this.accessoryInfoPath = join(this.configService.storagePath, 'persist', `AccessoryInfo.${this.accessoryId}.json`)
@@ -256,7 +272,9 @@ export class ServerService {
       this.logger.warn(`Bridge ${id} reset: removed Matter bridge storage at ${matterPath}.`)
     }
 
-    await this.deleteDeviceAccessories(id)
+    // The callers stopped Homebridge already: the public deleteDeviceAccessories() would stop it a second time,
+    // and with several bridges that could kill the Homebridge hb-service had just started again
+    await this.deleteSingleDeviceAccessories(id, join(this.configService.storagePath, 'accessories'))
   }
 
   /**
@@ -364,8 +382,13 @@ export class ServerService {
   public async getDevicePairings() {
     const persistPath = join(this.configService.storagePath, 'persist')
 
-    const devices = (await readdir(persistPath))
-      .filter(x => x.match(RE_ACCESSORY_INFO_FILE))
+    // A storage folder where homebridge has never run has no persist folder: that is no pairings, not an error
+    const persistFiles = await pathExists(persistPath)
+      ? await readdir(persistPath)
+      : []
+
+    const devices = persistFiles
+      .filter(x => x.match(RE_ACCESSORY_INFO_FILE) && RE_HEX_12.test(x.split('.')[1]))
 
     const configFile = await this.configEditorService.getConfigFile()
     const externalAttribution = await this.getExternalAccessoryAttribution()
@@ -375,8 +398,13 @@ export class ServerService {
       return await this.getDevicePairingById(x.split('.')[1], configFile, externalAttribution)
     }))
 
-    // Get Matter external published accessories
-    const matterExternalDevices = await this.getMatterExternalAccessories(hapDevices)
+    // A left-over child bridge has no block in config.json to say it had Matter: its storage folder does
+    await Promise.all(hapDevices.filter(device => device._couldBeStale).map(async (device) => {
+      device._matter = await pathExists(join(this.configService.storagePath, 'matter', device._id))
+    }))
+
+    // Get Matter external published accessories, and Matter storage that nothing uses any more
+    const matterExternalDevices = await this.getMatterExternalAccessories(hapDevices, configFile)
 
     // Combine and sort by name
     return [
@@ -429,13 +457,116 @@ export class ServerService {
   }
 
   /**
-   * Get Matter external published accessories
-   * These are Matter-only accessories that don't have HAP AccessoryInfo files
-   * @param hapDevices - List of HAP devices to check against
-   * @returns Array of Matter external accessory devices
+   * What config.json and the installed plugins say is in use, to tell Matter storage that is left over.
+   * @param configFile - the config.json as it is on disk
    * @private
    */
-  private async getMatterExternalAccessories(hapDevices: { _id: string }[]): Promise<Record<string, unknown>[]> {
+  private async getMatterUsageContext(configFile: HomebridgeConfig): Promise<MatterUsageContext> {
+    const blocks: any[] = [
+      ...(configFile.accessories || []),
+      ...(configFile.platforms || []),
+    ]
+
+    // The plugin folders are not complete while npm is installing or removing one
+    let installedPlugins: Set<string> | null = null
+    if (!this.pluginsService.isPluginManagementInProgress) {
+      try {
+        installedPlugins = await this.pluginsService.getInstalledModuleNames()
+      } catch (e) {
+        this.logger.warn(`Could not read the installed plugins to check for left-over Matter storage: ${e.message}`)
+      }
+    }
+
+    return {
+      installedPlugins,
+      platformAliases: new Set(blocks.map(block => block?.platform).filter(alias => typeof alias === 'string')),
+      bridgeUsernames: new Set([
+        this.configService.homebridgeConfig.bridge.username,
+        ...blocks.map(block => block?._bridge?.username),
+      ].filter(username => typeof username === 'string').map(username => username.toUpperCase())),
+    }
+  }
+
+  /**
+   * Whether Homebridge is running a Matter node from this storage folder now. matter.js locks the node's own
+   * folder (one level down) with `matter.lock` and `matter.pid` while it runs, and removes them when it stops.
+   *
+   * A lock left by a killed Homebridge names a process that is gone, or one that another program has since.
+   * The second case reads as "in use" here, which is the safe mistake: the folder is then not offered for removal.
+   * @param folder - `matter/<id>`
+   * @private
+   */
+  private async isMatterStorageLocked(folder: string): Promise<boolean> {
+    let nodeFolders: string[]
+    try {
+      nodeFolders = (await readdir(folder, { withFileTypes: true }))
+        .filter(entry => entry.isDirectory())
+        .map(entry => join(folder, entry.name))
+    } catch {
+      return false
+    }
+
+    for (const nodeFolder of nodeFolders) {
+      try {
+        const pid = Number.parseInt((await readFile(join(nodeFolder, 'matter.pid'), 'utf-8')).trim().split(RE_WHITESPACE)[0], 10)
+        if (!Number.isInteger(pid) || pid <= 0 || !await pathExists(join(nodeFolder, 'matter.lock'))) {
+          continue
+        }
+        // Signal 0 sends nothing: it only asks whether the process is there
+        process.kill(pid, 0)
+        return true
+      } catch (e) {
+        // EPERM: the process is there, and belongs to another user
+        if (e?.code === 'EPERM') {
+          return true
+        }
+      }
+    }
+
+    return false
+  }
+
+  /**
+   * Whether what Homebridge saved about a Matter accessory points at a plugin, a platform or a bridge that is gone.
+   * Only a clear sign counts. With none, the storage is taken to be in use.
+   * @param accessory - the cached accessory, when there is one
+   * @param owner - the `homebridge-owner.json` of an external accessory, when Homebridge wrote one
+   * @param context - what is installed and in config.json
+   * @private
+   */
+  private static matterStoragePointsAtNothing(
+    accessory: { plugin?: unknown, platform?: unknown } | undefined,
+    owner: { bridge?: unknown, plugin?: unknown, platform?: unknown } | null,
+    context: MatterUsageContext,
+  ): boolean {
+    const plugin = [accessory?.plugin, owner?.plugin].find(name => typeof name === 'string' && name) as string | undefined
+    if (plugin && context.installedPlugins && !context.installedPlugins.has(plugin)) {
+      return true
+    }
+
+    // Homebridge saves 'ExternalMatter' when a plugin published the accessory without naming its platform
+    const platform = [accessory?.platform, owner?.platform]
+      .find(alias => typeof alias === 'string' && alias && alias !== 'ExternalMatter') as string | undefined
+    if (platform && !context.platformAliases.has(platform)) {
+      return true
+    }
+
+    return typeof owner?.bridge === 'string' && !context.bridgeUsernames.has(owner.bridge.toUpperCase())
+  }
+
+  /**
+   * Get the Matter nodes that have no HAP side: external accessories a plugin published, and storage folders
+   * that nothing uses any more (`_couldBeStale`).
+   *
+   * Homebridge never deletes a node's storage (`matter/<id>/`, which holds its pairing). A folder stays behind
+   * when its plugin is uninstalled, its child bridge is taken out of config.json, or its accessory is no longer
+   * published (homebridge#4026).
+   * @param hapDevices - List of HAP devices to check against
+   * @param configFile - the config.json as it is on disk
+   * @returns Array of Matter-only devices
+   * @private
+   */
+  private async getMatterExternalAccessories(hapDevices: { _id: string }[], configFile: HomebridgeConfig): Promise<Record<string, unknown>[]> {
     const matterPath = join(this.configService.storagePath, 'matter')
 
     // Check if matter directory exists
@@ -446,6 +577,12 @@ export class ServerService {
     const matterDirs = (await readdir(matterPath))
       .filter(x => x.match(RE_HEX_12)) // Match 12 hex character device IDs
 
+    if (!matterDirs.length) {
+      return []
+    }
+
+    const context = await this.getMatterUsageContext(configFile)
+    const mainBridgeId = ServerService.macToHex(this.configService.homebridgeConfig.bridge.username)
     const matterExternalDevices: Record<string, unknown>[] = []
 
     for (const deviceId of matterDirs) {
@@ -458,31 +595,25 @@ export class ServerService {
         }
 
         // Check if this is the main bridge
-        const mainBridgeId = ServerService.macToHex(this.configService.homebridgeConfig.bridge.username)
         if (deviceId.toUpperCase() === mainBridgeId) {
           // This is the main bridge, skip it
           continue
         }
 
-        // Read the accessories.json file
-        const accessoriesPath = join(matterPath, deviceId, 'accessories.json')
-        if (!await pathExists(accessoriesPath)) {
-          // No accessories.json, might be a child bridge Matter storage, skip
-          continue
-        }
+        const folder = join(matterPath, deviceId)
+        const username = ServerService.hexToMac(deviceId)
 
-        const accessories = await readJson(accessoriesPath)
-        if (!Array.isArray(accessories) || accessories.length === 0) {
-          continue
-        }
+        // In use for certain: a bridge in config.json, or a node Homebridge is running now
+        const inUse = context.bridgeUsernames.has(username) || await this.isMatterStorageLocked(folder)
 
-        // For Matter external accessories, we create one device entry per accessory
-        // But since they're published as external, each has its own Matter server
-        // We'll just use the first accessory's info for the device name
-        const accessory = accessories[0]
+        const accessories = await this.readJsonOr<unknown>(join(folder, 'accessories.json'), [])
+        const owner = await this.readJsonOr<any>(join(folder, 'homebridge-owner.json'), null)
+        const accessory: any = Array.isArray(accessories)
+          ? accessories[0]
+          : undefined
 
         // Read commissioning info if available
-        const commissioningPath = join(matterPath, deviceId, 'commissioning.json')
+        const commissioningPath = join(folder, 'commissioning.json')
         let commissioned = false
         let qrCode: string | undefined
         let manualPairingCode: string | undefined
@@ -506,16 +637,53 @@ export class ServerService {
           }
         }
 
+        if (!accessory) {
+          // No cached accessory. This is the storage of a child bridge that has none yet, or of an external
+          // accessory whose plugin publishes it again at the next start: both stay out of the list
+          const comesBack = owner !== null && typeof owner === 'object' && !ServerService.matterStoragePointsAtNothing(undefined, owner, context)
+          if (inUse || comesBack) {
+            continue
+          }
+
+          // Nothing says what this was, so it is listed by its id, to be seen and removed
+          matterExternalDevices.push({
+            _id: deviceId,
+            _username: username,
+            _main: false,
+            _category: 'other',
+            _matter: true,
+            _matterOnly: true,
+            _isExternal: false,
+            _isPaired: commissioned,
+            _couldBeStale: true,
+            _plugin: typeof owner?.plugin === 'string'
+              ? owner.plugin
+              : undefined,
+            name: 'Unknown Matter Bridge',
+            displayName: 'Unknown Matter Bridge',
+            manufacturer: 'Unknown',
+            model: 'Unknown',
+            serialNumber: deviceId,
+            category: 1,
+          })
+          continue
+        }
+
+        // For Matter external accessories, we create one device entry per accessory
+        // But since they're published as external, each has its own Matter server
+        // We'll just use the first accessory's info for the device name
+
         // Create a device object similar to HAP devices
         const device: Record<string, unknown> = {
           _id: deviceId,
-          _username: ServerService.hexToMac(deviceId), // Format as MAC address
+          _username: username, // Format as MAC address
           _main: false,
           _category: 'other', // Matter external accessories don't have HAP categories
           _matter: true,
           _matterOnly: true, // Flag to indicate this is Matter-only
           _isExternal: true,
           _isPaired: commissioned,
+          _couldBeStale: !inUse && ServerService.matterStoragePointsAtNothing(accessory, owner, context),
           _plugin: accessory.plugin, // Plugin identifier for filtering
           _setupCode: qrCode, // Matter QR-code payload string (encodes the commissioning info)
           pincode: manualPairingCode, // Human-readable manual pairing code
@@ -536,6 +704,15 @@ export class ServerService {
     return matterExternalDevices
   }
 
+  /** Read a json file, or give the fallback when it is missing or is not json */
+  private async readJsonOr<T>(file: string, fallback: T): Promise<T> {
+    try {
+      return await readJson(file)
+    } catch {
+      return fallback
+    }
+  }
+
   /**
    * Return a single device pairing
    * @param deviceId
@@ -548,6 +725,12 @@ export class ServerService {
     configFile = null,
     externalAttribution: Map<string, { plugin: string, displayName?: string, category?: number, port?: number }> | null = null,
   ) {
+    // The id comes from the url (decoded, so `..%2F..%2Fx` is `../../x`): a 12 hex digit id only, as the
+    // other pairing routes check, or any json file on the host could be read
+    if (typeof deviceId !== 'string' || !RE_HEX_12.test(deviceId)) {
+      throw new BadRequestException('Invalid device id.')
+    }
+
     const persistPath = join(this.configService.storagePath, 'persist')
 
     let device: any
@@ -789,6 +972,11 @@ export class ServerService {
   public async getCachedAccessories() {
     const cachedAccessoriesDir = join(this.configService.storagePath, 'accessories')
 
+    // A storage folder where homebridge has never run has no accessories folder: that is an empty list, not an error
+    if (!await pathExists(cachedAccessoriesDir)) {
+      return []
+    }
+
     const cachedAccessoryFiles = (await readdir(cachedAccessoriesDir))
       .filter(x => x.match(RE_CACHED_ACCESSORIES_EXACT) || x === 'cachedAccessories')
 
@@ -851,14 +1039,14 @@ export class ServerService {
    * Remove multiple cached accessories
    */
   public async deleteCachedAccessories(accessories: { uuid: string, cacheFile: string }[]) {
-    this.logger.warn(`Shutting down Homebridge before removing cached accessories ${accessories.map(x => x.uuid).join(', ')}.`)
-
-    // Wait for homebridge to stop.
-    await this.homebridgeIpcService.restartAndWaitForClose()
+    if (!Array.isArray(accessories)) {
+      throw new BadRequestException('A list of accessories is required.')
+    }
 
     const accessoriesByCacheFile = new Map<string, { uuid: string }[]>()
 
-    // Group accessories by cacheFile
+    // Group accessories by cacheFile, and check every name before Homebridge is stopped: a bad name must not cost
+    // a restart for nothing
     for (const { cacheFile, uuid } of accessories) {
       const accessoryCacheFile = basename(cacheFile || 'cachedAccessories')
       if (accessoryCacheFile !== 'cachedAccessories' && !RE_CACHED_ACCESSORIES_EXACT.test(accessoryCacheFile)) {
@@ -870,6 +1058,11 @@ export class ServerService {
       accessoriesByCacheFile.get(accessoryCacheFile).push({ uuid })
     }
 
+    this.logger.warn(`Shutting down Homebridge before removing cached accessories ${accessories.map(x => x.uuid).join(', ')}.`)
+
+    // Wait for homebridge to stop.
+    await this.homebridgeIpcService.restartAndWaitForClose()
+
     // Process each group of accessories
     for (const [cacheFile, accessories] of accessoriesByCacheFile.entries()) {
       const cachedAccessoriesPath = resolve(this.configService.storagePath, 'accessories', cacheFile)
@@ -878,9 +1071,9 @@ export class ServerService {
           // Don't auto-create a fresh cache file just because a caller
           // pointed at a path that doesn't exist (e.g. an attempted
           // path-traversal that basename() flattened to an unrelated
-          // name). Skip this cacheFile and let other groups proceed.
+          // name). Skip this cacheFile (returning null writes nothing) and let the other groups proceed.
           this.logger.error(`Cached accessories file not found: ${cacheFile}.`)
-          throw new NotFoundException(`Cache file ${cacheFile} not found.`)
+          return null
         }
         for (const { uuid } of accessories) {
           try {
@@ -1198,6 +1391,15 @@ export class ServerService {
     }
 
     return []
+  }
+
+  /**
+   * Returns the `bridge.bind` entries, each with the network adapter it stands for on this host.
+   * An entry may be an IP address instead of an adapter name: Homebridge then uses the adapter
+   * that owns the address when it starts, so the UI has to look the address up the same way.
+   */
+  public async getHomebridgeNetworkInterfacesResolved(): Promise<ResolvedBindEntry[]> {
+    return resolveBindEntries(await this.getHomebridgeNetworkInterfaces())
   }
 
   /**
@@ -1640,23 +1842,30 @@ export class ServerService {
     const uiConfigBlock = configFile.platforms.find(x => x.platform === 'config')
 
     if (uiConfigBlock) {
-      // Delete the old wallpaper if it exists
-      if (uiConfigBlock.wallpaper) {
-        const oldPath = join(this.configService.storagePath, uiConfigBlock.wallpaper)
-        if (await pathExists(oldPath)) {
-          try {
-            await unlink(oldPath)
-            this.logger.log(`Old wallpaper file ${oldPath} deleted successfully.`)
-          } catch (e) {
-            this.logger.error(`Failed to delete old wallpaper ${oldPath} as ${e.message}.`)
-          }
-        }
+      // Write the upload to a temp file first, and only then put it in place and remove the old wallpaper: a
+      // failed upload must leave the old wallpaper (and the config that names it) as they were
+      const fileExtension = extname(data.filename).toLowerCase().replace(/[^.a-z0-9]/g, '')
+      const newPath = join(this.configService.storagePath, `ui-wallpaper${fileExtension}`)
+      const tmpPath = `${newPath}.upload-${randomInt(1e9)}`
+      try {
+        await pump(data.file, createWriteStream(tmpPath))
+        await rename(tmpPath, newPath)
+      } catch (e) {
+        await unlink(tmpPath).catch(() => undefined)
+        throw e
       }
 
-      // Save the uploaded image file to the storage path
-      const fileExtension = extname(data.filename)
-      const newPath = join(this.configService.storagePath, `ui-wallpaper${fileExtension}`)
-      await pump(data.file, createWriteStream(newPath))
+      // Delete the old wallpaper if it was another file
+      // Only a plain file name in the storage folder is ever deleted (see `getWallpaperPath`)
+      const oldPath = this.configService.getWallpaperPath(uiConfigBlock.wallpaper)
+      if (oldPath && oldPath !== newPath && await pathExists(oldPath)) {
+        try {
+          await unlink(oldPath)
+          this.logger.log(`Old wallpaper file ${oldPath} deleted successfully.`)
+        } catch (e) {
+          this.logger.error(`Failed to delete old wallpaper ${oldPath} as ${e.message}.`)
+        }
+      }
 
       // Update the config file with the new wallpaper path
       uiConfigBlock.wallpaper = `ui-wallpaper${fileExtension}`
@@ -1672,11 +1881,11 @@ export class ServerService {
     // Get the config file and find the UI config block
     const configFile = await this.configEditorService.getConfigFile()
     const uiConfigBlock = configFile.platforms.find(x => x.platform === 'config')
-    const fullPath = join(this.configService.storagePath, uiConfigBlock.wallpaper)
 
-    // Delete the wallpaper file if it exists
+    // Delete the wallpaper file if it exists. Only a plain file name in the storage folder is ever deleted.
     if (uiConfigBlock && uiConfigBlock.wallpaper) {
-      if (await pathExists(fullPath)) {
+      const fullPath = this.configService.getWallpaperPath(uiConfigBlock.wallpaper)
+      if (fullPath && await pathExists(fullPath)) {
         try {
           await unlink(fullPath)
           this.logger.log(`Wallpaper file ${uiConfigBlock.wallpaper} deleted successfully.`)
@@ -1827,7 +2036,7 @@ export class ServerService {
     await ensureDir(sslDir)
 
     // If existing files exist at these paths, overwrite them
-    await writeFile(keyPath, keyPem)
+    await writePrivateFile(keyPath, keyPem)
     await writeFile(certPath, certPem)
 
     // Update config.json UI block
@@ -1924,7 +2133,7 @@ export class ServerService {
     const sslDir = join(this.configService.storagePath, 'ssl-certs')
     const pfxPath = join(sslDir, 'ui-ssl.pfx')
     await ensureDir(sslDir)
-    await writeFile(pfxPath, pfxBuffer)
+    await writePrivateFile(pfxPath, pfxBuffer)
 
     // Update config
     const configFile = await this.configEditorService.getConfigFile()

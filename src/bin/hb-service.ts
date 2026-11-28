@@ -7,20 +7,18 @@
 
 import type { ChildProcessWithoutNullStreams, ForkOptions } from 'node:child_process'
 import type { PathLike, WriteStream } from 'node:fs'
-import type { TarOptionsWithAliases } from 'tar'
+import type { ExtractOptions } from 'tar'
 
 import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service.js'
 import type { BasePlatform } from './base-platform.js'
 
-import { Buffer } from 'node:buffer'
 import { execFileSync, execSync, fork } from 'node:child_process'
 import { randomInt } from 'node:crypto'
 import { chownSync, createReadStream, createWriteStream, existsSync } from 'node:fs'
-import { mkdtemp, open, readFile, rename, stat } from 'node:fs/promises'
+import { mkdtemp, readFile, rename, stat } from 'node:fs/promises'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
-import { StringDecoder } from 'node:string_decoder'
 import { fileURLToPath } from 'node:url'
 
 import axios from 'axios'
@@ -33,14 +31,18 @@ import { Tail } from 'tail'
 import { extract } from 'tar'
 import { check as tcpCheck } from 'tcp-port-used'
 
-import { isNodeMajorKnown, isNodeMajorSupported, pickNodeUpdate } from '../core/node-version.constants.js'
+import { findRequestedNodeVersion, isNodeMajorKnown, isNodeMajorSupported, pickNodeUpdate } from '../core/node-version.constants.js'
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
+import { readConfigForCheck, writeConfigAtomically } from './config-file.js'
 import { confirmUnknownNode } from './confirm-unknown-node.js'
+import { LineBuffer } from './line-buffer.js'
+import { openLogFile, truncateLogFile } from './log-file.js'
 import { Logger } from './logger.js'
 import { DarwinInstaller } from './platforms/darwin.js'
 import { FreeBSDInstaller } from './platforms/freebsd.js'
 import { LinuxInstaller } from './platforms/linux.js'
 import { Win32Installer } from './platforms/win32.js'
+import { gracefulShutdown } from './shutdown.js'
 
 process.title = 'hb-service'
 
@@ -66,6 +68,8 @@ export class HomebridgeServiceHelper {
   private homebridgeBinary: string
   private homebridge: ChildProcessWithoutNullStreams
   private homebridgeOpts = ['-I']
+  private shuttingDown = false
+  private closeUi?: () => Promise<void>
   private homebridgeCustomEnv = {}
   private uiBinary: string
 
@@ -317,8 +321,16 @@ export class HomebridgeServiceHelper {
     // Work out the log path
     this.logger.debug(`Logging to ${this.logPath}.`)
 
-    // Redirect all stdout to the log file
-    this.logFile = createWriteStream(this.logPath, { flags: 'a' })
+    // Redirect all stdout to the log file. If the file can't be written, go back to the console with a warning
+    // (before, the stream's unhandled `error` event ended hb-service, and systemd restarted it in a loop).
+    const stdoutWrite = process.stdout.write.bind(process.stdout)
+    const stderrWrite = process.stderr.write.bind(process.stderr)
+    this.logFile = openLogFile(this.logPath, (e) => {
+      process.stdout.write = stdoutWrite
+      process.stderr.write = stderrWrite
+      this.logFile = process.stdout
+      this.logger.warn(`Could not write the log file ${this.logPath} (${e.message}). Logging to the console instead.`)
+    })
     process.stdout.write = process.stderr.write = this.logFile.write.bind(this.logFile)
   }
 
@@ -342,38 +354,16 @@ export class HomebridgeServiceHelper {
       const maxSize = uiConfigBlock?.log?.maxSize ?? 1000000 // ~1 MB
       const truncateSize = uiConfigBlock?.log?.truncateSize ?? 200000 // ~0.2 MB
 
-      if (maxSize < 0) {
-        return
-      }
-
-      const logStats = await stat(this.logPath)
-
-      if (logStats.size < maxSize) {
-        return // log file does not need truncating
-      }
-
-      // Read out the last `truncatedSize` bytes to a buffer
-      const logStartPosition = logStats.size - truncateSize
-      const logBuffer = Buffer.alloc(truncateSize)
-      const logFileHandle = await open(this.logPath, 'a+')
-
       // Cork the WriteStream `this.log` (the FD that process.stdout /
-      // process.stderr are routed through) so concurrent log lines
-      // don't interleave with the truncate-then-rewrite sequence.
-      // Without the cork, lines emitted between truncate() and the
-      // final write() land out of order — and on some filesystems
-      // leave sparse \0 bytes between the truncated tail and the new
-      // content.
+      // process.stderr are routed through) so log lines written while the
+      // file is trimmed are held and land after it, not inside it.
       const corked = this.logFile && typeof (this.logFile as any).cork === 'function'
       if (corked) {
         (this.logFile as any).cork()
       }
       try {
-        await logFileHandle.read(logBuffer, 0, truncateSize, logStartPosition)
-        await logFileHandle.truncate()
-        await logFileHandle.write(logBuffer)
+        await truncateLogFile(this.logPath, maxSize, truncateSize)
       } finally {
-        await logFileHandle.close()
         if (corked) {
           (this.logFile as any).uncork()
         }
@@ -408,6 +398,10 @@ export class HomebridgeServiceHelper {
 
       // Start logging to file
       await this.startLog()
+
+      // Trim the log now as well as every two hours: a service that restarts more often than that (a crash loop)
+      // would otherwise never trim it
+      await this.truncateLog()
 
       // Verify the config
       await this.configCheck()
@@ -458,17 +452,18 @@ export class HomebridgeServiceHelper {
    */
   private startExitHandler() {
     const exitHandler = () => {
+      if (this.shuttingDown) {
+        return
+      }
+      this.shuttingDown = true
       this.logger.debug('Stopping services...')
-      try {
-        this.homebridge.kill()
-      } catch (e) {}
-
-      setTimeout(() => {
-        try {
-          this.homebridge.kill('SIGKILL')
-        } catch (e) {}
-        process.exit(1282)
-      }, 7000)
+      void gracefulShutdown({
+        child: this.homebridge,
+        closeUi: this.closeUi,
+        log: message => this.logger.warn(message),
+      }).finally(() => {
+        process.exit(0)
+      })
     }
 
     process.on('SIGTERM', exitHandler)
@@ -479,6 +474,12 @@ export class HomebridgeServiceHelper {
    * Starts homebridge as a child process, sending the log output to the homebridge.log
    */
   private runHomebridge() {
+    // A start scheduled before the stop began (the restart after a crash, the Pi Zero delay) must not run:
+    // hb-service exits once the UI has closed, and would leave this Homebridge running on its own
+    if (this.shuttingDown) {
+      return
+    }
+
     if (!this.homebridgeBinary || !pathExistsSync(this.homebridgeBinary)) {
       this.logger.error('Could not find Homebridge. Make sure you have installed Homebridge using the -g flag then restart.')
       this.logger.error('npm install -g homebridge')
@@ -538,56 +539,16 @@ export class HomebridgeServiceHelper {
 
     this.logger.success(`Started Homebridge v${this.homebridgePackage.version} with PID: ${this.homebridge.pid}.`)
 
-    // Buffer per-stream output and flush whole lines so concurrent
-    // stdout/stderr writes don't interleave mid-line in the log file.
-    const outDecoder = new StringDecoder('utf8')
-    const errDecoder = new StringDecoder('utf8')
-    let outBuf = ''
-    let errBuf = ''
-    const flushLines = (key: 'out' | 'err') => {
-      const buf = key === 'out'
-        ? outBuf
-        : errBuf
-      let consumed = 0
-      let idx = buf.indexOf('\n', consumed)
-      while (idx !== -1) {
-        this.logFile.write(buf.slice(consumed, idx + 1))
-        consumed = idx + 1
-        idx = buf.indexOf('\n', consumed)
-      }
-      const remainder = buf.slice(consumed)
-      if (key === 'out') {
-        outBuf = remainder
-      } else {
-        errBuf = remainder
-      }
-    }
+    // Write each stream to the log in whole lines, so stdout and stderr do not mix half-way through a line
+    const out = new LineBuffer(text => this.logFile.write(text))
+    const err = new LineBuffer(text => this.logFile.write(text))
 
-    this.homebridge.stdout.on('data', (data) => {
-      outBuf += outDecoder.write(data)
-      flushLines('out')
-    })
-
-    this.homebridge.stderr.on('data', (data) => {
-      errBuf += errDecoder.write(data)
-      flushLines('err')
-    })
+    this.homebridge.stdout.on('data', data => out.push(data))
+    this.homebridge.stderr.on('data', data => err.push(data))
 
     this.homebridge.on('close', (code, signal) => {
-      outBuf += outDecoder.end()
-      errBuf += errDecoder.end()
-      if (outBuf) {
-        this.logFile.write(outBuf.endsWith('\n')
-          ? outBuf
-          : `${outBuf}\n`)
-        outBuf = ''
-      }
-      if (errBuf) {
-        this.logFile.write(errBuf.endsWith('\n')
-          ? errBuf
-          : `${errBuf}\n`)
-        errBuf = ''
-      }
+      out.end()
+      err.end()
       this.handleHomebridgeClose(code, signal)
     })
   }
@@ -599,6 +560,11 @@ export class HomebridgeServiceHelper {
    */
   private handleHomebridgeClose(code: number, signal: string) {
     this.logger.log(`Homebridge process ended. Code: ${code}, signal: ${signal}.`)
+
+    // hb-service itself is stopping: Homebridge must not be started again
+    if (this.shuttingDown) {
+      return
+    }
 
     this.checkForStaleHomebridgeProcess()
     this.refreshHomebridgePackage()
@@ -622,6 +588,7 @@ export class HomebridgeServiceHelper {
 
       // Extract services
       this.ipcService = ui.get(main.HomebridgeIpcService)
+      this.closeUi = main.shutdownUi
     } catch (e) {
       this.logger.log('The user interface threw an unhandled error.')
       console.error(e)
@@ -803,94 +770,109 @@ export class HomebridgeServiceHelper {
       restartRequired = true
     }
 
+    let currentConfig: Record<string, any> | undefined
     try {
-      const currentConfig = await this.readConfig()
-
-      // Extract ui config
-      if (!Array.isArray(currentConfig.platforms)) {
-        currentConfig.platforms = []
-      }
-      let uiConfigBlock = currentConfig.platforms.find((x: any) => x.platform === 'config')
-
-      // If the config block does not exist, then create it
-      if (!uiConfigBlock) {
-        this.logger.log(`Adding missing UI platform block to ${process.env.UIX_CONFIG_PATH}.`)
-        uiConfigBlock = await this.createDefaultUiConfig()
-        currentConfig.platforms.push(uiConfigBlock)
-        saveRequired = true
-        restartRequired = true
-      }
-
-      // Ensure the port is set
-      if (this.action !== 'install' && typeof uiConfigBlock.port !== 'number') {
-        uiConfigBlock.port = await this.getLastKnownUiPort()
-        this.logger.log(`Added missing port number to UI config: ${uiConfigBlock.port}.`)
-        saveRequired = true
-        restartRequired = true
-      }
-
-      // If doing an installation, make sure the port number matches the value passed in by the user
-      if (this.action === 'install') {
-        // Correct the port
-        if (uiConfigBlock.port !== this.uiPort) {
-          uiConfigBlock.port = this.uiPort
-          this.logger.warn(`Homebridge UI port in ${process.env.UIX_CONFIG_PATH} changed to: ${this.uiPort}.`)
-        }
-        // Delete unnecessary config
-        delete uiConfigBlock.restart
-        delete uiConfigBlock.sudo
-        delete uiConfigBlock.log
-        saveRequired = true
-      }
-
-      // Ensure the ui port is defined and is a number
-      if (typeof uiConfigBlock.port !== 'number') {
-        uiConfigBlock.port = await this.getLastKnownUiPort()
-        this.logger.log(`Added missing port number to UI config: ${uiConfigBlock.port}.`)
-        saveRequired = true
-        restartRequired = true
-      }
-
-      // Check the bridge section exists
-      if (!currentConfig.bridge) {
-        currentConfig.bridge = await this.generateBridgeConfig()
-        this.logger.log('Added missing Homebridge bridge section to the config.json.')
-        saveRequired = true
-      }
-
-      // Ensure port is set in bridge config
-      if (!currentConfig.bridge.port) {
-        currentConfig.bridge.port = await this.generatePort()
-        this.logger.log(`Added port to the Homebridge bridge section of the config.json: ${currentConfig.bridge.port}.`)
-        saveRequired = true
-      }
-
-      // Ensure bridge port is not the same as the UI port
-      if ((uiConfigBlock && currentConfig.bridge.port === uiConfigBlock.port) || currentConfig.bridge.port === 8080) {
-        currentConfig.bridge.port = await this.generatePort()
-        this.logger.log(`Bridge port must not be the same as the UI port. Changing bridge port to: ${currentConfig.bridge.port}.`)
-        saveRequired = true
-      }
-
-      // Ensure homebridge-config-ui-x is enabled if the plugins array is set
-      if (currentConfig.plugins && Array.isArray(currentConfig.plugins)) {
-        if (!currentConfig.plugins.includes('homebridge-config-ui-x')) {
-          currentConfig.plugins.push('homebridge-config-ui-x')
-          this.logger.log('Added Homebridge UI to the plugins array in the config.json.')
-          saveRequired = true
-        }
-      }
-
-      if (saveRequired) {
-        await writeJson(process.env.UIX_CONFIG_PATH, currentConfig, { spaces: 4 })
-      }
+      currentConfig = await readConfigForCheck(process.env.UIX_CONFIG_PATH)
     } catch (e) {
+      // Not a broken file but one that can't be read (wrong owner after a `sudo` run, a disk error): leave it as it
+      // is. A new config.json would get a new bridge username and pin, which unpairs the bridge from HomeKit.
+      this.logger.error(`Could not read ${process.env.UIX_CONFIG_PATH}: ${e.message}. It was left as it is.`)
+      process.exit(1)
+    }
+
+    if (!currentConfig) {
       const backupFile = resolve(this.storagePath, `config.json.invalid.${Date.now().toString()}`)
       this.logger.warn(`${process.env.UIX_CONFIG_PATH} does not contain valid JSON.`)
       this.logger.warn(`Invalid config.json file has been backed up to ${backupFile}.`)
       await rename(process.env.UIX_CONFIG_PATH, backupFile)
       await this.createDefaultConfig()
       restartRequired = true
+    }
+
+    if (currentConfig) {
+      try {
+        // Extract ui config
+        if (!Array.isArray(currentConfig.platforms)) {
+          currentConfig.platforms = []
+        }
+        let uiConfigBlock = currentConfig.platforms.find((x: any) => x.platform === 'config')
+
+        // If the config block does not exist, then create it
+        if (!uiConfigBlock) {
+          this.logger.log(`Adding missing UI platform block to ${process.env.UIX_CONFIG_PATH}.`)
+          uiConfigBlock = await this.createDefaultUiConfig()
+          currentConfig.platforms.push(uiConfigBlock)
+          saveRequired = true
+          restartRequired = true
+        }
+
+        // Ensure the port is set
+        if (this.action !== 'install' && typeof uiConfigBlock.port !== 'number') {
+          uiConfigBlock.port = await this.getLastKnownUiPort()
+          this.logger.log(`Added missing port number to UI config: ${uiConfigBlock.port}.`)
+          saveRequired = true
+          restartRequired = true
+        }
+
+        // If doing an installation, make sure the port number matches the value passed in by the user
+        if (this.action === 'install') {
+          // Correct the port
+          if (uiConfigBlock.port !== this.uiPort) {
+            uiConfigBlock.port = this.uiPort
+            this.logger.warn(`Homebridge UI port in ${process.env.UIX_CONFIG_PATH} changed to: ${this.uiPort}.`)
+          }
+          // Delete unnecessary config
+          delete uiConfigBlock.restart
+          delete uiConfigBlock.sudo
+          delete uiConfigBlock.log
+          saveRequired = true
+        }
+
+        // Ensure the ui port is defined and is a number
+        if (typeof uiConfigBlock.port !== 'number') {
+          uiConfigBlock.port = await this.getLastKnownUiPort()
+          this.logger.log(`Added missing port number to UI config: ${uiConfigBlock.port}.`)
+          saveRequired = true
+          restartRequired = true
+        }
+
+        // Check the bridge section exists
+        if (!currentConfig.bridge) {
+          currentConfig.bridge = await this.generateBridgeConfig()
+          this.logger.log('Added missing Homebridge bridge section to the config.json.')
+          saveRequired = true
+        }
+
+        // Ensure port is set in bridge config
+        if (!currentConfig.bridge.port) {
+          currentConfig.bridge.port = await this.generatePort()
+          this.logger.log(`Added port to the Homebridge bridge section of the config.json: ${currentConfig.bridge.port}.`)
+          saveRequired = true
+        }
+
+        // Ensure bridge port is not the same as the UI port
+        if ((uiConfigBlock && currentConfig.bridge.port === uiConfigBlock.port) || currentConfig.bridge.port === 8080) {
+          currentConfig.bridge.port = await this.generatePort()
+          this.logger.log(`Bridge port must not be the same as the UI port. Changing bridge port to: ${currentConfig.bridge.port}.`)
+          saveRequired = true
+        }
+
+        // Ensure homebridge-config-ui-x is enabled if the plugins array is set
+        if (currentConfig.plugins && Array.isArray(currentConfig.plugins)) {
+          if (!currentConfig.plugins.includes('homebridge-config-ui-x')) {
+            currentConfig.plugins.push('homebridge-config-ui-x')
+            this.logger.log('Added Homebridge UI to the plugins array in the config.json.')
+            saveRequired = true
+          }
+        }
+
+        if (saveRequired) {
+          await writeConfigAtomically(process.env.UIX_CONFIG_PATH, currentConfig)
+        }
+      } catch (e) {
+        // A failed update (no write access, a full disk) leaves the file as it was: it was read fine, so it is kept
+        this.logger.error(`Could not update ${process.env.UIX_CONFIG_PATH}: ${e.message}. It was left as it is.`)
+      }
     }
 
     // If the port number potentially changed, we need to restart here when running the
@@ -1251,7 +1233,7 @@ export class HomebridgeServiceHelper {
     }
 
     if (requestedVersion) {
-      const wantedVersion = versionList.find(x => x.version.startsWith(`v${requestedVersion}`))
+      const wantedVersion = findRequestedNodeVersion(versionList, requestedVersion)
       if (wantedVersion) {
         // Check the requested version is greater than v22.12.0
         if (!gte(wantedVersion.version, '22.12.0')) {
@@ -1325,7 +1307,7 @@ export class HomebridgeServiceHelper {
   /**
    * Extract the Node.js tarball
    */
-  public async extractNodejs(targetVersion: string, extractConfig: TarOptionsWithAliases) {
+  public async extractNodejs(targetVersion: string, extractConfig: ExtractOptions) {
     const spinner = ora(`Installing Node.js ${targetVersion}`).start()
 
     try {

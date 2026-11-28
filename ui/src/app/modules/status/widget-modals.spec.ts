@@ -80,16 +80,19 @@ describe('the dashboard widget modals', () => {
    * @param widget - the widget being configured
    * @param options - how to set it up
    * @param options.serverInfoFails - make the server info request error
-   * @param options.interfaces - the bridge network interfaces to offer
+   * @param options.interfaces - the bridge.bind entries, each with the adapter it stands for
    * @param options.lightMode - whether the app is in light mode
    */
   async function openControl(widget: Record<string, any>, options: {
     serverInfoFails?: boolean
-    interfaces?: string[]
+    interfaces?: Array<{ entry: string, iface: string | null, isAddress: boolean }>
     lightMode?: boolean
   } = {}) {
     TestBed.resetTestingModule()
-    api = fakeApi().respond('get', '/server/network-interfaces/bridge', options.interfaces ?? ['eth0', 'wlan0'])
+    api = fakeApi().respond('get', '/server/network-interfaces/bridge/resolved', options.interfaces ?? [
+      { entry: 'eth0', iface: 'eth0', isAddress: false },
+      { entry: 'wlan0', iface: 'wlan0', isAddress: false },
+    ])
     settings = makeSettings({
       actualLightingMode: options.lightMode ? 'light' : 'dark',
     } as any)
@@ -377,11 +380,58 @@ describe('the dashboard widget modals', () => {
       expect(modal.networkInterfaces()).toEqual(['eth0', 'wlan0'])
     })
 
+    it('offers the adapter that has an ip address the bridge is bound to, not the address', async () => {
+      // ⚠️ bridge.bind may hold an address in place of an adapter name. The
+      // widget asks the server for traffic by adapter name, so an address
+      // offered here would be a choice that shows no traffic at all
+      const modal = await openControl({ component: 'NetworkWidgetComponent' }, {
+        interfaces: [
+          { entry: '192.168.1.50', iface: 'eth1', isAddress: true },
+          { entry: 'eth0', iface: 'eth0', isAddress: false },
+        ],
+      })
+
+      expect(modal.networkInterfaces()).toEqual(['eth1', 'eth0'])
+    })
+
+    it('offers an adapter once when the bridge is bound to it by name and by address', async () => {
+      const modal = await openControl({ component: 'NetworkWidgetComponent' }, {
+        interfaces: [
+          { entry: 'eth1', iface: 'eth1', isAddress: false },
+          { entry: '192.168.1.50', iface: 'eth1', isAddress: true },
+        ],
+      })
+
+      expect(modal.networkInterfaces()).toEqual(['eth1'])
+    })
+
+    it('leaves out an ip address that no adapter has', async () => {
+      const modal = await openControl({ component: 'NetworkWidgetComponent' }, {
+        interfaces: [
+          { entry: '10.0.0.1', iface: null, isAddress: true },
+          { entry: 'eth0', iface: 'eth0', isAddress: false },
+        ],
+      })
+
+      expect(modal.networkInterfaces()).toEqual(['eth0'])
+    })
+
+    it('still offers a named adapter the machine does not have right now', async () => {
+      // As before: the name is what the user chose, and the adapter may come back
+      const modal = await openControl({ component: 'NetworkWidgetComponent' }, {
+        interfaces: [
+          { entry: 'wlan0', iface: null, isAddress: false },
+        ],
+      })
+
+      expect(modal.networkInterfaces()).toEqual(['wlan0'])
+    })
+
     it('does not ask for network interfaces for other widgets', async () => {
       const modal = await openControl({ component: 'CpuWidgetComponent' })
 
       // Only one widget can use them, and the lookup is a server round trip
-      expect(api.callsTo('get', '/server/network-interfaces/bridge')).toHaveLength(0)
+      expect(api.callsTo('get', '/server/network-interfaces/bridge/resolved')).toHaveLength(0)
       expect(modal.networkInterfaces()).toEqual([])
     })
 

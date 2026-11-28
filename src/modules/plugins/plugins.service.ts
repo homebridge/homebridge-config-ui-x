@@ -1,5 +1,8 @@
 /* global NodeJS */
 
+import type { } from '@nestjs/axios'
+import type { BeforeApplicationShutdown, OnModuleDestroy } from '@nestjs/common'
+
 import type { HomebridgeConfig } from '../../core/config/config.interfaces.js'
 import type {
   HomebridgePlugin,
@@ -33,24 +36,27 @@ import {
 import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
-import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException, OnModuleDestroy } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import axios from 'axios'
 import { cyan, green, red, yellow } from 'bash-color'
 import { createFile, ensureDir, pathExists, pathExistsSync, readJson, remove } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import pLimit from 'p-limit'
 import { firstValueFrom } from 'rxjs'
-import { gt, lt, parse, rcompare, satisfies } from 'semver'
+import { coerce, compare, gt, lt, major, parse, prerelease, rcompare, satisfies, valid } from 'semver'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
 import {
+  RE_CMD_METACHARACTERS,
   RE_ENCODED_AT,
   RE_GITHUB_REPO,
   RE_HYPHEN,
   RE_HYPHEN_GLOBAL,
+  RE_NON_WORD,
+  RE_NPM_VERSION,
   RE_PLUGIN_NAME,
   RE_PRERELEASE_TYPE,
   RE_URL,
@@ -65,8 +71,26 @@ import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
 const require = createRequire(import.meta.url)
 const module = require('node:module')
 
+/**
+ * The first argument cmd.exe would act on (see RE_CMD_METACHARACTERS), if any
+ */
+export function findCmdUnsafeArgument(args: string[]): string | undefined {
+  return args.find(arg => RE_CMD_METACHARACTERS.test(arg))
+}
+
+/**
+ * The newest stable version with the same major version as the installed one, if it is newer than the installed one.
+ * Pre-releases are left out: the "major" update policy means stable updates only (a beta is the "beta" policy).
+ */
+export function latestStableInSameMajor(available: string[], installed: string): string | undefined {
+  const installedMajor = major(installed)
+  return available
+    .filter(version => valid(version) && !prerelease(version) && major(version) === installedMajor && gt(version, installed))
+    .sort(rcompare)[0]
+}
+
 @Injectable()
-export class PluginsService implements OnModuleDestroy {
+export class PluginsService implements BeforeApplicationShutdown, OnModuleDestroy {
   private _npm: Array<string> | undefined
   private npmMajorVersion: number | null = null
   private _paths: Array<string> | undefined
@@ -159,12 +183,31 @@ export class PluginsService implements OnModuleDestroy {
     process.exit(0)
   }
 
+  /**
+   * Nest calls this when the app closes: on SIGTERM / SIGINT, on a full restart from the UI (which sends this
+   * process SIGTERM) and when hb-service stops. Closing must wait for npm too, or the exit kills an install
+   * part-way and leaves the package half-unpacked on disk (see exitOnceUpdatesFinish).
+   */
+  public async beforeApplicationShutdown(): Promise<void> {
+    // Only the run in progress is waited for (decided by BP). Under hb-service Homebridge is already stopped here,
+    // so waiting for every queued run (each up to 30 minutes) kept all accessories offline. The queued runs are
+    // dropped (each says so in the log) and new ones are refused.
+    this.closing = true
+    if (this.runningPackageOperation) {
+      this.logger.warn('Waiting for a package update to finish before closing...')
+      await this.runningPackageOperation.catch(() => {})
+    }
+  }
+
   public onModuleDestroy(): void {
     if (this.uiRestartTimer) {
       clearTimeout(this.uiRestartTimer)
       this.uiRestartTimer = undefined
     }
   }
+
+  /** How long one npm run may take before it is stopped */
+  public static NPM_RUN_TIMEOUT_MS = 30 * 60 * 1000
 
   /**
    * All npm package operations run through here, one at a time. npm has no
@@ -175,12 +218,34 @@ export class PluginsService implements OnModuleDestroy {
    */
   private packageOperationQueue: Promise<unknown> = Promise.resolve()
   private packageOperationsPending = 0
+  private runningPackageOperation?: Promise<unknown>
+  // Set when the app starts closing: no package operation starts after that
+  private closing = false
 
   private queuePackageOperation<T>(operation: () => Promise<T>): Promise<T> {
+    if (this.closing) {
+      return Promise.reject(new Error('The UI is closing: try again once it has restarted.'))
+    }
+    // With nothing ahead of it, a run counts as running from now: it starts a moment later, and closing must wait
+    // for it, not drop it
+    const startsNow = this.packageOperationsPending === 0
     this.packageOperationsPending++
-    const run = this.packageOperationQueue.then(operation).finally(() => {
+    const run: Promise<T> = this.packageOperationQueue.then(() => {
+      if (this.closing && !startsNow) {
+        this.logger.warn('A queued package update was dropped, as the UI is closing.')
+        throw new Error('The UI closed before this package update started: try again once it has restarted.')
+      }
+      this.runningPackageOperation = run
+      return operation()
+    }).finally(() => {
+      if (this.runningPackageOperation === run) {
+        this.runningPackageOperation = undefined
+      }
       this.packageOperationsPending--
     })
+    if (startsNow) {
+      this.runningPackageOperation = run
+    }
     // The queue lives on after a failed operation - only the caller sees the error
     this.packageOperationQueue = run.catch(() => {})
     return run
@@ -392,7 +457,8 @@ export class PluginsService implements OnModuleDestroy {
     }
 
     try {
-      const fromCache = this.npmPluginCache.get(`lookup-${pluginName}`)
+      // Its own cache key: this asks for npm's short document (no keywords), which the full lookup can't use
+      const fromCache = this.npmPluginCache.get(`versions-${pluginName}`)
 
       const pkg: INpmRegistryModule = fromCache || (await firstValueFrom((
         this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(RE_ENCODED_AT, '@')}`, {
@@ -403,7 +469,7 @@ export class PluginsService implements OnModuleDestroy {
       )).data
 
       if (!fromCache) {
-        this.npmPluginCache.set(`lookup-${pluginName}`, pkg, 60)
+        this.npmPluginCache.set(`versions-${pluginName}`, pkg, 60)
       }
 
       return {
@@ -476,18 +542,26 @@ export class PluginsService implements OnModuleDestroy {
     const nameTermsSet = new Set(nameTerms)
 
     // The search terms contain all the parts of the name
-    if (nameTerms.every(term => searchTermsSet.has(term))) {
+    if (nameTerms.length > 0 && nameTerms.every(term => searchTermsSet.has(term))) {
       return 'exactName'
     }
     // The keywords or name contain all the search terms
     if (searchTerms.every(term => keywordsSet.has(term)) || searchTerms.every(term => nameTermsSet.has(term))) {
       return 'exactKeyword'
     }
-    if (
-      searchTerms.some(term => pluginName.includes(term))
-      || searchTerms.some(term => pluginKeywords.some(k => k.includes(term)))
-      || searchTerms.some(term => pluginDescription.includes(term))
-    ) {
+
+    // Every search term starts a word of the name, a keyword or the description: "cam" finds "camera" and
+    // "light" finds "lights", but "ring" does not match "monitoring" because that word does not start with it
+    const words = [
+      ...nameTerms,
+      ...pluginKeywords,
+      ...pluginKeywords.flatMap(k => k.split(RE_NON_WORD)),
+      ...pluginDescription.split(RE_NON_WORD),
+    ]
+    if (searchTerms.every((term) => {
+      const termWords = term.split(RE_NON_WORD).filter(Boolean)
+      return termWords.length > 0 && termWords.every(termWord => words.some(word => word.startsWith(termWord)))
+    })) {
       return 'partial'
     }
     return null
@@ -560,7 +634,12 @@ export class PluginsService implements OnModuleDestroy {
           description: (pkg.package.description || pkg.package.name).replace(RE_URL_WITH_OPTIONAL_PAREN, '').trim(),
           keywords: pkg.package.keywords || [],
           links: pkg.package.links,
-          author: this.pluginAuthors[pkg.package.name] || (pkg.package.publisher ? pkg.package.publisher.username : null),
+          // The first maintainer, as for an installed plugin. With npm trusted publishing the publisher is
+          // 'GitHub Actions', not a person (#3146)
+          author: this.pluginAuthors[pkg.package.name]
+            || pkg.package.maintainers?.[0]?.username
+            || pkg.package.publisher?.username
+            || null,
           verifiedPlugin: this.verifiedPlugins.includes(pkg.package.name),
           verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.package.name),
           supportsMatter: this.supportsMatter(pkg.package.keywords),
@@ -574,7 +653,7 @@ export class PluginsService implements OnModuleDestroy {
         }
       })
 
-    // Find scoped plugins from the plugin list that match search terms but weren't returned by npm
+    // Find plugins that match the search terms but weren't returned by npm
     const resultNames = new Set(plugins.map(p => p.name))
     const scopedLookups: Promise<HomebridgePlugin[]>[] = []
 
@@ -582,10 +661,18 @@ export class PluginsService implements OnModuleDestroy {
       if (!resultNames.has(name) && !this.isHiddenPlugin(name)) {
         // Extract the unscoped part after the scope prefix for matching
         const unscopedName = name.substring(name.lastIndexOf('/') + 1).toLowerCase()
-        if (searchTerms.some(term => unscopedName.includes(term))) {
+        const unscopedNameTerms = this.extractTerms(unscopedName, RE_HYPHEN)
+        if (searchTerms.some(term => unscopedNameTerms.some(nameTerm => nameTerm.startsWith(term)))) {
           scopedLookups.push(this.searchNpmRegistrySingle(name).catch(() => []))
         }
       }
+    }
+
+    // npm search does not always list a recently published package, so also look up the package
+    // that the search words would spell out (e.g. "philips hue" -> homebridge-philips-hue)
+    const guessedName = `homebridge-${searchTerms.join('-')}`
+    if (searchTerms.length > 0 && RE_PLUGIN_NAME.test(guessedName) && !resultNames.has(guessedName) && !this.isHiddenPlugin(guessedName)) {
+      scopedLookups.push(this.searchNpmRegistrySingle(guessedName).catch(() => []))
     }
 
     if (scopedLookups.length > 0) {
@@ -760,13 +847,14 @@ export class PluginsService implements OnModuleDestroy {
 
     const userPlatform = platform()
 
+    // Load the installed plugins first: the default install path below is read from them, and on the first update
+    // after a start (for example one the updater plugin asks for) they are not loaded yet
+    await this.getInstalledPlugins()
+
     // Set the default install path
     let installPath = this.configService.customPluginPath
       ? this.configService.customPluginPath
-      : this.installedPlugins.find(x => x.name === this.configService.name).installPath
-
-    // Check if the plugin is already installed
-    await this.getInstalledPlugins()
+      : this.installedPlugins.find(x => x.name === this.configService.name)?.installPath ?? dirname(resolve(process.env.UIX_BASE_PATH))
 
     // Update the installation we are actually running from. The UI carries the
     // 'homebridge-plugin' keyword, so it is deduplicated like a plugin - and that
@@ -1001,23 +1089,14 @@ export class PluginsService implements OnModuleDestroy {
       homebridge.updateAvailable = false
       homebridge.latestVersion = null
     } else if (updatePolicy === 'major') {
-      // Find the latest version within the same major version
-      const currentMajor = Number.parseInt(homebridge.installedVersion.split('.')[0], 10)
+      // The latest stable version within the same major version (versions lists the ones not deprecated)
       const versions = await this.getAvailablePluginVersions('homebridge')
+      const latestInMajor = latestStableInSameMajor(Object.keys(versions.versions), homebridge.installedVersion)
 
-      // Filter to versions in the same major and not deprecated
-      const sameMajorVersions = Object.keys(versions.versions)
-        .filter((version) => {
-          const versionMajor = Number.parseInt(version.split('.')[0], 10)
-          return versionMajor === currentMajor
-        })
-        .sort(rcompare) // Sort descending (highest first)
-
-      if (sameMajorVersions.length > 0 && gt(sameMajorVersions[0], homebridge.installedVersion)) {
-        // There's a newer version in the same major
-        homebridge.latestVersion = sameMajorVersions[0]
+      if (latestInMajor) {
+        homebridge.latestVersion = latestInMajor
         homebridge.updateAvailable = true
-        homebridge.updateEngines = versions.versions[sameMajorVersions[0]]?.engines || null
+        homebridge.updateEngines = versions.versions[latestInMajor]?.engines || null
       } else {
         // No newer version in same major
         homebridge.updateAvailable = false
@@ -1143,7 +1222,11 @@ export class PluginsService implements OnModuleDestroy {
    * @returns Object containing operation status, package name, and version
    */
   public async triggerUpdate(name: string, version?: string): Promise<{ ok: boolean, name: string, version: string }> {
-    if (version !== undefined && typeof version !== 'string') {
+    // `?version=` with nothing after it has always meant "latest"
+    if (version === '') {
+      version = undefined
+    }
+    if (version !== undefined && (typeof version !== 'string' || !RE_NPM_VERSION.test(version))) {
       throw new BadRequestException('Invalid version parameter.')
     }
 
@@ -1377,23 +1460,14 @@ export class PluginsService implements OnModuleDestroy {
       uiPackage.updateAvailable = false
       uiPackage.latestVersion = null
     } else if (updatePolicy === 'major') {
-      // Find the latest version within the same major version
-      const currentMajor = Number.parseInt(uiPackage.installedVersion.split('.')[0], 10)
+      // The latest stable version within the same major version (versions lists the ones not deprecated)
       const versions = await this.getAvailablePluginVersions(this.configService.name)
+      const latestInMajor = latestStableInSameMajor(Object.keys(versions.versions), uiPackage.installedVersion)
 
-      // Filter to versions in the same major and not deprecated
-      const sameMajorVersions = Object.keys(versions.versions)
-        .filter((version) => {
-          const versionMajor = Number.parseInt(version.split('.')[0], 10)
-          return versionMajor === currentMajor
-        })
-        .sort(rcompare) // Sort descending (highest first)
-
-      if (sameMajorVersions.length > 0 && gt(sameMajorVersions[0], uiPackage.installedVersion)) {
-        // There's a newer version in the same major
-        uiPackage.latestVersion = sameMajorVersions[0]
+      if (latestInMajor) {
+        uiPackage.latestVersion = latestInMajor
         uiPackage.updateAvailable = true
-        uiPackage.updateEngines = versions.versions[sameMajorVersions[0]]?.engines || null
+        uiPackage.updateEngines = versions.versions[latestInMajor]?.engines || null
       } else {
         // No newer version in same major
         uiPackage.updateAvailable = false
@@ -1802,10 +1876,10 @@ export class PluginsService implements OnModuleDestroy {
         const response = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${owner}/${repo}/branches`, {
           params: { per_page: 100 },
         }))
-        const matched = response.data.filter((b: any) => b.name.includes(keyword))
-        return matched.length > 0
-          ? matched.at(-1).name
-          : null
+        // GitHub lists branches by name, so `beta-2.5.1` comes after `beta-2.10.0`: take the highest version
+        const matched: string[] = response.data.map((b: any) => b.name).filter((name: string) => name.includes(keyword))
+        const versionOf = (name: string) => coerce(name)?.version ?? '0.0.0'
+        return matched.sort((a, b) => compare(versionOf(a), versionOf(b))).at(-1) ?? null
       } catch { }
       return null
     }
@@ -2183,8 +2257,13 @@ export class PluginsService implements OnModuleDestroy {
       throw new Error(`Plugin does not provide a custom UI at expected location: ${customUiPath}`)
     }
 
-    if (!devServer && !(await realpath(customUiPath)).startsWith(await realpath(fullPath))) {
-      throw new Error(`Custom UI path is outside the plugin root: ${await realpath(customUiPath)}`)
+    if (!devServer) {
+      // With the separator: `homebridge-x` must not reach into a folder such as `homebridge-x-two` beside it
+      const realUiPath = await realpath(customUiPath)
+      const realRoot = await realpath(fullPath)
+      if (realUiPath !== realRoot && !realUiPath.startsWith(realRoot + sep)) {
+        throw new Error(`Custom UI path is outside the plugin root: ${realUiPath}`)
+      }
     }
 
     if (await pathExists(resolve(publicPath, 'index.html')) || devServer) {
@@ -2239,6 +2318,16 @@ export class PluginsService implements OnModuleDestroy {
       this.logger.log(e)
       return []
     }
+  }
+
+  /**
+   * The names of the packages in the plugin folders.
+   *
+   * This reads the folders only. getInstalledPlugins() also parses each package.json and asks npm for the
+   * latest version, which is too much for a caller that only needs to know whether a plugin is still there.
+   */
+  public async getInstalledModuleNames(): Promise<Set<string>> {
+    return new Set((await this.getInstalledModules()).map(module => module.name))
   }
 
   /**
@@ -2805,6 +2894,15 @@ export class PluginsService implements OnModuleDestroy {
     let timeoutTimer: NodeJS.Timeout
     command = command.map(x => String(x)).filter(x => x.length)
 
+    if (platform() === 'win32') {
+      // Only the arguments: the program path is the install's npm (a user folder such as C:\Users\Bob!\...),
+      // not something a request sent, and cmd.exe takes a lone ! or % in it literally
+      const unsafe = findCmdUnsafeArgument(command.slice(1))
+      if (unsafe !== undefined) {
+        throw new Error(`Refused to run npm with the argument "${unsafe}": on Windows it would be read as a command.`)
+      }
+    }
+
     // Sudo mode is requested in plugin config
     if (this.configService.ui.sudo) {
       command.unshift('sudo', '-E', '-n')
@@ -2883,21 +2981,41 @@ export class PluginsService implements OnModuleDestroy {
         })
 
         // Send an error message to the client if the command does not exit with code 0
-        term.onExit(({ exitCode }) => {
-          if (exitCode === 0) {
+        // node-pty reports a process ended by a signal (as the time limit below does) as exit code 0 with a
+        // `signal`: that run did not finish, so it is a failure
+        let timedOut = false
+        term.onExit(({ exitCode, signal }) => {
+          if (timedOut) {
+            clearTimeout(timeoutTimer)
+            rej(new Error('npm did not finish in time and was stopped.'))
+          } else if (exitCode === 0 && !signal) {
             clearTimeout(timeoutTimer)
             client.emit('stdout', green('\n\rOperation succeeded!.\n\r'))
             res(null)
           } else {
             clearTimeout(timeoutTimer)
-            rej(new Error(`Operation failed with code ${exitCode}.\n\rYou can download this log file for future reference.\n\rSee https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting for help.`))
+            rej(new Error(`Operation failed with code ${exitCode}${signal
+              ? ` (signal ${signal})`
+              : ''}.\n\rYou can download this log file for future reference.\n\rSee https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting for help.`))
           }
         })
 
-        // If the command spends to long trying to execute kill it after 5 minutes
+        // Stop a run that hangs. The limit is long: killing npm part-way can leave a package half-unpacked,
+        // and on a Raspberry Pi 1 / Zero a UI update can take 15 minutes. If npm ignores SIGTERM it is killed
+        // outright, and the run fails either way, so the package queue (and a waiting restart) moves on.
         timeoutTimer = setTimeout(() => {
-          term.kill('SIGTERM')
-        }, 300000)
+          timedOut = true
+          client.emit('stdout', red(`\n\rnpm did not finish within ${PluginsService.NPM_RUN_TIMEOUT_MS / 60000} minutes and was stopped.\n\r`))
+          try {
+            term.kill('SIGTERM')
+          } catch {}
+          timeoutTimer = setTimeout(() => {
+            try {
+              term.kill('SIGKILL')
+            } catch {}
+            rej(new Error('npm did not finish in time and was stopped.'))
+          }, 10000)
+        }, PluginsService.NPM_RUN_TIMEOUT_MS)
       })
     } finally {
       // Invalidate the cache only after npm exits, not before — invalidating
@@ -2976,8 +3094,10 @@ export class PluginsService implements OnModuleDestroy {
 
     const offendingPath = resolve(this.configService.customPluginPath, '@eaDir')
 
+    // Synology DSM writes `@eaDir` metadata folders, and npm stops on one in node_modules. This check was the wrong
+    // way round from 2020 to 2026 (it only "removed" the folder when there was none); fixed as decided by BP.
     try {
-      if (!await pathExists(offendingPath)) {
+      if (await pathExists(offendingPath)) {
         await remove(offendingPath)
       }
     } catch (e) {

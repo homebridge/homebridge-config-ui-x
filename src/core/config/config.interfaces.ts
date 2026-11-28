@@ -1,6 +1,6 @@
 import type { Buffer } from 'node:buffer'
 
-import { BridgeHapConfig, MatterConfig } from '../matter/matter.interfaces.js'
+import type { BridgeHapConfig, MatterConfig } from '../matter/matter.interfaces.js'
 
 export interface StartupConfig {
   host?: '::' | '0.0.0.0' | string
@@ -11,6 +11,8 @@ export interface StartupConfig {
     passphrase?: string
   }
   cspWsOverride?: string
+  // The path the UI is served under, from `ui.webRoot` (see core/web-root.ts). Empty when there is none.
+  webRoot: string
   // Extra origins permitted to frame the UI, from `ui.allowFrameAncestors`.
   // Empty by default, so the CSP is `frame-ancestors 'self'` — same-origin only.
   allowedFrameAncestors?: string[]
@@ -105,6 +107,7 @@ export interface HomebridgeUiConfig {
   port: number
   host?: '::' | '0.0.0.0' | string
   proxyHost?: string
+  webRoot?: string
   auth: 'form' | 'none'
   theme: string
   lightingMode: 'auto' | 'light' | 'dark'

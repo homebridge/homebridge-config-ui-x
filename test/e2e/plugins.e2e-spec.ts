@@ -13,7 +13,9 @@ import { HttpService } from '@nestjs/axios'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { copy, readJson, remove } from 'fs-extra'
+import { plainToInstance } from 'class-transformer'
+import { validate } from 'class-validator'
+import { copy, pathExists, readJson, remove } from 'fs-extra'
 import { of, throwError } from 'rxjs'
 import { gt as semverGt } from 'semver'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -22,8 +24,9 @@ import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
+import { HomebridgeUpdateActionDto } from '../../src/modules/plugins/plugins.dto.js'
 import { PluginsModule } from '../../src/modules/plugins/plugins.module.js'
-import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
+import { findCmdUnsafeArgument, latestStableInSameMajor, PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
 vi.mock('node:child_process', async () => {
   const actual = await vi.importActual<typeof import('node:child_process')>('node:child_process')
@@ -271,6 +274,151 @@ describe('PluginController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(res.json().filter(x => x.name === 'homebridge-config-ui-rdp')).toHaveLength(0)
+  })
+
+  describe('GET /plugins/search/:query (matching)', () => {
+    const searchHit = (name: string, description: string, keywords: string[] = ['homebridge-plugin']) => ({
+      package: {
+        name,
+        description,
+        keywords,
+        version: '1.0.0',
+        date: '2026-01-01T00:00:00.000Z',
+        links: {},
+      },
+    })
+
+    const mockNpm = (hits: ReturnType<typeof searchHit>[], published: Record<string, object> = {}) => {
+      vi.spyOn(httpService, 'get').mockImplementation(((url: string) => {
+        if (url.startsWith('https://registry.npmjs.org/-/v1/search')) {
+          return of({
+            data: { objects: hits },
+          })
+        }
+        const name = decodeURIComponent(url.replace('https://registry.npmjs.org/', ''))
+        return name in published
+          ? of({ data: published[name] })
+          : throwError(() => Object.assign(new Error('Not found'), {
+              response: { status: 404 },
+            }))
+      }) as any)
+    }
+
+    const search = async (query: string): Promise<string[]> => {
+      const res = await app.inject({
+        method: 'GET',
+        path: `/plugins/search/${encodeURIComponent(query)}`,
+        headers: {
+          authorization,
+        },
+      })
+      expect(res.statusCode).toBe(200)
+      return res.json().map((x: HomebridgePlugin) => x.name)
+    }
+
+    let scopedPluginNames: string[]
+
+    beforeEach(() => {
+      vi.spyOn(pluginsService, 'getInstalledPlugins').mockImplementation(async () => {
+        ;(pluginsService as any).installedPlugins = []
+        return []
+      })
+      scopedPluginNames = (pluginsService as any).scopedPluginNames
+      ;(pluginsService as any).scopedPluginNames = []
+    })
+
+    afterEach(() => {
+      vi.mocked(httpService.get).mockRestore()
+      vi.mocked(pluginsService.getInstalledPlugins).mockRestore()
+      ;(pluginsService as any).installedPlugins = null
+      ;(pluginsService as any).scopedPluginNames = scopedPluginNames
+    })
+
+    it('does not match inside a word', async () => {
+      mockNpm([
+        searchHit('homebridge-appliance-monitor', 'Appliance monitoring and spring cleaning'),
+        searchHit('homebridge-ring', 'Ring doorbells and cameras'),
+      ])
+
+      expect(await search('ring')).toEqual(['homebridge-ring'])
+    })
+
+    it('matches the start of a word, so partial words still find their plugins', async () => {
+      mockNpm([
+        searchHit('homebridge-camera-ffmpeg', 'FFmpeg camera streaming'),
+        searchHit('homebridge-smart-lights', 'Smart bulbs', ['homebridge-plugin', 'lights']),
+        searchHit('homebridge-hue-lighting', 'Hue scenes', ['homebridge-plugin', 'lighting']),
+        searchHit('homebridge-philips-hue', 'Philips Hue bridge', ['homebridge-plugin', 'philips']),
+        searchHit('homebridge-appliance-monitor', 'Appliance monitoring and spring cleaning'),
+      ])
+
+      expect(await search('cam')).toEqual(['homebridge-camera-ffmpeg'])
+      expect((await search('light')).sort()).toEqual(['homebridge-hue-lighting', 'homebridge-smart-lights'])
+      expect(await search('philip')).toEqual(['homebridge-philips-hue'])
+      expect(await search('ring')).toEqual([])
+    })
+
+    it('requires every search word to match', async () => {
+      mockNpm([
+        searchHit('homebridge-philips-lights', 'Philips lights', ['homebridge-plugin', 'philips']),
+        searchHit('homebridge-hue', 'Hue bridge', ['homebridge-plugin', 'hue']),
+        searchHit('homebridge-hue-sync', 'Philips Hue sync box', ['homebridge-plugin', 'philips', 'hue']),
+      ])
+
+      expect(await search('philips hue')).toEqual(['homebridge-hue', 'homebridge-hue-sync'])
+    })
+
+    it('shows the first maintainer as the author, not github actions for a trusted publish (#3146)', async () => {
+      mockNpm([
+        {
+          package: {
+            ...searchHit('homebridge-fhemgate', 'FHEM gateway').package,
+            publisher: {
+              username: 'GitHub Actions',
+              email: 'npm-oidc-no-reply@github.com',
+              trustedPublisher: { id: 'github' },
+            },
+            maintainers: [
+              { username: 'bircni' },
+            ],
+          },
+        } as ReturnType<typeof searchHit>,
+        {
+          package: {
+            ...searchHit('homebridge-older', 'An older listing').package,
+            publisher: { username: 'someone' },
+          },
+        } as ReturnType<typeof searchHit>,
+      ])
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins/search/homebridge',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const authors = Object.fromEntries(res.json().map((x: HomebridgePlugin) => [x.name, x.author]))
+      expect(authors['homebridge-fhemgate']).toBe('bircni')
+      // A listing without maintainers still falls back to the publisher
+      expect(authors['homebridge-older']).toBe('someone')
+    })
+
+    it('finds a package that npm search does not list by its name', async () => {
+      mockNpm([], {
+        'homebridge-newplug': {
+          'name': 'homebridge-newplug',
+          'description': 'A newly published plugin',
+          'keywords': ['homebridge-plugin'],
+          'dist-tags': { latest: '0.0.1' },
+          'time': { modified: '2026-01-02T00:00:00.000Z' },
+        },
+      })
+
+      expect(await search('newplug')).toEqual(['homebridge-newplug'])
+    })
   })
 
   it('GET /plugins/lookup/:pluginName (non-scoped)', async () => {
@@ -873,6 +1021,100 @@ describe('PluginController (e2e)', () => {
     })
   })
 
+  it('reads a beta changelog from the newest beta branch, not the last one by name', async () => {
+    // Regression: GitHub lists branches by name, so `beta-2.5.1` came after `beta-2.10.0` and was used
+    const fetched: string[] = []
+    const getSpy = vi.spyOn(httpService, 'get').mockImplementation(((url: string) => {
+      fetched.push(url)
+      if (url.startsWith('https://registry.npmjs.org/')) {
+        return of({
+          data: {
+            'dist-tags': { latest: '2.9.0', beta: '2.10.0-beta.1' },
+            'versions': {},
+          },
+        })
+      }
+      if (url.endsWith('/branches')) {
+        return of({
+          data: [
+            { name: 'beta-2.10.0' },
+            { name: 'beta-2.5.1' },
+            { name: 'beta-2.9.1' },
+            { name: 'latest' },
+          ],
+        })
+      }
+      if (url.includes('/refs/heads/')) {
+        return of({ data: '# changelog' })
+      }
+      return throwError(() => new Error('not found'))
+    }) as any)
+    try {
+      await pluginsService.getPluginRelease('homebridge', '2.10.0-beta.1')
+
+      expect(fetched.filter(url => url.includes('/refs/heads/'))[0]).toContain('/refs/heads/beta-2.10.0/')
+    } finally {
+      getSpy.mockRestore()
+    }
+  })
+
+  describe('the version to install', () => {
+    it.each([
+      '1.0.0 --registry=x',
+      '1.0; rm -rf /',
+      '$(id)',
+      '1.0.0\ncalc',
+    ])('POST /plugins/update/:pluginName refuses %s', async (version) => {
+      const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          path: `/plugins/update/homebridge-mock-plugin?version=${encodeURIComponent(version)}`,
+          headers: { authorization },
+        })
+        expect(res.statusCode).toBe(400)
+        expect(managePluginSpy).not.toHaveBeenCalled()
+      } finally {
+        managePluginSpy.mockRestore()
+      }
+    })
+
+    it('POST /plugins/update/:pluginName treats an empty version as no version (latest), as before', async () => {
+      // Regression: `?version=` used to mean latest; the new version check answered 400 for it
+      const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          path: '/plugins/update/homebridge-mock-plugin?version=',
+          headers: { authorization },
+        })
+        expect(res.statusCode).toBe(201)
+        expect(res.json().version).not.toBe('')
+        await new Promise(resolve => setTimeout(resolve, 200))
+      } finally {
+        managePluginSpy.mockRestore()
+      }
+    })
+
+    it('a homebridge update over the socket checks the version like a plugin install does', async () => {
+      expect(await validate(plainToInstance(HomebridgeUpdateActionDto, { version: '1.0; rm -rf /' }))).not.toHaveLength(0)
+      expect(await validate(plainToInstance(HomebridgeUpdateActionDto, { version: '2.5.1-beta.2' }))).toHaveLength(0)
+      expect(await validate(plainToInstance(HomebridgeUpdateActionDto, { version: '^2.5.0' }))).toHaveLength(0)
+    })
+
+    it('finds the npm arguments cmd.exe would run as commands on windows', () => {
+      expect(findCmdUnsafeArgument(['install', 'homebridge-x@1.0.0|calc'])).toBe('homebridge-x@1.0.0|calc')
+      expect(findCmdUnsafeArgument(['install', 'homebridge-x@1.0.0&calc'])).toBe('homebridge-x@1.0.0&calc')
+      expect(findCmdUnsafeArgument(['install', 'homebridge-x@>=1.0.0'])).toBe('homebridge-x@>=1.0.0')
+      expect(findCmdUnsafeArgument([
+        'install',
+        '--allow-scripts=a,b',
+        'homebridge-x@1.2.3',
+        '--omit=dev',
+      ])).toBeUndefined()
+    })
+  })
+
   it('POST /plugins/update/:pluginName (plugin with specific version)', async () => {
     const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
 
@@ -920,7 +1162,7 @@ describe('PluginController (e2e)', () => {
 
   it('POST /plugins/update/:pluginName (homebridge)', async () => {
     const updateHomebridgeSpy = vi.spyOn(pluginsService as any, 'updateHomebridgePackage').mockResolvedValue(true)
-    const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+    const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => true)
 
     const res = await app.inject({
       method: 'POST',
@@ -1229,7 +1471,7 @@ describe('PluginController (e2e)', () => {
         pluginType: 'platform',
       })
       const restartChildBridgeSpy = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
-      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => true)
 
       const res = await app.inject({
         method: 'POST',
@@ -1296,7 +1538,7 @@ describe('PluginController (e2e)', () => {
         pluginType: 'platform',
       })
       const restartChildBridgeSpy = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
-      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => true)
 
       const res = await app.inject({
         method: 'POST',
@@ -1345,7 +1587,7 @@ describe('PluginController (e2e)', () => {
 
       const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
       const restartChildBridgeSpy = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
-      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => true)
 
       const res = await app.inject({
         method: 'POST',
@@ -1370,7 +1612,7 @@ describe('PluginController (e2e)', () => {
     it('should restart homebridge when updating homebridge itself', async () => {
       const updateHomebridgeSpy = vi.spyOn(pluginsService as any, 'updateHomebridgePackage').mockResolvedValue(true)
       const restartChildBridgeSpy = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
-      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => true)
 
       const res = await app.inject({
         method: 'POST',
@@ -2058,6 +2300,179 @@ describe('PluginController (e2e)', () => {
 
       const [, cwd] = npmSpy.mock.calls[0]
       expect(cwd).toBe(resolve(shadowParent, '../'))
+    })
+  })
+
+  it('updates the ui on the first request after a start, before the plugin list was ever loaded', async () => {
+    // homebridge-updater can ask for this before any browser has opened the plugins page
+    const configService = app.get(ConfigService)
+    const beforePath = configService.customPluginPath
+    configService.customPluginPath = undefined
+    ;(pluginsService as any).installedPlugins = undefined
+    const loaded = vi.spyOn(pluginsService, 'getInstalledPlugins').mockImplementation(async () => {
+      ;(pluginsService as any).installedPlugins = [
+        {
+          name: configService.name,
+          installPath: resolve(process.env.UIX_BASE_PATH, '..'),
+          globalInstall: true,
+        },
+      ]
+      return (pluginsService as any).installedPlugins
+    })
+    vi.spyOn(pluginsService as any, 'isUiUpdateBundleAvailable').mockResolvedValue(false)
+    // Without these two the test ran a real `npm cache clean --force` on the machine, which is
+    // slow enough to time out, and then left customPluginPath unset for the tests after it
+    vi.spyOn(pluginsService as any, 'applyAllowScripts').mockResolvedValue(undefined)
+    const cacheClean = vi.spyOn(pluginsService as any, 'cleanNpmCache').mockResolvedValue(undefined)
+    const npm = vi.spyOn(pluginsService as any, 'runNpmCommand').mockResolvedValue(undefined)
+    try {
+      await (pluginsService as any).manageUi('install', { name: configService.name, version: '5.30.2' }, new EventEmitter())
+      expect(npm).toHaveBeenCalledOnce()
+      expect(cacheClean).toHaveBeenCalledOnce()
+    } finally {
+      configService.customPluginPath = beforePath
+      loaded.mockRestore()
+      vi.restoreAllMocks()
+    }
+  })
+
+  it('a plugin lookup right after a version list still finds the plugin', async () => {
+    // npm answers the version list with a short document that has no keywords. Both used one cache key, so for a
+    // minute after opening "manage version" an exact-name search came back empty.
+    const short = {
+      'name': 'homebridge-cachetest',
+      'dist-tags': { latest: '1.0.0' },
+      'versions': {
+        '1.0.0': { version: '1.0.0' },
+      },
+    }
+    const full = {
+      ...short,
+      keywords: ['homebridge-plugin'],
+      description: 'x',
+      time: { modified: '2026-11-15T00:00:00.000Z' },
+      maintainers: [],
+    }
+    const get = vi.spyOn(httpService, 'get').mockImplementation(((_url: string, options?: any) => of({
+      data: options?.headers?.accept?.includes('install-v1')
+        ? short
+        : full,
+    })) as any)
+    try {
+      await pluginsService.getAvailablePluginVersions('homebridge-cachetest')
+      const found = await pluginsService.searchNpmRegistrySingle('homebridge-cachetest')
+      expect(found.map(p => p.name)).toEqual(['homebridge-cachetest'])
+    } finally {
+      get.mockRestore()
+    }
+  })
+
+  it('closing the app waits for an npm run in progress, so it is never killed part-way', async () => {
+    let finish: () => void
+    const order: string[] = []
+    void (pluginsService as any).queuePackageOperation(() => new Promise<void>((resolve) => {
+      finish = () => {
+        order.push('npm finished')
+        resolve()
+      }
+    }))
+
+    const closing = pluginsService.beforeApplicationShutdown().then(() => order.push('closed'))
+    await new Promise(resolve => setTimeout(resolve, 50))
+    expect(order).toEqual([])
+
+    finish()
+    await closing
+    expect(order).toEqual(['npm finished', 'closed'])
+    ;(pluginsService as any).closing = false
+  })
+
+  it('closing the app waits only for the run in progress, and drops the queued ones', async () => {
+    // Regression: it waited for every queued run (each up to 30 minutes), while hb-service had already stopped
+    // Homebridge, so all accessories stayed offline for the whole queue (decided by BP: the run in progress only)
+    let finish: () => void
+    const order: string[] = []
+    const first = (pluginsService as any).queuePackageOperation(() => new Promise<void>((resolve) => {
+      finish = () => {
+        order.push('first finished')
+        resolve()
+      }
+    }))
+    const queued = vi.fn(async () => order.push('queued ran'))
+    const second = (pluginsService as any).queuePackageOperation(queued).catch((e: Error) => e.message)
+    await new Promise(resolve => setTimeout(resolve, 10))
+
+    try {
+      const closing = pluginsService.beforeApplicationShutdown().then(() => order.push('closed'))
+      await expect((pluginsService as any).queuePackageOperation(async () => undefined)).rejects.toThrow('closing')
+
+      finish()
+      await first
+      await closing
+
+      expect(queued).not.toHaveBeenCalled()
+      expect(await second).toContain('closed before this package update started')
+      expect(order).toEqual(['first finished', 'closed'])
+    } finally {
+      ;(pluginsService as any).closing = false
+    }
+  })
+
+  it('removes a synology @eaDir folder from the plugin folder before npm runs', async () => {
+    const configService = app.get(ConfigService)
+    const eaDir = resolve(configService.customPluginPath, '@eaDir')
+    await mkdir(eaDir, { recursive: true })
+    await writeFile(join(eaDir, 'SYNO@.fileindexdb'), 'x')
+
+    await (pluginsService as any).removeSynologyMetadata()
+
+    expect(await pathExists(eaDir)).toBe(false)
+  })
+
+  describe('the "major" update policy', () => {
+    it('offers the newest stable version of the same major, never a beta', () => {
+      const available = [
+        '2.5.0',
+        '2.5.1-beta.2',
+        '2.5.1-beta.1',
+        '2.4.9',
+        '3.0.0',
+        '3.0.0-alpha.1',
+      ]
+      expect(latestStableInSameMajor(available, '2.5.0')).toBeUndefined()
+      expect(latestStableInSameMajor([...available, '2.6.0'], '2.5.0')).toBe('2.6.0')
+      expect(latestStableInSameMajor(available, '2.4.0')).toBe('2.5.0')
+      // Someone on a beta is offered the stable release of it
+      expect(latestStableInSameMajor([...available, '2.5.1'], '2.5.1-beta.2')).toBe('2.5.1')
+    })
+
+    it('is what getHomebridgePackage offers', async () => {
+      const configService = app.get(ConfigService)
+      const before = configService.ui.homebridgeUpdatePolicy
+      configService.ui.homebridgeUpdatePolicy = 'major'
+      const installPath = resolve(process.env.UIX_STORAGE_PATH, 'fake-homebridge-major', 'node_modules', 'homebridge')
+      await mkdir(installPath, { recursive: true })
+      await writeFile(join(installPath, 'package.json'), JSON.stringify({ name: 'homebridge', version: '2.5.0' }))
+      vi.spyOn(pluginsService as any, 'getInstalledModules').mockResolvedValue([
+        { name: 'homebridge', path: installPath, installPath },
+      ])
+      vi.spyOn(pluginsService as any, 'parsePackageJson').mockResolvedValue({
+        name: 'homebridge',
+        installedVersion: '2.5.0',
+        latestVersion: '2.5.0',
+      })
+      vi.spyOn(pluginsService, 'getAvailablePluginVersions').mockResolvedValue({
+        versions: { '2.5.0': {}, '2.5.1-beta.2': {}, '3.0.0': {} },
+      } as any)
+      try {
+        const homebridge = await pluginsService.getHomebridgePackage()
+        expect(homebridge.updateAvailable).toBe(false)
+        expect(homebridge.latestVersion).not.toBe('2.5.1-beta.2')
+      } finally {
+        configService.ui.homebridgeUpdatePolicy = before
+        vi.restoreAllMocks()
+        await remove(resolve(process.env.UIX_STORAGE_PATH, 'fake-homebridge-major'))
+      }
     })
   })
 

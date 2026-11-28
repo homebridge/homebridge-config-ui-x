@@ -52,3 +52,27 @@ export class PortRangeDto {
   @IsOptional()
   end?: number | null
 }
+
+export class SetMatterEnabledDto {
+  @ApiProperty({ type: Boolean, description: 'Whether Matter is on for the main bridge' })
+  @IsDefined()
+  @IsBoolean()
+  enabled: boolean
+
+  @ApiProperty({ type: Boolean, required: false, description: 'Restart Homebridge first (default true)' })
+  @IsOptional()
+  @IsBoolean()
+  restart?: boolean
+
+  @ApiProperty({ type: Boolean, required: false, description: 'When off, keep Matter for external accessories only' })
+  @IsOptional()
+  @IsBoolean()
+  externalsOnly?: boolean
+}
+
+export class SetHapEnabledDto extends SetMatterEnabledDto {
+  @ApiProperty({ type: Boolean, required: false, description: 'Leave identifying material out of the HAP advertisement' })
+  @IsOptional()
+  @IsBoolean()
+  disableIdentifyingMaterial?: boolean
+}

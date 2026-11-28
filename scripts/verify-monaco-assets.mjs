@@ -13,13 +13,18 @@
  * Monaco's files are AMD modules that declare their dependencies up front, so
  * this walks the whole graph from `editor/editor.main.js` and checks every
  * relative module id resolves to a file that was actually copied. Lazily
- * fetched languages are not in any define() array, so they are correctly
- * ignored — only what the editor needs to start is checked.
+ * fetched languages are not in any define() array, so the ones we do not copy
+ * are correctly ignored.
+ *
+ * The walk also starts from every other module that was copied. The json and
+ * shell support are fetched on first use, so nothing in the start-up graph
+ * names them, and a chunk that only `jsonMode-<hash>.js` needs would otherwise
+ * go unchecked: the editor would open, with no validation and no completion.
  *
  * Runs automatically via the `postbuild:ui` script.
  */
 
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -65,8 +70,15 @@ function walk(file, requiredBy) {
 
 walk(entry, null)
 
+// The modules that are fetched on first use (see the note at the top)
+for (const name of readdirSync(vsDir)) {
+  if (name.endsWith('.js')) {
+    walk(resolve(vsDir, name), null)
+  }
+}
+
 if (missing.size) {
-  console.error('[monaco] These files are required to start the editor, but were not copied into assets/monaco/min/vs:')
+  console.error('[monaco] These files are required by the editor, but were not copied into assets/monaco/min/vs:')
   for (const [file, requiredBy] of missing) {
     console.error(`  - ${file}  (required by ${requiredBy})`)
   }

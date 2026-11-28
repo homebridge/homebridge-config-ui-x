@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
+import { numberList, numberValue } from '@/app/core/accessories/types/hap/hap-values'
 
 @Component({
   selector: 'app-security-system-manage',
@@ -12,19 +13,19 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SecuritySystemManageComponent extends BaseManageComponent {
-  public targetMode!: number
+  public targetMode: number | undefined
   public targetModeValidValues: number[] = []
   public isArming = false
   public isDisarming = false
 
   protected setupComponent() {
-    this.targetMode = this.service.values.SecuritySystemTargetState
-    this.targetModeValidValues = this.service.getCharacteristic!('SecuritySystemTargetState')!.validValues as number[]
+    this.targetMode = numberValue(this.service.values, 'SecuritySystemTargetState')
+    this.targetModeValidValues = numberList(this.service.getCharacteristic?.('SecuritySystemTargetState')?.validValues)
     this.updateTransitionState()
   }
 
   protected handleAccessoryUpdate() {
-    this.targetMode = this.service.values.SecuritySystemTargetState
+    this.targetMode = numberValue(this.service.values, 'SecuritySystemTargetState')
     this.updateTransitionState()
   }
 
@@ -37,7 +38,7 @@ export class SecuritySystemManageComponent extends BaseManageComponent {
 
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
-    void this.service.getCharacteristic!('SecuritySystemTargetState')!.setValue!(this.targetMode)
+    void this.service.getCharacteristic?.('SecuritySystemTargetState')?.setValue?.(this.targetMode)
 
     this.blurTarget(event)
   }

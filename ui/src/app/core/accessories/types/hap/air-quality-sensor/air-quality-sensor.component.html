@@ -1,4 +1,4 @@
-@let aq = service().values?.AirQuality || 0;
+@let aq = (service().values.AirQuality | hapNumber) || 0;
 @let aqLabel = labels[aq] | translate;
 
 @let srBaseName = (service().customName || service().serviceName || '').trim();

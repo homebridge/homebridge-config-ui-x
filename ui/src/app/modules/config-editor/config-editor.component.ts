@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, effect, EnvironmentInjector, inject, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
@@ -100,6 +100,13 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   // is one click once rather than on every visit
   public readonly secretsRevealed = signal<boolean>(readStoredFlag('hb_config_editor_revealed'))
   public readonly redactedConfig = computed(() => redactConfig(this.homebridgeConfig()))
+
+  /**
+   * The masked preview uses a read-only Monaco editor wherever the editable
+   * view would, so a big screen keeps the colours, folding and line numbers.
+   * Phones and the plain text preference keep the read-only text box.
+   */
+  public readonly previewInMonaco = computed(() => !this.isMobile() && !this.preferPlainTextEditor())
   public readonly originalConfig = signal<string>('')
   public readonly saveInProgress = signal(false)
   public readonly isMobile = signal<boolean>(false)
@@ -110,13 +117,23 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   public monacoEditor: any
   public editorOptions: any
+  public singleEditorOptions: any
   public monacoEditorModel!: NgxEditorModel
   public diffOriginalModel!: DiffEditorModel
+  public previewEditorOptions: any
+  public previewEditorModel!: NgxEditorModel
+  private previewEditor?: any
   public diffModifiedModel!: DiffEditorModel
   public readonly renderSideBySide = signal(false)
 
   constructor() {
     this.isMobile.set(!!this.$md.detect.mobile())
+
+    // Keep the read-only preview in step with the config, such as after a restore
+    effect(() => {
+      const text = this.redactedConfig()
+      this.previewEditor?.getModel?.()?.setValue(text ?? '')
+    })
   }
 
   /**
@@ -143,6 +160,30 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       renderIndicators: true,
       ignoreTrimWhitespace: false,
       glyphMargin: true,
+    }
+
+    // Nothing is ever drawn in the strip left of the line numbers of the
+    // editor on its own, so it is left out there. The compare view keeps it
+    this.singleEditorOptions = {
+      ...this.editorOptions,
+      glyphMargin: false,
+    }
+
+    // The masked preview is read only. It has no model URI of its own, so the
+    // config schema and its warnings are not attached to it. Everything else
+    // matches the editable view, so the text does not move when revealed
+    this.previewEditorOptions = {
+      ...this.singleEditorOptions,
+      readOnly: true,
+      domReadOnly: true,
+      // Monaco's own 'Cannot edit in read-only editor' does not say how to edit
+      readOnlyMessage: {
+        value: this.$translate.instant('config.privacy.locked'),
+      },
+    }
+    this.previewEditorModel = {
+      value: '',
+      language: 'json',
     }
 
     const content = document.querySelector('.content')
@@ -234,6 +275,28 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Called when the read-only preview editor is ready. It is kept apart from
+   * `monacoEditor` and `window.editor`, which belong to the editable view and
+   * are what a save reads
+   */
+  public onPreviewEditorInit(editor: any) {
+    this.previewEditor = editor
+    editor.getModel?.()?.setValue(this.redactedConfig() ?? '')
+  }
+
+  private disposePreviewEditor(): void {
+    const editor = this.previewEditor
+    this.previewEditor = undefined
+    try {
+      const model = editor?.getModel?.()
+      editor?.dispose?.()
+      model?.dispose?.()
+    } catch {
+      // Already disposed by the editor component itself
+    }
+  }
+
   public onInitDiffEditor(editor: any) {
     this.monacoEditor = editor.getModifiedEditor()
     window.editor = editor
@@ -315,6 +378,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     if (model) {
       // Preserve unsaved edits before Angular destroys the editing surface.
       this.homebridgeConfig.set(model.getValue())
+    }
+    if (!this.secretsRevealed()) {
+      // About to reveal: the preview editor goes away with the masked view
+      this.disposePreviewEditor()
     }
     this.secretsRevealed.update(revealed => !revealed)
     try {
@@ -608,6 +675,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       if (this.monacoEditor) {
         this.monacoEditor.dispose()
       }
+      this.disposePreviewEditor()
     } catch (error) { /* no problem disposing */ }
   }
 
@@ -1302,6 +1370,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'string',
                           pattern: '^[^{}/ :\\\\]+(?::\\d+)?$',
                           description: this.$translate.instant('settings.network.proxy_desc'),
+                        },
+                        webRoot: {
+                          title: this.$translate.instant('settings.network.web_root'),
+                          type: 'string',
+                          pattern: '^/?[\\w.~-]+(?:/[\\w.~-]+)*/?$',
+                          description: this.$translate.instant('settings.network.web_root_desc'),
                         },
                         scheduledBackupPath: {
                           title: this.$translate.instant('backup.settings_path'),

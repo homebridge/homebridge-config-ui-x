@@ -720,6 +720,24 @@ describe('the plugins page', () => {
         expect(meta.hasExternalAccessories).toBe(true)
       })
 
+      it('ignores matter storage that could be left over', async () => {
+        const meta = await metaFor({
+          config: [
+            { platform: 'Example' },
+          ],
+        }, {
+          env: {
+            featureFlags: { externalAccessoriesAttribution: true },
+          },
+          pairings: [
+            { _plugin: 'homebridge-example', _matterOnly: true, _couldBeStale: true },
+          ],
+        })
+
+        // The card would offer a list of external accessories that then opens empty
+        expect(meta.hasExternalAccessories).toBe(false)
+      })
+
       it('ignores an ordinary bridged pairing', async () => {
         const meta = await metaFor({
           config: [

@@ -6,6 +6,8 @@ import {
   Get,
   Header,
   Inject,
+  NotFoundException,
+  Param,
   Post,
   Request,
   Res,
@@ -80,8 +82,12 @@ export class AuthController {
   @Get('/wallpaper/:hash')
   @Header('Content-Type', 'image/jpeg')
   @Header('Cache-Control', 'public,max-age=31536000,immutable')
-  getCustomWallpaper() {
-    return this.configService.streamCustomWallpaper()
+  getCustomWallpaper(@Param('hash') hash: string) {
+    const stream = this.configService.streamCustomWallpaper(hash)
+    if (!stream) {
+      throw new NotFoundException()
+    }
+    return stream
   }
 
   @ApiOperation({ summary: 'This method can be used to obtain an access token ONLY when authentication has been disabled.' })
@@ -267,6 +273,7 @@ export class AuthController {
    *
    * HttpOnly keeps it away from JavaScript, and Path is scoped to the single
    * endpoint that consumes it so it is not attached to ordinary API calls.
+   * The path starts with the web root, as that is the address the browser calls.
    * SameSite=Strict means a cross-site page cannot trigger the exchange, and
    * the API itself still authenticates with a Bearer header, so widening this
    * does not introduce a CSRF path.
@@ -274,7 +281,7 @@ export class AuthController {
   private buildRefreshCookie(token: string, secure: boolean): string {
     const maxAge = this.configService.ui.sessionTimeout || 28800
     const secureFlag = secure ? '; Secure' : ''
-    return `hb-refresh=${token}; HttpOnly; SameSite=Strict; Path=${API_PREFIX}/auth/session; Max-Age=${maxAge}${secureFlag}`
+    return `hb-refresh=${token}; HttpOnly; SameSite=Strict; Path=${this.configService.webRoot}${API_PREFIX}/auth/session; Max-Age=${maxAge}${secureFlag}`
   }
 
   /**
@@ -285,8 +292,8 @@ export class AuthController {
   private buildClearedCookies(secure: boolean, pluginNames: string[] = []): string[] {
     const secureFlag = secure ? '; Secure' : ''
     return [
-      `hb-refresh=; HttpOnly; SameSite=Strict; Path=${API_PREFIX}/auth/session; Max-Age=0${secureFlag}`,
-      ...pluginNames.map(pluginName => `hb-plugin-ui=; HttpOnly; SameSite=Strict; Path=${API_PREFIX}/plugins/settings-ui/${encodeURIComponent(pluginName)}/; Max-Age=0${secureFlag}`),
+      `hb-refresh=; HttpOnly; SameSite=Strict; Path=${this.configService.webRoot}${API_PREFIX}/auth/session; Max-Age=0${secureFlag}`,
+      ...pluginNames.map(pluginName => `hb-plugin-ui=; HttpOnly; SameSite=Strict; Path=${this.configService.webRoot}${API_PREFIX}/plugins/settings-ui/${encodeURIComponent(pluginName)}/; Max-Age=0${secureFlag}`),
     ]
   }
 }

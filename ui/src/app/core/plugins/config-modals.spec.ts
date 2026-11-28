@@ -521,6 +521,21 @@ describe('plugin config modals', () => {
       })
     })
 
+    it('takes its marker listener off monaco when the window closes', async () => {
+      // Regression: `monaco.editor.onDidChangeMarkers` is global, and its listener was never removed, so each
+      // open kept the closed window alive and ran its handler on every marker change in any editor
+      const listener = {
+        dispose: vi.fn(),
+      }
+      ;(window as any).monaco.editor.onDidChangeMarkers.mockReturnValue(listener)
+      const modal = await openEditor()
+
+      await modal.onEditorInit(fakeEditor())
+      modal.ngOnDestroy()
+
+      expect(listener.dispose).toHaveBeenCalledOnce()
+    })
+
     it('refuses to work on a phone', async () => {
       isMobile = true
       const modal = await open(ManualConfigComponent)

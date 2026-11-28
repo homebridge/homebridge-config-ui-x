@@ -1,4 +1,4 @@
-@let detected = !!service().values?.CarbonDioxideDetected;
+@let detected = !!service().values.CarbonDioxideDetected;
 
 @let stateText =
   detected ? ('accessories.control.detected' | translate) : ('accessories.control.not_detected' | translate);

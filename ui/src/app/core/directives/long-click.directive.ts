@@ -1,4 +1,3 @@
-/* global NodeJS */
 import { Directive, input, OnDestroy, output } from '@angular/core'
 
 import { RE_IPAD_IPHONE_IPOD, RE_NON_SAFARI, RE_SAFARI } from '@/app/core/regex.constants'
@@ -17,7 +16,7 @@ import { RE_IPAD_IPHONE_IPOD, RE_NON_SAFARI, RE_SAFARI } from '@/app/core/regex.
   },
 })
 export class LongClickDirective implements OnDestroy {
-  private downTimeout!: NodeJS.Timeout
+  private downTimeout!: ReturnType<typeof setTimeout>
   private done = false
   private touchInProgress = false
   private lastTouchTime = 0

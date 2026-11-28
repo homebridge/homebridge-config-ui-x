@@ -1,4 +1,6 @@
-import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common'
+import type { CanActivate, ExecutionContext } from '@nestjs/common'
+
+import { Inject, Injectable } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 import { WsException } from '@nestjs/websockets'
 import jwt from 'jsonwebtoken'
@@ -6,6 +8,7 @@ import jwt from 'jsonwebtoken'
 import { UserDto } from '../../../modules/users/users.dto.js'
 import { ConfigService } from '../../config/config.service.js'
 import { AuthService } from '../auth.service.js'
+import { JWT_ALGORITHM } from '../jwt.constants.js'
 import { extractWsToken } from './ws-token.js'
 
 /**
@@ -35,7 +38,9 @@ export class WsLogGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient()
     try {
-      const payload = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey) as UserDto & { instanceId?: string }
+      const payload = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey, {
+        algorithms: [JWT_ALGORITHM],
+      }) as UserDto & { instanceId?: string }
 
       if (payload?.instanceId !== this.configService.instanceId) {
         const isLiveWizardToken = payload?.username === 'setup-wizard'
@@ -48,6 +53,9 @@ export class WsLogGuard implements CanActivate {
       if (!await this.authService.validateUser(payload)) {
         throw new Error('User no longer valid')
       }
+
+      // so the log stops for this socket if its user is deleted or revoked while it only listens
+      this.authService.trackSocket(client, payload)
 
       return this.configService.restrictLogsToAdmins
         ? Boolean(payload.admin)

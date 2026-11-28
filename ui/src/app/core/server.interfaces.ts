@@ -18,6 +18,11 @@ export interface HomebridgeStatusMatterUpdate {
    * >= 2.0.3-beta.26.
    */
   externalsOnly?: boolean
+  /**
+   * When true, Matter is turned on but its server failed to start (see the Homebridge log), so there is no
+   * pairing code to show. Only set by Homebridge >= 2.5.1.
+   */
+  startFailed?: boolean
 }
 
 export interface HomebridgeStatusHapUpdate {
@@ -100,6 +105,9 @@ export interface ChildBridgeStatusResponse {
 
   /** Matter manual pairing code */
   matterPin?: string
+
+  /** Matter is on for this bridge but its server failed to start (Homebridge >= 2.5.1) */
+  matterStartFailed?: boolean
 
   /** Matter serial number */
   matterSerialNumber?: string

@@ -13,6 +13,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
+import { numberValue, stringValue } from '@/app/core/accessories/types/hap/hap-values'
 import { TelevisionManageComponent } from '@/app/core/accessories/types/hap/television/television.manage.component'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
@@ -37,11 +38,20 @@ export class TelevisionComponent implements OnInit {
 
   public channelList: Record<number, string> = {}
 
+  /** The name of the input that is showing, if the TV reports one */
+  public activeChannelName(): string | undefined {
+    const identifier = numberValue(this.service().values, 'ActiveIdentifier')
+    return identifier === undefined
+      ? undefined
+      : this.channelList[identifier]
+  }
+
   public ngOnInit() {
     if (this.service().linkedServices) {
       for (const [, inputService] of Object.entries(this.service().linkedServices!)) {
-        if (inputService.type === 'InputSource') {
-          this.channelList[inputService.values.Identifier] = inputService.values.ConfiguredName || `Input ${inputService.values.Identifier}`
+        const identifier = numberValue(inputService.values, 'Identifier')
+        if (inputService.type === 'InputSource' && identifier !== undefined) {
+          this.channelList[identifier] = stringValue(inputService.values, 'ConfiguredName') || `Input ${identifier}`
         }
       }
     }
@@ -53,11 +63,11 @@ export class TelevisionComponent implements OnInit {
     }
 
     if ('Active' in this.service().values) {
-      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active
+      void this.service().getCharacteristic?.('Active')?.setValue?.(this.service().values.Active
         ? 0
         : 1)
     } else if ('On' in this.service().values) {
-      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
+      void this.service().getCharacteristic?.('On')?.setValue?.(!this.service().values.On)
     }
   }
 
@@ -97,6 +107,6 @@ export class TelevisionComponent implements OnInit {
       return undefined
     }
 
-    return this.service().values.Consumption
+    return numberValue(this.service().values, 'Consumption')
   }
 }

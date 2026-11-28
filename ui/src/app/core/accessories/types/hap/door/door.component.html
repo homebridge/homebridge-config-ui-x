@@ -1,5 +1,5 @@
 @let values = service().values;
-@let pos = values?.CurrentPosition;
+@let pos = values?.CurrentPosition | hapNumber;
 @let posState = values?.PositionState;
 
 @let stateText = (stateKey() | translate) + (isPartOpen() ? ` ${pos}%` : '');
@@ -95,7 +95,7 @@
         @if (pos === 0) {
           {{ 'accessories.control.closed' | translate }}
         }
-        @if (pos > 0 && pos < 100) {
+        @if (pos !== undefined && pos > 0 && pos < 100) {
           {{ 'accessories.control.open' | translate }} {{ pos }}%
         }
         @if (pos === 100) {

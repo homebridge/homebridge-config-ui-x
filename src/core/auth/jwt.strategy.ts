@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt'
 
 import { ConfigService } from '../config/config.service.js'
 import { AuthService } from './auth.service.js'
+import { JWT_ALGORITHM } from './jwt.constants.js'
 
 /** Reads the JWT from a request. Shared so `JwtAuthGuard` agrees on when a token is missing. */
 export const extractBearerToken = ExtractJwt.fromAuthHeaderAsBearerToken()
@@ -17,6 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: extractBearerToken,
       secretOrKey: configService.secrets.secretKey,
+      algorithms: [JWT_ALGORITHM],
     })
   }
 

@@ -28,7 +28,7 @@ export class FilterMaintenanceManageComponent extends BaseManageComponent {
   }
 
   public resetFilterLife(event: MouseEvent) {
-    void this.service.getCharacteristic!('ResetFilterIndication')!.setValue!(1)
+    void this.service.getCharacteristic?.('ResetFilterIndication')?.setValue?.(1)
 
     this.blurTarget(event)
   }

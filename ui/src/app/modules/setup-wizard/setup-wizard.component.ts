@@ -10,6 +10,7 @@ import { firstValueFrom, interval } from 'rxjs'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { setStoredToken } from '@/app/core/auth/token-store'
 import { ApiService } from '@/app/core/communication/api.service'
+import { listenUntilDestroyed } from '@/app/core/communication/socket-listener'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { RE_ANSI_FULL, RE_NEWLINE, RE_SPINNER } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/ui/settings.service'
@@ -41,6 +42,10 @@ export class SetupWizardComponent implements OnInit {
   private destroyRef = inject(DestroyRef)
 
   // Signals
+  /** Plain links, for a full page load: under the web root when the UI has one */
+  public readonly homeUrl = `${environment.api.webRoot}/`
+  public readonly loginUrl = `${environment.api.webRoot}/login`
+
   public readonly step = signal<'welcome' | 'create-account' | 'setup-complete' | 'restore-backup' | 'restoring' | 'restarting' | 'restore-complete'>('welcome')
   public readonly backgroundStyle = signal<string | undefined>(undefined)
   public readonly progress = signal(1)
@@ -168,7 +173,7 @@ export class SetupWizardComponent implements OnInit {
       this.io = this.$ws.connectToNamespace('backup')
       const outputBox = document.getElementById('output')!
       let spinnerElement: HTMLDivElement | null = null
-      this.io.socket.on('stdout', (data) => {
+      listenUntilDestroyed(this.destroyRef, this.io.socket).on('stdout', (data) => {
         const lines = data.split(RE_NEWLINE)
         lines.forEach((line: string) => {
           if (!line) {

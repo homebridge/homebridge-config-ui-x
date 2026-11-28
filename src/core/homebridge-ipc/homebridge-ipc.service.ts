@@ -46,12 +46,20 @@ export class HomebridgeIpcService extends EventEmitter {
 
     this.homebridge.setMaxListeners(this.homebridge.getMaxListeners() + 2)
 
-    this.homebridge.on('message', (message: { id: string, data: unknown }) => {
-      if (typeof message !== 'object' || !message.id) {
+    // Any plugin in the Homebridge process can call process.send(). This listener runs outside any request, so a
+    // throw here (a `null` message, or a listener that trips over odd data) would end the whole UI process.
+    this.homebridge.on('message', (message: unknown) => {
+      if (!message || typeof message !== 'object' || typeof (message as { id?: unknown }).id !== 'string') {
         return
       }
-      if (this.permittedEvents.includes(message.id)) {
-        this.emit(message.id, message.data)
+      const { id, data } = message as { id: string, data: unknown }
+      if (!this.permittedEvents.includes(id)) {
+        return
+      }
+      try {
+        this.emit(id, data)
+      } catch (e) {
+        this.logger.error(`Failed to handle the ${id} message from Homebridge: ${e?.message ?? e}.`)
       }
     })
 

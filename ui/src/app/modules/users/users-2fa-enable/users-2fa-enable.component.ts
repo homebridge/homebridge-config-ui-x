@@ -1,4 +1,3 @@
-/* global NodeJS */
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
@@ -45,7 +44,7 @@ export class Users2faEnableComponent implements OnInit {
   public readonly secretCopied = signal(false)
 
   // Other properties
-  private copyTimeout: NodeJS.Timeout | null = null
+  private copyTimeout: ReturnType<typeof setTimeout> | null = null
   public formGroup = new FormGroup({
     code: new FormControl('', [
       Validators.required,

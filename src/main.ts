@@ -21,6 +21,7 @@ import { devServerCorsConfig } from './core/cors.config.js'
 import { Logger } from './core/logger/logger.service.js'
 import { SpaFilter } from './core/spa/spa.filter.js'
 import { setStaticAssetCacheHeaders } from './core/static-assets.js'
+import { serveUnderWebRoot, setBaseHref } from './core/web-root.js'
 
 import './env-setup.js'
 import 'reflect-metadata'
@@ -28,6 +29,9 @@ import './self-check.js'
 import './global-defaults.js'
 
 export { HomebridgeIpcService } from './core/homebridge-ipc/homebridge-ipc.service.js'
+
+let closeUi: (() => Promise<void>) | undefined
+let uiClosing: Promise<void> | undefined
 
 async function bootstrap(): Promise<NestFastifyApplication> {
   const startupConfig = await getStartupConfig()
@@ -129,7 +133,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     res.header('Cache-Control', 'no-cache, no-store, must-revalidate')
     res.header('Pragma', 'no-cache')
     res.header('Expires', '0')
-    res.send(await readFile(resolve(process.env.UIX_BASE_PATH, 'public/index.html')))
+    res.send(setBaseHref(await readFile(resolve(process.env.UIX_BASE_PATH, 'public/index.html'), 'utf-8'), startupConfig.webRoot))
   })
 
   // (7) Serve static assets. Content-hashed build output (chunk-B3-qTyJy.js,
@@ -185,20 +189,29 @@ async function bootstrap(): Promise<NestFastifyApplication> {
       type: 'oauth2',
       flows: {
         password: {
-          tokenUrl: '/api/auth/login',
+          tokenUrl: `${startupConfig.webRoot}${API_PREFIX}/auth/login`,
           scopes: null,
         },
       },
     })
+    // The "Try it out" requests go to the web root, as a reverse proxy may pass on nothing else
+    .addServer(startupConfig.webRoot || '/')
     .build()
   const document = SwaggerModule.createDocument(app, options)
   SwaggerModule.setup('swagger', app, document)
 
   // (12) Use the spa filter to serve index.html for any non-api routes
-  app.useGlobalFilters(new SpaFilter())
+  app.useGlobalFilters(new SpaFilter(startupConfig.webRoot))
 
-  // (13) Start listening - woohoo!
-  logger.success(`Homebridge UI v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}.`)
+  // (13) Answer under the web root too. This must come after init: see serveUnderWebRoot()
+  await app.init()
+  serveUnderWebRoot(app.getHttpServer(), startupConfig.webRoot)
+
+  // (14) Start listening - woohoo!
+  const underWebRoot = startupConfig.webRoot
+    ? `, under ${startupConfig.webRoot}`
+    : ''
+  logger.success(`Homebridge UI v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}${underWebRoot}.`)
   await app.listen(configService.ui.port, startupConfig.host)
 
   // Advertise the HTTP service via mDNS/Bonjour for easy discovery (if enabled)
@@ -217,7 +230,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
           ? undefined
           : startupConfig.host,
         txt: {
-          path: '/',
+          path: `${startupConfig.webRoot}/`,
           version: configService.package.version,
           https: startupConfig.httpsOptions ? 'true' : 'false',
         },
@@ -229,8 +242,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     }
   }
 
-  const handleShutdown = (signal: string) => {
-    logger.debug(`Received ${signal}, starting graceful shutdown...`)
+  closeUi = async () => {
     if (bonjour) {
       try {
         logger.log('Shutting down mDNS service advertising...')
@@ -241,15 +253,35 @@ async function bootstrap(): Promise<NestFastifyApplication> {
         logger.error('Error during mDNS cleanup:', error)
       }
     }
-    app.close().finally(() => {
-      process.exit(0)
-    })
+    await app.close()
   }
 
-  process.once('SIGINT', () => handleShutdown('SIGINT'))
-  process.once('SIGTERM', () => handleShutdown('SIGTERM'))
+  // Under hb-service the UI runs inside the hb-service process, and hb-service handles the signals: it stops
+  // Homebridge first, then calls `shutdownUi()`. A second handler here would exit the process at once, while
+  // Homebridge is still stopping.
+  if (process.env.UIX_SERVICE_MODE !== '1') {
+    const handleShutdown = (signal: string) => {
+      logger.debug(`Received ${signal}, starting graceful shutdown...`)
+      void shutdownUi().finally(() => {
+        process.exit(0)
+      })
+    }
+
+    process.once('SIGINT', () => handleShutdown('SIGINT'))
+    process.once('SIGTERM', () => handleShutdown('SIGTERM'))
+  }
 
   return app
+}
+
+/**
+ * Close the UI: stop the mDNS advertisement and close the Nest app. Safe to call more than once.
+ */
+export function shutdownUi(): Promise<void> {
+  uiClosing ??= closeUi
+    ? closeUi()
+    : Promise.resolve()
+  return uiClosing
 }
 
 export const app = bootstrap()

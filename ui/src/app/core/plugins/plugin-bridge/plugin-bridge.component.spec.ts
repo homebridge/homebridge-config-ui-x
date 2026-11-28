@@ -1017,6 +1017,26 @@ describe('pluginBridgeComponent', () => {
     })
   })
 
+  describe('the matter pairing code of a child bridge', () => {
+    it('knows when homebridge says matter failed to start, so it does not ask for a restart to see the code', async () => {
+      const modal = await open([
+        {
+          platform: 'TestPlatform',
+          _bridge: { username: '0E:11:11:11:11:11', matter: {} },
+        },
+      ], {
+        featureFlags: { matterSupport: true },
+      })
+      childBridges.getAll.mockResolvedValue([
+        { username: '0E:11:11:11:11:11', matterStartFailed: true },
+      ])
+
+      await (modal as any).getMatterCommissioningInfo('0E:11:11:11:11:11')
+
+      expect(modal.matterDeviceInfo().get('0E:11:11:11:11:11')?.startFailed).toBe(true)
+    })
+  })
+
   describe('naming a matter fabric', () => {
     it('names the controllers it recognises', async () => {
       const modal = await open([

@@ -1,6 +1,6 @@
 import type { Terminal } from '@xterm/xterm'
 
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/communication/api.service'
+import { listenUntilDestroyed } from '@/app/core/communication/socket-listener'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { SWITCH_TO_SCOPED_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { RE_ANSI } from '@/app/core/regex.constants'
@@ -29,6 +30,7 @@ import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
 export class SwitchToScopedComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private $saveAs = inject(SAVE_AS)
+  private destroyRef = inject(DestroyRef)
   private $terminals = inject(TERMINAL_FACTORY)
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
@@ -85,7 +87,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
     // until the next resize event.
     setTimeout(() => this.fitAddon.fit(), 0)
 
-    this.io.socket.on('stdout', (data: string | Uint8Array) => {
+    listenUntilDestroyed(this.destroyRef, this.io.socket).on('stdout', (data: string | Uint8Array) => {
       this.term.write(data)
       const dataCleaned = data
         .toString()

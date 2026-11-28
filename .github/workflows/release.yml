@@ -14,13 +14,14 @@ on:
       - alpha-*.*.*
   workflow_dispatch:
 
+# The npm publish job asks for `id-token: write` itself (see below). The other jobs run shared
+# workflows and third-party actions, which must not be able to get a publish token.
 permissions:
-  id-token: write
   contents: write
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+# Concurrency is set per job, per branch: a newer push on the same branch cancels an older run while
+# it is still testing (so a burst of merges publishes once), but never once it has reached publish
+# (a run stopped after npm publish leaves a version with no pre-release). Branches never affect each other.
 
 jobs:
   determine-release-type:
@@ -34,14 +35,18 @@ jobs:
     steps:
       - name: Determine release type
         id: release-type
+        # The branch name reaches the script as an environment variable, never as script text.
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
         run: |
-          if [[ "${{ github.event_name }}" == "release" ]]; then
+          if [[ "$EVENT_NAME" == "release" ]]; then
             echo "type=latest" >> $GITHUB_OUTPUT
             echo "tag=latest" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref }}" == refs/heads/beta-* ]]; then
+          elif [[ "$REF" == refs/heads/beta-* ]]; then
             echo "type=beta" >> $GITHUB_OUTPUT
             echo "tag=beta" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref }}" == refs/heads/alpha-* ]]; then
+          elif [[ "$REF" == refs/heads/alpha-* ]]; then
             echo "type=alpha" >> $GITHUB_OUTPUT
             echo "tag=alpha" >> $GITHUB_OUTPUT
           else
@@ -53,13 +58,16 @@ jobs:
       - name: Get Release Tag (Latest Only)
         if: steps.release-type.outputs.type == 'latest'
         id: get_version
-        uses: jannemattila/get-version-from-tag@v4
+        uses: jannemattila/get-version-from-tag@22de24a56e53ef11268538c9e6a77659a142afa7 # v4
 
       - name: Tag Info (Latest Only)
         if: steps.release-type.outputs.type == 'latest'
+        env:
+          REF: ${{ github.ref }}
+          VERSION: ${{ steps.get_version.outputs.version }}
         run: |
-          echo "Release Tag: ${{github.ref}}"
-          echo "Latest Tag: ${{ steps.get_version.outputs.version }}"
+          echo "Release Tag: $REF"
+          echo "Latest Tag: $VERSION"
 
       - name: Tag Info Matches (Latest Only)
         if: steps.release-type.outputs.type == 'latest' && endsWith(github.ref, steps.get_version.outputs.version)
@@ -87,6 +95,11 @@ jobs:
     needs: determine-release-type
     name: Build and Test (${{ needs.determine-release-type.outputs.release_type }})
     if: needs.determine-release-type.outputs.release_type == 'beta' || needs.determine-release-type.outputs.release_type == 'alpha'
+    # One group per branch and OS: a newer run's leg cancels the same leg of an older run on this branch.
+    # A cancelled leg makes this job's result 'cancelled', so the older run's publish is skipped.
+    concurrency:
+      group: ${{ github.workflow }}-build-${{ github.ref }}-${{ matrix.os }}
+      cancel-in-progress: true
     strategy:
       fail-fast: false
       matrix:
@@ -124,7 +137,14 @@ jobs:
       (needs.build_and_test_beta.result == 'success' ||
        needs.build_and_test_beta.result == 'skipped')
     name: Publish to npm (${{ needs.determine-release-type.outputs.npm_tag }})
+    # Never cancelled once started; a second run's publish on this branch waits for it.
+    concurrency:
+      group: ${{ github.workflow }}-publish-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
     outputs:
       npm_version: ${{ steps.get-published-version.outputs.version }}
     steps:
@@ -139,24 +159,29 @@ jobs:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
 
+      # npm 11.5.1 is the first version that can publish with OIDC. Stay on npm 11, so a new major
+      # version of npm is not picked up by the job that publishes without anyone looking at it first.
       - name: Upgrade npm for OIDC support
-        run: npm install -g npm@latest
+        run: npm install -g npm@^11.5.1
 
       - name: Install dependencies
         run: npm i && cd ui && npm i
 
       - name: Handle prerelease versioning
         if: needs.determine-release-type.outputs.release_type == 'beta' || needs.determine-release-type.outputs.release_type == 'alpha'
+        env:
+          REF: ${{ github.ref }}
+          RELEASE_TYPE: ${{ needs.determine-release-type.outputs.release_type }}
         run: |
           # Download versioning script from homebridge/.github
           mkdir -p .github
           wget -q https://raw.githubusercontent.com/homebridge/.github/latest/.github/npm-version-script-esm.js -O .github/npm-version-script-esm.js
 
           # Run the script to set base version
-          node .github/npm-version-script-esm.js ${{ github.ref }} ${{ needs.determine-release-type.outputs.release_type }}
+          node .github/npm-version-script-esm.js "$REF" "$RELEASE_TYPE"
 
           # Add prerelease suffix
-          npm version pre --preid=${{ needs.determine-release-type.outputs.release_type }} --no-git-tag-version
+          npm version pre --preid="$RELEASE_TYPE" --no-git-tag-version
 
       - name: Get package version
         id: get-published-version
@@ -186,7 +211,9 @@ jobs:
         run: npm run build
 
       - name: Publish to npm with OIDC
-        run: npm publish --tag ${{ needs.determine-release-type.outputs.npm_tag }} --provenance --access public
+        env:
+          NPM_TAG: ${{ needs.determine-release-type.outputs.npm_tag }}
+        run: npm publish --tag "$NPM_TAG" --provenance --access public
 
       - name: Add publish summary
         run: |
@@ -218,7 +245,7 @@ jobs:
 
       - name: Create nightly release
         id: create_release
-        uses: viperproject/create-nightly-release@v2
+        uses: viperproject/create-nightly-release@57d9a49ddd9a99ac251861663ae92972b6c2607b # v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -229,13 +256,15 @@ jobs:
           keep_tags: false
 
       - name: Add GitHub pre-release summary
+        env:
+          REF_NAME: ${{ github.ref_name }}
         run: |
           {
             echo "## GitHub Pre-Release"
             echo
             echo '- Version: `v${{ needs.publish.outputs.npm_version }}`'
             echo '- Type: `${{ needs.determine-release-type.outputs.release_type }}`'
-            echo '- Branch: `${{ github.ref_name }}`'
+            echo "- Branch: \`$REF_NAME\`"
             echo '- Release: [View on GitHub](${{ steps.create_release.outputs.html_url }})'
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -307,7 +336,7 @@ jobs:
             ./SHASUMS256.txt
 
       - name: Attach Bundle v${{ needs.publish.outputs.npm_version }}
-        uses: AButler/upload-release-assets@v4.0
+        uses: AButler/upload-release-assets@34491005a5d7ec239a784e460807ce844fde7962 # v4.0.0
         with:
           files: 'homebridge-config-ui-x-${{ needs.publish.outputs.npm_version }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}

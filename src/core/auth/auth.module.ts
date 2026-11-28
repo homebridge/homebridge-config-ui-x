@@ -14,6 +14,7 @@ import { AdminGuard } from './guards/admin.guard.js'
 import { WsAdminGuard } from './guards/ws-admin-guard.js'
 import { WsLogGuard } from './guards/ws-log.guard.js'
 import { WsGuard } from './guards/ws.guard.js'
+import { JWT_ALGORITHM } from './jwt.constants.js'
 import { JwtStrategy } from './jwt.strategy.js'
 
 @Module({
@@ -24,7 +25,12 @@ import { JwtStrategy } from './jwt.strategy.js'
       useFactory: async (configService: ConfigService) => ({
         secret: configService.secrets.secretKey,
         signOptions: {
+          algorithm: JWT_ALGORITHM,
           expiresIn: configService.ui.sessionTimeout,
+        },
+        // Merged into every JwtService.verify() call, such as the session cookie checks
+        verifyOptions: {
+          algorithms: [JWT_ALGORITHM],
         },
       }),
       inject: [ConfigService],

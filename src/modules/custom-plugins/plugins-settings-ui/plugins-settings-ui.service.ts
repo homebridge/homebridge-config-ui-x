@@ -24,6 +24,9 @@ import { PluginsService } from '../../plugins/plugins.service.js'
 // script and a helper that is momentarily gone.
 const CUSTOM_UI_UNAVAILABLE = 'The custom UI server for this plugin is not available.'
 
+// What a plugin's custom UI server (plugin-ui-utils) sends: 'error' reaches the page as 'server_error'
+const CHILD_MESSAGE_ACTIONS = new Set(['ready', 'response', 'stream', 'error'])
+
 @Injectable()
 export class PluginsSettingsUiService {
   private pluginUiMetadataCache = new NodeCache({ stdTTL: 86400 })
@@ -211,7 +214,7 @@ export class PluginsSettingsUiService {
             serverEnv: ${JSON.stringify(this.configService.uiSettings(true)).replace(/</g, '\\u003c')},
           };
           </script>
-          <script src="${safeOrigin}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
+          <script src="${safeOrigin}${this.configService.webRoot}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
           <script>
             window.addEventListener('load', () => {
               window.parent.postMessage({action: 'loaded'}, '*');
@@ -390,7 +393,12 @@ export class PluginsSettingsUiService {
     // Bind the socket's listeners synchronously, before the lookups below suspend: they belong to
     // the socket for its whole session, and a request that arrives while a helper is being
     // resolved still has to be answered rather than dropped.
-    client.on('request', (request: { requestId?: string }) => {
+    client.on('request', (request: { action?: unknown, requestId?: string }) => {
+      // Only a request message goes to the plugin's server, the only kind @homebridge/plugin-ui-utils reads. Its
+      // server crashed on a `null` or junk message before v2.3.1, and a plugin keeps the version it shipped with.
+      if (!request || typeof request !== 'object' || Array.isArray(request) || request.action !== 'request') {
+        return
+      }
       if (child?.connected) {
         if (request?.requestId) {
           outstanding.add(request.requestId)
@@ -449,15 +457,24 @@ export class PluginsSettingsUiService {
       settleOutstanding()
     })
 
-    child.addListener('message', (response: { action: string, payload: any }) => {
-      if (typeof response === 'object' && response.action) {
-        if (response.action === 'response' && response.payload?.requestId) {
-          outstanding.delete(response.payload.requestId)
-        }
-        response.action = response.action === 'error'
-          ? 'server_error'
-          : response.action
-        client.emit(response.action, response.payload)
+    // Only the messages plugin-ui-utils sends go on to the plugin's page. Anything else from the plugin's own
+    // code (null, a reserved socket.io name such as 'disconnect') would throw here, and an exception in this
+    // listener ends the whole ui process.
+    child.addListener('message', (response: { action?: unknown, payload?: any } | null) => {
+      if (!response || typeof response !== 'object' || typeof response.action !== 'string'
+        || !CHILD_MESSAGE_ACTIONS.has(response.action)) {
+        return
+      }
+      if (response.action === 'response' && response.payload?.requestId) {
+        outstanding.delete(response.payload.requestId)
+      }
+      const event = response.action === 'error'
+        ? 'server_error'
+        : response.action
+      try {
+        client.emit(event, response.payload)
+      } catch (e) {
+        this.loggerService.error(`[${pluginName}] could not pass on a message from the custom UI server: ${e?.message ?? e}`)
       }
     })
   }

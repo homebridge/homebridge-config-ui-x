@@ -12,6 +12,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
+import { isOneOf, numberValue } from '@/app/core/accessories/types/hap/hap-values'
 import { MicrophoneManageComponent } from '@/app/core/accessories/types/hap/microphone/microphone.manage.component'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
@@ -42,10 +43,10 @@ export class MicrophoneComponent {
       return !!values?.Active
     }
     if ('CurrentMediaState' in values) {
-      return [0, 1].includes(values?.CurrentMediaState)
+      return isOneOf(values?.CurrentMediaState, [0, 1])
     }
     if ('Mute' in values && 'Volume' in values) {
-      return !values?.Mute && values?.Volume > 0
+      return !values?.Mute && (numberValue(values, 'Volume') ?? 0) > 0
     }
     return 'Mute' in values && !values?.Mute
   }
@@ -56,17 +57,17 @@ export class MicrophoneComponent {
     }
 
     if ('On' in this.service().values) {
-      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
+      void this.service().getCharacteristic?.('On')?.setValue?.(!this.service().values.On)
     } else if ('Active' in this.service().values) {
-      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active === 0
+      void this.service().getCharacteristic?.('Active')?.setValue?.(this.service().values.Active === 0
         ? 1
         : 0)
     } else if ('TargetMediaState' in this.service().values) {
-      void this.service().getCharacteristic!('TargetMediaState').setValue!(this.service().values.TargetMediaState === 0
+      void this.service().getCharacteristic?.('TargetMediaState')?.setValue?.(this.service().values.TargetMediaState === 0
         ? 1
         : 0)
     } else if ('Mute' in this.service().values) {
-      void this.service().getCharacteristic!('Mute').setValue!(!this.service().values.Mute)
+      void this.service().getCharacteristic?.('Mute')?.setValue?.(!this.service().values.Mute)
     }
   }
 

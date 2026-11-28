@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer'
-import { pbkdf2, randomBytes, timingSafeEqual } from 'node:crypto'
+import { pbkdf2, randomBytes, randomInt, timingSafeEqual } from 'node:crypto'
 
 import {
   BadRequestException,
@@ -12,10 +12,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { createGuardrails } from '@otplib/core'
-import { pathExists, readJson } from 'fs-extra/esm'
+import { readJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
-import { generateSecret, generateURI, verify } from 'otplib'
+import { createGuardrails, generateSecret, generateURI, verify } from 'otplib'
 
 import { PluginsSettingsUiTicketService } from '../../modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
 import { UserDto } from '../../modules/users/users.dto.js'
@@ -30,6 +29,11 @@ const PBKDF2_ITERATIONS = 210000
 // hashed at 1,000. They verify at this count and are transparently upgraded to
 // PBKDF2_ITERATIONS on the owner's next successful login.
 const LEGACY_PBKDF2_ITERATIONS = 1000
+
+// Password checks that may run at once. Each one takes a thread of Node's pool (4 by default), which the UI's
+// file reads and writes need too. Without a limit, logins with made-up usernames (each does a full hash, so the
+// answer time does not tell which names exist, and a new name each time is never locked out) could fill it.
+const MAX_CONCURRENT_PASSWORD_CHECKS = 2
 
 // Login throttling: after this many failed attempts for a given key the account
 // is locked out for LOGIN_LOCKOUT_SECONDS. Guards against online password and
@@ -58,6 +62,12 @@ const MAX_SERVICE_TOKEN_LIFETIME_SECONDS = 300
  */
 const MAX_SESSION_LIFETIME_SECONDS = 30 * 24 * 60 * 60
 
+/**
+ * auth.json holds password hashes and 2fa secrets: a new file is readable by its owner only.
+ * An existing file keeps its mode (see JsonFileStoreService).
+ */
+const AUTH_FILE_WRITE_OPTIONS = { spaces: 4, mode: 0o600 }
+
 @Injectable()
 export class AuthService {
   private otpUsageCache = new NodeCache({ stdTTL: 90 })
@@ -66,10 +76,19 @@ export class AuthService {
   // A failed attempt refreshes the TTL, so sustained guessing keeps the account
   // locked; the count clears after LOGIN_LOCKOUT_SECONDS of no attempts.
   private loginFailureCache = new NodeCache({ stdTTL: LOGIN_LOCKOUT_SECONDS })
+  // Logins being checked right now, by the same key as the failure count
+  private loginsInFlight = new Map<string, number>()
+  // Password checks running now, and the ones waiting for a slot (see MAX_CONCURRENT_PASSWORD_CHECKS)
+  private passwordChecksRunning = 0
+  private passwordCheckQueue: Array<() => void> = []
 
   // Short-lived cache of the auth file, so validating a token on every request
   // is not a file read each time. Cleared by invalidateUserCache() on writes.
   private userCache = new NodeCache({ stdTTL: USER_CACHE_TTL_SECONDS })
+
+  // Every socket a websocket guard has let through, with the token payload it was checked with.
+  // See trackSocket() and disconnectRevokedSockets().
+  private trackedSockets = new Map<any, any>()
 
   // Synchronous reservation flag for first-user setup, so two concurrent
   // onboarding requests cannot both create an administrator. See setupFirstUser.
@@ -103,16 +122,24 @@ export class AuthService {
     const throttleKey = `${(username || '').toLowerCase()}|${clientId || ''}`
 
     // Reject before doing any work once the failure threshold is reached, so
-    // password and 2FA guessing cannot run unbounded.
-    if ((this.loginFailureCache.get<number>(throttleKey) || 0) >= MAX_LOGIN_FAILURES) {
+    // password and 2FA guessing cannot run unbounded. Attempts still being
+    // checked count too: the check takes a while (the password hash), and
+    // without them many attempts sent at once would all pass this test.
+    const inFlight = this.loginsInFlight.get(throttleKey) || 0
+    if ((this.loginFailureCache.get<number>(throttleKey) || 0) + inFlight >= MAX_LOGIN_FAILURES) {
       this.logger.warn(`Too many failed login attempts for '${username}' - temporarily locked out.`)
       throw new HttpException('Too many failed attempts. Please wait a few minutes and try again.', 429)
     }
+    this.loginsInFlight.set(throttleKey, inFlight + 1)
 
     try {
       const user = await this.findByUsername(username)
 
       if (!user) {
+        // Do the same work as for a real user, so the time the answer takes does not tell which usernames exist
+        await this.limitPasswordCheck(() => this.hashPassword(typeof password === 'string'
+          ? password
+          : '', 'no-such-user', PBKDF2_ITERATIONS))
         throw new ForbiddenException()
       }
 
@@ -164,6 +191,13 @@ export class AuthService {
       }
 
       throw new ForbiddenException()
+    } finally {
+      const left = (this.loginsInFlight.get(throttleKey) || 1) - 1
+      if (left > 0) {
+        this.loginsInFlight.set(throttleKey, left)
+      } else {
+        this.loginsInFlight.delete(throttleKey)
+      }
     }
   }
 
@@ -198,7 +232,7 @@ export class AuthService {
     // Verify against the strength this record was hashed at. Legacy records
     // carry no count and were hashed at 1,000 iterations.
     const iterations = user.passwordIterations ?? LEGACY_PBKDF2_ITERATIONS
-    const passwordAttemptHash = await this.hashPassword(password, user.salt, iterations)
+    const passwordAttemptHash = await this.limitPasswordCheck(() => this.hashPassword(password, user.salt, iterations))
     const passwordAttemptHashBuff = Buffer.from(passwordAttemptHash, 'hex')
     const knownPasswordHashBuff = Buffer.from(user.hashedPassword, 'hex')
 
@@ -497,6 +531,28 @@ export class AuthService {
    * @param password
    * @param salt
    */
+  /**
+   * Run a password check once fewer than MAX_CONCURRENT_PASSWORD_CHECKS are running, in the order they came
+   */
+  private async limitPasswordCheck<T>(check: () => Promise<T>): Promise<T> {
+    if (this.passwordChecksRunning >= MAX_CONCURRENT_PASSWORD_CHECKS) {
+      await new Promise<void>(resolve => this.passwordCheckQueue.push(resolve))
+    } else {
+      this.passwordChecksRunning++
+    }
+    try {
+      return await check()
+    } finally {
+      // Hand the slot straight to the next one waiting, or free it
+      const next = this.passwordCheckQueue.shift()
+      if (next) {
+        next()
+      } else {
+        this.passwordChecksRunning--
+      }
+    }
+  }
+
   private async hashPassword(password: string, salt: string, iterations: number = PBKDF2_ITERATIONS): Promise<string> {
     return new Promise((resolve, reject) => {
       pbkdf2(password, salt, iterations, 64, 'sha512', (err, derivedKey) => {
@@ -549,9 +605,15 @@ export class AuthService {
       // First user must be admin
       user.admin = true
 
-      // Start with an empty auth file; addUser() below acquires the same
-      // lock to push the first user, so both writes serialise correctly.
-      await this.jsonStore.write<UserDto[]>(this.configService.authPath, [], { spaces: 4 })
+      // Start the auth file if there is none. The wizard also opens for a file with users but no admin: those
+      // users are kept. addUser() below takes the same lock, so both writes serialise correctly.
+      await this.jsonStore.mutate<UserDto[]>(
+        this.configService.authPath,
+        current => (Array.isArray(current)
+          ? current
+          : []),
+        AUTH_FILE_WRITE_OPTIONS,
+      )
 
       const createdUser = await this.addUser(user)
 
@@ -591,17 +653,27 @@ export class AuthService {
    * Executed on startup to see if the auth file is set up yet
    */
   async checkAuthFile() {
-    if (!await pathExists(this.configService.authPath)) {
-      this.configService.setupWizardComplete = false
+    let authfile: unknown
+    try {
+      authfile = await readJson(this.configService.authPath)
+    } catch (e) {
+      if (e?.code === 'ENOENT') {
+        this.configService.setupWizardComplete = false
+        return
+      }
+      // Fail closed. The setup wizard hands an admin token to anyone who asks, so a file that is there but can not
+      // be read (wrong owner after a `sudo` run, a half-written file) must not open it.
+      this.logger.error(`Could not read the user accounts file ${this.configService.authPath} (${e.message}). `
+        + 'Nobody can log in until it is fixed. To start again with the setup wizard, delete the file and restart Homebridge.')
       return
     }
-    try {
-      const authfile: UserDto[] = await readJson(this.configService.authPath)
-      // There must be at least one admin user
-      if (!authfile.some(x => x.admin === true)) {
-        this.configService.setupWizardComplete = false
-      }
-    } catch (e) {
+    if (!Array.isArray(authfile)) {
+      this.logger.error(`The user accounts file ${this.configService.authPath} does not hold a list of users. `
+        + 'Nobody can log in until it is fixed. To start again with the setup wizard, delete the file and restart Homebridge.')
+      return
+    }
+    // There must be at least one admin user
+    if (!authfile.some(x => x?.admin === true)) {
       this.configService.setupWizardComplete = false
     }
   }
@@ -666,13 +738,62 @@ export class AuthService {
         result = await mutator(users)
         return users
       },
-      { spaces: 4 },
+      AUTH_FILE_WRITE_OPTIONS,
     )
     // Every write to the auth file goes through here, so this is the one place
     // that has to drop the token-validation cache. Without it a deletion or
     // demotion would not take effect until the cache expired.
     this.invalidateUserCache()
+    // ... and the one place that has to close the sockets the write made invalid.
+    await this.disconnectRevokedSockets()
     return result as R
+  }
+
+  /**
+   * Remember a socket that a websocket guard has just let through.
+   *
+   * The guards run when a socket SENDS a message. What the server pushes to a
+   * socket afterwards (status updates, the log) passes no guard, so a socket
+   * that only listens was never checked again: a deleted user's open tab kept
+   * receiving until it closed. Keeping the sockets here lets a change to the
+   * auth file close the ones it made invalid (see disconnectRevokedSockets).
+   *
+   * @param client - the socket.io socket
+   * @param payload - the verified token payload the guard checked it with
+   */
+  trackSocket(client: any, payload: any): void {
+    if (!client || this.trackedSockets.has(client)) {
+      return
+    }
+    this.trackedSockets.set(client, payload)
+    client.once?.('disconnect', () => this.trackedSockets.delete(client))
+  }
+
+  /**
+   * Close every tracked socket whose token is no longer valid: its user was
+   * deleted, renamed or demoted, or its sessions were revoked (password
+   * change, 2fa, logout everywhere). Sockets with a token that still passes
+   * are left alone, so this can run after every write to the auth file.
+   */
+  private async disconnectRevokedSockets(): Promise<void> {
+    for (const [client, payload] of this.trackedSockets) {
+      let valid = false
+      try {
+        valid = !!await this.validateUser(payload)
+      } catch {
+        // a socket that cannot be checked is treated as invalid
+      }
+      if (valid) {
+        continue
+      }
+      this.trackedSockets.delete(client)
+      try {
+        // true: close the connection itself, and with it every namespace the browser opened over it
+        client.disconnect(true)
+      } catch (e) {
+        this.logger.warn(`Failed to close a socket of '${payload?.username}' after its session ended: ${e.message}`)
+      }
+    }
   }
 
   /**
@@ -680,6 +801,11 @@ export class AuthService {
    * @param user
    */
   async addUser(user: UserDto) {
+    // A user with no password (or an empty one) could never log in, as login refuses an empty password
+    if (typeof user.password !== 'string' || !user.password) {
+      throw new BadRequestException('A password is required.')
+    }
+
     // Salt + password hashing are computed *outside* the auth.json
     // lock so a slow PBKDF2 doesn't block other callers waiting on
     // the file. The duplicate-username check + id derivation + push
@@ -700,7 +826,9 @@ export class AuthService {
         hashedPassword,
         salt,
         passwordIterations: PBKDF2_ITERATIONS,
-        sessionVersion: 0,
+        // A random start, not 0: a token is matched to its user by username and session version, so a user made
+        // with the name of a deleted (or renamed) one would otherwise accept the old user's unexpired tokens
+        sessionVersion: randomInt(1, 2 ** 31),
         admin: user.admin,
       }
       authfile.push(newUser)
@@ -1025,7 +1153,7 @@ export class AuthService {
         this.logger.warn(`Marked ${username} as having legacy OTP secret.`)
         return authfile
       },
-      { spaces: 4 },
+      AUTH_FILE_WRITE_OPTIONS,
     )
   }
 }

@@ -2,21 +2,186 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.30.2 (Pending Release)
+## v5.30.2 (2026-11-29)
 
 ### Highlights
 
+- 📡 The accessories tab shows accessories that are not responding, with their HomeKit status
+- 🪫 Accessory tiles show a low battery icon
+- 📷 A camera shows as one tile, with its sound, motion sensor and doorbell, and its recording, operating mode and data stream services are hidden
+- 🌀 Matter fans show on and off by their mode and speed, and write the two together
+- 🧹 Matter controls are sent once and show on the part of the device they belong to, the room layout is saved for the signed-in user, and the page no longer adds another set of socket handlers on each visit
+
 ### UI Changes
+
+- feat(accessories): show accessories that are not responding, with their HomeKit status (#3124, #3127)
+- fix(auth): only serve and delete a wallpaper that is a plain image file name in the storage folder
+- fix(auth): allow dev server origins only in development, so a site on port 8080 can't read a token
+- fix(fs): keep a json file's mode and symlink when saving it, and remove the temp file on failure
+- fix(auth): keep the token signing key private (0600), read it once, and never overwrite it
+- fix(auth): keep the setup wizard closed when auth.json can't be read, and keep its users
+- fix(auth): create auth.json readable by its owner only, as it holds password hashes
+- fix(server): write tls private keys and pfx files readable by their owner only
+- fix(accessories): save and load the room layout of the signed-in user, not the user a socket names
+- fix(status): let only an admin save the shared dashboard layout, and refuse one that is not a list
+- fix(ipc): ignore a null or malformed message from homebridge instead of crashing the ui process
+- fix(accessories): wait for homebridge's accessoryInfoData reply when getting one matter accessory
+- fix(plugins): stop the major update policy offering a beta of homebridge or the ui
+- fix(plugins): check every version given to npm, and refuse cmd.exe characters on windows
+- fix(accessories): never save an empty room layout from a modal left open after leaving the page
+- fix(accessories): take the socket handlers off on stop, so each visit no longer adds another set
+- fix(backup): leave the token signing key out, and restore none of the files a backup leaves out
+- fix(backup): install only plugins with a valid name and version when restoring a backup
+- fix(backup): keep old scheduled backups when today's fails, and never remove other instances' ones
+- fix(backup): remove the temp folder of a backup upload that fails to extract
+- fix(backup): free the restore slot when a restore fails part-way, and allow a config with no bridge
+- fix(config-editor): keep saving when config.json has an older custom restart command
+- fix(config-editor): save the hap and matter settings under the config lock, keeping other saves
+- fix(config): start the ui without ssl, instead of not at all, when an ssl file is missing
+- fix(terminal): ignore terminal input that is not text, which crashed the ui process
+- fix(server): accept only a 12 hex digit id when reading one pairing, not a path
+- fix(feature-flags): keep the hap bridge disable switch on for homebridge 3 and later
+- fix(users): answer 400, not 500, when a password or 2fa field is missing, and require a password
+- fix(auth): start a new user's session version at random, so a deleted user's token can't come back
+- fix(auth): count logins still being checked toward the lockout, so a burst can't get past it
+- fix(auth): take as long to refuse an unknown username as a wrong password
+- fix(plugins): load the plugin list before a ui update reads its install path from it
+- fix(plugins): cache npm's short version list apart from the full lookup, which needs the keywords
+- fix(scheduler): restart a shared child bridge once, cancel every old job, and warn on a bad cron
+- fix(config): read a session timeout typed as text as seconds, not milliseconds
+- fix(config-editor): refuse a hap or matter switch with no true or false, which turned hap off
+- fix(config-editor): refuse a whole config that is not an object, which was saved as an empty list
+- feat(status): say matter failed to start on the dashboard code widget, in place of an empty box
+- feat(plugins): say matter failed to start for a child bridge, not to restart to see the code
+- fix(ui): use browser timer types instead of node.js ones, so a ui spec also builds on its own
+- fix(login): say the account is locked for a while, or the ui can't be reached, not a wrong password
+- fix(platform-tools): reboot or shut down the host only from a click, not again on back or reload
+- fix(power-options): ask before restarting the operating system, as a shut down already does
+- fix(ui): reload after an update on safari and firefox too, which showed a blank page
+- fix(i18n): add the ten texts the ui uses that en.json lacked, and test that none are missing
+- fix(plugins): take the install window's output listener off the socket and free its terminal
+- fix(ui): take seven pages' socket listeners off when they close, so each visit no longer adds one
+- fix(plugins): wait for an npm run to finish before the ui closes, so a restart never cuts it short
+- fix(plugins): give npm 30 minutes, not 5, then kill it if needed so the queue moves on
+- fix(terminal): end a socket's first shell when it starts a second, which got the same keystrokes
+- fix(api): keep the reason a route gives for a 404, as json, not a bare not found
+- fix(server): check cached accessory names before stopping homebridge, and skip a missing cache file
+- fix(server): stop homebridge once, not twice, when resetting a bridge pairing
+- fix(backup): save the ui block as config.json has it on an hbfx restore, not its start-up values
+- fix(config-editor): put a plugin's blocks back where its first block was, not past other plugins
+- fix(custom-plugins): pass on only request messages to a plugin's ui server, never junk or null
+- fix(custom-plugins): answer a plugin's page when its cached accessories can't be read
+- refactor(accessories): let the temperature and mired pipes take a missing value
+- refactor(accessories): read hap tile values through typed helpers, ready for hap-client 5.4.1
+- refactor(accessories): read hap control window values through typed helpers, for hap-client 5.4.1
+- refactor(accessories): type the service-update handler as the list of services it gets
+- fix(accessories): send a slider change made just before closing a control window
+- fix(settings): save a setting typed just before leaving the page, instead of losing it
+- fix(accessories): show a matter fan as on by its mode, and write the mode and speed together
+- fix(plugins): remove a synology @eaDir folder before npm runs, which the check never did since 2020
+- fix(accessories): clean up a socket that leaves during the first load, which stayed attached
+- fix(log): clean up a socket that leaves while the log file is checked, which kept its tail listener
+- fix(accessories): send a matter control once, not a second time when its reply is slow
+- fix(accessories): show a control on one part of a matter device on that part, not the main tile
+- fix(platform-tools): read hb-service startup settings that have no env block, not as empty
+- fix(backup): restore none of the files a backup leaves out from an hbfx backup either
+- fix(plugins): fail an npm run stopped at the time limit, which node-pty reports as exit code 0
+- fix(status): say matter failed to start on the dashboard for the status homebridge really sends
+- fix(custom-plugins): ignore a null or junk message from a plugin's ui server instead of crashing
+- fix(auth): log out only for a 401 from the ui's own server, not from the weather widget's site
+- fix(child-bridges): watch a socket once however often it asks, so each status update arrives once
+- fix(status): keep the dashboard's status updates when the bridges widget is removed or re-made
+- fix(update-all): keep the page's child bridge status updates when the update all window closes
+- fix(status): keep a widget's resize and settings events working after the dashboard is unlocked
+- fix(accessories): undo the accessory info edits when its window is closed with escape
+- fix(plugins): take the json config window's monaco marker listener off when it closes
+- fix(terminal): start a re-attached terminal again when its socket reconnects, not leave it silent
+- fix(plugins): run npm on windows from a user folder with a ! or % in its name, as before
+- fix(plugins): treat an empty version in a plugin update as latest again, not refuse it
+- fix(auth): show a wallpaper uploaded with no file extension, saved as ui-wallpaper
+- fix(auth): write a new signing key through a new temp file, so a leftover one can't make it 0644
+- fix(server): make an existing tls key file private before writing the new key into it
+- fix(auth): check at most two passwords at once, so made-up usernames can't fill the thread pool
+- fix(server): survive a promise rejected with nothing, and end the ui only for a port error
+- fix(accessories): write only a mode a matter fan has, from its mode list, with a new speed
+- fix(accessories): put a matter fan window's switch back by its mode after a failed write
+- fix(spa): read index.html on each request again, so a reload after a ui update gets the new one
+- fix(terminal): end a socket's first shell even when two starts arrive at once
+- fix(ui): add no socket listener for a page that has already closed, instead of throwing
+- fix(login): say something went wrong for a server error, not that the ui can't be reached
+- fix(plugins): keep a custom ui path inside its own plugin, not a folder whose name starts the same
+- fix(platform-tools): fail a log download without colours when the read fails, not hang
+- fix(server): keep the old wallpaper when an upload fails, writing the new one to a temp file first
+- fix(backup): remove old scheduled backups of an older bridge username from the default folder
+- fix(status): let only an admin drag the dashboard accessories, as only an admin's order is saved
+- fix(plugins): save an update preference chosen just before the version window closes
+- fix(plugins): read a beta changelog from the newest beta branch, not the last one by name
+- fix(accessories): show a matter fan as on while its current speed is above 0, whatever its mode
+- fix(plugins): on close, wait only for the npm run in progress and drop the queued ones
+- feat(config): show the masked config in a read-only monaco editor on a big screen
+- fix(config): drop the empty strip left of the line numbers in the config editor
+- feat(config): show the secrets toggle as a lock icon, with the masking notice in its tooltip
+- fix(logs): make the log and terminal scrollbar always visible and easy to grab on touch screens
+- feat(settings): bind homebridge to a network interface by its ip address, not only its name (#3126) (@stalinCCCP415)
+- feat(accessories): show a low battery icon on accessory tiles (#3149)
+- fix(auth): accept only HS256 tokens (#3154) (@ofri-peretz)
 
 ### Other Changes
 
 - ci: stop running the validate jobs on node.js v20
+- ci: pin the wiki notification action to a commit and keep the npm publish token to the publish job
+- build: stop publishing 134 source maps whose sources are not shipped, and 134 unused type files
+- test: typecheck the server tests and ui tests in ci, and fix the six type errors it found
+- build: stop publishing three build-only scripts, and fix the patches note in claude.md
+- fix(hb-service): on stop, wait for homebridge to end before closing the ui, and never restart it
+- fix(hb-service): only replace a config.json that is not valid json, never one that failed to save
+- fix(hb-service): log to the console when the log file can't be written, instead of crashing
+- fix(hb-service): trim the log safely when the size to keep is over the maximum, from a whole line
+- fix(hb-service): trim the log at start-up too, so a service that restarts often still trims it
+- fix(hb-service): on freebsd, install for the user who ran sudo when no --user is given
+- fix(hb-service): ask before installing an odd node.js major (23, 25), as for any major not tested
+- fix(hb-service): match update-node 22.1 to v22.1.x, not v22.19.0, and 2 to nothing, not v26
+- fix(hb-service): show the log with hb-service view on macos, windows and freebsd
+- ci: pin the third-party actions to a commit
+- chore: add the homepage url to package.json
+- chore: drop the stale maintainers field from package.json
+- refactor(auth): import createGuardrails from otplib instead of the undeclared @otplib/core
+- build: declare socket.io, whose Socket type the accessories service imports
+- build: compile the server for es2024, which node 22 runs in full, instead of the moving esnext
+- ci: name the labeler job labeler, not stale
+- ci: fix the labeler comment that says alpha pull requests get the beta label
+- fix(hb-service): never start homebridge from a restart timer that fires while hb-service stops
+- docs(plugins): put the package queue's comment back on the queue, not on the npm time limit
+- fix(hb-service): keep a config.json that starts with a byte order mark, instead of replacing it
+- test(server): make the wallpaper delete test fail without its fix, using a file not config.json
+- fix(hb-service): write homebridge output that never ends a line, instead of holding it for ever
+- fix(hb-service): keep the newest part of the log for a maximum size of 0, not empty it
+- fix(hb-service): append the kept log when trimming, so a line written meanwhile is not cut
+- test(scheduler): check the old restart jobs on a copy, as the refresh empties the list in place
+- fix(hb-service): keep config.json's owner when saving it as root, as sudo hb-service install does
+- ci: name the release tag the upload-release-assets pin points at, v4.0.0, not the v4.0 branch
+- test(i18n): find a missing key in a ternary, a helper call or a template, not only before translate
+- fix: import types with import type, so each server file builds on its own as the swc dev server needs
+- chore(dev): run the dev server through swc, so nest checks api data in dev as a release does
+- ci: set release concurrency per job and branch, so a publish is never cancelled part-way (#3128)
+- fix(auth): close a user's open sockets when the user is deleted or the session is revoked
+- fix(terminal): leave a swipe past the first or last line to the phone, to scroll the page
+- fix(plugins): match the start of words in the plugin search (#3138) (@emreocell)
+- fix(plugins): show a plugin's first maintainer in the search, not github actions (#3146)
+- test(ui): stop loading the app polyfills in the ui tests, which left them unchecked
+- fix(accessories): hide a camera's recording, operating mode and data stream services
+- feat(accessories): show a camera as one tile, with its sound, motion sensor and doorbell
+- fix(accessories): accept an id saved before hap-client 5.4.1 in the accessory api (#3125)
+- feat(server): add a web root setting, to serve the ui under a path behind a reverse proxy (#746)
+- feat(matter): show left-over matter storage as stale bridges, and remove it with its plugin
+- fix(server): return an empty list, not a 500, when the accessories or persist folder is missing
+- chore(deps): dependency updates
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.4.0`
+- `@homebridge/hap-client` @ `v5.5.0`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
-- `@homebridge/plugin-ui-utils` @ `v2.3.0`
+- `@homebridge/plugin-ui-utils` @ `v2.3.1`
 
 ## v5.30.1 (2026-11-13)
 

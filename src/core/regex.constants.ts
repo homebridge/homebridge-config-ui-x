@@ -11,6 +11,7 @@ export const RE_CHAR_PAIRS = /.{1,2}/g
 export const RE_HYPHEN = /-/
 export const RE_HYPHEN_GLOBAL = /-/g
 export const RE_WHITESPACE = /\s+/
+export const RE_NON_WORD = /[^\p{L}\p{N}]+/u
 
 // URL patterns
 export const RE_URL_WITH_OPTIONAL_PAREN = /\(?(?:https?|ftp):\/\/[\n\S]+/g
@@ -43,11 +44,23 @@ export const RE_NON_SCOPED = /^([^@/]+)(?:@([^/]+))?(\/.*)?$/
 // Plugin identification
 export const RE_PLUGIN_NAME = /^(?:@[\w-]+(?:\.[\w-]+)*\/)?homebridge-[\w-]+$/i
 
+// A version, range or dist-tag to install: no spaces and no characters a shell would act on (other than the
+// range operators, which are passed as one argv entry and never through a shell on Linux and macOS)
+export const RE_NPM_VERSION = /^[\w.\-^~>=<*|+]+$/
+
+// Characters cmd.exe acts on. On Windows npm is `npm.cmd`, which cmd.exe runs, and node-pty quotes an argument
+// only when it has a space, so `1.0.0&calc` would run calc. These are refused in any npm argument there.
+export const RE_CMD_METACHARACTERS = /[&|<>^%!"]/
+
 // MAC address / device ID
 export const RE_DEVICE_ID = /^[0-9a-f]{2}(?::?[0-9a-f]{2}){5}$/i
 export const RE_USERNAME = /^(?:[0-9a-f]{2}:){5}[0-9a-f]{2}$/i
 export const RE_HEX_12 = /^[a-f0-9]{12}$/i
 export const RE_HEX_ANY = /^[a-f0-9]+$/i
+
+// Network
+// The zone of an IPv6 address given as a scope id (fe80::1%3) rather than an interface name (fe80::1%eth0)
+export const RE_DIGITS_ONLY = /^\d+$/
 
 // Homebridge accessory / cache files
 export const RE_ACCESSORY_INFO_FILE = /AccessoryInfo\.([A-Fa-f0-9]+)\.json$/

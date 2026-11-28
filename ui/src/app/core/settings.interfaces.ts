@@ -93,6 +93,7 @@ export interface AppSettingsInterface {
   formAuth: boolean
   host?: string
   proxyHost?: string
+  webRoot?: string
   sessionTimeout: number
   sessionTimeoutInactivityBased: boolean
   theme: string

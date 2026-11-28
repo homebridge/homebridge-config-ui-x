@@ -1,12 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core'
-import { TranslatePipe } from '@ngx-translate/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { hapStatusKey, isNotResponding, notRespondingCodes } from '@/app/core/accessories/not-responding'
 import { AccessCodeComponent } from '@/app/core/accessories/types/hap/access-code/access-code.component'
 import { AirPurifierComponent } from '@/app/core/accessories/types/hap/air-purifier/air-purifier.component'
 import { AirQualitySensorComponent } from '@/app/core/accessories/types/hap/air-quality-sensor/air-quality-sensor.component'
 import { BatteryComponent } from '@/app/core/accessories/types/hap/battery/battery.component'
+import { CameraComponent } from '@/app/core/accessories/types/hap/camera/camera.component'
 import { CarbonDioxideSensorComponent } from '@/app/core/accessories/types/hap/carbon-dioxide-sensor/carbon-dioxide-sensor.component'
 import { CarbonMonoxideSensorComponent } from '@/app/core/accessories/types/hap/carbon-monoxide-sensor/carbon-monoxide-sensor.component'
 import { ContactSensorComponent } from '@/app/core/accessories/types/hap/contact-sensor/contact-sensor.component'
@@ -88,6 +90,7 @@ import { MatterWindowCoveringComponent } from '@/app/core/accessories/types/matt
     DoorComponent,
     TelevisionComponent,
     BatteryComponent,
+    CameraComponent,
     SpeakerComponent,
     SecuritySystemComponent,
     LeakSensorComponent,
@@ -134,9 +137,22 @@ import { MatterWindowCoveringComponent } from '@/app/core/accessories/types/matt
   standalone: true,
   templateUrl: './accessory-tile.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[attr.title]': 'notRespondingTitle()',
+  },
 })
 export class AccessoryTileComponent {
   $accessories = inject(AccessoriesService)
+  private readonly $translate = inject(TranslateService)
 
   public readonly service = input.required<ServiceTypeX>()
+  protected readonly notResponding = computed(() => this.service().protocol !== 'matter' && isNotResponding(this.service()))
+  protected readonly lowBattery = computed(() => !!this.service().uniqueId && this.$accessories.lowBatteryIds().has(this.service().uniqueId!))
+
+  /** Hover text for the whole tile: each HAP status description with its code, one per line */
+  protected readonly notRespondingTitle = computed(() => this.notResponding()
+    ? notRespondingCodes(this.service())
+        .map(code => `${this.$translate.instant(hapStatusKey(code))} (${code})`)
+        .join('\n')
+    : null)
 }

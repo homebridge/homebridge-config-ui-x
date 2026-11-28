@@ -1,6 +1,7 @@
 import type { ServiceType } from '@homebridge/hap-client'
 import type { Socket } from 'socket.io'
 
+import type { MatterAccessoriesResponse, MatterAccessory, MatterAccessoryInfo, MatterAccessoryPart, MatterControlResponse, MatterEvent, MatterService, MatterStateUpdate } from '../../core/matter/matter.interfaces.js'
 import type { AccessoryControlMessage } from './accessories.interfaces.js'
 
 import { join } from 'node:path'
@@ -14,17 +15,6 @@ import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
-import {
-  MatterAccessoriesResponse,
-  MatterAccessory,
-  MatterAccessoryInfo,
-  MatterAccessoryPart,
-  MatterControlResponse,
-  MatterEvent,
-  MatterService,
-  MatterStateUpdate,
-} from '../../core/matter/matter.interfaces.js'
-
 /**
  * Whether a hap-client error is a characteristic answering with a HAP error
  * status (a device that is off or not responding), rather than a failed request.
@@ -66,7 +56,14 @@ export class AccessoriesService {
   // request stores `{ eventType, resolve, reject, timer }` keyed by its
   // correlation id; the dispatcher routes incoming events to the right
   // waiter instead of every request registering its own listener.
-  private matterRequests = new Map<string, { eventType: string, resolve: (v: any) => void, reject: (e: Error) => void, timer: ReturnType<typeof setTimeout> }>()
+  private matterRequests = new Map<string, {
+    eventType: string
+    resolve: (v: any) => void
+    reject: (e: Error) => void
+    timer: ReturnType<typeof setTimeout>
+    matchUncorrelated?: (data: any) => boolean
+  }>()
+
   private matterDispatcherInstalled = false
 
   constructor(
@@ -194,6 +191,15 @@ export class AccessoriesService {
     // requests can short-circuit at the next `await` boundary instead of
     // burning IPC + HAP work whose result has nowhere to go.
     let disconnected = false
+    const notResponding = new Set<string>()
+
+    // The first load below takes a while (Matter start, every bridge). A page reload in that time sends the
+    // socket's one-time 'disconnect' before the clean-up handler further down exists, so note it here
+    const markDisconnected = () => {
+      disconnected = true
+    }
+    client.once('disconnect', markDisconnected)
+    client.once('end', markDisconnected)
 
     const loadAllAccessories = async (refresh: boolean) => {
       if (disconnected) {
@@ -211,7 +217,7 @@ export class AccessoriesService {
       if (disconnected) {
         return
       }
-      this.refreshCharacteristics(hapServices)
+      this.refreshAndEmitNotResponding(client, hapServices, notResponding, () => disconnected)
 
       // Emit HAP ready immediately so HAP accessories can be controlled
       client.emit('hap-accessories-ready-for-control')
@@ -285,7 +291,7 @@ export class AccessoriesService {
 
               // Do a refresh to check if any accessories changed after this action
               setTimeout(() => {
-                this.refreshCharacteristics(hapServices)
+                this.refreshAndEmitNotResponding(client, hapServices, notResponding, () => disconnected)
               }, 1500)
               // Update services list with new HAP services
               services = [
@@ -308,7 +314,17 @@ export class AccessoriesService {
 
     const monitor = await this.ensureHapMonitor()
 
-    const updateHandler = (data: ServiceType | MatterService) => {
+    // Gone during the first load: undo what was set up, rather than add listeners nobody would ever remove
+    if (disconnected) {
+      this.clientSessions.delete(client)
+      client.removeAllListeners('accessory-control')
+      this.activeClients.delete(client)
+      return
+    }
+    client.removeListener('disconnect', markDisconnected)
+    client.removeListener('end', markDisconnected)
+
+    const updateHandler = (data: ServiceType[]) => {
       client.emit('accessories-data', data)
     }
     monitor.on('service-update', updateHandler)
@@ -383,8 +399,36 @@ export class AccessoriesService {
    * Refresh the characteristics from Homebridge
    * @param services
    */
-  private refreshCharacteristics(services: ServiceType[]) {
-    Promise.all(services.map(service =>
+  /**
+   * Refresh the services, then send the client the ones with a characteristic
+   * that answered with a HAP error status, so the UI can show them as not
+   * responding. The refresh is not awaited before the first emit, so that list
+   * goes out without statuses.
+   */
+  private refreshAndEmitNotResponding(client: Socket, services: ServiceType[], notResponding: Set<string>, isDisconnected: () => boolean) {
+    void this.refreshCharacteristics(services).then(() => {
+      if (isDisconnected()) {
+        return
+      }
+      // Send the services that are failing now, and those that have recovered
+      const changed = services.filter((service) => {
+        const failing = service.serviceCharacteristics.some(c => c.status)
+        const wasFailing = notResponding.has(service.uniqueId)
+        if (failing) {
+          notResponding.add(service.uniqueId)
+        } else {
+          notResponding.delete(service.uniqueId)
+        }
+        return failing || wasFailing
+      })
+      if (changed.length) {
+        client.emit('accessories-data', changed)
+      }
+    })
+  }
+
+  private refreshCharacteristics(services: ServiceType[]): Promise<unknown> {
+    return Promise.all(services.map(service =>
       service.refreshCharacteristics().catch((error) => {
         // A device that is off is normal, and this runs on every page load, so
         // say so quietly - its other values were still refreshed
@@ -420,6 +464,24 @@ export class AccessoriesService {
   }
 
   /**
+   * Find a HAP service by its uniqueId. hap-client 5.4.1 builds the id differently, so an id saved
+   * from an older version (by a script or an app using this API) still finds its service through
+   * `legacyUniqueId`, but only when no other service shares that old id.
+   * @param services
+   * @param uniqueId
+   */
+  private findService(services: ServiceType[], uniqueId: string): ServiceType | undefined {
+    const service = services.find(x => x.uniqueId === uniqueId)
+    if (service) {
+      return service
+    }
+    const legacy = services.filter(x => x.legacyUniqueId === uniqueId)
+    return legacy.length === 1
+      ? legacy[0]
+      : undefined
+  }
+
+  /**
    * Get a single accessory and refresh its characteristics
    * @param uniqueId
    */
@@ -431,7 +493,7 @@ export class AccessoriesService {
 
     // HAP accessory (existing logic)
     const services = await this.loadAccessories()
-    const service = services.find(x => x.uniqueId === uniqueId)
+    const service = this.findService(services, uniqueId)
 
     if (!service) {
       throw new BadRequestException(`Service with uniqueId of '${uniqueId}' not found.`)
@@ -459,9 +521,11 @@ export class AccessoriesService {
       const { uuid, partId } = this.parseMatterUniqueId(uniqueId)
 
       // Request detailed info via IPC using unified Matter event channel
-      const response = await this.waitForMatterEvent<MatterAccessoryInfo>('accessoryInfo', (correlationId) => {
+      // Homebridge answers with `accessoryInfoData`. Up to v2.5.0 that reply carries no correlation id, so a reply
+      // without one is matched to this request by the accessory uuid instead.
+      const response = await this.waitForMatterEvent<MatterAccessoryInfo>('accessoryInfoData', (correlationId) => {
         this.homebridgeIpcService.sendMessage('getMatterAccessoryInfo', { uuid, correlationId })
-      })
+      }, (data: { uuid?: string }) => !data?.uuid || data.uuid === uuid)
 
       if (response.error) {
         throw new BadRequestException(response.error)
@@ -491,7 +555,7 @@ export class AccessoriesService {
    */
   public async setAccessoryCharacteristic(uniqueId: string, characteristicType: string, value: number | boolean | string) {
     const services = await this.loadAccessories()
-    const service = services.find(x => x.uniqueId === uniqueId)
+    const service = this.findService(services, uniqueId)
 
     if (!service) {
       throw new BadRequestException(`Service with uniqueId of '${uniqueId}' not found.`)
@@ -650,13 +714,17 @@ export class AccessoriesService {
    * Uses a correlationId to avoid cross-talk between concurrent requests.
    * Retries once on timeout (10s per attempt).
    */
-  private async waitForMatterEvent<T = unknown>(eventType: string, sendRequest: (correlationId: string) => void): Promise<T> {
+  private async waitForMatterEvent<T = unknown>(
+    eventType: string,
+    sendRequest: (correlationId: string) => void,
+    matchUncorrelated?: (data: any) => boolean,
+  ): Promise<T> {
     try {
-      return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000)
+      return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000, matchUncorrelated)
     } catch {
       this.logger.warn(`Matter IPC request '${eventType}' timed out, retrying...`)
       try {
-        return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000)
+        return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000, matchUncorrelated)
       } catch (retryError) {
         this.logger.error(`Matter IPC request '${eventType}' failed after retry`)
         throw retryError
@@ -672,7 +740,12 @@ export class AccessoriesService {
    * registered a fresh listener per request, so N concurrent requests
    * meant N listeners and each emit did O(N) work.
    */
-  private async attemptMatterEvent<T = unknown>(eventType: string, sendRequest: (correlationId: string) => void, timeoutMs: number): Promise<T> {
+  private async attemptMatterEvent<T = unknown>(
+    eventType: string,
+    sendRequest: (correlationId: string) => void,
+    timeoutMs: number,
+    matchUncorrelated?: (data: any) => boolean,
+  ): Promise<T> {
     this.ensureMatterDispatcher()
     const correlationId = `${eventType}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 
@@ -688,6 +761,7 @@ export class AccessoriesService {
         resolve,
         reject,
         timer,
+        matchUncorrelated,
       })
 
       try {
@@ -715,6 +789,15 @@ export class AccessoriesService {
     this.matterDispatcherInstalled = true
     this.homebridgeIpcService.on('matterEvent', (event: MatterEvent) => {
       if (!event?.correlationId) {
+        // An older Homebridge sends some replies without the id: give it to the oldest request that accepts it
+        for (const [id, waiter] of this.matterRequests) {
+          if (waiter.eventType === event?.type && waiter.matchUncorrelated?.(event.data)) {
+            this.matterRequests.delete(id)
+            clearTimeout(waiter.timer)
+            waiter.resolve(event.data)
+            return
+          }
+        }
         return
       }
       const waiter = this.matterRequests.get(event.correlationId)
@@ -1042,12 +1125,14 @@ export class AccessoriesService {
     try {
       const { uuid, partId } = this.parseMatterUniqueId(control.uniqueId)
 
-      // Find the accessory in the cache to get the bridge username
-      const accessory = this.matterAccessories.find(acc => acc.uuid === uuid)
+      // Find the accessory in the cache to get the bridge username. By the full id: the parts of a composed
+      // device share its uuid, and the uuid alone finds the main accessory, whose tile would then be changed
+      const accessory = this.matterAccessories.find(acc => acc.uniqueId === control.uniqueId)
       const bridgeUsername = accessory?.bridge?.username
 
-      // Send control command via IPC using unified Matter event channel
-      const response = await this.waitForMatterEvent<MatterControlResponse>('accessoryControlResponse', (correlationId) => {
+      // Send control command via IPC using unified Matter event channel. Sent once, with no retry: a reply that
+      // comes late does not mean the command was lost, and a second send would carry it out twice
+      const response = await this.attemptMatterEvent<MatterControlResponse>('accessoryControlResponse', (correlationId) => {
         this.homebridgeIpcService.sendMessage('matterAccessoryControl', {
           uuid,
           cluster: control.cluster,
@@ -1056,7 +1141,7 @@ export class AccessoriesService {
           partId,
           correlationId,
         })
-      })
+      }, 10000)
 
       if (!response.success) {
         client.emit('accessory-control-failure', response.error || 'Matter control failed')

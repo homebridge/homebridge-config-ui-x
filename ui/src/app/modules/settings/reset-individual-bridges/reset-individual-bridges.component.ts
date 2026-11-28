@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -36,6 +36,12 @@ export class ResetIndividualBridgesComponent implements OnInit {
   public readonly pairingsNonChild = signal<any[]>([])
   public readonly pairingsChildActive = signal<any[]>([])
   public readonly pairingsChildStale = signal<any[]>([])
+  public readonly pairingsMatterStale = signal<any[]>([])
+  public readonly isEmpty = computed(() => !this.pairingsNonChild().length
+    && !this.pairingsChildActive().length
+    && !this.pairingsChildStale().length
+    && !this.pairingsMatterStale().length)
+
   public readonly toDelete = signal<{ id: string, resetPairingInfo: boolean }[]>([])
 
   // Other properties
@@ -91,8 +97,11 @@ export class ResetIndividualBridgesComponent implements OnInit {
         .sort((a: Pairing, b: Pairing) => a.name.localeCompare(b.name))
 
       this.pairingsChildActive.set(pairings.filter((pairing: any) => pairing._category === 'bridge' && !pairing._couldBeStale))
-      this.pairingsNonChild.set(pairings.filter((pairing: any) => pairing._category !== 'bridge'))
+      this.pairingsNonChild.set(pairings.filter((pairing: any) => pairing._category !== 'bridge' && !pairing._couldBeStale))
       this.pairingsChildStale.set(pairings.filter((pairing: any) => pairing._category === 'bridge' && pairing._couldBeStale))
+      // Matter storage that has no HAP side and that nothing uses any more: an external accessory, or a folder
+      // with no accessories. Shown among the ones in use, it would not be seen as something to clean up
+      this.pairingsMatterStale.set(pairings.filter((pairing: any) => pairing._category !== 'bridge' && pairing._couldBeStale))
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('settings.unpair_bridge.load_error'), this.$translate.instant('toast.title_error'))

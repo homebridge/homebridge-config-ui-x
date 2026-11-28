@@ -1,6 +1,7 @@
 import { Inject, UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 
+import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard.js'
 import { WsGuard } from '../../core/auth/guards/ws.guard.js'
 import { devServerCorsConfig } from '../../core/cors.config.js'
 import { PluginsService } from '../plugins/plugins.service.js'
@@ -41,6 +42,8 @@ export class StatusGateway {
     }
   }
 
+  // One dashboard layout is shared by every user, and only an admin can change it in the UI
+  @UseGuards(WsAdminGuard)
   @SubscribeMessage('set-dashboard-layout')
   async setDashboardLayout(client, payload) {
     try {

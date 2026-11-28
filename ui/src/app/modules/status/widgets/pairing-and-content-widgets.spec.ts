@@ -17,7 +17,7 @@ import { AccessoriesWidgetComponent } from '@/app/modules/status/widgets/accesso
 import { HapQrcodeWidgetComponent } from '@/app/modules/status/widgets/hap-qrcode-widget/hap-qrcode-widget.component'
 import { MatterQrcodeWidgetComponent } from '@/app/modules/status/widgets/matter-qrcode-widget/matter-qrcode-widget.component'
 import { WeatherWidgetComponent } from '@/app/modules/status/widgets/weather-widget/weather-widget.component'
-import { fakeWs, makeSettings, toastrStub } from '@/testing'
+import { fakeWs, makeAuth, makeSettings, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
 /**
@@ -58,6 +58,7 @@ describe('the pairing and content widgets', () => {
    * @param options.rooms - the accessory rooms the service reports
    * @param options.env - settings env overrides
    * @param options.awaitStable - whether to wait for stability before returning
+   * @param options.admin - whether the signed-in user is an admin (default yes)
    */
   async function open<T>(type: new (...args: any[]) => T, widget: any, options: {
     connected?: boolean
@@ -65,6 +66,7 @@ describe('the pairing and content widgets', () => {
     rooms?: any[]
     env?: Record<string, any>
     awaitStable?: boolean
+    admin?: boolean
   } = {}) {
     TestBed.resetTestingModule()
     settings = makeSettings({ env: options.env })
@@ -105,6 +107,9 @@ describe('the pairing and content widgets', () => {
           settings,
           ws,
           toastr: toastrStub(),
+          auth: makeAuth({
+            user: { admin: options.admin ?? true },
+          }),
         }),
         { provide: AccessoriesService, useValue: accessories },
         { provide: DragulaService, useValue: dragula },
@@ -716,6 +721,15 @@ describe('the pairing and content widgets', () => {
       const group = dragula.createGroup.mock.calls[0][1]
 
       expect(group.moves(document.createElement('div'))).toBe(true)
+    })
+
+    it('does not allow dragging for a user who is not an admin', async () => {
+      // Regression: a non-admin could drag the tiles, but only an admin may save the shared dashboard layout, so
+      // the new order was quietly lost on the next load
+      await open(AccessoriesWidgetComponent, { component: 'AccessoriesWidgetComponent' }, { admin: false })
+      const group = dragula.createGroup.mock.calls[0][1]
+
+      expect(group.moves(document.createElement('div'))).toBe(false)
     })
 
     it('refuses to drag a tile marked no-drag', async () => {

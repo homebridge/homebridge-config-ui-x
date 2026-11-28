@@ -755,6 +755,18 @@ describe('managePluginComponent', () => {
       expect(xterm.terminals[0].written).toEqual(['added 1 package\r\n'])
     })
 
+    it('takes its output listener off the shared socket and frees its terminal when closed', async () => {
+      // The plugins socket is cached and `end()` leaves listeners on it: each modal opened used to keep its closed
+      // terminal and error log receiving every later npm run
+      const modalRef = await open({ action: 'Update', targetVersion: 'latest' })
+      expect(io.socket.handlers('stdout')).toHaveLength(1)
+
+      modalRef.ngOnDestroy()
+
+      expect(io.socket.handlers('stdout')).toHaveLength(0)
+      expect(xterm.terminals[0].dispose).toHaveBeenCalled()
+    })
+
     it('saves the log without the colour codes', async () => {
       const modalRef = await open({ action: 'Update', targetVersion: 'latest' })
       io.socket.fire('stdout', '\u001B[31mnpm ERR! code E404\u001B[39m\r\n')

@@ -5,6 +5,7 @@ import { NouisliderComponent } from 'ng2-nouislider'
 import { Subject } from 'rxjs'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
+import { asNumber } from '@/app/core/accessories/types/hap/hap-values'
 
 @Component({
   selector: 'app-window-manage',
@@ -18,7 +19,7 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WindowManageComponent extends BaseManageComponent {
-  public targetMode!: string
+  public targetMode!: boolean
   public targetPositionChanged: Subject<string> = new Subject<string>()
   public targetPosition!: {
     value: any
@@ -29,22 +30,23 @@ export class WindowManageComponent extends BaseManageComponent {
 
   protected setupComponent() {
     this.createDebouncedSubscription(this.targetPositionChanged, () => {
-      if (this.service.getCharacteristic!('CurrentPosition')!.value < this.targetPosition.value) {
+      const currentPosition = asNumber(this.service.getCharacteristic?.('CurrentPosition')?.value)
+      if (currentPosition !== undefined && currentPosition < this.targetPosition.value) {
         this.service.values.PositionState = 1
-      } else if (this.service.getCharacteristic!('CurrentPosition')!.value > this.targetPosition.value) {
+      } else if (currentPosition !== undefined && currentPosition > this.targetPosition.value) {
         this.service.values.PositionState = 0
       }
-      void this.service.getCharacteristic!('TargetPosition').setValue!(this.targetPosition.value)
+      void this.service.getCharacteristic?.('TargetPosition')?.setValue?.(this.targetPosition.value)
     })
 
-    this.targetMode = this.service.values.On
+    this.targetMode = !!this.service.values.On
     this.loadTargetPosition()
   }
 
   protected handleAccessoryUpdate() {
-    this.targetMode = this.service.values.On
+    this.targetMode = !!this.service.values.On
     if (this.targetPosition && 'TargetPosition' in this.service.values) {
-      this.targetPosition.value = this.service.getCharacteristic!('TargetPosition').value
+      this.targetPosition.value = this.service.getCharacteristic?.('TargetPosition')?.value
     }
   }
 
@@ -53,7 +55,7 @@ export class WindowManageComponent extends BaseManageComponent {
   }
 
   private loadTargetPosition() {
-    const TargetPosition = this.service.getCharacteristic!('TargetPosition')
+    const TargetPosition = this.service.getCharacteristic?.('TargetPosition')
 
     if (TargetPosition) {
       this.targetPosition = {

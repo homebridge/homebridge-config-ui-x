@@ -13,12 +13,14 @@ import { AccessoriesService as AccessoriesServiceToken } from '@/app/core/access
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { AirPurifierComponent } from '@/app/core/accessories/types/hap/air-purifier/air-purifier.component'
 import { BatteryComponent } from '@/app/core/accessories/types/hap/battery/battery.component'
+import { CameraComponent } from '@/app/core/accessories/types/hap/camera/camera.component'
 import { DoorComponent } from '@/app/core/accessories/types/hap/door/door.component'
 import { DoorbellComponent } from '@/app/core/accessories/types/hap/doorbell/doorbell.component'
 import { DoorbellManageComponent } from '@/app/core/accessories/types/hap/doorbell/doorbell.manage.component'
 import { FanComponent } from '@/app/core/accessories/types/hap/fan/fan.component'
 import { FilterMaintenanceComponent } from '@/app/core/accessories/types/hap/filter-maintenance/filter-maintenance.component'
 import { GarageDoorOpenerComponent } from '@/app/core/accessories/types/hap/garage-door-opener/garage-door-opener.component'
+import { HapNumberPipe } from '@/app/core/accessories/types/hap/hap-number.pipe'
 import { HeaterCoolerComponent } from '@/app/core/accessories/types/hap/heater-cooler/heater-cooler.component'
 import { HumidifierDehumidifierComponent } from '@/app/core/accessories/types/hap/humidifier-dehumidifier/humidifier-dehumidifier.component'
 import { LightbulbComponent } from '@/app/core/accessories/types/hap/lightbulb/lightbulb.component'
@@ -109,6 +111,7 @@ describe('the HAP accessory tiles', () => {
           ConvertTempPipe,
           ConvertMiredPipe,
           DurationPipe,
+          HapNumberPipe,
         ],
         schemas: [NO_ERRORS_SCHEMA],
       },
@@ -342,6 +345,11 @@ describe('the HAP accessory tiles', () => {
 
   // Three tiles have nothing to toggle, so a tap opens their manage modal
   const MODAL_TILES: ModalTileCase[] = [
+    {
+      name: 'camera',
+      type: CameraComponent,
+      chars: [],
+    },
     {
       name: 'thermostat',
       type: ThermostatComponent,
@@ -2082,6 +2090,70 @@ describe('the HAP accessory tiles', () => {
 
   // The state text used to be one long nested condition in each template. It now
   // comes from a method on the tile, and these pin it to what the template said
+  describe('the camera tile', () => {
+    /**
+     * A camera's video stream service, with its parts folded in as AccessoriesService does it.
+     * @param parts - the folded-in services
+     */
+    function camera(...parts: ServiceTypeX[]) {
+      const service = hapService({ type: 'CameraRTPStreamManagement', serviceName: 'Front', characteristics: [] })
+      service.linkedServices = Object.fromEntries(parts.map((part, index) => [20 + index, part]))
+      return service
+    }
+
+    function part(type: string, chars: Array<[string, any]> = []) {
+      return hapService({
+        type,
+        characteristics: chars.map(([name, value]) => characteristic(name, value)),
+      })
+    }
+
+    function render(service: ServiceTypeX) {
+      return build(CameraComponent, service, true).nativeElement as HTMLElement
+    }
+
+    it('calls a camera with no doorbell a camera', () => {
+      const tile = create(CameraComponent, camera(part('MotionSensor', [
+        ['MotionDetected', false],
+      ])))
+
+      expect(tile.isDoorbell()).toBe(false)
+      expect(render(camera()).textContent).toContain('accessories.core.camera')
+    })
+
+    it('calls a camera with a doorbell service a doorbell', () => {
+      const service = camera(part('Doorbell', [
+        ['ProgrammableSwitchEvent', null],
+      ]))
+
+      expect(create(CameraComponent, service).isDoorbell()).toBe(true)
+      expect(render(service).textContent).toContain('accessories.core.doorbell')
+    })
+
+    it('lights up and says so while its motion sensor detects motion', () => {
+      const element = render(camera(part('MotionSensor', [
+        ['MotionDetected', true],
+      ])))
+
+      expect(element.querySelector('.accessory-box')!.classList).toContain('accessory-on')
+      expect(element.querySelector('.red-text')!.textContent).toContain('accessories.control.detected')
+    })
+
+    it('stays dark with no motion, or no motion sensor', () => {
+      for (const service of [
+        camera(part('MotionSensor', [
+          ['MotionDetected', false],
+        ])),
+        camera(),
+      ]) {
+        const element = render(service)
+
+        expect(element.querySelector('.accessory-box')!.classList).not.toContain('accessory-on')
+        expect(element.querySelector('.red-text')).toBeNull()
+      }
+    })
+  })
+
   describe('what a tile says about its state', () => {
     it.each([
       [

@@ -1,4 +1,6 @@
-import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common'
+import type { CanActivate, ExecutionContext } from '@nestjs/common'
+
+import { Inject, Injectable } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 import { WsException } from '@nestjs/websockets'
 import jwt from 'jsonwebtoken'
@@ -6,7 +8,8 @@ import jwt from 'jsonwebtoken'
 import { UserDto } from '../../../modules/users/users.dto.js'
 import { ConfigService } from '../../config/config.service.js'
 import { AuthService } from '../auth.service.js'
-import { extractWsToken } from './ws-token.js'
+import { JWT_ALGORITHM } from '../jwt.constants.js'
+import { extractWsToken, setWsUser } from './ws-token.js'
 
 @Injectable()
 export class WsGuard implements CanActivate {
@@ -33,7 +36,9 @@ export class WsGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient()
     try {
-      const payload = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey) as UserDto & { instanceId?: string }
+      const payload = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey, {
+        algorithms: [JWT_ALGORITHM],
+      }) as UserDto & { instanceId?: string }
       // Mirror JwtStrategy.validate — reject mismatched instanceId so the
       // setup-wizard token (intentionally signed with a wrong instanceId)
       // cannot reach socket endpoints once the wizard has completed.
@@ -49,6 +54,9 @@ export class WsGuard implements CanActivate {
       if (!await this.authService.validateUser(payload)) {
         throw new Error('User no longer valid')
       }
+      setWsUser(client, payload)
+      // so the socket is closed if this user is deleted or revoked while it only listens
+      this.authService.trackSocket(client, payload)
       return true
     } catch (e) {
       client.disconnect()

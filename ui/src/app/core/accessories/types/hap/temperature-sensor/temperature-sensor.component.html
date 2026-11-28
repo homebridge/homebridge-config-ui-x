@@ -1,7 +1,7 @@
 @let hasTemp = 'CurrentTemperature' in service().values;
 @let tempText =
   hasTemp
-    ? `${(service().values?.CurrentTemperature | convertTemp | number: '1.0-1')}°${(temperatureUnits | uppercase)}`
+    ? `${(service().values.CurrentTemperature | convertTemp | number: '1.0-1')}°${(temperatureUnits | uppercase)}`
     : ('accessories.control.no_data' | translate);
 
 @let srBaseName = (service().customName || service().serviceName || '').trim();
@@ -59,9 +59,7 @@
     <div class="accessory-label mt-auto" aria-hidden="true">{{ service().customName || service().serviceName }}</div>
     <div class="accessory-label grey-text" aria-hidden="true">
       @if (hasTemp) {
-        {{ service().values?.CurrentTemperature | convertTemp | number: '1.0-1' }}&deg;{{
-          temperatureUnits | uppercase
-        }}
+        {{ service().values.CurrentTemperature | convertTemp | number: '1.0-1' }}&deg;{{ temperatureUnits | uppercase }}
       } @else {
         {{ 'accessories.control.no_data' | translate }}
       }

@@ -883,7 +883,9 @@ describe('AccessoriesService', () => {
     it.each([
       'InputSource',
       'LockManagement',
-      'CameraRTPStreamManagement',
+      'CameraRecordingManagement',
+      'CameraOperatingMode',
+      'DataStreamTransportManagement',
       'ProtocolInformation',
       'NFCAccess',
       'BridgedNode',
@@ -1007,6 +1009,102 @@ describe('AccessoriesService', () => {
       expect((first as any).linkedServices).toBeUndefined()
       expect((second as any).linkedServices).toBeUndefined()
     })
+
+    describe('a camera', () => {
+      // A Ring camera, as homebridge-ring-hksv publishes it
+      function camera(...types: Array<[string, number]>) {
+        return types.map(([type, iid]) => accessory('Front', 'RING-1', type, `cam-${type}-${iid}`, iid))
+      }
+
+      it('shows as one tile, with its sound and motion sensor folded in', async () => {
+        await start()
+
+        const [stream, microphone, speaker, motion] = camera(
+          ['CameraRTPStreamManagement', 10],
+          ['Microphone', 11],
+          ['Speaker', 12],
+          ['MotionSensor', 13],
+        )
+        sendData(stream, microphone, speaker, motion)
+
+        expect(roomsHolding('cam-CameraRTPStreamManagement-10')).toHaveLength(1)
+        for (const part of [microphone, speaker, motion]) {
+          expect((stream as any).linkedServices[part.iid]).toBe(part)
+          expect(roomsHolding(part.uniqueId!)).toEqual([])
+        }
+      })
+
+      it('keeps its battery, light and siren as their own tiles', async () => {
+        await start()
+
+        const [stream, battery, light, siren] = camera(
+          ['CameraRTPStreamManagement', 10],
+          ['Battery', 11],
+          ['Lightbulb', 12],
+          ['Switch', 13],
+        )
+        sendData(stream, battery, light, siren)
+
+        for (const part of [battery, light, siren]) {
+          expect(roomsHolding(part.uniqueId!)).toHaveLength(1)
+        }
+      })
+
+      it('folds the bell and its button into a video doorbell', async () => {
+        await start()
+
+        const [stream, doorbell, button] = camera(
+          ['CameraRTPStreamManagement', 10],
+          ['Doorbell', 11],
+          ['StatelessProgrammableSwitch', 12],
+        )
+        sendData(stream, doorbell, button)
+
+        expect((stream as any).linkedServices[11]).toBe(doorbell)
+        expect((stream as any).linkedServices[12]).toBe(button)
+        expect(roomsHolding(doorbell.uniqueId!)).toEqual([])
+        expect(roomsHolding(button.uniqueId!)).toEqual([])
+      })
+
+      it('leaves a button alone on a camera that is not a doorbell', async () => {
+        await start()
+
+        const [stream, button] = camera(['CameraRTPStreamManagement', 10], ['StatelessProgrammableSwitch', 11])
+        sendData(stream, button)
+
+        expect(roomsHolding(button.uniqueId!)).toHaveLength(1)
+      })
+
+      it('shows one tile for a camera with several video streams', async () => {
+        // A camera without HomeKit Secure Video can offer up to ten streams
+        await start()
+
+        const [first, second] = camera(['CameraRTPStreamManagement', 20], ['CameraRTPStreamManagement', 10])
+        sendData(first, second)
+
+        expect(roomsHolding(second.uniqueId!)).toHaveLength(1)
+        expect(roomsHolding(first.uniqueId!)).toEqual([])
+      })
+
+      it('leaves a speaker alone on an accessory with no camera', async () => {
+        await start()
+
+        const speaker = accessory('Kitchen', 'SPK-1', 'Speaker', 'hap-speaker', 10)
+        sendData(speaker)
+
+        expect(roomsHolding('hap-speaker')).toHaveLength(1)
+      })
+
+      it('does not fold a motion sensor from another accessory', async () => {
+        await start()
+
+        const [stream] = camera(['CameraRTPStreamManagement', 10])
+        const motion = accessory('Hall', 'PIR-1', 'MotionSensor', 'hap-motion', 11)
+        sendData(stream, motion)
+
+        expect(roomsHolding('hap-motion')).toHaveLength(1)
+      })
+    })
   })
 
   describe('HAP control helpers', () => {
@@ -1127,6 +1225,29 @@ describe('AccessoriesService', () => {
   })
 
   describe('saving the layout', () => {
+    it('saves nothing once the session has stopped, so a modal left open can not wipe the rooms', async () => {
+      // The info modal is opened on document.body, so it outlives the page. Pressing Back and then Save in it
+      // used to send an empty layout, which the server stored as is.
+      await start({
+        layout: [
+          {
+            name: 'Kitchen',
+            isDefault: true,
+            services: [
+              layoutEntry({ customName: 'Kettle' }),
+            ],
+          },
+        ],
+      })
+      sendData(rawHap({ nameBasedUniqueId: 'nb-1' }))
+
+      service.stop()
+      service.saveLayout()
+      await settle()
+
+      expect(io.requests.filter(entry => entry.resource === 'save-layout')).toHaveLength(0)
+    })
+
     it('sends the room names and the fields the layout needs', async () => {
       await start({
         layout: [
@@ -1514,19 +1635,30 @@ describe('AccessoriesService', () => {
       expect(seen).toHaveBeenCalled()
     })
 
-    it('re-binds its socket handlers on every restart', async () => {
-      // `io.end()` only emits `end` - the namespace is cached and shared, so
-      // its listeners are never removed. This is exactly why an
-      // `accessories-reload-required` event refreshes over the open socket
-      // rather than calling stop() and start() again: doing that doubled the
-      // live listeners on every late-discovered bridge
+    it('takes its socket handlers off on stop, so a restart never adds a second set', async () => {
+      // `io.end()` only emits `end` - the namespace is cached and shared, so its
+      // listeners stay unless stop() removes them. The page and the dashboard
+      // widget both start and stop the session, so each visit used to add one
+      // more set: N error toasts for one failure, N reloads for one new bridge
       await start()
       expect(io.socket.handlers('accessories-data')).toHaveLength(1)
 
       service.stop()
       await service.start()
 
-      expect(io.socket.handlers('accessories-data')).toHaveLength(2)
+      for (const event of [
+        'accessories-data',
+        'accessories-reload-required',
+        'matter-accessories-reload-required',
+        'accessory-control-failure',
+        'hap-accessories-ready-for-control',
+        'matter-accessories-ready-for-control',
+      ]) {
+        expect(io.socket.handlers(event)).toHaveLength(1)
+      }
+
+      io.socket.fire('accessory-control-failure', 'Accessory not found')
+      expect(toastr.error).toHaveBeenCalledTimes(1)
     })
 
     it('keeps the layoutSaved subscribers alive across a stop and start', async () => {

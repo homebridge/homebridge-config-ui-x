@@ -2,7 +2,7 @@
   "name": "Homebridge",
   "short_name": "Homebridge",
   "description": "Homebridge is a lightweight NodeJS server that emulates the iOS HomeKit API.",
-  "start_url": "/",
+  "start_url": "..",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#57277c",

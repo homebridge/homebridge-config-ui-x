@@ -427,6 +427,27 @@ describe('the bridge and backup modals', () => {
       expect(modal.accessories().map(accessory => accessory.name)).toEqual(['Matter Light'])
     })
 
+    it('leaves out matter storage that could be left over', async () => {
+      // Nothing publishes it now, so the pairing code this window shows would lead nowhere. It is in the
+      // unpair window, as something to remove
+      const modal = await openModal([
+        {
+          _plugin: 'homebridge-example',
+          _matterOnly: true,
+          _couldBeStale: true,
+          name: 'Old Vacuum',
+        },
+        {
+          _plugin: 'homebridge-example',
+          _matterOnly: true,
+          _couldBeStale: false,
+          name: 'Vacuum',
+        },
+      ])
+
+      expect(modal.accessories().map(accessory => accessory.name)).toEqual(['Vacuum'])
+    })
+
     it('leaves a bridged accessory out', async () => {
       // Only externals need their own pairing code
       const modal = await openModal([

@@ -1,0 +1,47 @@
+@let kind = (isDoorbell() ? 'accessories.core.doorbell' : 'accessories.core.camera') | translate;
+@let name = (service().customName || service().serviceName || '').trim();
+@let stateText = motionDetected() ? ('accessories.control.detected' | translate) : kind;
+@let motionText = `${('accessories.core.motion_sensor' | translate)} ${stateText}`;
+@let srText = `${name}, ${kind}${motionDetected() ? `, ${motionText}` : ''}`;
+
+<div
+  class="accessory-box"
+  tabindex="0"
+  [class.accessory-on]="motionDetected()"
+  [class.cursor-pointer]="readyForControl()"
+  (longClick)="onClick()"
+  (shortClick)="onClick()"
+>
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
+  <div class="d-flex flex-column h-100">
+    <div class="accessory-svg" aria-hidden="true">
+      @if (isDoorbell()) {
+        <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" focusable="false">
+          <!-- outer casing -->
+          <rect x="6" y="1" width="20" height="30" rx="3" stroke="#7f7f7f" fill="none" stroke-width="2" />
+          <!-- camera lens -->
+          <circle cx="16" cy="8" r="3" stroke="#7f7f7f" stroke-width="1.5" fill="#1976d2" fill-opacity="0.5" />
+          <!-- bell button -->
+          <circle cx="16" cy="21" r="5" stroke="#7f7f7f" stroke-width="2" fill="#1976d2" fill-opacity="0.25" />
+        </svg>
+      } @else {
+        <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" focusable="false">
+          <!-- body -->
+          <rect x="2" y="9" width="20" height="14" rx="3" stroke="#7f7f7f" fill="none" stroke-width="2" />
+          <!-- lens -->
+          <circle cx="12" cy="16" r="4" stroke="#7f7f7f" stroke-width="1.5" fill="#1976d2" fill-opacity="0.5" />
+          <!-- video side -->
+          <path d="M22 14 L30 9 V23 L22 18 Z" stroke="#7f7f7f" stroke-width="2" stroke-linejoin="round" fill="none" />
+        </svg>
+      }
+    </div>
+    <div class="accessory-label mt-auto" aria-hidden="true">{{ name }}</div>
+    @if (motionDetected()) {
+      <div class="accessory-label red-text" aria-hidden="true">{{ stateText }}</div>
+    } @else {
+      <div class="accessory-label grey-text" aria-hidden="true">{{ stateText }}</div>
+    }
+  </div>
+</div>

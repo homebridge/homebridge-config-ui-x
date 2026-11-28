@@ -1,4 +1,4 @@
-import type { NetworkAdapterAvailable, NetworkAdapterSelected } from '@/app/modules/settings/settings.interfaces'
+import type { NetworkAdapterAvailable, NetworkAdapterSelected, ResolvedBindEntry } from '@/app/modules/settings/settings.interfaces'
 import type { WritableSignal } from '@angular/core'
 
 import { TitleCasePipe } from '@angular/common'
@@ -16,6 +16,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { NotificationService } from '@/app/core/communication/notification.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
+import { readWebRoot } from '@/app/core/helpers/web-root.helper'
 import { chooseStartupLanguage, localeIdFor } from '@/app/core/locales'
 import { ACCESSORY_CONTROL_LISTS_MODAL_DATA, CONFIRM_MODAL_DATA, NETWORK_INTERFACES_MODAL_DATA, REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { RE_CRON_FIELD, RE_HAP_NAME_PATTERN, RE_WHITESPACE_SINGLE } from '@/app/core/regex.constants'
@@ -130,6 +131,7 @@ export class SettingsComponent implements OnInit {
       'setting-port-range',
       'setting-network-host',
       'setting-network-proxy',
+      'setting-network-web-root',
       'setting-ui-port-network',
       'setting-port-overview',
     ],
@@ -322,6 +324,10 @@ export class SettingsComponent implements OnInit {
 
   public readonly uiProxyHostIsSaving = signal(false)
   public uiProxyHostFormControl = new FormControl('')
+
+  public readonly uiWebRootIsSaving = signal(false)
+  public readonly uiWebRootIsInvalid = signal(false)
+  public uiWebRootFormControl = new FormControl('')
 
   public readonly uiAuthIsSaving = signal(false)
   public uiAuthFormControl = new UntypedFormControl(true)
@@ -599,6 +605,7 @@ export class SettingsComponent implements OnInit {
       'setting-port-range': this.$translate.instant('settings.network.port_range'),
       'setting-network-host': this.$translate.instant('settings.network.host'),
       'setting-network-proxy': this.$translate.instant('settings.network.proxy'),
+      'setting-network-web-root': this.$translate.instant('settings.network.web_root'),
       'setting-ui-port-network': this.$translate.instant('settings.network.port_ui'),
       'setting-port-overview': this.$translate.instant('settings.ports.title'),
 
@@ -659,6 +666,7 @@ export class SettingsComponent implements OnInit {
       this.uiPortFormControl.disable()
       this.uiHostFormControl.disable()
       this.uiProxyHostFormControl.disable()
+      this.uiWebRootFormControl.disable()
       this.uiSslTypeFormControl.disable()
     }
 
@@ -669,47 +677,47 @@ export class SettingsComponent implements OnInit {
 
     this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName, { emitEvent: false })
     this.hbNameFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.hbNameSave(value!))
 
     this.uiLangFormControl.patchValue(this.$settings.env.lang, { emitEvent: false })
     this.uiLangFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiLangSave(value!))
 
     this.uiThemeFormControl.patchValue(this.$settings.theme, { emitEvent: false })
     this.uiThemeFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiThemeSave(value!))
 
     this.uiLightFormControl.patchValue(this.$settings.lightingMode, { emitEvent: false })
     this.uiLightFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiLightSave(value as 'auto' | 'light' | 'dark'))
 
     this.uiMenuFormControl.patchValue(this.$settings.menuMode, { emitEvent: false })
     this.uiMenuFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiMenuSave(value as 'default' | 'freeze'))
 
     this.uiTempFormControl.patchValue(this.$settings.env.temperatureUnits, { emitEvent: false })
     this.uiTempFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiTempSave(value!))
 
     this.uiTerminalPersistenceFormControl.patchValue(this.$settings.env.terminal?.persistence ?? null, { emitEvent: false })
     this.uiTerminalPersistenceFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiTerminalPersistenceSave(value!))
 
     this.uiTerminalHideWarningFormControl.patchValue(this.$settings.env.terminal?.hideWarning ?? null, { emitEvent: false })
     this.uiTerminalHideWarningFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiTerminalHideWarningSave(value!))
 
     this.uiTerminalBufferSizeFormControl.patchValue(this.$settings.env.terminal?.bufferSize ?? null, { emitEvent: false })
     this.uiTerminalBufferSizeFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.uiTerminalBufferSizeSave(value!))
 
     // Validate and set terminal fontSize
@@ -722,7 +730,7 @@ export class SettingsComponent implements OnInit {
       this.uiTerminalFontSizeFormControl.patchValue(savedFontSize || 13, { emitEvent: false })
     }
     this.uiTerminalFontSizeFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiTerminalFontSizeSave(value!))
 
     // Validate and set terminal fontWeight
@@ -735,7 +743,7 @@ export class SettingsComponent implements OnInit {
       this.uiTerminalFontWeightFormControl.patchValue(savedFontWeight || '400', { emitEvent: false })
     }
     this.uiTerminalFontWeightFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiTerminalFontWeightSave(value!))
 
     // Terminal lighting mode - default to dark, but allow light if main theme is light
@@ -748,27 +756,27 @@ export class SettingsComponent implements OnInit {
       this.uiTerminalLightingModeFormControl.disable({ emitEvent: false })
     }
     this.uiTerminalLightingModeFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiTerminalLightingModeSave(value!))
 
     this.hbLogSizeFormControl.patchValue(this.$settings.env.log?.maxSize ?? null, { emitEvent: false })
     this.hbLogSizeFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.hbLogSizeSave(value!))
 
     this.hbLogTruncateFormControl.patchValue(this.$settings.env.log?.truncateSize ?? null, { emitEvent: false })
     this.hbLogTruncateFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.hbLogTruncateSave(value!))
 
     this.uiPortFormControl.patchValue(this.$settings.env.port, { emitEvent: false })
     this.uiPortFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.uiPortSave(value!))
 
     this.uiAuthFormControl.patchValue(this.$settings.formAuth, { emitEvent: false })
     this.uiAuthFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiAuthSave(value!))
 
     // Convert seconds to days, hours, minutes
@@ -782,20 +790,20 @@ export class SettingsComponent implements OnInit {
     this.uiSessionTimeoutMinutesFormControl.patchValue(minutes, { emitEvent: false })
 
     this.uiSessionTimeoutDaysFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(() => this.uiSessionTimeoutSaveFromFields())
 
     this.uiSessionTimeoutHoursFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(() => this.uiSessionTimeoutSaveFromFields())
 
     this.uiSessionTimeoutMinutesFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(() => this.uiSessionTimeoutSaveFromFields())
 
     this.uiSessionTimeoutInactivityBasedFormControl.patchValue(this.$settings.sessionTimeoutInactivityBased || false, { emitEvent: false })
     this.uiSessionTimeoutInactivityBasedFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiSessionTimeoutInactivityBasedSave(value!))
 
     this.uiSslTypeFormControl.patchValue(
@@ -811,52 +819,57 @@ export class SettingsComponent implements OnInit {
 
     this.uiHostFormControl.patchValue(this.$settings.host || '', { emitEvent: false })
     this.uiHostFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.uiHostSave(value!))
 
     this.uiProxyHostFormControl.patchValue(this.$settings.proxyHost || '', { emitEvent: false })
     this.uiProxyHostFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.uiProxyHostSave(value!))
+
+    this.uiWebRootFormControl.patchValue(this.$settings.webRoot || '', { emitEvent: false })
+    this.uiWebRootFormControl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
+      .subscribe(value => this.uiWebRootSave(value!))
 
     this.hbPackageFormControl.patchValue(this.$settings.env.homebridgePackagePath || '', { emitEvent: false })
     this.hbPackageFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.hbPackageSave(value!))
 
     this.uiMetricsFormControl.patchValue(!this.$settings.env.disableServerMetricsMonitoring, { emitEvent: false })
     this.uiMetricsFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiMetricsSave(value!))
 
     this.enableMdnsAdvertiseFormControl.patchValue(this.$settings.env.enableMdnsAdvertise || false, { emitEvent: false })
     this.enableMdnsAdvertiseFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.enableMdnsAdvertiseSave(value!))
 
     this.uiAccDebugFormControl.patchValue(this.$settings.env.accessoryControl?.debug ?? null, { emitEvent: false })
     this.uiAccDebugFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.uiAccDebugSave(value!))
 
     this.uiTempFileFormControl.patchValue(this.$settings.env.temp ?? null, { emitEvent: false })
     this.uiTempFileFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.uiTempFileSave(value!))
 
     this.hbLinuxShutdownFormControl.patchValue(this.$settings.env.linux?.shutdown ?? null, { emitEvent: false })
     this.hbLinuxShutdownFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.hbLinuxShutdownSave(value!))
 
     this.hbLinuxRestartFormControl.patchValue(this.$settings.env.linux?.restart ?? null, { emitEvent: false })
     this.hbLinuxRestartFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.hbLinuxRestartSave(value!))
 
     this.scheduledRestartCronFormControl.patchValue(this.$settings.env.scheduledRestartCron || '', { emitEvent: false })
     this.scheduledRestartCronFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(value => this.scheduledRestartCronSave(value!))
 
     await this.initMatterSettings()
@@ -984,6 +997,8 @@ export class SettingsComponent implements OnInit {
         useValue: {
           adaptersAvailable: this.adaptersAvailable(),
           adaptersSelected: this.adaptersSelected(),
+          // Before v2.5.1, Homebridge fails to start Matter when bridge.bind holds an address
+          canBindByAddress: this.$settings.isFeatureEnabled('bridgeBindByAddress'),
         },
       },
     ], this.injector)
@@ -995,10 +1010,13 @@ export class SettingsComponent implements OnInit {
     })
 
     try {
+      // Adapter names, or the IP address chosen in place of a name
       const adapters: string[] = await ref.result
-      this.buildBridgeNetworkAdapterList(adapters)
       await this.$api.put('/server/network-interfaces/bridge', { adapters })
       this.$settings.showRestartToast()
+      this.buildBridgeNetworkAdapterList(
+        await this.$api.get<ResolvedBindEntry[]>('/server/network-interfaces/bridge/resolved'),
+      )
     } catch (error: any) {
       if (error !== 'Dismiss') {
         console.error(error)
@@ -1027,27 +1045,27 @@ export class SettingsComponent implements OnInit {
 
       this.hbDebugFormControl.patchValue(startupSettingsData.HOMEBRIDGE_DEBUG, { emitEvent: false })
       this.hbDebugFormControl.valueChanges
-        .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+        .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
         .subscribe(value => this.hbDebugSave(value!))
 
       this.hbInsecureFormControl.patchValue(startupSettingsData.HOMEBRIDGE_INSECURE, { emitEvent: false })
       this.hbInsecureFormControl.valueChanges
-        .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+        .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
         .subscribe(value => this.hbInsecureSave(value!))
 
       this.hbKeepFormControl.patchValue(startupSettingsData.HOMEBRIDGE_KEEP_ORPHANS, { emitEvent: false })
       this.hbKeepFormControl.valueChanges
-        .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+        .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
         .subscribe(value => this.hbKeepSave(value!))
 
       this.hbEnvDebugFormControl.patchValue(startupSettingsData.ENV_DEBUG, { emitEvent: false })
       this.hbEnvDebugFormControl.valueChanges
-        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+        .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
         .subscribe(value => this.hbEnvDebugSave(value!))
 
       this.hbEnvNodeFormControl.patchValue(startupSettingsData.ENV_NODE_OPTIONS, { emitEvent: false })
       this.hbEnvNodeFormControl.valueChanges
-        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+        .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
         .subscribe(value => this.hbEnvNodeSave(value!))
     } catch (error: any) {
       console.error(error)
@@ -1077,7 +1095,7 @@ export class SettingsComponent implements OnInit {
   private async getNetworkSettings(): Promise<void> {
     const [system, adapters, mdnsAdvertiser, port, ports] = await Promise.all([
       this.$api.get<NetworkAdapterAvailable[]>('/server/network-interfaces/system'),
-      this.$api.get<string[]>('/server/network-interfaces/bridge'),
+      this.$api.get<ResolvedBindEntry[]>('/server/network-interfaces/bridge/resolved'),
       this.$api.get<{ advertiser: string }>('/server/mdns-advertiser'),
       this.$api.get<{ port: number }>('/server/port'),
       this.$api.get<{ start?: number, end?: number }>('/server/ports'),
@@ -1088,22 +1106,22 @@ export class SettingsComponent implements OnInit {
 
     this.hbMDnsFormControl.patchValue(mdnsAdvertiser.advertiser, { emitEvent: false })
     this.hbMDnsFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(750))
       .subscribe(value => this.hbMDnsSave(value!))
 
     this.hbPortFormControl.patchValue(port.port, { emitEvent: false })
     this.hbPortFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(port => this.hbPortSave(port!))
 
     this.hbStartPortFormControl.patchValue(ports.start ?? null, { emitEvent: false })
     this.hbStartPortFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(port => this.hbStartPortSave(port!))
 
     this.hbEndPortFormControl.patchValue(ports.end ?? null, { emitEvent: false })
     this.hbEndPortFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
       .subscribe(port => this.hbEndPortSave(port!))
   }
 
@@ -1854,6 +1872,30 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  private async uiWebRootSave(typed: string): Promise<void> {
+    // The server starts at the root when it reads a path it cannot use, so that one is never saved
+    const value = readWebRoot(typed)
+    if (value === null) {
+      this.uiWebRootIsInvalid.set(true)
+      return
+    }
+
+    try {
+      this.uiWebRootIsSaving.set(true)
+      this.$settings.setItem('webRoot', value)
+      await this.queueUiSettingChange('webRoot', value)
+      this.uiWebRootIsInvalid.set(false)
+      setTimeout(() => {
+        this.uiWebRootIsSaving.set(false)
+        this.$settings.showRestartToast()
+      }, 1000)
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+      this.uiWebRootIsSaving.set(false)
+    }
+  }
+
   private async hbPackageSave(value: string): Promise<void> {
     try {
       this.hbPackageIsSaving.set(true)
@@ -2056,7 +2098,7 @@ export class SettingsComponent implements OnInit {
 
       // Subscribe to form changes
       this.matterPortFormControl.valueChanges
-        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+        .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
         .subscribe(value => this.matterPortSave(value!))
 
       // disableIpv4 toggle (Homebridge >= 2.2.0 only)
@@ -2070,12 +2112,12 @@ export class SettingsComponent implements OnInit {
       // Matter port range
       this.matterStartPortFormControl.patchValue(matterPorts.start ?? null, { emitEvent: false })
       this.matterStartPortFormControl.valueChanges
-        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+        .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
         .subscribe(value => this.matterStartPortSave(value!))
 
       this.matterEndPortFormControl.patchValue(matterPorts.end ?? null, { emitEvent: false })
       this.matterEndPortFormControl.valueChanges
-        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+        .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1500))
         .subscribe(value => this.matterEndPortSave(value!))
 
       // Set enabled state
@@ -2629,16 +2671,20 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private buildBridgeNetworkAdapterList(adapters: string[]) {
-    if (!adapters.length) {
+  // A bridge.bind entry is an adapter name or an IP address. The server works out which adapter an
+  // address belongs to now, as Homebridge does at start, so an address is shown against its adapter
+  private buildBridgeNetworkAdapterList(entries: ResolvedBindEntry[]) {
+    if (!entries?.length) {
       this.adaptersSelected.set([])
       return
     }
 
-    this.adaptersSelected.set(adapters.map((interfaceName) => {
-      const i = this.adaptersAvailable().find(x => x.iface === interfaceName)
+    this.adaptersSelected.set(entries.map(({ entry, iface, isAddress }) => {
+      const i = this.adaptersAvailable().find(x => x.iface === iface)
       if (i) {
         return {
+          entry,
+          byAddress: isAddress,
           iface: i.iface,
           selected: true,
           missing: false,
@@ -2647,7 +2693,9 @@ export class SettingsComponent implements OnInit {
         }
       } else {
         return {
-          iface: interfaceName,
+          entry,
+          byAddress: isAddress,
+          iface: entry,
           selected: true,
           missing: true,
         }

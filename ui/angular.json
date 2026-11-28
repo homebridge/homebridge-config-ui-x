@@ -80,11 +80,6 @@
                 "output": "./assets/monaco/min/vs"
               },
               {
-                "glob": "editorWorkerHost-*.js",
-                "input": "node_modules/monaco-editor/min/vs",
-                "output": "./assets/monaco/min/vs"
-              },
-              {
                 "glob": "toggleHighContrast-*.js",
                 "input": "node_modules/monaco-editor/min/vs",
                 "output": "./assets/monaco/min/vs"
@@ -96,11 +91,6 @@
               },
               {
                 "glob": "jsonMode-*.js",
-                "input": "node_modules/monaco-editor/min/vs",
-                "output": "./assets/monaco/min/vs"
-              },
-              {
-                "glob": "main-*.js",
                 "input": "node_modules/monaco-editor/min/vs",
                 "output": "./assets/monaco/min/vs"
               },
@@ -208,6 +198,7 @@
             "tsConfig": "tsconfig.spec.json",
             "runner": "vitest",
             "runnerConfig": "vitest-base.config.ts",
+            "polyfills": [],
             "setupFiles": ["src/testing/setup.ts"]
           }
         }

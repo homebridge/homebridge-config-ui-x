@@ -16,6 +16,7 @@ import {
   ensureDir,
   pathExists,
   readdir,
+  readFile,
   readJson,
   remove,
   writeFile,
@@ -25,6 +26,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
 import { BackupModule } from '../../src/modules/backup/backup.module.js'
 import { BackupService } from '../../src/modules/backup/backup.service.js'
@@ -666,6 +668,32 @@ describe('ConfigEditorController (e2e)', () => {
     expect(updatedConfig.platforms).toEqual(mockConfig)
   })
 
+  it('POST /config-editor/plugin/:pluginName puts a plugin with two blocks back where its first block was', async () => {
+    const currentConfig: HomebridgeConfig = await readJson(configFilePath)
+    currentConfig.platforms = [
+      { platform: 'A' },
+      { platform: 'ExampleHomebridgePlugin', name: 'one' },
+      { platform: 'B' },
+      { platform: 'ExampleHomebridgePlugin', name: 'two' },
+      { platform: 'C' },
+    ]
+    await writeJson(configFilePath, currentConfig)
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor/plugin/homebridge-mock-plugin',
+      headers: { authorization },
+      payload: [
+        { platform: 'ExampleHomebridgePlugin', name: 'one' },
+        { platform: 'ExampleHomebridgePlugin', name: 'two' },
+      ],
+    })
+
+    expect(res.statusCode).toBe(201)
+    const saved: HomebridgeConfig = await readJson(configFilePath)
+    expect(saved.platforms.map((p: any) => p.name ?? p.platform)).toEqual(['A', 'one', 'two', 'B', 'C'])
+  })
+
   it('POST /config-editor/plugin/:pluginName (retain index position)', async () => {
     // Empty platforms
     const currentConfig: HomebridgeConfig = await readJson(configFilePath)
@@ -1227,6 +1255,28 @@ describe('ConfigEditorController (e2e)', () => {
         },
       })
       expect(okRes.statusCode).toBe(200)
+    })
+
+    it('still saves other changes when config.json has an older custom restart command', async () => {
+      // A command from before the allowlist is kept, so the user is not locked out of every save
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      uiBlock.restart = 'sudo -n systemctl restart homebridge && echo restarted'
+      await writeJson(configFilePath, config)
+      const configService = app.get(ConfigService)
+      configService.parseConfig(await readJson(configFilePath))
+
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { theme: 'red' },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const saved = (await readJson(configFilePath)).platforms.find((p: any) => p.platform === 'config')
+      expect(saved.theme).toBe('red')
+      expect(saved.restart).toBe('sudo -n systemctl restart homebridge && echo restarted')
     })
 
     it('toggling scheduledBackupDisable re-registers the backup schedule', async () => {
@@ -2187,6 +2237,92 @@ describe('ConfigEditorController (e2e)', () => {
     expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: false })
   })
 
+  it.each([
+    ['/config-editor/hap', {}],
+    [
+      '/config-editor/hap',
+      { enabled: 'false' },
+    ],
+    ['/config-editor/matter/enabled', {}],
+    [
+      '/config-editor/matter/enabled',
+      { enabled: 1 },
+    ],
+  ])('PUT %s refuses a body without a true or false enabled (%j)', async (path, payload) => {
+    // An empty body used to turn HAP off (enabled undefined) and restart Homebridge
+    const restart = vi.spyOn(app.get(HomebridgeIpcService), 'restartAndWaitForClose').mockResolvedValue(undefined)
+    try {
+      const res = await app.inject({
+        method: 'PUT',
+        path,
+        headers: { authorization },
+        payload,
+      })
+      expect(res.statusCode).toBe(400)
+      expect(restart).not.toHaveBeenCalled()
+    } finally {
+      restart.mockRestore()
+    }
+  })
+
+  it.each([
+    ['a list', []],
+    [
+      'a list of objects',
+      [
+        { bridge: {} },
+      ],
+    ],
+    [
+      'a bridge that is text',
+      { bridge: 'x', platforms: [] },
+    ],
+  ])('POST /config-editor refuses %s and keeps config.json', async (_label, payload) => {
+    const before = await readFile(configFilePath, 'utf8')
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: { authorization },
+      payload,
+    })
+    expect(res.statusCode).toBe(400)
+    expect(await readFile(configFilePath, 'utf8')).toBe(before)
+  })
+
+  it('PUT /config-editor/hap keeps a save made while Homebridge restarts', async () => {
+    // The HAP and Matter switches restart Homebridge first. They used to read config.json before that wait and
+    // write the whole old copy after it, undoing any other save in between.
+    let release: () => void
+    const restart = vi.spyOn(app.get(HomebridgeIpcService), 'restartAndWaitForClose')
+      .mockImplementation(() => new Promise<void>((r) => {
+        release = r
+      }) as any)
+    try {
+      const hap = app.inject({
+        method: 'PUT',
+        path: '/config-editor/hap',
+        headers: { authorization },
+        payload: { enabled: false },
+      })
+      await new Promise(r => setTimeout(r, 50))
+      const theme = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { theme: 'purple' },
+      })
+      expect(theme.statusCode).toBe(200)
+      release()
+      expect((await hap).statusCode).toBe(200)
+    } finally {
+      restart.mockRestore()
+    }
+
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.bridge.hap).toBe(false)
+    expect((config.platforms.find((p: any) => p.platform === 'config') as any).theme).toBe('purple')
+  })
+
   it('PUT /config-editor/hap (should allow disabling HAP even when Matter is not configured)', async () => {
     // Default config has no bridge.matter. Disabling HAP here leaves the main
     // bridge with no protocols enabled — this is now allowed; the bridge simply
@@ -2306,6 +2442,17 @@ describe('ConfigEditorController (e2e)', () => {
     expect(after.bridge.hap).toBeUndefined()
   })
 
+  it('keeps every feature flag on for a later major version of Homebridge', () => {
+    const before = homebridgeConfigService.homebridgeVersion
+    homebridgeConfigService.homebridgeVersion = '3.0.0'
+    try {
+      const flags = homebridgeConfigService.getFeatureFlags()
+      expect(Object.entries(flags).filter(([, on]) => on !== true).map(([key]) => key)).toEqual([])
+    } finally {
+      homebridgeConfigService.homebridgeVersion = before
+    }
+  })
+
   it('should enable the hapDisableIdentifyingMaterial feature flag from Homebridge 2.2.2-beta.0', () => {
     homebridgeConfigService.homebridgeVersion = '2.2.1'
     expect(homebridgeConfigService.getFeatureFlags().hapDisableIdentifyingMaterial).toBe(false)
@@ -2315,6 +2462,27 @@ describe('ConfigEditorController (e2e)', () => {
 
     homebridgeConfigService.homebridgeVersion = '2.3.0'
     expect(homebridgeConfigService.getFeatureFlags().hapDisableIdentifyingMaterial).toBe(true)
+  })
+
+  it('should enable the bridgeBindByAddress feature flag from Homebridge 2.5.1-beta.3', () => {
+    // The first version that gives Matter the adapter that has an address in
+    // bridge.bind. Earlier ones pass the address on as a name, and Matter fails to start
+    const before = homebridgeConfigService.homebridgeVersion
+    try {
+      homebridgeConfigService.homebridgeVersion = '2.5.0'
+      expect(homebridgeConfigService.getFeatureFlags().bridgeBindByAddress).toBe(false)
+
+      homebridgeConfigService.homebridgeVersion = '2.5.1-beta.2'
+      expect(homebridgeConfigService.getFeatureFlags().bridgeBindByAddress).toBe(false)
+
+      homebridgeConfigService.homebridgeVersion = '2.5.1-beta.3'
+      expect(homebridgeConfigService.getFeatureFlags().bridgeBindByAddress).toBe(true)
+
+      homebridgeConfigService.homebridgeVersion = '2.5.1'
+      expect(homebridgeConfigService.getFeatureFlags().bridgeBindByAddress).toBe(true)
+    } finally {
+      homebridgeConfigService.homebridgeVersion = before
+    }
   })
 
   it('PUT /config-editor/hap (should persist and preserve disableIdentifyingMaterial)', async () => {

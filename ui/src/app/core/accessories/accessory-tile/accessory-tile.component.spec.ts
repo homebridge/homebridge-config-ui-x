@@ -1,14 +1,14 @@
 import type { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import type { ComponentFixture } from '@angular/core/testing'
 
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA, signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { TranslatePipe } from '@ngx-translate/core'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
-import { hapService, matterService } from '@/testing'
+import { characteristic, hapService, matterService } from '@/testing'
 import { provideTestTranslate } from '@/testing/providers'
 
 /**
@@ -21,7 +21,7 @@ import { provideTestTranslate } from '@/testing/providers'
  * dragging every child's dependencies into the spec.
  */
 describe('AccessoryTileComponent', () => {
-  let accessories: { hapReadyForControl: boolean, matterReadyForControl: boolean, showAccessoryInformation: ReturnType<typeof vi.fn> }
+  let accessories: { hapReadyForControl: boolean, matterReadyForControl: boolean, showAccessoryInformation: ReturnType<typeof vi.fn>, lowBatteryIds: ReturnType<typeof signal<Set<string>>> }
   let fixture: ComponentFixture<AccessoryTileComponent>
 
   beforeEach(() => {
@@ -29,6 +29,7 @@ describe('AccessoryTileComponent', () => {
       hapReadyForControl: true,
       matterReadyForControl: true,
       showAccessoryInformation: vi.fn(),
+      lowBatteryIds: signal(new Set<string>()),
     }
 
     TestBed.configureTestingModule({
@@ -267,6 +268,113 @@ describe('AccessoryTileComponent', () => {
 
       expect(element.querySelector('.accessory-hidden-indicator')).not.toBeNull()
       expect(element.querySelector('.accessory-hidden-icon')).not.toBeNull()
+    })
+  })
+
+  describe('not responding', () => {
+    it('shows the badge when a characteristic did not respond', () => {
+      const element = render(hapService({
+        characteristics: [
+          characteristic('On', true, { status: -70402 }),
+        ],
+      }))
+      expect(element.querySelector('.accessory-not-responding-indicator')).not.toBeNull()
+    })
+
+    it('puts each status description and code on the whole tile as hover text', () => {
+      render(hapService({
+        characteristics: [
+          characteristic('On', true, { status: -70402 }),
+          characteristic('Brightness', 50, { status: -70408 }),
+        ],
+      }))
+      const title = (fixture.nativeElement as HTMLElement).getAttribute('title')
+      expect(title).toContain('(-70402)')
+      expect(title).toContain('(-70408)')
+      expect(title?.split('\n')).toHaveLength(2)
+    })
+
+    it('has no tile hover text when every characteristic answered', () => {
+      render(hapService({
+        characteristics: [
+          characteristic('On', true, { status: 0 }),
+        ],
+      }))
+      expect((fixture.nativeElement as HTMLElement).hasAttribute('title')).toBe(false)
+    })
+
+    it('hides the badge when every characteristic answered', () => {
+      const element = render(hapService({
+        characteristics: [
+          characteristic('On', true, { status: 0 }),
+        ],
+      }))
+      expect(element.querySelector('.accessory-not-responding-indicator')).toBeNull()
+    })
+
+    it('never shows the badge on a matter accessory', () => {
+      const element = render(matterService())
+      expect(element.querySelector('.accessory-not-responding-indicator')).toBeNull()
+    })
+  })
+
+  describe('status icons', () => {
+    const notRespondingStatus = [
+      characteristic('On', true, { status: -70402 }),
+    ]
+    const lowBatteryTile = (characteristics = [
+      characteristic('On', true),
+    ]) => {
+      accessories.lowBatteryIds.set(new Set(['low-1']))
+      return render(hapService({
+        characteristics,
+        overrides: { uniqueId: 'low-1' },
+      }))
+    }
+    const icons = (element: HTMLElement) => [
+      ...element.querySelectorAll('.accessory-status-icons i'),
+    ]
+      .map(icon => icon.classList.contains('accessory-low-battery-icon')
+        ? 'battery'
+        : 'not-responding')
+
+    it('shows no status icons when the battery is fine and the accessory answers', () => {
+      const element = render(hapService({
+        overrides: { uniqueId: 'ok-1' },
+      }))
+      expect(element.querySelector('.accessory-status-icons')).toBeNull()
+      expect(element.querySelector('.accessory-low-battery-indicator')).toBeNull()
+    })
+
+    it('shows only the battery icon when the battery is low', () => {
+      const element = lowBatteryTile()
+      expect(icons(element)).toEqual(['battery'])
+      expect(element.querySelector('.accessory-low-battery-indicator')).not.toBeNull()
+      expect(element.querySelector('.accessory-not-responding-indicator')).toBeNull()
+    })
+
+    it('shows only the triangle when the accessory is not responding', () => {
+      const element = render(hapService({ characteristics: notRespondingStatus }))
+      expect(icons(element)).toEqual(['not-responding'])
+    })
+
+    it('puts the battery left of the triangle when both apply', () => {
+      const element = lowBatteryTile(notRespondingStatus)
+      expect(icons(element)).toEqual(['battery', 'not-responding'])
+    })
+
+    it('says low battery in the button label', () => {
+      const element = lowBatteryTile()
+      expect(element.querySelector('.manage-accessory-button')?.getAttribute('aria-label')).toContain('accessories.low_battery')
+    })
+
+    it('shows the battery icon on a hidden accessory instead of the hidden icon', () => {
+      accessories.lowBatteryIds.set(new Set(['low-1']))
+      const element = render(hapService({
+        overrides: { uniqueId: 'low-1', hidden: true },
+      }))
+      expect(icons(element)).toEqual(['battery'])
+      expect(element.querySelector('.accessory-hidden-indicator')).toBeNull()
     })
   })
 })

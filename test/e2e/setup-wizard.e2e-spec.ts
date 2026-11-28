@@ -3,15 +3,17 @@ import type { TestingModule } from '@nestjs/testing'
 
 import type { UserDto } from '../../src/modules/users/users.dto.js'
 
+import { stat } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { copy, readJson, remove } from 'fs-extra'
+import { copy, readJson, remove, writeFile, writeJson } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
+import { AuthService } from '../../src/core/auth/auth.service.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { SetupWizardModule } from '../../src/modules/setup-wizard/setup-wizard.module.js'
 
@@ -243,6 +245,64 @@ describe('SetupWizard (e2e)', () => {
     // token can be issued even from an unauthenticated client during
     // setup — pairs with the 403 case above for the post-complete state.
     expect(res.statusCode).toBe(200)
+  })
+
+  describe('when auth.json is there but can not be used', () => {
+    it.each([
+      ['is not json', '{ half written'],
+      ['is not a list', '{"username":"admin"}'],
+    ])('keeps the wizard closed when the file %s', async (_label, body) => {
+      configService.setupWizardComplete = true
+      await writeFile(authFilePath, body)
+
+      await app.get(AuthService).checkAuthFile()
+
+      expect(configService.setupWizardComplete).toBe(true)
+      const res = await app.inject({ method: 'GET', path: '/setup-wizard/get-setup-wizard-token' })
+      expect(res.statusCode).toBe(403)
+    })
+
+    it('opens the wizard when the file is missing', async () => {
+      configService.setupWizardComplete = true
+      await app.get(AuthService).checkAuthFile()
+      expect(configService.setupWizardComplete).toBe(false)
+    })
+
+    it('keeps the existing users when the first admin is made for a file with no admin', async () => {
+      await writeJson(authFilePath, [
+        {
+          id: 1,
+          username: 'guest',
+          name: 'Guest',
+          admin: false,
+          hashedPassword: 'x',
+          salt: 'y',
+        },
+      ])
+      await app.get(AuthService).checkAuthFile()
+      expect(configService.setupWizardComplete).toBe(false)
+
+      const res = await app.inject({
+        method: 'POST',
+        path: '/setup-wizard/create-first-user',
+        payload: { name: 'Tester', username: 'test', password: 'test' },
+      })
+
+      expect(res.statusCode).toBe(201)
+      const users = await readJson(authFilePath)
+      expect(users.map((u: UserDto) => u.username)).toEqual(['guest', 'test'])
+    })
+  })
+
+  it.skipIf(process.platform === 'win32')('creates auth.json readable by its owner only', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/setup-wizard/create-first-user',
+      payload: { name: 'Tester', username: 'test', password: 'test' },
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect((await stat(authFilePath)).mode & 0o777).toBe(0o600)
   })
 
   afterAll(async () => {

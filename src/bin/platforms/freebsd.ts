@@ -212,6 +212,11 @@ export class FreeBSDInstaller extends BasePlatform {
       this.hbService.logger.error(`EXAMPLE: sudo hb-service ${this.hbService.action} --user your-user`)
       process.exit(1)
     }
+    // With no --user, run as the user who ran sudo (as on macOS). Every step below reads `asUser`: without this
+    // they made a system user, a sudoers entry and an rc script for a user called "undefined".
+    if (this.hbService.action === 'install' && !this.hbService.asUser) {
+      this.hbService.asUser = process.env.SUDO_USER
+    }
   }
 
   /**

@@ -102,6 +102,8 @@ export class WsService {
       // handshake and be rejected by WsGuard on every retry for the life of the
       // page — which showed up as a status page stuck on its spinner.
       auth: (cb: (data: Record<string, any>) => void) => cb({ token: this.$auth.token }),
+      // Under the web root, when the UI has one: a reverse proxy may pass on nothing else
+      path: environment.api.socketPath,
       reconnectionAttempts: 10,
       reconnectionDelayMax: 30000,
     })

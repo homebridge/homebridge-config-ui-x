@@ -440,6 +440,31 @@ describe('plugin modals', () => {
       expect(onSettingsChange).toHaveBeenCalled()
     })
 
+    it('saves a choice made just before the window closes', async () => {
+      // Regression: the wait before saving came before takeUntilDestroyed, so closing the window within half a
+      // second dropped the choice (the same as the settings page fix)
+      const modalRef = await open(
+        ManageVersionComponent,
+        [
+          {
+            provide: MANAGE_VERSION_MODAL_DATA,
+            useValue: {
+              plugin: makePlugin(),
+              onRefreshPluginList,
+            },
+          },
+        ],
+        () => api.respond('get', /\/plugins\/lookup\//, versionsResponse),
+      )
+      api.clearCalls()
+
+      modalRef.updatePreferenceControl.setValue('none')
+      TestBed.resetTestingModule()
+      await vi.advanceTimersByTimeAsync(500)
+
+      expect(api.callsTo('put').map((call: any) => call.url)).toContain('/config-editor/ui/plugins/hide-updates-for')
+    })
+
     it('puts the dropdown back when saving fails', async () => {
       const modalRef = await open(
         ManageVersionComponent,
@@ -579,6 +604,44 @@ describe('plugin modals', () => {
         '/server/pairings/0E123456789A',
         '/server/pairings/0EAABBCCDDEE',
       ])
+    })
+
+    it('removes the storage of the plugin\'s external matter accessories too', async () => {
+      // A robot vacuum is its own Matter node, with storage and a pairing of its own. Homebridge never
+      // deletes that folder, so it stayed behind after the plugin had gone (homebridge#4026)
+      const modalRef = await openUninstall({}, () => api.respond('get', '/server/pairings', [
+        { _id: 'AABBCCDDEE01', _matterOnly: true, _plugin: 'homebridge-test' },
+        { _id: 'AABBCCDDEE02', _matterOnly: true, _plugin: 'homebridge-other' },
+        { _id: 'AABBCCDDEE03', _isExternal: true, _plugin: 'homebridge-test' },
+      ]))
+
+      await modalRef.doUninstall()
+
+      // Not another plugin's, and not a HAP external: its pairing files are not Matter storage
+      expect(api.callsTo('delete').map(call => call.url)).toEqual(['/server/pairings/AABBCCDDEE01'])
+    })
+
+    it('keeps the external matter accessories when the config is kept', async () => {
+      const modalRef = await openUninstall({}, () => api.respond('get', '/server/pairings', [
+        { _id: 'AABBCCDDEE01', _matterOnly: true, _plugin: 'homebridge-test' },
+      ]))
+      modalRef.removeConfig.set(false)
+      modalRef.onRemoveConfigChange()
+
+      await modalRef.doUninstall()
+
+      // The plugin is coming back, and would publish them again with the same pairing
+      expect(api.callsTo('delete')).toEqual([])
+    })
+
+    it('still opens when the list of bridges cannot be read', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+      const modalRef = await openUninstall({}, () => api.fail('get', '/server/pairings', new Error('server unavailable')))
+
+      await modalRef.doUninstall()
+
+      expect(modalRef.loading()).toBe(false)
+      expect(modal.lastOpened()?.content).toBe(ManagePluginComponent)
     })
 
     it('carries on uninstalling when a pairing cannot be removed', async () => {

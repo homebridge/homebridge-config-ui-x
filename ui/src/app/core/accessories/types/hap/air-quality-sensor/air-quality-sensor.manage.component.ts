@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
+import { numberValue } from '@/app/core/accessories/types/hap/hap-values'
 
 @Component({
   selector: 'app-air-quality-sensor-manage',
@@ -39,13 +40,13 @@ export class HapAirQualitySensorManageComponent extends BaseManageComponent {
   }
 
   private updateFromService() {
-    this.airQuality = this.service.values?.AirQuality ?? 0
-    this.pm25 = this.service.values?.PM2_5Density ?? null
-    this.pm10 = this.service.values?.PM10Density ?? null
-    this.ozone = this.service.values?.OzoneDensity ?? null
-    this.no2 = this.service.values?.NitrogenDioxideDensity ?? null
-    this.so2 = this.service.values?.SulphurDioxideDensity ?? null
-    this.voc = this.service.values?.VOCDensity ?? null
+    this.airQuality = numberValue(this.service.values, 'AirQuality') ?? 0
+    this.pm25 = numberValue(this.service.values, 'PM2_5Density') ?? null
+    this.pm10 = numberValue(this.service.values, 'PM10Density') ?? null
+    this.ozone = numberValue(this.service.values, 'OzoneDensity') ?? null
+    this.no2 = numberValue(this.service.values, 'NitrogenDioxideDensity') ?? null
+    this.so2 = numberValue(this.service.values, 'SulphurDioxideDensity') ?? null
+    this.voc = numberValue(this.service.values, 'VOCDensity') ?? null
   }
 
   public get hasReadings(): boolean {

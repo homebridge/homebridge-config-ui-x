@@ -784,12 +784,53 @@ export function getFanPercentSetting(service: ServiceTypeX): number {
 }
 
 /**
- * Check if fan is on (mode > 0 or percent > 0)
+ * Whether the plugin reports the fan mode (Off 0, Low 1, Medium 2, High 3, On 4, Auto 5, Smart 6)
+ */
+function hasFanMode(service: ServiceTypeX): boolean {
+  return typeof service.clusters?.fanControl?.fanMode === 'number'
+}
+
+/**
+ * The fan mode that goes with a speed, from the modes this fan has (its `fanModeSequence`: 0 Off-Low-Med-High,
+ * 1 Off-Low-High, 2 Off-Low-Med-High-Auto, 3 Off-Low-High-Auto, 4 Off-High-Auto, 5 Off-High). A mode the fan
+ * does not have (Medium for an Off-High fan) is refused by the plugin, and the fan then stays as it was.
+ * A fan that reports no sequence gets the 3-speed mapping.
+ */
+function fanModeForPercent(percent: number, sequence?: number): number {
+  if (percent <= 0) {
+    return 0
+  }
+  switch (sequence) {
+    case 1:
+    case 3:
+      return percent <= 50
+        ? 1
+        : 3
+    case 4:
+    case 5:
+      return 3
+    default:
+      return percent <= 33
+        ? 1
+        : percent <= 66
+          ? 2
+          : 3
+  }
+}
+
+/**
+ * Check if fan is on.
+ *
+ * Homebridge 2.5.1 no longer ties the mode and the speed together, so a controller that turns the fan off sets the
+ * mode to Off and leaves the speed. When the plugin reports a mode, the mode decides (decided by BP); only a fan
+ * with no mode is judged by its speed. A fan whose current speed (`percentCurrent`) is above 0 is running, so it
+ * is on whatever its mode says: a plugin that sends only the speed leaves the mode at Off (decided by BP).
  */
 export function isFanOn(service: ServiceTypeX): boolean {
-  const mode = getFanMode(service)
-  const percent = getFanPercentSetting(service)
-  return mode > 0 || percent > 0
+  if (hasFanMode(service)) {
+    return getFanMode(service) > 0 || (service.clusters?.fanControl?.percentCurrent ?? 0) > 0
+  }
+  return getFanPercentSetting(service) > 0
 }
 
 /**
@@ -797,30 +838,12 @@ export function isFanOn(service: ServiceTypeX): boolean {
  */
 export async function toggleFan(service: ServiceTypeX): Promise<void> {
   const isOn = isFanOn(service)
-  const cluster = service.getCluster?.('fanControl')
-
-  if (!cluster) {
-    const error = new Error('Fan control cluster not found')
-    console.error(error.message)
-    throw error
-  }
-
-  try {
-    if (isOn) {
-      // Turn off
-      await cluster.setAttributes({ percentSetting: 0 })
-    } else {
-      // Turn on to 100%
-      await cluster.setAttributes({ percentSetting: 100 })
-    }
-  } catch (error) {
-    console.error(`Failed to turn fan ${isOn ? 'off' : 'on'}:`, error)
-    throw error
-  }
+  await setFanSpeed(service, isOn ? 0 : 100)
 }
 
 /**
- * Set fan speed percentage (0-100)
+ * Set the fan speed (0-100). For a fan that reports a mode, the matching mode is written with it, so the mode and
+ * the speed never disagree (a speed of 0 with the mode left at High stayed "on").
  */
 export async function setFanSpeed(service: ServiceTypeX, percent: number): Promise<void> {
   const cluster = service.getCluster?.('fanControl')
@@ -832,7 +855,12 @@ export async function setFanSpeed(service: ServiceTypeX, percent: number): Promi
   }
 
   try {
-    await cluster.setAttributes({ percentSetting: percent })
+    await cluster.setAttributes(hasFanMode(service)
+      ? {
+          fanMode: fanModeForPercent(percent, service.clusters?.fanControl?.fanModeSequence),
+          percentSetting: percent,
+        }
+      : { percentSetting: percent })
   } catch (error) {
     console.error('Failed to set fan speed:', error)
     throw error
