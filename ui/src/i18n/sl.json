@@ -195,6 +195,7 @@
   "accessories.hap_status.unknown": "Unknown error",
   "accessories.hap_status.write_only": "Write-only characteristic",
   "accessories.hide_this_accessory": "Skrij to dodatno opremo",
+  "accessories.low_battery": "Low Battery",
   "accessories.manage_layout": "Manage Layout",
   "accessories.message_must_use_insecure_mode": "TČe želite nadzirati dodatno opremo, morate v načinu nezaščiteno uporabljati Homebridge {{ link }}.",
   "accessories.name": "Ime",
