@@ -1435,6 +1435,88 @@ describe('AuthController (e2e)', () => {
     expect([r1, r2].filter(Boolean)).toHaveLength(1)
   })
 
+  /**
+   * Tokens are signed with HS256, so every check accepts HS256 only. jsonwebtoken accepts every HMAC algorithm
+   * when it is given no list, so a token signed with HS384 or HS512 and the same secret was accepted as well
+   * (#3154). The socket guards are covered in ws-guards-algorithm.e2e-spec.ts.
+   */
+  describe('a token signed with another algorithm', () => {
+    /**
+     * The claims of a real session, signed again with the same secret.
+     * @param algorithm - the algorithm to sign with
+     * @param expiresIn - seconds until it expires (negative for one that has expired)
+     */
+    async function resigned(algorithm: jwt.Algorithm, expiresIn = 600) {
+      const login = await app.inject({
+        method: 'POST',
+        path: '/auth/login',
+        payload: { username: 'admin', password: 'admin' },
+      })
+      const claims = jwt.decode(login.json().access_token) as Record<string, unknown>
+      delete claims.iat
+      delete claims.exp
+      return jwt.sign(claims, configService.secrets.secretKey, { algorithm, expiresIn })
+    }
+
+    it('signs sessions with HS256', async () => {
+      const login = await app.inject({
+        method: 'POST',
+        path: '/auth/login',
+        payload: { username: 'admin', password: 'admin' },
+      })
+
+      expect(jwt.decode(login.json().access_token, { complete: true })?.header.alg).toBe('HS256')
+    })
+
+    it('accepts the same claims signed again with HS256, so the checks below test the algorithm only', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        path: '/auth/check',
+        headers: { authorization: `bearer ${await resigned('HS256')}` },
+      })
+
+      expect(res.statusCode).toBe(200)
+    })
+
+    it.each(['HS384', 'HS512'] as const)('refuses a %s token on the api', async (algorithm) => {
+      const res = await app.inject({
+        method: 'GET',
+        path: '/auth/check',
+        headers: { authorization: `bearer ${await resigned(algorithm)}` },
+      })
+
+      expect(res.statusCode).toBe(401)
+    })
+
+    it('restores nothing from an HS512 session cookie', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        path: '/auth/session',
+        headers: { cookie: `hb-refresh=${await resigned('HS512')}` },
+      })
+
+      expect(res.statusCode).toBe(401)
+    })
+
+    it('clears no plugin ui tickets for an expired HS512 token at logout', async () => {
+      // The logout fallback reads expired tokens to clean up tickets, and must not read one signed another way.
+      // An expired HS256 token does clear them: see 'still clears them for a person whose own token has expired'
+      app.get(PluginsSettingsUiTicketService).issueAssetSession('homebridge-mock-plugin', 'admin', 'http://localhost')
+
+      const loggedOut = await app.inject({
+        method: 'POST',
+        path: '/auth/logout',
+        headers: { authorization: `Bearer ${await resigned('HS512', -10)}` },
+      })
+
+      const header = loggedOut.headers['set-cookie']
+      const cleared = (Array.isArray(header)
+        ? header
+        : [header]) as string[]
+      expect(cleared.some(c => c.startsWith('hb-plugin-ui='))).toBe(false)
+    })
+  })
+
   describe('the wallpaper route (no login needed)', () => {
     const wallpaperFile = () => resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper.png')
 
