@@ -7,7 +7,7 @@
 
 import type { ChildProcessWithoutNullStreams, ForkOptions } from 'node:child_process'
 import type { PathLike, WriteStream } from 'node:fs'
-import type { TarOptionsWithAliases } from 'tar'
+import type { ExtractOptions } from 'tar'
 
 import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service.js'
 import type { BasePlatform } from './base-platform.js'
@@ -1307,7 +1307,7 @@ export class HomebridgeServiceHelper {
   /**
    * Extract the Node.js tarball
    */
-  public async extractNodejs(targetVersion: string, extractConfig: TarOptionsWithAliases) {
+  public async extractNodejs(targetVersion: string, extractConfig: ExtractOptions) {
     const spinner = ora(`Installing Node.js ${targetVersion}`).start()
 
     try {

@@ -11,8 +11,6 @@ import { access, lstat, mkdir, mkdtemp, readdir, realpath } from 'node:fs/promis
 import { platform, tmpdir } from 'node:os'
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import process from 'node:process'
-import { pipeline } from 'node:stream'
-import { promisify } from 'node:util'
 
 import {
   BadRequestException,
@@ -38,8 +36,6 @@ import { Logger } from '../../core/logger/logger.service.js'
 import { RE_BACKUP_FILENAME, RE_BACKUP_ID, RE_COLON, RE_NPM_VERSION, RE_PLUGIN_NAME } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
-
-const pump = promisify(pipeline)
 
 // Sentinel value placed in `restoreDirectory` between the moment an upload
 // reserves the slot and the moment the temp dir is actually created. Lets
@@ -538,13 +534,14 @@ export class BackupService {
       // Prepare a temp working directory
       restoreDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
 
-      // Pipe the data to the temp directory
-      await pump(createReadStream(backupPath), extract({
+      // Extract the archive into the temp directory
+      await extract({
+        file: backupPath,
         cwd: restoreDir,
         strict: true,
         preservePaths: false,
         filter: this.tarSafeFilter,
-      }))
+      })
 
       this.restoreDirectory = restoreDir
     } catch (err) {
@@ -617,13 +614,15 @@ export class BackupService {
       // Prepare a temp working directory
       backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
 
-      // Pipe the data to the temp directory
-      await pump(data.file, extract({
+      // Extract the upload into the temp directory as it arrives. A Node.js stream is an async iterable of
+      // chunks, which is what tar reads: an upload over the size limit fails the stream, and with it this
+      await extract({
+        input: data.file,
         cwd: backupDir,
         strict: true,
         preservePaths: false,
         filter: this.tarSafeFilter,
-      }))
+      })
 
       this.restoreDirectory = backupDir
     } catch (err) {
