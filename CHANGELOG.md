@@ -169,12 +169,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(matter): show left-over matter storage as stale bridges, and remove it with its plugin
 - fix(server): return an empty list, not a 500, when the accessories or persist folder is missing
 - chore(deps): dependency updates
+- chore(deps): update `@homebridge/hap-client` to v5.5.0 and `@homebridge/plugin-ui-utils` to v2.3.1
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.4.1-beta`
+- `@homebridge/hap-client` @ `v5.5.0`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
-- `@homebridge/plugin-ui-utils` @ `v2.3.1-beta`
+- `@homebridge/plugin-ui-utils` @ `v2.3.1`
 
 ## v5.30.1 (2026-11-13)
 
