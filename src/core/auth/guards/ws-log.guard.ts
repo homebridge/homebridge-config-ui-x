@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'
 import { UserDto } from '../../../modules/users/users.dto.js'
 import { ConfigService } from '../../config/config.service.js'
 import { AuthService } from '../auth.service.js'
+import { JWT_ALGORITHM } from '../jwt.constants.js'
 import { extractWsToken } from './ws-token.js'
 
 /**
@@ -37,7 +38,9 @@ export class WsLogGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient()
     try {
-      const payload = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey, { algorithms: ['HS256'] }) as UserDto & { instanceId?: string }
+      const payload = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey, {
+        algorithms: [JWT_ALGORITHM],
+      }) as UserDto & { instanceId?: string }
 
       if (payload?.instanceId !== this.configService.instanceId) {
         const isLiveWizardToken = payload?.username === 'setup-wizard'

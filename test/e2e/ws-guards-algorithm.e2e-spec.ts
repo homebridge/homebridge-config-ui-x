@@ -27,15 +27,29 @@ vi.mock('../../src/core/config/config.service.js', () => ({ ConfigService: class
 const SECRET = 'a-test-secret-key-for-ws-guard-algorithm'
 const INSTANCE_ID = 'test-instance'
 
-const payload = { username: 'admin', name: 'Admin', admin: true, instanceId: INSTANCE_ID }
+const payload = {
+  username: 'admin',
+  name: 'Admin',
+  admin: true,
+  instanceId: INSTANCE_ID,
+}
 const jwtService = new JwtService({ secret: SECRET })
 
 function makeClient(token: string) {
-  return { handshake: { auth: { token } }, disconnect: vi.fn() }
+  return {
+    handshake: {
+      auth: { token },
+    },
+    disconnect: vi.fn(),
+  }
 }
 
 function makeContext(client: ReturnType<typeof makeClient>) {
-  return { switchToWs: () => ({ getClient: () => client }) } as unknown as ExecutionContext
+  return {
+    switchToWs: () => ({
+      getClient: () => client,
+    }),
+  } as unknown as ExecutionContext
 }
 
 function makeGuard(Guard: any) {
@@ -45,8 +59,13 @@ function makeGuard(Guard: any) {
     setupWizardComplete: true,
     restrictLogsToAdmins: false,
   }
-  const authService = { validateUser: vi.fn(async () => true), trackSocket: vi.fn() }
-  const moduleRef = { get: vi.fn(() => authService) }
+  const authService = {
+    validateUser: vi.fn(async () => true),
+    trackSocket: vi.fn(),
+  }
+  const moduleRef = {
+    get: vi.fn(() => authService),
+  }
   return new Guard(configService, moduleRef)
 }
 
