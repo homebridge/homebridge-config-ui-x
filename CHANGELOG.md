@@ -2,9 +2,15 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.30.2 (Pending Release)
+## v5.30.2 (2026-11-29)
 
 ### Highlights
+
+- 📡 The accessories tab shows accessories that are not responding, with their HomeKit status
+- 🪫 Accessory tiles show a low battery icon
+- 📷 A camera shows as one tile, with its sound, motion sensor and doorbell, and its recording, operating mode and data stream services are hidden
+- 🌀 Matter fans show on and off by their mode and speed, and write the two together
+- 🧹 Matter controls are sent once and show on the part of the device they belong to, the room layout is saved for the signed-in user, and the page no longer adds another set of socket handlers on each visit
 
 ### UI Changes
 
